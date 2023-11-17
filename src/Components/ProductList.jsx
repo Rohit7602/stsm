@@ -6,15 +6,16 @@ import vivomobile from "../Images/svgs/vivomobile.svg";
 import threedot from "../Images/svgs/threedot.svg";
 import SearchIcon from "../Images/svgs/search.svg";
 import deleteIcon from "../Images/Png/Icons.png";
-import Modifyproduct from "./Modifyproduct";
 import { ProductList } from "../Common/Helper";
 import { collection, doc, getDocs, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Link } from "react-router-dom";
+import Modifyproduct from "./Modifyproduct";
 
 const ProductListComponent = ({ setOpen, open }) => {
   const [selectedProduct, setselectedProduct] = useState(null);
   const [data, setData] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,9 +33,13 @@ const ProductListComponent = ({ setOpen, open }) => {
     };
     fetchData();
   }, []);
-
   const handleModifyClick = (index) => {
-    setselectedProduct(index === selectedProduct ? null : index);
+    // Toggle the selection for the first product
+    if (index === 0) {
+      setSelectAll(!selectAll);
+    } else {
+      setselectedProduct(index === selectedProduct ? null : index);
+    }
   };
 
   async function handleDelete(id) {
@@ -127,10 +132,14 @@ const ProductListComponent = ({ setOpen, open }) => {
               <div className="product_overflow_X ">
                 <div className="d-flex align-items-center justify-content-between py-3">
                   <div className="d-flex align-items-center  w-25 ">
-                    <label class="check1 fw-400 fs-sm black mb-0">
+                    <label className="check1 fw-400 fs-sm black mb-0">
                       Product
-                      <input type="checkbox" />
-                      <span class="checkmark"></span>
+                      <input
+                        type="checkbox"
+                        checked={selectAll}
+                        onChange={() => handleModifyClick(0)}
+                      />
+                      <span className="checkmark"></span>
                     </label>
                   </div>
                   <div className="d-flex align-items-center   w-75">
@@ -150,72 +159,6 @@ const ProductListComponent = ({ setOpen, open }) => {
                 </div>
                 <div className="product_borderbottom"></div>
 
-                {/* {data.map((item, index) => {
-                  const {
-                    id,
-                    name,
-                    originalPrice,
-                    categories,
-                    status,
-                    totalStock,
-                    productImages,
-                    sku,
-                    shortDescription,
-                  } = item;
-                  return (
-                    <>
-                      <div className="d-flex align-items-center position-relative justify-content-between py-3 ">
-                        <div className="d-flex align-items-center gap-3 w-25  ">
-                          <label class="check1 fw-400 fs-sm black mb-0  align-items-center d-flex">
-                            <img
-                              className="vivomobile mx-2"
-                              src={
-                                productImages ? productImages[0] : vivomobile
-                              }
-                              alt="vivomobile"
-                            />
-                            {name}
-                            <input type="checkbox" />
-                            <span class="checkmark"></span>
-                          </label>
-                        </div>
-                        <div className="d-flex align-items-center gap-3   w-75">
-                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                            {id}
-                          </h3>
-                          <h3 className="fs-sm fw-400 black mb-0 mw-450">
-                            {shortDescription}
-                          </h3>
-                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                            {sku}
-                          </h3>
-                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                            {categories}
-                          </h3>
-                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                            {totalStock}
-                          </h3>
-                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                            {status}
-                          </h3>
-                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                            {originalPrice}
-                          </h3>
-
-                          <img
-                            className="threedot cursor_pointer me-4"
-                            src={deleteIcon}
-                            alt="threedot"
-                            onClick={() => {
-                              handleDelete(id);
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div className="product_borderbottom"></div>
-                    </>
-                  );
-                })} */}
                 {ProductList.map((value, index) => {
                   return (
                     <div
@@ -223,10 +166,14 @@ const ProductListComponent = ({ setOpen, open }) => {
                       key={index}
                     >
                       <div className="d-flex align-items-center gap-3 w-25 ">
-                        <label class="check1 fw-400 fs-sm black mb-0">
+                        <label className="check1 fw-400 fs-sm black mb-0">
                           {value.Product}
-                          <input type="checkbox" />
-                          <span class="checkmark"></span>
+                          <input
+                            type="checkbox"
+                            checked={selectAll || selectedProduct === index}
+                            onChange={() => handleModifyClick(index)}
+                          />
+                          <span className="checkmark"></span>
                         </label>
                       </div>
                       <div className="d-flex align-items-center   w-75">

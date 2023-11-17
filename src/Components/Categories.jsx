@@ -14,8 +14,9 @@ const Categories = ({ setOpen, open }) => {
   const [data, setData] = useState([]);
   const [mainCategory, setMainCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectAll, setSelectAll] = useState(false);
 
-  const handleModifyClick = (index) => {
+  const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);
   };
 
@@ -52,6 +53,14 @@ const Categories = ({ setOpen, open }) => {
     };
     fetchData();
   }, []);
+  const handleModifyClick = (index) => {
+    // Toggle the selection for the first product
+    if (index === 0) {
+      setSelectAll(!selectAll);
+    } else {
+      setSelectedCategory(index === setSelectedCategory ? null : index);
+    }
+  };
 
   async function handleDelete(id) {
     try {
@@ -144,7 +153,11 @@ const Categories = ({ setOpen, open }) => {
                   <div className="d-flex align-items-center gap-3 w-25 w-md-50">
                     <label class="check1 fw-400 fs-sm black mb-0">
                       Name
-                      <input type="checkbox" />
+                      <input
+                        type="checkbox"
+                        checked={selectAll}
+                        onChange={() => handleModifyClick(0)}
+                      />
                       <span class="checkmark"></span>
                     </label>
                   </div>
@@ -174,7 +187,11 @@ const Categories = ({ setOpen, open }) => {
                         <div className="d-flex align-items-center gap-3 w-25 w-md-50">
                           <label class="check1 fw-400 fs-sm black mb-0">
                             {value.Name}
-                            <input type="checkbox" />
+                            <input
+                              type="checkbox"
+                              checked={selectAll || selectedCategory === index}
+                              onChange={() => handleModifyClick(index)}
+                            />
                             <span class="checkmark"></span>
                           </label>
                         </div>
