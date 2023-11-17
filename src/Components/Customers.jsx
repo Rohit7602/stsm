@@ -4,27 +4,35 @@ import manicon from "../Images/svgs/manicon.svg";
 import threedot from "../Images/svgs/threedot.svg";
 import search from "../Images/svgs/search.svg";
 import SearchIcon from "../Images/svgs/search.svg";
-import { collection, doc, getDocs, deleteDoc, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  deleteDoc,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import { useEffect } from "react";
 import { useState } from "react";
-
+import { Link, NavLink } from "react-router-dom";
 
 const Customers = ({ setOpen, open }) => {
-  const[data,setData]=useState([])
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       let list = [];
       try {
-
-        const q = query(collection(db, "customers"), where("is_customer", "==", true));
+        const q = query(
+          collection(db, "customers"),
+          where("is_customer", "==", true)
+        );
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
           list.push({ id: doc.id, ...doc.data() });
         });
         setData([...list]);
-        
       } catch (error) {
         console.log(error);
       }
@@ -138,71 +146,85 @@ const Customers = ({ setOpen, open }) => {
                   </div>
                 </div>
                 <div className="product_borderbottom"></div>
-               {data.map((item,index)=>{
-                const{city,is_customer,email,is_salesman,state,is_wholesaler,name,image,created_at}=item;
-                const formatNumbers = function(num) {
-                  return num < 10 ? "0" + num : num;
-                }
-                const formatDate = function (date){
-                  let day = formatNumbers(date.getDate());
-                  let month = formatNumbers(date.getMonth() + 1);
-                  let year = date.getFullYear()
-                  console.log(date)
-                  return day + '-' +  month + '-' + year
-                }
-                const newval=new Date(created_at)
-                const newDate=formatDate(newval)
-                return(
-                  <>
-                                  <div className="d-flex align-items-center justify-content-between py-3">
-                  <div className="d-flex align-items-center gap-3  width_33">
-                    <label class="check1 fw-400 fs-sm black mb-0  align-items-center d-flex">
-                      <img
-                        className="manicon mx-2"
-                        src={!image? manicon :image}
-                        alt="manicon"
-                      />
+                {data.map((item, index) => {
+                  const {
+                    city,
+                    is_customer,
+                    email,
+                    is_salesman,
+                    state,
+                    is_wholesaler,
+                    name,
+                    image,
+                    created_at,
+                  } = item;
+                  const formatNumbers = function (num) {
+                    return num < 10 ? "0" + num : num;
+                  };
+                  const formatDate = function (date) {
+                    let day = formatNumbers(date.getDate());
+                    let month = formatNumbers(date.getMonth() + 1);
+                    let year = date.getFullYear();
+                    console.log(date);
+                    return day + "-" + month + "-" + year;
+                  };
+                  const newval = new Date(created_at);
+                  const newDate = formatDate(newval);
+                  return (
+                    <>
+                      <div className="d-flex align-items-center justify-content-between py-3">
+                        <div className="d-flex align-items-center gap-3  width_33">
+                          <label class="check1 fw-400 fs-sm black mb-0  align-items-center d-flex">
+                            {" "}
+                            <img
+                              className="manicon mx-2"
+                              src={!image ? manicon : image}
+                              alt="manicon"
+                            />
+                            <div>
+                              <NavLink
+                                className="d-flex py-1 color_black_02"
+                                to="/CustomerDetailsView"
+                              >
+                                {" "}
+                                {name}
+                              </NavLink>
 
-                      <div>
-                        {name}
-                        <h3 className="fs-xxs fw-400 fade_grey mt-1 mb-0">
-                          {email}
-                        </h3>
+                              <h3 className="fs-xxs fw-400 fade_grey mt-1 mb-0">
+                                {email}
+                              </h3>
+                            </div>
+                            <input type="checkbox" />
+                            <span class="checkmark"></span>
+                          </label>
+                        </div>
+                        <div className="d-flex width_33">
+                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
+                            {newDate}
+                          </h3>
+                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
+                            {city} / {state}
+                          </h3>
+                        </div>
+                        <div className="d-flex  width_33">
+                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
+                            Public
+                          </h3>
+                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
+                            ₹ 32,460.00
+                          </h3>
+
+                          <img
+                            className="threedot me-3"
+                            src={threedot}
+                            alt="threedot"
+                          />
+                        </div>
                       </div>
-                      <input type="checkbox" />
-                      <span class="checkmark"></span>
-                    </label>
-                  </div>
-                  <div className="d-flex width_33">
-                    <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                      {newDate}
-                    </h3>
-                    <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                      {city} / {state}
-                    </h3>
-                  </div>
-                  <div className="d-flex  width_33">
-                    <h3 className="fs-sm fw-400 black mb-0 mw-200">Public</h3>
-                    <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                      ₹ 32,460.00
-                    </h3>
-              
-                   <img
-                      className="threedot me-3"
-                      src={threedot}
-                      alt="threedot"
-                    />
-          
-                   
-                  </div>
-                </div>
-                <div className="product_borderbottom"></div>
-                  
-                  </>
-                )
-               })}
-
-               
+                      <div className="product_borderbottom"></div>
+                    </>
+                  );
+                })}
               </div>
             </div>
           </div>

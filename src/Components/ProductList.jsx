@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import filtericon from "../Images/svgs/filtericon.svg";
 import addicon from "../Images/svgs/addicon.svg";
 import checkicon from "../Images/svgs/checkicon.svg";
@@ -6,13 +6,14 @@ import vivomobile from "../Images/svgs/vivomobile.svg";
 import threedot from "../Images/svgs/threedot.svg";
 import SearchIcon from "../Images/svgs/search.svg";
 import deleteIcon from "../Images/Png/Icons.png";
-
+import Modifyproduct from "./Modifyproduct";
+import { ProductList } from "../Common/Helper";
 import { collection, doc, getDocs, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const ProductList = ({ setOpen, open }) => {
+const ProductListComponent = ({ setOpen, open }) => {
+  const [selectedProduct, setselectedProduct] = useState(null);
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -31,6 +32,10 @@ const ProductList = ({ setOpen, open }) => {
     };
     fetchData();
   }, []);
+
+  const handleModifyClick = (index) => {
+    setselectedProduct(index === selectedProduct ? null : index);
+  };
 
   async function handleDelete(id) {
     try {
@@ -121,7 +126,7 @@ const ProductList = ({ setOpen, open }) => {
             <div className="overflow-x-scroll line_scroll">
               <div className="product_overflow_X ">
                 <div className="d-flex align-items-center justify-content-between py-3">
-                  <div className="d-flex align-items-center gap-3 w-25 ">
+                  <div className="d-flex align-items-center  w-25 ">
                     <label class="check1 fw-400 fs-sm black mb-0">
                       Product
                       <input type="checkbox" />
@@ -140,12 +145,12 @@ const ProductList = ({ setOpen, open }) => {
                     <h3 className="fs-sm fw-400 black mb-0 mw-200">Stock</h3>
                     <h3 className="fs-sm fw-400 black mb-0 mw-200">Status</h3>
                     <h3 className="fs-sm fw-400 black mb-0 mw-200">Price</h3>
-                    <h3 className="fs-sm fw-400 black mb-0  me-3">Action</h3>
+                    <h3 className="fs-sm fw-400 black mb-0 ">Action</h3>
                   </div>
                 </div>
                 <div className="product_borderbottom"></div>
 
-                {data.map((item, index) => {
+                {/* {data.map((item, index) => {
                   const {
                     id,
                     name,
@@ -159,58 +164,112 @@ const ProductList = ({ setOpen, open }) => {
                   } = item;
                   return (
                     <>
-                    <div className="d-flex align-items-center position-relative justify-content-between py-3 ">
-                      <div className="d-flex align-items-center gap-3 w-25  ">
-                        <label class="check1 fw-400 fs-sm black mb-0  align-items-center d-flex">
+                      <div className="d-flex align-items-center position-relative justify-content-between py-3 ">
+                        <div className="d-flex align-items-center gap-3 w-25  ">
+                          <label class="check1 fw-400 fs-sm black mb-0  align-items-center d-flex">
+                            <img
+                              className="vivomobile mx-2"
+                              src={
+                                productImages ? productImages[0] : vivomobile
+                              }
+                              alt="vivomobile"
+                            />
+                            {name}
+                            <input type="checkbox" />
+                            <span class="checkmark"></span>
+                          </label>
+                        </div>
+                        <div className="d-flex align-items-center gap-3   w-75">
+                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
+                            {id}
+                          </h3>
+                          <h3 className="fs-sm fw-400 black mb-0 mw-450">
+                            {shortDescription}
+                          </h3>
+                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
+                            {sku}
+                          </h3>
+                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
+                            {categories}
+                          </h3>
+                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
+                            {totalStock}
+                          </h3>
+                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
+                            {status}
+                          </h3>
+                          <h3 className="fs-sm fw-400 black mb-0 mw-200">
+                            {originalPrice}
+                          </h3>
+
                           <img
-                            className="vivomobile mx-2"
-                            src={productImages ? productImages[0] : vivomobile}
-                            alt="vivomobile"
+                            className="threedot cursor_pointer me-4"
+                            src={deleteIcon}
+                            alt="threedot"
+                            onClick={() => {
+                              handleDelete(id);
+                            }}
                           />
-                          {name}
+                        </div>
+                      </div>
+                      <div className="product_borderbottom"></div>
+                    </>
+                  );
+                })} */}
+                {ProductList.map((value, index) => {
+                  return (
+                    <div
+                      className="d-flex align-items-center justify-content-md-between py-3"
+                      key={index}
+                    >
+                      <div className="d-flex align-items-center gap-3 w-25 ">
+                        <label class="check1 fw-400 fs-sm black mb-0">
+                          {value.Product}
                           <input type="checkbox" />
                           <span class="checkmark"></span>
                         </label>
                       </div>
-                      <div className="d-flex align-items-center gap-3   w-75">
-                        <h3 className="fs-sm fw-400 black mb-0 mw-200">{id}</h3>
+                      <div className="d-flex align-items-center   w-75">
+                        <h3 className="fs-sm fw-400 black mb-0 mw-200">
+                          {value.ProductID}
+                        </h3>
                         <h3 className="fs-sm fw-400 black mb-0 mw-450">
-                          {shortDescription}
+                          {value.ShortDiscription}
                         </h3>
                         <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                          {sku}
+                          {" "}
+                          {value.SKU}
                         </h3>
                         <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                          {categories}
+                          {value.Category}
                         </h3>
                         <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                          {totalStock}
+                          {value.Stock}
                         </h3>
                         <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                          {status}
+                          {value.Status}
                         </h3>
                         <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                          {originalPrice}
+                          {value.Price}
                         </h3>
+                        <div className="position-relative    d-flex pe-4  flex-column align-items-end  ">
+                          <img
+                            onClick={() => handleModifyClick(index)}
+                            className="threedot me-3"
+                            src={threedot}
+                            alt="threedot"
+                          />
 
-                        <img
-                          className="threedot cursor_pointer me-4"
-                          src={deleteIcon}
-                          alt="threedot"
-                          onClick={() => {
-                            handleDelete(id);
-                          }}
-                        />
-                        
+                          {selectedProduct === index && (
+                            <div className="position-absolute mt-4 z_index top-20 bg_white">
+                              <Modifyproduct />
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                      <div className="product_borderbottom"></div>
-                    
-                  </>
                   );
-                  
                 })}
-                
               </div>
             </div>
           </div>
@@ -220,4 +279,4 @@ const ProductList = ({ setOpen, open }) => {
   );
 };
 
-export default ProductList;
+export default ProductListComponent;
