@@ -4,7 +4,7 @@ import manicon from "../Images/svgs/manicon.svg";
 import threedot from "../Images/svgs/threedot.svg";
 import search from "../Images/svgs/search.svg";
 import SearchIcon from "../Images/svgs/search.svg";
-import { collection, doc, getDocs, deleteDoc } from "firebase/firestore";
+import { collection, doc, getDocs, deleteDoc, query, where } from "firebase/firestore";
 import { db } from "../firebase";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -17,13 +17,14 @@ const Customers = ({ setOpen, open }) => {
     const fetchData = async () => {
       let list = [];
       try {
-        const querySnapshot = await getDocs(collection(db, "customers"));
+
+        const q = query(collection(db, "customers"), where("is_customer", "==", true));
+        const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
           list.push({ id: doc.id, ...doc.data() });
         });
         setData([...list]);
-        console.log(list)
+        
       } catch (error) {
         console.log(error);
       }
@@ -180,16 +181,19 @@ const Customers = ({ setOpen, open }) => {
                       {city} / {state}
                     </h3>
                   </div>
-                  <div className="d-flex width_33">
+                  <div className="d-flex  width_33">
                     <h3 className="fs-sm fw-400 black mb-0 mw-200">Public</h3>
                     <h3 className="fs-sm fw-400 black mb-0 mw-200">
                       ₹ 32,460.00
                     </h3>
-                    <img
+              
+                   <img
                       className="threedot me-3"
                       src={threedot}
                       alt="threedot"
                     />
+          
+                   
                   </div>
                 </div>
                 <div className="product_borderbottom"></div>

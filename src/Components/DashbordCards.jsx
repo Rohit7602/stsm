@@ -70,7 +70,7 @@ function DashbordCards({ setOpen, open }) {
             <div className="    col-xl col-lg-4 col-md-6  mb-3 mr-3  ">
               <div className="   bg-white cards  flex-column d-flex justify-content-around px-3">
                 <div className="d-flex justify-content-between   bg-white">
-                  <h3 className="fw-400 fade_grey fs-xs">Total Sells</h3>
+                  <h3 className="fw-400 fade_grey fs-xs">Total Sales</h3>
                   <div>
                     <img src={Dots} alt="dots" />
                   </div>
@@ -91,7 +91,7 @@ function DashbordCards({ setOpen, open }) {
             <div className="    col-xl col-lg-4 col-md-6 mb-3 mr-3  ">
               <div className=" bg-white   cards  flex-column d-flex justify-content-around px-3">
                 <div className="d-flex justify-content-between   bg-white">
-                  <h3 className="fw-400 fade_grey fs-xs">Total Sells</h3>
+                  <h3 className="fw-400 fade_grey fs-xs">Average Order Value</h3>
                   <div>
                     <img src={Dots} alt="dots" />
                   </div>
@@ -112,14 +112,14 @@ function DashbordCards({ setOpen, open }) {
             <div className="     col-xl col-lg-4 col-md-6 mb-3    ">
               <div className="  bg-white  cards  flex-column d-flex justify-content-around px-3">
                 <div className="d-flex justify-content-between   bg-white">
-                  <h3 className="fw-400 fade_grey fs-xs">Total Sells</h3>
+                  <h3 className="fw-400 fade_grey fs-xs">Total Orders</h3>
                   <div>
                     <img src={Dots} alt="dots" />
                   </div>
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
-                  <h3 className="fw-500 black mb-0 fs-lg">₹ 50680.00</h3>
+                  <h3 className="fw-500 black mb-0 fs-lg"> 3368</h3>
                   <div className="d-flex flex-column   justify-content-between">
                     <h3 className="color_green fs-xxs mb-0 text-end">15.3%</h3>
                     <p className="text-end  para mb-0">
@@ -144,7 +144,7 @@ function DashbordCards({ setOpen, open }) {
                   </div>
                 </div>
                 <div className="grey_box my-2 text-center w-100 p-2">
-                  <h3 className="fw-500 black mb-0 fs-lg">34</h3>
+                  <h3 className="fw-500 black mb-0 fs-lg">56</h3>
                 </div>
                 <div className="d-flex align-items-center py-1 bottom_border  justify-content-between">
                   <h4 className="fw-400 fade_grey mb-0 fs-xs"> City</h4>

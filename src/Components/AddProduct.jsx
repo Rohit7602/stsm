@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import saveicon from "../Images/svgs/saveicon.svg";
 import deleteicon from "../Images/svgs/deleteicon.svg";
 import SearchIcon from "../Images/svgs/search.svg";
 import { Col, Row, Toast } from "react-bootstrap";
-import { collection, addDoc } from "firebase/firestore";
+import { collection,getDocs, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -24,6 +24,7 @@ const AddProduct = ({ setOpen, open }) => {
   const [totalStock, setTotalStock] = useState();
   const [categories, setCategories] = useState();
   const [imageUpload22, setImageUpload22] = useState([]);
+  const [data, setData] = useState([]);
 
   function handleReset() {
     setName();
@@ -100,6 +101,42 @@ const AddProduct = ({ setOpen, open }) => {
     updatedImages.splice(index, 1);
     setImageUpload22(updatedImages);
   }
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      let list = [];
+      try {
+        const querySnapshot = await getDocs(collection(db, "sub_categories"));
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          list.push({ id: doc.id, ...doc.data() });
+        });
+        setData([...list]);
+          console.log(list)
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+
+function handleSearch(e){
+  function search(nameKey, myArray){
+    for (let i=0; i < myArray.length; i++) {
+        if ((String(myArray[i].title)).includes(nameKey)) {
+            return myArray[i].title;
+        }
+    }
+  }
+  
+  
+  
+  const resultObject = search(e.target.value, data);
+  console.log(resultObject)
+}
+
+
 
   return (
     <div className="main_panel_wrapper pb-4  bg_light_grey w-100 d-flex flex-column">
@@ -268,7 +305,10 @@ const AddProduct = ({ setOpen, open }) => {
                             className="mt-2 product_input  fade_grey fw-400"
                             id="Discount"
                             value={discountType}
-                            onChange={(e) => setDiscountType(e.target.value)}
+                            onChange={(e) =>{
+                              setDiscountType(e.target.value)
+                              setDiscount(0)
+                            }}
                           >
                             <option
                               className="mt-2 product_input fade_grey fw-400"
@@ -295,10 +335,17 @@ const AddProduct = ({ setOpen, open }) => {
                           <input
                             type="number"
                             className="mt-2 product_input fade_grey fw-400"
-                            placeholder="₹ 0.00"
+                            placeholder={discountType!=='Percentage'? "₹ 0.00":"%"}
                             id="ddisc"
                             value={discount}
-                            onChange={(e) => setDiscount(e.target.value)}
+                            onChange={(e) =>{ 
+                              if(discountType=="Percentage"){
+                                if(e.target.value <101 && e.target.value >=0){
+                                setDiscount(e.target.value)}}
+                              else{
+                                setDiscount(e.target.value)
+                              }}
+                              }
                           />{" "}
                         </div>
                       </div>
@@ -417,9 +464,9 @@ const AddProduct = ({ setOpen, open }) => {
                     className="mt-3 product_input fade_grey fw-400"
                     placeholder="search for category"
                     value={categories}
-                    onChange={(e) => setCategories(e.target.value)}
+                    onChange={handleSearch}
                   />{" "}
-                  <div className="gap-1 d-flex align-items-center mt-3">
+                  {/* <div className="gap-1 d-flex align-items-center mt-3">
                     <button className="fs-sm black categories_btn">
                       Electronics
                     </button>
@@ -430,7 +477,7 @@ const AddProduct = ({ setOpen, open }) => {
                     <button className="fs-sm black categories_btn">
                       Original
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               </Col>
             </Row>
