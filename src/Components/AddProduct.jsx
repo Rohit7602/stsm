@@ -413,20 +413,9 @@ const AddProduct = ({ setOpen, open }) => {
                     <label className="check fw-400 fs-sm black mb-0">
                       Published
                       <input
-<<<<<<< HEAD
-                         ref={pubref}
-                         onChange={(e) => {
-                           if (e.target.checked) {
-                             setStatus("published");
-                             hidref.current.checked = false;
-                           }
-                         }}
-                        type="checkbox"
-=======
                         onChange={() => setStatus("published")}
                         type="radio"
                         checked={status === "published"}
->>>>>>> 40bec17915d4021d17ddd3ac991777acbf4e596f
                       />
                       <span className="checkmark"></span>
                     </label>
@@ -435,20 +424,9 @@ const AddProduct = ({ setOpen, open }) => {
                     <label className="check fw-400 fs-sm black mb-0">
                       Hidden
                       <input
-<<<<<<< HEAD
-                        ref={hidref}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setStatus("hidden");
-                            pubref.current.checked = false;
-                          }
-                        }}
-                        type="checkbox"
-=======
                         onChange={() => setStatus("hidden")}
                         type="radio"
                         checked={status === "hidden"}
->>>>>>> 40bec17915d4021d17ddd3ac991777acbf4e596f
                       />
                       <span className="checkmark"></span>
                     </label>
@@ -533,6 +511,6 @@ const AddProduct = ({ setOpen, open }) => {
     </div>
   );
                 }
-};
+
 
 export default AddProduct;
