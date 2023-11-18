@@ -186,32 +186,32 @@ const AddProduct = ({ setOpen, open }) => {
       </div>
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
         <div className="container">
-          <div className="d-flex  align-items-center flex-column flex-sm-row gap-2 gap-sm-0  justify-content-between">
-            <div className="d-flex">
-              <h1 className="fw-500  mb-0 black fs-lg">New Product</h1>
-            </div>
-            <div className="d-flex align-itmes-center gap-3">
-              <button className="reset_border">
-                <button
-                  onClick={handleReset}
-                  className="fs-sm reset_btn  border-0 fw-400 "
-                >
-                  Reset
-                </button>
-              </button>
-              <button
-                className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
-                onClick={handlesave}
-              >
-                <img src={saveicon} alt="saveicon" />
-                Save
-              </button>
-            </div>
-          </div>
           {/* NEW PRODUCT DETAILSS  */}
 
           <form action="" className="mt-3">
-            <Row>
+            <div className="d-flex  align-items-center flex-column flex-sm-row gap-2 gap-sm-0  justify-content-between">
+              <div className="d-flex">
+                <h1 className="fw-500  mb-0 black fs-lg">New Product</h1>
+              </div>
+              <div className="d-flex align-itmes-center gap-3">
+                <button className="reset_border">
+                  <button
+                    onClick={handleReset}
+                    className="fs-sm reset_btn  border-0 fw-400 "
+                  >
+                    Reset
+                  </button>
+                </button>
+                <button
+                  className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
+                  onClick={handlesave}
+                >
+                  <img src={saveicon} alt="saveicon" />
+                  Save
+                </button>
+              </div>
+            </div>
+            <Row className="mt-3">
               <Col xxl={8}>
                 {/* Basic Information */}
                 <div className="  ">
