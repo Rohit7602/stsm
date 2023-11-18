@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import addicon from "../Images/svgs/addicon.svg";
-import deleteIcon from "../Images/svgs/deleteicon.svg";
+import threedot from "../Images/svgs/threedot.svg";
 import search from "../Images/svgs/search.svg";
 import SearchIcon from "../Images/svgs/search.svg";
 import Modifyproduct from "./Modifyproduct";
@@ -8,12 +8,17 @@ import { collection, doc, getDocs, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { CategoryItems } from "../Common/Helper";
 
-const Categories = () => {
-  
+const Categories = ({ setOpen, open }) => {
   const [data, setData] = useState([]);
   const [mainCategory, setMainCategory] = useState([]);
- 
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectAll, setSelectAll] = useState(false);
+
+  const handleModifyClicked = (index) => {
+    setSelectedCategory(index === selectedCategory ? null : index);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,7 +30,6 @@ const Categories = () => {
           list.push({ id: doc.id, ...doc.data() });
         });
         setData([...list]);
-
       } catch (error) {
         console.log(error);
       }
@@ -43,14 +47,20 @@ const Categories = () => {
           list.push({ id: doc.id, ...doc.data() });
         });
         setMainCategory([...list]);
-
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
   }, []);
-
+  const handleModifyClick = (index) => {
+    // Toggle the selection for the first product
+    if (index === 0) {
+      setSelectAll(!selectAll);
+    } else {
+      setSelectedCategory(index === setSelectedCategory ? null : index);
+    }
+  };
 
   async function handleDelete(id) {
     try {
@@ -60,8 +70,8 @@ const Categories = () => {
     } catch (error) {
       console.log(error);
     }
-
   }
+
   return (
     <div className="main_panel_wrapper pb-4  bg_light_grey w-100 d-flex flex-column">
       {/* top-bar  */}
@@ -126,7 +136,10 @@ const Categories = () => {
                   placeholder="Search for categories..."
                 />
               </div>
-              <Link to='/NewCategoryView' className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
+              <Link
+                to="/NewCategoryView"
+                className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
+              >
                 <img className="me-1" width={20} src={addicon} alt="add-icon" />
                 Add New Category
               </Link>
@@ -138,10 +151,14 @@ const Categories = () => {
               <div className="categories_xl_overflow_X">
                 <div className="d-flex align-items-center justify-content-md-between py-3">
                   <div className="d-flex align-items-center gap-3 w-25 w-md-50">
-                    <label className="check1 fw-400 fs-sm black mb-0">
+                    <label class="check1 fw-400 fs-sm black mb-0">
                       Name
-                      <input type="checkbox" />
-                      <span className="checkmark"></span>
+                      <input
+                        type="checkbox"
+                        checked={selectAll}
+                        onChange={() => handleModifyClick(0)}
+                      />
+                      <span class="checkmark"></span>
                     </label>
                   </div>
                   <div className="d-flex align-items-center justify-content-between w-75 w-md-50">
@@ -159,46 +176,54 @@ const Categories = () => {
                 </div>
                 <div className="product_borderbottom"></div>
                 {/* 1st */}
-                {data.map((item,index)=>{
-                  const{title,status,cat_ID,id}=item;
-                  return(
-                    <>
-                              <div  className="d-flex align-items-center justify-content-md-between py-3">
-                  <div className="d-flex align-items-center gap-3 w-25 w-md-50">
-                    <label className="check1 fw-400 fs-sm black mb-0">
-                      {title}
-                      <input type="checkbox" />
-                      <span className="checkmark"></span>
-                    </label>
-                  </div>
-                  <div className="d-flex align-items-center gap-3 justify-content-between w-75 w-md-50">
-                    <h3 className="fs-sm fw-400 black mb-0 width_23">
-                      {mainCategory.map((value,ind)=>{
-                        const{id,title}=value
-                       if(id==cat_ID){
-                        return title
-                       }
-                      })}
-                    </h3>
-                    <h3 className="fs-sm fw-400 black mb-0 width_10">10</h3>
-                    <h3 className="fs-sm fw-400 black mb-0 width_10 color_green">
-                      {status}
-                    </h3>
-                    <div className="position-relative    d-flex pe-4  flex-column align-items-end  ">
-                      <img
-                        className="threedot me-3  cursor_pointer "
-                        src={deleteIcon}
-                        alt="threedot"
-                        onClick={()=>{
-                          handleDelete(id)
-                        }}
-                      />
-                    </div>
-                  </div>
+
+                <div>
+                  {CategoryItems.map((value, index) => {
+                    return (
+                      <div
+                        className="d-flex align-items-center justify-content-md-between py-3"
+                        key={index}
+                      >
+                        <div className="d-flex align-items-center gap-3 w-25 w-md-50">
+                          <label class="check1 fw-400 fs-sm black mb-0">
+                            {value.Name}
+                            <input
+                              type="checkbox"
+                              checked={selectAll || selectedCategory === index}
+                              onChange={() => handleModifyClick(index)}
+                            />
+                            <span class="checkmark"></span>
+                          </label>
+                        </div>
+                        <div className="d-flex align-items-center gap-3 justify-content-between w-75 w-md-50">
+                          <h3 className="fs-sm fw-400 black mb-0 width_23">
+                            {value.Category}
+                          </h3>
+                          <h3 className="fs-sm fw-400 black mb-0 width_10">
+                            {value.Items}
+                          </h3>
+                          <h3 className="fs-sm fw-400 black mb-0 width_10 color_green">
+                            {value.Visibility}
+                          </h3>
+                          <div className="position-relative    d-flex pe-4  flex-column align-items-end  ">
+                            <img
+                              onClick={() => handleModifyClick(index)}
+                              className="threedot me-3"
+                              src={threedot}
+                              alt="threedot"
+                            />
+
+                            {selectedCategory === index && (
+                              <div className="position-absolute mt-4 z_index top-20 bg_white">
+                                <Modifyproduct />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-                <div className="product_borderbottom"></div></>
-                  )
-                })}
               </div>
             </div>
           </div>

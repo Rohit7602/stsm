@@ -1,9 +1,9 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import saveicon from "../Images/svgs/saveicon.svg";
 import deleteicon from "../Images/svgs/deleteicon.svg";
 import SearchIcon from "../Images/svgs/search.svg";
 import { Col, Row, Toast } from "react-bootstrap";
-import { collection,getDocs, addDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -51,19 +51,20 @@ const AddProduct = ({ setOpen, open }) => {
   async function handlesave() {
     
     try {
-      if ( totalStock==undefined &&name==undefined && shortDes==undefined && longDes==undefined && originalPrice==undefined && sku == undefined) {
-        alert(
-          'Please enter the all fields first'
-        )
-        console.log(imageUpload22.length)
-
-
-      }else if(imageUpload22.length===0 ){
-        alert(
-          'Please Set an image for the product'
-        )
+      if (
+        totalStock == undefined &&
+        name == undefined &&
+        shortDes == undefined &&
+        longDes == undefined &&
+        originalPrice == undefined &&
+        sku == undefined
+      ) {
+        alert("Please enter the all fields first");
+        console.log(imageUpload22.length);
+      } else if (imageUpload22.length === 0) {
+        alert("Please Set an image for the product");
       } else {
-        setLoader(true)
+        console.log(imageUpload22.length);
         const imagelinks = [];
         for await (const file of imageUpload22) {
           const storageRef = ref(storage, `/products/${file.name}`);
@@ -113,7 +114,6 @@ const AddProduct = ({ setOpen, open }) => {
     setImageUpload22(updatedImages);
   }
 
-
   useEffect(() => {
     const fetchData = async () => {
       let list = [];
@@ -124,7 +124,7 @@ const AddProduct = ({ setOpen, open }) => {
           list.push({ id: doc.id, ...doc.data() });
         });
         setData([...list]);
-          
+        console.log(list);
       } catch (error) {
         console.log(error);
       }
@@ -132,33 +132,19 @@ const AddProduct = ({ setOpen, open }) => {
     fetchData();
   }, []);
 
-function handleSearch(e){
-  const mylist=[]
-  function search(nameKey, myArray){
-    
-    if(nameKey.length>0){
-      for (let i=0; i < myArray.length; i++) {
-        if ((String(myArray[i].title)).includes(nameKey)) {
-            mylist.push(myArray[i])
+  function handleSearch(e) {
+    function search(nameKey, myArray) {
+      for (let i = 0; i < myArray.length; i++) {
+        if (String(myArray[i].title).includes(nameKey)) {
+          return myArray[i].title;
         }
+      }
     }
-    }
-   
-    
-}
-setSearchdata(mylist)
-  
-  search(e.target.value, data);
-}
 
-if(loader){
-  return(
-    <div className="loader">
-    <h3 className="heading">Uploading Data... Please Wait</h3>
-  </div>
-  )
-}
-else{
+    const resultObject = search(e.target.value, data);
+    console.log(resultObject);
+  }
+
   return (
     <div className="main_panel_wrapper pb-4  bg_light_grey w-100 d-flex flex-column">
       {/* top-bar  */}
@@ -211,32 +197,32 @@ else{
       </div>
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
         <div className="container">
-          <div className="d-flex  align-items-center flex-column flex-sm-row gap-2 gap-sm-0  justify-content-between">
-            <div className="d-flex">
-              <h1 className="fw-500  mb-0 black fs-lg">New Product</h1>
-            </div>
-            <div className="d-flex align-itmes-center gap-3">
-              <button className="reset_border">
-                <button
-                  onClick={handleReset}
-                  className="fs-sm reset_btn  border-0 fw-400 "
-                >
-                  Reset
-                </button>
-              </button>
-              <button
-                className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
-                onClick={handlesave}
-              >
-                <img src={saveicon} alt="saveicon" />
-                Save
-              </button>
-            </div>
-          </div>
           {/* NEW PRODUCT DETAILSS  */}
 
           <form action="" className="mt-3">
-            <Row>
+            <div className="d-flex  align-items-center flex-column flex-sm-row gap-2 gap-sm-0  justify-content-between">
+              <div className="d-flex">
+                <h1 className="fw-500  mb-0 black fs-lg">New Product</h1>
+              </div>
+              <div className="d-flex align-itmes-center gap-3">
+                <button className="reset_border">
+                  <button
+                    onClick={handleReset}
+                    className="fs-sm reset_btn  border-0 fw-400 "
+                  >
+                    Reset
+                  </button>
+                </button>
+                <button
+                  className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
+                  onClick={handlesave}
+                >
+                  <img src={saveicon} alt="saveicon" />
+                  Save
+                </button>
+              </div>
+            </div>
+            <Row className="mt-3">
               <Col xxl={8}>
                 {/* Basic Information */}
                 <div className="  ">
@@ -326,9 +312,9 @@ else{
                             className="mt-2 product_input  fade_grey fw-400"
                             id="Discount"
                             value={discountType}
-                            onChange={(e) =>{
-                              setDiscountType(e.target.value)
-                              setDiscount(0)
+                            onChange={(e) => {
+                              setDiscountType(e.target.value);
+                              setDiscount(0);
                             }}
                           >
                             <option
@@ -356,17 +342,23 @@ else{
                           <input
                             type="number"
                             className="mt-2 product_input fade_grey fw-400"
-                            placeholder={discountType!=='Percentage'? "₹ 0.00":"%"}
+                            placeholder={
+                              discountType !== "Percentage" ? "₹ 0.00" : "%"
+                            }
                             id="ddisc"
                             value={discount}
-                            onChange={(e) =>{ 
-                              if(discountType=="Percentage"){
-                                if(e.target.value <101 && e.target.value >=0){
-                                setDiscount(e.target.value)}}
-                              else{
-                                setDiscount(e.target.value)
-                              }}
+                            onChange={(e) => {
+                              if (discountType == "Percentage") {
+                                if (
+                                  e.target.value < 101 &&
+                                  e.target.value >= 0
+                                ) {
+                                  setDiscount(e.target.value);
+                                }
+                              } else {
+                                setDiscount(e.target.value);
                               }
+                            }}
                           />{" "}
                         </div>
                       </div>
@@ -414,12 +406,14 @@ else{
 
               <Col xxl={4}>
                 {/* Status */}
+
                 <div className="product_shadow bg_white p-3 mt-3 mt-xxl-0">
                   <h2 className="fw-400 fs-2sm black mb-0">Status</h2>
                   <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
-                    <label class="check fw-400 fs-sm black mb-0">
+                    <label className="check fw-400 fs-sm black mb-0">
                       Published
                       <input
+<<<<<<< HEAD
                          ref={pubref}
                          onChange={(e) => {
                            if (e.target.checked) {
@@ -428,14 +422,20 @@ else{
                            }
                          }}
                         type="checkbox"
+=======
+                        onChange={() => setStatus("published")}
+                        type="radio"
+                        checked={status === "published"}
+>>>>>>> 40bec17915d4021d17ddd3ac991777acbf4e596f
                       />
-                      <span class="checkmark"></span>
+                      <span className="checkmark"></span>
                     </label>
                   </div>
                   <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
-                    <label class="check fw-400 fs-sm black mb-0">
+                    <label className="check fw-400 fs-sm black mb-0">
                       Hidden
                       <input
+<<<<<<< HEAD
                         ref={hidref}
                         onChange={(e) => {
                           if (e.target.checked) {
@@ -444,11 +444,17 @@ else{
                           }
                         }}
                         type="checkbox"
+=======
+                        onChange={() => setStatus("hidden")}
+                        type="radio"
+                        checked={status === "hidden"}
+>>>>>>> 40bec17915d4021d17ddd3ac991777acbf4e596f
                       />
-                      <span class="checkmark"></span>
+                      <span className="checkmark"></span>
                     </label>
                   </div>
                 </div>
+
                 {/* invertory */}
                 <div className="mt-4 product_shadow bg_white p-3">
                   <h2 className="fw-400 fs-2sm black mb-0">Inventory</h2>

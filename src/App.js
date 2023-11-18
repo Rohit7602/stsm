@@ -20,7 +20,9 @@ function App() {
         <Route path="/NewProductView" element={<NewProductView />} />
         <Route path="/NewCategoryView" element={<NewCategoryView />} />
         <Route path="/CustomerDetailsView" element={<CustomerDetailsView />} />
-        <Route path="/BannersAdvertisementView" element={<BannersAdvertisementView />}
+        <Route
+          path="/BannersAdvertisementView"
+          element={<BannersAdvertisementView />}
         />
       </Routes>
     </div>
