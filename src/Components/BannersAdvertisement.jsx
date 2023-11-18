@@ -2,41 +2,34 @@ import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import SearchIcon from "../Images/svgs/search.svg";
 import deleteicon from "../Images/svgs/deleteicon.svg";
-import uploadIcon from '../Images/svgs/upload.svg'
-import {  ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import uploadIcon from "../Images/svgs/upload.svg";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase";
 
 const BannersAdvertisement = ({ setOpen, open }) => {
-
-async function imageSet(file){
-   try {
-    const name=  Math.floor(Date.now() / 1000)+"-" + file.name
-    const storageRef = ref(storage, `banner/${file.name}` );
-    const uploadTask = await uploadBytesResumable(storageRef, file);
-   const url= await getDownloadURL(storageRef)
-      console.log(url)
-    
-    
-   } catch (error) {
-    console.log(error)
-   }
+  async function imageSet(file) {
+    try {
+      const name = Math.floor(Date.now() / 1000) + "-" + file.name;
+      const storageRef = ref(storage, `banner/${file.name}`);
+      const uploadTask = await uploadBytesResumable(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      console.log(url);
+    } catch (error) {
+      console.log(error);
+    }
   }
-
 
   const [imageUpload1, setImageUpload1] = useState();
   const [imageUploadUrl1, setImageUploadUrl1] = useState();
   function handelUpload1(e) {
     setImageUpload1(e.target.files[0]);
-   
-
-
   }
   function handeldelete1() {
     setImageUpload1(null);
   }
 
-  function imageSet1(){
-    imageSet(imageUpload1)
+  function imageSet1() {
+    imageSet(imageUpload1);
   }
   // 2
   const [imageUpload2, setImageUpload2] = useState("");
@@ -201,7 +194,7 @@ async function imageSet(file){
   return (
     <div className="main_panel_wrapper pb-2  bg_light_grey w-100 d-flex flex-column">
       {/* top-bar  */}
-      <div className="top_bar px-3  bg-white py-2 ">
+      <div className="top_bar position-sticky top-0 px-3  bg-white py-2 ">
         <div className="d-flex align-items-center  justify-content-between">
           <div className="d-flex align-items-center search_bar_wrapper">
             <svg

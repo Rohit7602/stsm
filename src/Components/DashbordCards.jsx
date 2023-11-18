@@ -9,7 +9,7 @@ function DashbordCards({ setOpen, open }) {
     <>
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100 d-flex flex-column">
         {/* top-bar  */}
-        <div className="top_bar px-3  bg-white py-2 ">
+        <div className="top_bar position-sticky top-0 px-3  bg-white py-2 ">
           <div className="d-flex align-items-center  justify-content-between">
             <div className="d-flex align-items-center search_bar_wrapper">
               <svg
@@ -91,7 +91,9 @@ function DashbordCards({ setOpen, open }) {
             <div className="    col-xl col-lg-4 col-md-6 mb-3 mr-3  ">
               <div className=" bg-white   cards  flex-column d-flex justify-content-around px-3">
                 <div className="d-flex justify-content-between   bg-white">
-                  <h3 className="fw-400 fade_grey fs-xs">Average Order Value</h3>
+                  <h3 className="fw-400 fade_grey fs-xs">
+                    Average Order Value
+                  </h3>
                   <div>
                     <img src={Dots} alt="dots" />
                   </div>

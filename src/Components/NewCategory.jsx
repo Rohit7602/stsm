@@ -111,7 +111,7 @@ const NewCategory = ({ setOpen, open }) => {
     return (
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100 d-flex flex-column">
         {/* top-bar  */}
-        <div className="top_bar px-3  bg-white py-2 ">
+        <div className="top_bar position-sticky top-0 px-3  bg-white py-2 ">
           <div className="d-flex align-items-center  justify-content-between">
             <div className="d-flex align-items-center search_bar_wrapper">
               <svg
