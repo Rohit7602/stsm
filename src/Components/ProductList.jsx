@@ -181,7 +181,7 @@ const ProductList = ({ setOpen, open }) => {
                           {sku}
                         </h3>
                         <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                          {categories}
+                          {categories[0]}
                         </h3>
                         <h3 className="fs-sm fw-400 black mb-0 mw-200">
                           {totalStock}

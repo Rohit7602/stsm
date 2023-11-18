@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import { storage } from "../firebase";
+import { useRef } from "react";
 
 const AddProduct = ({ setOpen, open }) => {
   const [name, setName] = useState();
@@ -25,6 +26,12 @@ const AddProduct = ({ setOpen, open }) => {
   const [categories, setCategories] = useState();
   const [imageUpload22, setImageUpload22] = useState([]);
   const [data, setData] = useState([]);
+  const [searchdata, setSearchdata] = useState([]);
+  const[catval,setCatval]=useState([])
+  const[loader,setLoader]=useState(false)
+
+  const pubref = useRef();
+  const hidref = useRef();
 
   function handleReset() {
     setName();
@@ -38,8 +45,11 @@ const AddProduct = ({ setOpen, open }) => {
     setSku();
     setTotalStock();
     setImageUpload22([]);
+    pubref.current.checked = false;
+    hidref.current.checked = false;
   }
   async function handlesave() {
+    
     try {
       if ( totalStock==undefined &&name==undefined && shortDes==undefined && longDes==undefined && originalPrice==undefined && sku == undefined) {
         alert(
@@ -53,7 +63,7 @@ const AddProduct = ({ setOpen, open }) => {
           'Please Set an image for the product'
         )
       } else {
-        console.log(imageUpload22.length)
+        setLoader(true)
         const imagelinks = [];
         for await (const file of imageUpload22) {
           const storageRef = ref(storage, `/products/${file.name}`);
@@ -73,9 +83,10 @@ const AddProduct = ({ setOpen, open }) => {
           status: status,
           sku: sku,
           totalStock: totalStock,
-          categories: categories,
+          categories: catval,
           productImages: imagelinks,
         });
+        setLoader(false)
         toast.success("Product added Successfully !", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -113,7 +124,7 @@ const AddProduct = ({ setOpen, open }) => {
           list.push({ id: doc.id, ...doc.data() });
         });
         setData([...list]);
-          console.log(list)
+          
       } catch (error) {
         console.log(error);
       }
@@ -122,22 +133,32 @@ const AddProduct = ({ setOpen, open }) => {
   }, []);
 
 function handleSearch(e){
+  const mylist=[]
   function search(nameKey, myArray){
-    for (let i=0; i < myArray.length; i++) {
+    
+    if(nameKey.length>0){
+      for (let i=0; i < myArray.length; i++) {
         if ((String(myArray[i].title)).includes(nameKey)) {
-            return myArray[i].title;
+            mylist.push(myArray[i])
         }
     }
-  }
+    }
+   
+    
+}
+setSearchdata(mylist)
   
-  
-  
-  const resultObject = search(e.target.value, data);
-  console.log(resultObject)
+  search(e.target.value, data);
 }
 
-
-
+if(loader){
+  return(
+    <div className="loader">
+    <h3 className="heading">Uploading Data... Please Wait</h3>
+  </div>
+  )
+}
+else{
   return (
     <div className="main_panel_wrapper pb-4  bg_light_grey w-100 d-flex flex-column">
       {/* top-bar  */}
@@ -399,11 +420,13 @@ function handleSearch(e){
                     <label class="check fw-400 fs-sm black mb-0">
                       Published
                       <input
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setStatus("published");
-                          }
-                        }}
+                         ref={pubref}
+                         onChange={(e) => {
+                           if (e.target.checked) {
+                             setStatus("published");
+                             hidref.current.checked = false;
+                           }
+                         }}
                         type="checkbox"
                       />
                       <span class="checkmark"></span>
@@ -413,9 +436,11 @@ function handleSearch(e){
                     <label class="check fw-400 fs-sm black mb-0">
                       Hidden
                       <input
+                        ref={hidref}
                         onChange={(e) => {
                           if (e.target.checked) {
                             setStatus("hidden");
+                            pubref.current.checked = false;
                           }
                         }}
                         type="checkbox"
@@ -479,6 +504,19 @@ function handleSearch(e){
                     </button>
                   </div> */}
                 </div>
+                <div className=" product_shadow bg_white p-3">
+                 {searchdata.map((item,index)=>{
+                  const{id,title}=item;
+                  return( <div className=" black mb-0 d-flex justify-content-start align-items-center">
+                  <input className="" type="radio" value={id} onChange={(e)=>{
+                    setCatval([title,e.target.value])
+                  }} name='test' id={title} />
+                  <label className="ms-3" htmlFor={title}>{title}</label>
+                </div>
+              )
+                 })}
+            
+                </div>
               </Col>
             </Row>
           </form>
@@ -488,6 +526,7 @@ function handleSearch(e){
       <ToastContainer />
     </div>
   );
+                }
 };
 
 export default AddProduct;

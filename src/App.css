@@ -692,7 +692,23 @@ body {
   width: 185px;
 }
 
+.loader{
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background-color: rgb(240, 240, 240);
+  align-items: center;
+}
 
+.loader .heading{
+  border-radius: 20px;
+  padding: 20px;
+  color:grey;
+  border: 1px solid grey;
+  background-color: rgb(204, 202, 202);
+  opacity: 0.5;
+}
 
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {

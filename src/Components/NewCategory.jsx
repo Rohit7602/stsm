@@ -104,7 +104,9 @@ const NewCategory = ({ setOpen, open }) => {
   if (loaderstatus) {
     return (
       <>
-        <h1>loading...</h1>
+        <div className="loader">
+          <h3 className="heading">Uploading Data... Please Wait</h3>
+        </div>
       </>
     );
   } else {
