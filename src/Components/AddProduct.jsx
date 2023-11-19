@@ -13,22 +13,22 @@ import { storage } from "../firebase";
 import { useRef } from "react";
 
 const AddProduct = ({ setOpen, open }) => {
-  const [name, setName] = useState();
-  const [shortDes, setShortDes] = useState();
-  const [longDes, setLongDes] = useState();
-  const [originalPrice, setOriginalPrice] = useState();
+  const [name, setName] = useState("");
+  const [shortDes, setShortDes] = useState("");
+  const [longDes, setLongDes] = useState("");
+  const [originalPrice, setOriginalPrice] = useState("");
   const [discountType, setDiscountType] = useState("Amount");
   const [deliveryCharges, setDeliveryCharges] = useState(0);
-  const [discount, setDiscount] = useState();
-  const [status, setStatus] = useState();
-  const [sku, setSku] = useState();
-  const [totalStock, setTotalStock] = useState();
-  const [categories, setCategories] = useState();
+  const [discount, setDiscount] = useState("");
+  const [status, setStatus] = useState("");
+  const [sku, setSku] = useState("");
+  const [totalStock, setTotalStock] = useState("");
+  const [categories, setCategories] = useState("");
   const [imageUpload22, setImageUpload22] = useState([]);
   const [data, setData] = useState([]);
   const [searchdata, setSearchdata] = useState([]);
   const[catval,setCatval]=useState([])
-  const[loader,setLoader]=useState(false)
+  const [loaderstatus, setLoaderstatus] = useState(false);
 
   const pubref = useRef();
   const hidref = useRef();
@@ -40,34 +40,31 @@ const AddProduct = ({ setOpen, open }) => {
     setOriginalPrice();
     setDiscountType();
     setCategories();
-    setDiscount("Amount");
+    setDiscount();
     setStatus();
     setSku();
     setTotalStock();
     setImageUpload22([]);
     pubref.current.checked = false;
     hidref.current.checked = false;
+    setSearchdata([])
   }
-  async function handlesave() {
+  async function handlesave(e) {
+    e.preventDefault()
+
     
-    try {
-      if (
-        totalStock == undefined &&
-        name == undefined &&
-        shortDes == undefined &&
-        longDes == undefined &&
-        originalPrice == undefined &&
-        sku == undefined
-      ) {
-        alert("Please enter the all fields first");
-        console.log(imageUpload22.length);
-      } else if (imageUpload22.length === 0) {
-        alert("Please Set an image for the product");
-      } else {
-        console.log(imageUpload22.length);
+
+   if(imageUpload22.length===0 && status ===undefined){
+    alert('set status')
+   }else if(imageUpload22.length===0){
+    alert('set image ')
+   }else{
+     try {
+      setLoaderstatus(true)
         const imagelinks = [];
         for await (const file of imageUpload22) {
-          const storageRef = ref(storage, `/products/${file.name}`);
+          const filename = Math.floor(Date.now() / 1000) + "-" + file.name;
+          const storageRef = ref(storage, `/products/${filename}`);
           const upload = await uploadBytes(storageRef, file);
           const imageUrl = await getDownloadURL(storageRef);
           imagelinks.push(imageUrl);
@@ -87,18 +84,20 @@ const AddProduct = ({ setOpen, open }) => {
           categories: catval,
           productImages: imagelinks,
         });
-        setLoader(false)
+        setSearchdata([])
+        setLoaderstatus(false)
         toast.success("Product added Successfully !", {
           position: toast.POSITION.TOP_RIGHT,
         });
         handleReset();
-      }
+      
     } catch (e) {
       toast.error(e, {
         position: toast.POSITION.TOP_RIGHT,
       });
       console.error("Error adding document: ", e);
     }
+   }
   }
 
   // image upload section
@@ -133,18 +132,31 @@ const AddProduct = ({ setOpen, open }) => {
   }, []);
 
   function handleSearch(e) {
+    const mylist = []
     function search(nameKey, myArray) {
+     if(e.target.value.length===0){
+      setSearchdata(null)
+     }else{
       for (let i = 0; i < myArray.length; i++) {
         if (String(myArray[i].title).includes(nameKey)) {
-          return myArray[i].title;
+          mylist.push(myArray[i])
         }
       }
+     }
     }
 
-    const resultObject = search(e.target.value, data);
-    console.log(resultObject);
+    search(e.target.value, data);
+    setSearchdata(mylist)
   }
-
+  if (loaderstatus) {
+    return (
+      <>
+        <div className="loader">
+          <h3 className="heading">Uploading Data... Please Wait</h3>
+        </div>
+      </>
+    );
+  } else {
   return (
     <div className="main_panel_wrapper pb-4  bg_light_grey w-100 d-flex flex-column">
       {/* top-bar  */}
@@ -199,7 +211,7 @@ const AddProduct = ({ setOpen, open }) => {
         <div className="container">
           {/* NEW PRODUCT DETAILSS  */}
 
-          <form action="" className="mt-3">
+          <form onSubmit={handlesave} className="mt-3">
             <div className="d-flex  align-items-center flex-column flex-sm-row gap-2 gap-sm-0  justify-content-between">
               <div className="d-flex">
                 <h1 className="fw-500  mb-0 black fs-lg">New Product</h1>
@@ -215,7 +227,7 @@ const AddProduct = ({ setOpen, open }) => {
                 </button>
                 <button
                   className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
-                  onClick={handlesave}
+                type="submit"
                 >
                   <img src={saveicon} alt="saveicon" />
                   Save
@@ -243,6 +255,7 @@ const AddProduct = ({ setOpen, open }) => {
                         placeholder="Enter product name"
                         id="Name"
                         value={name}
+                        required
                         onChange={(e) => setName(e.target.value)}
                       />{" "}
                       <br />
@@ -259,6 +272,7 @@ const AddProduct = ({ setOpen, open }) => {
                         className="mt-2 product_input fade_grey fw-400"
                         placeholder="Enter short description"
                         id="short"
+                        required
                         value={shortDes}
                         onChange={(e) => setShortDes(e.target.value)}
                       />{" "}
@@ -273,6 +287,7 @@ const AddProduct = ({ setOpen, open }) => {
                         className="mt-2 product_input resize_none fade_grey fw-400"
                         cols="30"
                         rows="5"
+                        required
                         placeholder="Enter product name"
                         value={longDes}
                         onChange={(e) => setLongDes(e.target.value)}
@@ -292,6 +307,7 @@ const AddProduct = ({ setOpen, open }) => {
                             Original Price
                           </label>
                           <input
+                            required
                             type="number"
                             className="mt-2 product_input fade_grey fw-400"
                             placeholder="₹ 0.00"
@@ -309,6 +325,7 @@ const AddProduct = ({ setOpen, open }) => {
                             Discount Type
                           </label>{" "}
                           <select
+                            required
                             className="mt-2 product_input  fade_grey fw-400"
                             id="Discount"
                             value={discountType}
@@ -340,6 +357,7 @@ const AddProduct = ({ setOpen, open }) => {
                             Discount
                           </label>
                           <input
+                            required
                             type="number"
                             className="mt-2 product_input fade_grey fw-400"
                             placeholder={
@@ -368,6 +386,7 @@ const AddProduct = ({ setOpen, open }) => {
                       <h2 className="fw-400 fs-2sm black mb-0">Images</h2>
                       <div className="d-flex flex-wrap gap-4 mt-3 align-items-center">
                         <input
+                      
                           type="file"
                           id="file22"
                           hidden
@@ -413,6 +432,7 @@ const AddProduct = ({ setOpen, open }) => {
                     <label className="check fw-400 fs-sm black mb-0">
                       Published
                       <input
+                       
                         onChange={() => setStatus("published")}
                         type="radio"
                         checked={status === "published"}
@@ -424,6 +444,7 @@ const AddProduct = ({ setOpen, open }) => {
                     <label className="check fw-400 fs-sm black mb-0">
                       Hidden
                       <input
+                      
                         onChange={() => setStatus("hidden")}
                         type="radio"
                         checked={status === "hidden"}
@@ -442,6 +463,7 @@ const AddProduct = ({ setOpen, open }) => {
                   </label>
                   <br />
                   <input
+                    required
                     type="text"
                     className="mt-2 product_input fade_grey fw-400"
                     placeholder="6HK3I5"
@@ -456,6 +478,7 @@ const AddProduct = ({ setOpen, open }) => {
                   </label>{" "}
                   <br />
                   <input
+                    required
                     type="text"
                     className="mt-2 product_input fade_grey fw-400"
                     placeholder="50"
@@ -469,10 +492,11 @@ const AddProduct = ({ setOpen, open }) => {
                 <div className="mt-4 product_shadow bg_white p-3">
                   <h2 className="fw-400 fs-2sm black mb-0">Categories</h2>
                   <input
+                    required
                     type="text"
                     className="mt-3 product_input fade_grey fw-400"
                     placeholder="search for category"
-                    value={categories}
+                    
                     onChange={handleSearch}
                   />{" "}
                   {/* <div className="gap-1 d-flex align-items-center mt-3">
@@ -493,7 +517,9 @@ const AddProduct = ({ setOpen, open }) => {
                   const{id,title}=item;
                   return( <div className=" black mb-0 d-flex justify-content-start align-items-center">
                   <input className="" type="radio" value={id} onChange={(e)=>{
+                    
                     setCatval([title,e.target.value])
+                    setCategories(title)
                   }} name='test' id={title} />
                   <label className="ms-3" htmlFor={title}>{title}</label>
                 </div>
@@ -510,7 +536,7 @@ const AddProduct = ({ setOpen, open }) => {
       <ToastContainer />
     </div>
   );
-                }
+        }      }
 
 
 export default AddProduct;

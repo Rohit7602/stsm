@@ -33,14 +33,7 @@ const ProductListComponent = ({ setOpen, open }) => {
     };
     fetchData();
   }, []);
-  const handleModifyClick = (index) => {
-    // Toggle the selection for the first product
-    if (index === 0) {
-      setSelectAll(!selectAll);
-    } else {
-      setselectedProduct(index === selectedProduct ? null : index);
-    }
-  };
+
 
   async function handleDelete(id) {
     try {
@@ -136,14 +129,13 @@ const ProductListComponent = ({ setOpen, open }) => {
                       Product
                       <input
                         type="checkbox"
-                        checked={selectAll}
-                        onChange={() => handleModifyClick(0)}
+                 
                       />
                       <span className="checkmark"></span>
                     </label>
                   </div>
                   <div className="d-flex align-items-center   w-75">
-                    <h3 className="fs-sm fw-400 black mb-0 mw-200">
+                    <h3 className="fs-sm fw-400 black mb-0 mw-300">
                       Product ID
                     </h3>
                     <h3 className="fs-sm fw-400 black mb-0 mw-450">
@@ -154,12 +146,12 @@ const ProductListComponent = ({ setOpen, open }) => {
                     <h3 className="fs-sm fw-400 black mb-0 mw-200">Stock</h3>
                     <h3 className="fs-sm fw-400 black mb-0 mw-200">Status</h3>
                     <h3 className="fs-sm fw-400 black mb-0 mw-200">Price</h3>
-                    <h3 className="fs-sm fw-400 black mb-0 ">Action</h3>
+                    <h3 className="fs-sm fw-400 black mb-0  pe-4">Action</h3>
                   </div>
                 </div>
                 <div className="product_borderbottom"></div>
 
-                {ProductList.map((value, index) => {
+                {data.map((value, index) => {
                   return (
                     <div
                       className="d-flex align-items-center justify-content-md-between py-3"
@@ -167,51 +159,52 @@ const ProductListComponent = ({ setOpen, open }) => {
                     >
                       <div className="d-flex align-items-center gap-3 w-25 ">
                         <label className="check1 fw-400 fs-sm black mb-0">
-                          {value.Product}
+                          {value.name}
                           <input
                             type="checkbox"
-                            checked={selectAll || selectedProduct === index}
-                            onChange={() => handleModifyClick(index)}
+                         
                           />
                           <span className="checkmark"></span>
                         </label>
                       </div>
                       <div className="d-flex align-items-center   w-75">
-                        <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                          {value.ProductID}
+                        <h3 className="fs-sm fw-400 black mb-0 mw-300">
+                          {value.id}
                         </h3>
                         <h3 className="fs-sm fw-400 black mb-0 mw-450">
-                          {value.ShortDiscription}
+                          {value.shortDescription}
                         </h3>
                         <h3 className="fs-sm fw-400 black mb-0 mw-200">
                           {" "}
-                          {value.SKU}
+                          {value.sku}
                         </h3>
                         <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                          {value.Category}
+                          {value.categories[0]}
                         </h3>
                         <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                          {value.Stock}
+                          50
                         </h3>
                         <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                          {value.Status}
+                          {value.status}
                         </h3>
                         <h3 className="fs-sm fw-400 black mb-0 mw-200">
-                          {value.Price}
+                          {value.originalPrice}
                         </h3>
                         <div className="position-relative    d-flex pe-4  flex-column align-items-end  ">
                           <img
-                            onClick={() => handleModifyClick(index)}
+                            onClick={()=>{
+                              handleDelete(value.id)
+                            }}
                             className="threedot me-3"
-                            src={threedot}
+                            src={deleteIcon}
                             alt="threedot"
                           />
-
+{/* 
                           {selectedProduct === index && (
                             <div className="position-absolute mt-4 z_index top-20 bg_white">
                               <Modifyproduct />
                             </div>
-                          )}
+                          )} */}
                         </div>
                       </div>
                     </div>

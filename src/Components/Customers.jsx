@@ -32,6 +32,7 @@ const Customers = ({ setOpen, open }) => {
         querySnapshot.forEach((doc) => {
           list.push({ id: doc.id, ...doc.data() });
         });
+        console.log(list)
         setData([...list]);
       } catch (error) {
         console.log(error);
@@ -148,6 +149,7 @@ const Customers = ({ setOpen, open }) => {
                 <div className="product_borderbottom"></div>
                 {data.map((item, index) => {
                   const {
+                    id,
                     city,
                     is_customer,
                     email,
@@ -165,7 +167,7 @@ const Customers = ({ setOpen, open }) => {
                     let day = formatNumbers(date.getDate());
                     let month = formatNumbers(date.getMonth() + 1);
                     let year = date.getFullYear();
-                    console.log(date);
+                
                     return day + "-" + month + "-" + year;
                   };
                   const newval = new Date(created_at);
@@ -182,13 +184,13 @@ const Customers = ({ setOpen, open }) => {
                               alt="manicon"
                             />
                             <div>
-                              <NavLink
+                              <Link
                                 className="d-flex py-1 color_black_02"
-                                to="/CustomerDetailsView"
+                                to={`/CustomerDetailsView/${id}`}
                               >
                                 {" "}
                                 {name}
-                              </NavLink>
+                              </Link>
 
                               <h3 className="fs-xxs fw-400 fade_grey mt-1 mb-0">
                                 {email}
@@ -218,6 +220,9 @@ const Customers = ({ setOpen, open }) => {
                             className="threedot me-3"
                             src={threedot}
                             alt="threedot"
+                            onClick={()=>{
+                              alert('Actions Under Development')
+                            }}
                           />
                         </div>
                       </div>

@@ -661,6 +661,10 @@ body {
   max-width: 450px;
   width: 450px;
 }
+.mw-300 {
+  max-width: 300px;
+  width: 300px;
+}
 
 /* =========Chart-section======  */
 .chart_content_wrapper {

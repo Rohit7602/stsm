@@ -19,7 +19,7 @@ function App() {
         <Route path="/CustomerView" element={<CustomerView />} />
         <Route path="/NewProductView" element={<NewProductView />} />
         <Route path="/NewCategoryView" element={<NewCategoryView />} />
-        <Route path="/CustomerDetailsView" element={<CustomerDetailsView />} />
+        <Route path="/CustomerDetailsView/:id" element={<CustomerDetailsView />} />
         <Route
           path="/BannersAdvertisementView"
           element={<BannersAdvertisementView />}

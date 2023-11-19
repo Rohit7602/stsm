@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import addicon from "../Images/svgs/addicon.svg";
 import threedot from "../Images/svgs/threedot.svg";
+import deleteicon from "../Images/svgs/deleteicon.svg";
 import search from "../Images/svgs/search.svg";
 import SearchIcon from "../Images/svgs/search.svg";
 import Modifyproduct from "./Modifyproduct";
@@ -14,7 +15,7 @@ const Categories = ({ setOpen, open }) => {
   const [data, setData] = useState([]);
   const [mainCategory, setMainCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectAll, setSelectAll] = useState(false);
+
 
   const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);
@@ -53,14 +54,7 @@ const Categories = ({ setOpen, open }) => {
     };
     fetchData();
   }, []);
-  const handleModifyClick = (index) => {
-    // Toggle the selection for the first product
-    if (index === 0) {
-      setSelectAll(!selectAll);
-    } else {
-      setSelectedCategory(index === setSelectedCategory ? null : index);
-    }
-  };
+
 
   async function handleDelete(id) {
     try {
@@ -155,8 +149,7 @@ const Categories = ({ setOpen, open }) => {
                       Name
                       <input
                         type="checkbox"
-                        checked={selectAll}
-                        onChange={() => handleModifyClick(0)}
+                        
                       />
                       <span class="checkmark"></span>
                     </label>
@@ -178,7 +171,7 @@ const Categories = ({ setOpen, open }) => {
                 {/* 1st */}
 
                 <div>
-                  {CategoryItems.map((value, index) => {
+                  {data.map((value, index) => {
                     return (
                       <div
                         className="d-flex align-items-center justify-content-md-between py-3"
@@ -186,38 +179,39 @@ const Categories = ({ setOpen, open }) => {
                       >
                         <div className="d-flex align-items-center gap-3 w-25 w-md-50">
                           <label class="check1 fw-400 fs-sm black mb-0">
-                            {value.Name}
+                            {value.title}
                             <input
                               type="checkbox"
-                              checked={selectAll || selectedCategory === index}
-                              onChange={() => handleModifyClick(index)}
                             />
                             <span class="checkmark"></span>
                           </label>
                         </div>
                         <div className="d-flex align-items-center gap-3 justify-content-between w-75 w-md-50">
                           <h3 className="fs-sm fw-400 black mb-0 width_23">
-                            {value.Category}
+                            {value.cat_ID}
                           </h3>
                           <h3 className="fs-sm fw-400 black mb-0 width_10">
-                            {value.Items}
+                            10
                           </h3>
                           <h3 className="fs-sm fw-400 black mb-0 width_10 color_green">
-                            {value.Visibility}
+                            {value.status}
                           </h3>
                           <div className="position-relative    d-flex pe-4  flex-column align-items-end  ">
                             <img
-                              onClick={() => handleModifyClick(index)}
-                              className="threedot me-3"
-                              src={threedot}
+       
+                              className="threedot cursor_pointer me-3"
+                              src={deleteicon}
                               alt="threedot"
+                              onClick={()=>{
+                                handleDelete(value.id)
+                              }}
                             />
 
-                            {selectedCategory === index && (
+                            {/* {selectedCategory === index && (
                               <div className="position-absolute mt-4 z_index top-20 bg_white">
                                 <Modifyproduct />
                               </div>
-                            )}
+                            )} */}
                           </div>
                         </div>
                       </div>
