@@ -1,10 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;500;600;700;800;900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;500;600;700;800;900&display=swap');
 
 * {
   padding: 0;
   margin: 0;
   list-style: none;
-  font-family: "Outfit", sans-serif;
+  font-family: 'Outfit', sans-serif;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   text-decoration: none !important;
@@ -17,6 +17,7 @@ body {
 /*--------------------------------- ROOT-DEFINE-VALUES --------------------------------- */
 :root {
   --color-black: #000000;
+  --color-red: #dd0000;
   --color-white: #ffffff;
   --color-brown: #ffae00;
   --body-color: #f5f7fa;
@@ -27,7 +28,7 @@ body {
   --light-blue: #01bbbd;
   --color-green: #54b435;
   --color-blue: #0019ff;
-  --ff-outfit: "Outfit", sans-serif;
+  --ff-outfit: 'Outfit', sans-serif;
 
   --fw-300: 300;
   --fw-400: 400;
@@ -81,6 +82,9 @@ body {
 }
 .color_blue {
   color: var(--color-blue);
+}
+.color_red {
+  color: var(--color-red);
 }
 
 .bg_black {
@@ -151,14 +155,29 @@ body {
   background-color: var(--color-grey-01);
   min-height: 100vh;
 }
-
-/* --------------------Page-css---------------- */
-.admin_btn:hover {
-  color: var(--color-brown);
-  background-color: var(--color-grey-01);
+.sidebar_position {
+  position: fixed;
+  width: 366px;
+  z-index: 2;
+  height: 100%;
+  max-height: 100vh;
+  overflow-y: scroll;
 }
+.sidebar_position::-webkit-scrollbar {
+  width: 0;
+}
+.content {
+  width: calc(100% - 366px);
+}
+.top_bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+/* --------------------Page-css---------------- */
 .admin_btn {
   padding: 10px 10px !important;
+  cursor: auto !important;
 }
 .dash_links:hover {
   background-color: #26313a !important;
@@ -243,7 +262,7 @@ body {
 }
 
 .accordion-button::after {
-  background-image: url("./Images/svgs/arrow.svg") !important;
+  background-image: url('./Images/svgs/arrow.svg') !important;
 }
 .accordion-header:hover {
   background-color: #26313a !important;
@@ -275,7 +294,33 @@ body {
 .accordion-body:hover h3 {
   color: var(--color-brown) !important;
 }
+.banner_advertisement .accordion-header:focus {
+  color: var(--color-black) !important;
+}
+.banner_advertisement .accordion-header:hover {
+  background-color: var(--color-white) !important;
+  color: var(--color-black) !important;
+}
+.banner_advertisement .accordion-header:hover h3 {
+  background-color: var(--color-white) !important;
+  color: var(--color-black) !important;
+  border-radius: 0 !important;
+}
+.banner_advertisement .accordion-body:hover {
+  background-color: var(--color-white) !important;
+  border-radius: 0 !important;
+}
+.banner_advertisement .accordion-item {
+  margin-top: 20px !important;
+}
+.banner_advertisement .accordion-button::after {
+  background-image: url('./Images/svgs/dropdown_icon.svg') !important;
+  background-position: right center;
+}
 
+.banner_advertisement .accordion-button:not(.collapsed)::after {
+  transform: rotate(180deg) !important;
+}
 /*export_btn*/
 .export_btn {
   border-radius: 10px;
@@ -305,10 +350,7 @@ body {
   -webkit-text-fill-color: transparent;
 }
 .reset_btn:hover {
-  background: var(
-    --red_gradient,
-    linear-gradient(90deg, #fff 0%, #fff 49.43%, #fff 105.44%)
-  );
+  background: var(--red_gradient, linear-gradient(90deg, #fff 0%, #fff 49.43%, #fff 105.44%));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -318,19 +360,11 @@ body {
   border-radius: 10px;
   border: 1.5px solid transparent;
   background: linear-gradient(#f5f7fa, #f5f7fa) padding-box,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
-      border-box;
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%) border-box;
 }
 .reset_border:hover {
-  background: linear-gradient(
-        90deg,
-        #8a2387 0%,
-        #e94057 49.43%,
-        #f27121 105.44%
-      )
-      padding-box,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
-      border-box;
+  background: linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%) padding-box,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%) border-box;
 }
 /*save_btn*/
 .save_btn {
@@ -526,7 +560,7 @@ body {
 
 /* Create the checkmark/indicator (hidden when not checked) */
 .checkmark:after {
-  content: "";
+  content: '';
   position: absolute;
   display: none;
 }
@@ -599,9 +633,7 @@ body {
 }
 /* product border */
 .product_borderbottom {
-  height: 1px;
-  width: 100%;
-  background: #dfdfdfcd;
+  border-bottom: 1px solid #dfdfdfcd;
 }
 /* product overflow  on x axis */
 .product_overflow_X {
@@ -665,7 +697,10 @@ body {
   max-width: 300px;
   width: 300px;
 }
-
+.mw-90 {
+  max-width: 90px;
+  width: 90px;
+}
 /* =========Chart-section======  */
 .chart_content_wrapper {
   border-radius: 10px !important;
@@ -692,11 +727,11 @@ body {
   left: 220px;
 }
 
-.w_185{
+.w_185 {
   width: 185px;
 }
 
-.loader{
+.loader {
   height: 100vh;
   width: 100%;
   display: flex;
@@ -705,15 +740,65 @@ body {
   align-items: center;
 }
 
-.loader .heading{
+.loader .heading {
   border-radius: 20px;
   padding: 20px;
-  color:grey;
+  color: grey;
   border: 1px solid grey;
   background-color: rgb(204, 202, 202);
   opacity: 0.5;
 }
 
+.mx_160 {
+  max-width: 160px;
+  width: 160px;
+}
+.mx_100 {
+  max-width: 100px;
+  width: 100px;
+}
+
+.varient_btn {
+  accent-color: var(--color-black);
+}
+
+.varient_value {
+  border: none;
+  outline: none;
+  text-transform: uppercase;
+}
+.outline_none {
+  outline: none;
+}
+.add_varient_btn {
+  border: none;
+  outline: none;
+  background-color: transparent;
+}
+.varient_form_border {
+  border: 1px solid #00000033;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+.update_banners_btn {
+  border: none;
+  outline: none;
+  padding: 10px 15px;
+  border-radius: 10px;
+  background-color: var(--color-green);
+}
+.categories_dropdown {
+  width: 182px;
+  background-color: var(--color-white);
+  position: absolute;
+  right: 0;
+  top: 30px;
+  display: none;
+}
+.categorie_dropdown_options {
+  padding: 10px;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
   :root {
