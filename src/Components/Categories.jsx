@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import addicon from '../Images/svgs/addicon.svg';
-import deleteicon from '../Images/svgs/deleteicon.svg';
 import search from '../Images/svgs/search.svg';
 import dropdownDots from '../Images/svgs/dots2.svg';
 import eye_icon from '../Images/svgs/eye.svg';
@@ -17,6 +16,7 @@ const Categories = () => {
   const [data, setData] = useState([]);
   const [mainCategory, setMainCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectAll, setSelectAll] = useState(false);
 
   const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);
@@ -100,15 +100,19 @@ const Categories = () => {
                     <div className="d-flex align-items-center gap-3">
                       <label class="check1 fw-400 fs-sm black mb-0">
                         Name
-                        <input type="checkbox" />
+                        <input
+                          type="checkbox"
+                          checked={selectAll}
+                          onChange={() => setSelectAll(!selectAll)}
+                        />
                         <span class="checkmark"></span>
                       </label>
                     </div>
                   </th>
-                  <th className="mw-200 px-2">
+                  <th className="mw-250 px-2">
                     <h3 className="fs-sm fw-400 black mb-0">Parent Category</h3>
                   </th>
-                  <th className="mx_160 px-2">
+                  <th className="mx_160 ps-4">
                     <h3 className="fs-sm fw-400 black mb-0">Items</h3>
                   </th>
                   <th className="mx_160">
@@ -125,7 +129,7 @@ const Categories = () => {
                         <div className="d-flex align-items-center gap-3 w-25 w-md-50">
                           <label class="check1 fw-400 fs-sm black mb-0">
                             {value.title}
-                            <input type="checkbox" />
+                            <input type="checkbox" checked={selectAll} />
                             <span class="checkmark"></span>
                           </label>
                         </div>
@@ -133,7 +137,7 @@ const Categories = () => {
                       <td className="px-2">
                         <h3 className="fs-sm fw-400 black mb-0">{value.cat_ID}</h3>
                       </td>
-                      <td>
+                      <td className="ps-4">
                         <h3 className="fs-sm fw-400 black mb-0 width_10">10</h3>
                       </td>
                       <td>
@@ -142,32 +146,57 @@ const Categories = () => {
                         </h3>
                       </td>
                       <td className="text-center">
-                        <div className="position-relative">
-                          <img
-                            // onClick={() => {
-                            //   handleDelete(value.id);
-                            // }}
-                            src={dropdownDots}
-                            alt="dropdownDots"
-                          />
-                          <div className="categories_dropdown">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={eye_icon} alt="" />
-                              <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
-                            </div>
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={pencil_icon} alt="" />
-                              <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
-                            </div>
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={updown_icon} alt="" />
-                              <p className="fs-sm fw-400 green mb-0 ms-2">Change to Hidden</p>
-                            </div>
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={delete_icon} alt="" />
-                              <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
-                            </div>
-                          </div>
+                        <div class="dropdown">
+                          <button
+                            class="btn dropdown-toggle"
+                            type="button"
+                            id="dropdownMenuButton1"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <img
+                              // onClick={() => {
+                              //   handleDelete(value.id);
+                              // }}
+                              src={dropdownDots}
+                              alt="dropdownDots"
+                            />
+                          </button>
+                          <ul
+                            class="dropdown-menu categories_dropdown"
+                            aria-labelledby="dropdownMenuButton1">
+                            <li>
+                              <div class="dropdown-item" href="#">
+                                <div className="d-flex align-items-center categorie_dropdown_options">
+                                  <img src={eye_icon} alt="" />
+                                  <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div class="dropdown-item" href="#">
+                                <div className="d-flex align-items-center categorie_dropdown_options">
+                                  <img src={pencil_icon} alt="" />
+                                  <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div class="dropdown-item" href="#">
+                                <div className="d-flex align-items-center categorie_dropdown_options">
+                                  <img src={updown_icon} alt="" />
+                                  <p className="fs-sm fw-400 green mb-0 ms-2">Change to Hidden</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div class="dropdown-item" href="#">
+                                <div className="d-flex align-items-center categorie_dropdown_options">
+                                  <img src={delete_icon} alt="" />
+                                  <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
+                                </div>
+                              </div>
+                            </li>
+                          </ul>
                         </div>
                       </td>
                     </tr>

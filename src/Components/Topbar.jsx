@@ -3,7 +3,7 @@ import SearchIcon from '../Images/svgs/search.svg';
 
 export default function Topbar({ setOpen, open }) {
   return (
-    <nav className="top_bar px-3  bg-white py-2 position-sticky">
+    <nav className="top_bar  bg-white py-2 position-sticky">
       <div className="d-flex align-items-center  justify-content-between px-3 bg-white py-2">
         <div className="d-flex align-items-center search_bar_wrapper">
           <svg
