@@ -908,6 +908,32 @@ body {
   background-color: #dd000026;
   border-radius: 5px;
 }
+.bill_generate {
+  padding: 10px 15px;
+  background-color: #b5b5b5;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  margin-top: 20px;
+}
+.cancel_gray {
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: #eeeeee;
+}
+.processing_skyblue {
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: #01bbbd;
+  background-color: #01bbbd33;
+}
+.green_btn {
+  padding: 10px 15px;
+  background-color: var(--color-green);
+  border-radius: 10px;
+  border: none;
+  outline: none;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
   :root {

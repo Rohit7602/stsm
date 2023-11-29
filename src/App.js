@@ -12,6 +12,9 @@ import ViewCustomerDetails from './Components/ViewCustomerDetails';
 import BannersAdvertisement from './Components/BannersAdvertisement';
 import Topbar from './Components/Topbar';
 import NewOrder from './Components/NewOrder';
+import OrderProcessing from './Components/OrderProcessing';
+import OrderCanceled from './Components/OrderCanceled';
+import OrderDelivered from './Components/OrderDelivered';
 
 function App() {
   return (
@@ -27,8 +30,8 @@ function App() {
             <Route path="/productlist" element={<ProductList />} />
             <Route path="/addproduct" element={<AddProduct />} />
             <Route path="/customer" element={<Customers />} />
-            <Route path="/orderslist" element={<OrdersList />}></Route>
-            <Route path="/orderslist/neworder" element={<NewOrder />} />
+            <Route path="/orderslist" element={<OrdersList />} />
+            <Route path="/orderslist/neworder" element={<OrderDelivered />} />
             <Route path="/viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
             <Route path="/bannersadvertisement" element={<BannersAdvertisement />} />
           </Routes>

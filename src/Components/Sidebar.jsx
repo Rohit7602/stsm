@@ -1,6 +1,7 @@
 import Accordion from 'react-bootstrap/Accordion';
 import Logo from '../Images/svgs/logo.svg';
 import { NavLink } from 'react-router-dom';
+import { useState } from 'react';
 
 function Sidebar() {
   return (
@@ -190,7 +191,7 @@ function Sidebar() {
 
                   <Accordion.Item className="py-1" eventKey="6">
                     <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400  white mb-0 ">
-                      <NavLink className="fs-xs fw-400d white d-flex align-items-center">
+                      <div className="fs-xs fw-400d white d-flex align-items-center">
                         <svg
                           className="list_icons"
                           width="16"
@@ -204,7 +205,7 @@ function Sidebar() {
                           />
                         </svg>
                         <h3 className="fs-xs fw-400  white mb-0">Orders</h3>
-                      </NavLink>
+                      </div>
                     </Accordion.Header>
                     <Accordion.Body className="py-2">
                       <NavLink to="OrdersList" className="d-flex py-1">

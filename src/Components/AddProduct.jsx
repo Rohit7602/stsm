@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import saveicon from '../Images/svgs/saveicon.svg';
+import savegreenicon from '../Images/svgs/save_green_icon.svg';
 import SearchIcon from '../Images/svgs/search.svg';
 import whiteSaveicon from '../Images/svgs/white_saveicon.svg';
 import deleteicon from '../Images/svgs/deleteicon.svg';
@@ -47,6 +48,7 @@ const AddProduct = () => {
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [stockpopup, setStockpopup] = useState(false);
   const [searchquery, setSearchquery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [catdata, setCatdata] = useState([
     { name: 'Led TV' },
     { name: 'Washing Machine' },
@@ -76,7 +78,10 @@ const AddProduct = () => {
       setFiltereddata([]);
     }
   };
-
+  const handleSelectCategory = (category) => {
+    setSearchquery(category.name);
+    setSelectedCategory(category);
+  };
   const handleAddVariant = () => {
     const newVariant = {
       id: variants.length + 1,
@@ -684,7 +689,7 @@ const AddProduct = () => {
                           value={searchquery}
                           onChange={handleInputChange}
                           placeholder="search for category"
-                          className="fade_grey fw-400 border-0 outline_none ms-2"
+                          className="fade_grey fw-400 border-0 outline_none ms-2 w-100"
                           type="text"
                         />
                       </div>
@@ -693,8 +698,17 @@ const AddProduct = () => {
                     <Dropdown.Menu className="w-100">
                       {filtereddata.map((category) => (
                         <Dropdown.Item href="#/action-1">
-                          <div onClick={() => setSearchquery(category.name)} key={category.name}>
-                            {category.name}
+                          <div
+                            className={`d-flex justify-content-between ${
+                              selectedCategory && selectedCategory.name === category.name
+                                ? 'selected'
+                                : ''
+                            }`}
+                            onClick={() => handleSelectCategory(category)}>
+                            <p className="fs-xs fw-400 black mb-0">{category.name}</p>
+                            {selectedCategory && selectedCategory.name === category.name && (
+                              <img src={savegreenicon} alt="savegreenicon" />
+                            )}
                           </div>
                         </Dropdown.Item>
                       ))}
