@@ -15,6 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../firebase';
 import { NavLink, Link } from 'react-router-dom';
+// import { Toast } from 'react-toastify/dist/components';
 
 const NewCategory = () => {
   const [imageupload, setImageupload] = useState('');
@@ -22,35 +23,21 @@ const NewCategory = () => {
   const [name, setName] = useState();
   const [category, setCategory] = useState();
   const [loaderstatus, setLoaderstatus] = useState(false);
-  const [searchquery, setSearchquery] = useState('');
+  const [searchvalue, setSearchvalue] = useState('')
+
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [catval, setCatval] = useState([]);
-  const [catdata, setCatdata] = useState([
-    { name: 'Led TV' },
-    { name: 'Washing Machine' },
-    { name: 'Mobile Phone' },
-    { name: 'Electronic' },
-    { name: 'Footwear' },
-    { name: 'Animal Suppliments' },
-    { name: 'Grocery' },
-  ]);
-  const [filtereddata, setFiltereddata] = useState(catdata);
-  const handleInputChange = (event) => {
-    const input = event.target.value;
-    setSearchquery(input);
-    // Filter data based on the entered letter
-    const filtered = catdata.filter((category) =>
-      category.name.toLowerCase().startsWith(input.toLowerCase())
-    );
-    setFiltereddata(filtered);
-  };
+
   const handleSelectCategory = (category) => {
-    setSearchquery(category.name);
+    setSearchvalue('');
     setSelectedCategory(category);
-    setCatval(category.name);
+    setCategory(category)
   };
+
   const pubref = useRef();
   const hidref = useRef();
+
+
+
 
   const [mainCategory, setMainCategory] = useState([]);
 
@@ -77,10 +64,10 @@ const NewCategory = () => {
           title: name,
           status: status,
           image: imageUrl,
-          cat_ID: category,
+          cat_ID: category.id,
         });
         setLoaderstatus(false);
-        toast.success('Product added Successfully !', {
+        toast.success('Category  added Successfully !', {
           position: toast.POSITION.TOP_RIGHT,
         });
         handleReset();
@@ -93,14 +80,30 @@ const NewCategory = () => {
     }
   }
 
-  function handelUpload(e) {
-    setImageupload(e.target.files[0]);
-  }
+  const handelUpload = (e) => {
+    const selectedFile = e.target.files[0];
+
+    if (!selectedFile) {
+      toast.error("please select an image file ")
+      setImageupload(null);
+    } else {
+      const allowedExtensions = ['.png', '.jpeg', '.jpg'];
+      const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
+
+      if (!allowedExtensions.includes(`.${fileExtension}`)) {
+        toast.error('Invalid file type. Please select a valid image file.');
+        setImageupload(null);
+      } else {
+        setImageupload(selectedFile);
+      }
+    }
+  };
   function handleReset() {
     setImageupload();
     setName('');
     pubref.current.checked = false;
     hidref.current.checked = false;
+
   }
 
   function handleDelete22(index) {
@@ -189,7 +192,7 @@ const NewCategory = () => {
                         type="file"
                         id="file22"
                         hidden
-                        accept="/*"
+                        accept=".png, .jpeg, .jpg"
                         multiple
                         onChange={handelUpload}
                       />
@@ -272,7 +275,7 @@ const NewCategory = () => {
                     <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
                       <div className="product_input">
                         <p className="fade_grey fw-400 w-100 mb-0 text-start">
-                          {selectedCategory ? selectedCategory.name : 'Select category'}
+                          {selectedCategory ? selectedCategory.title : 'Select Category'}
                         </p>
                       </div>
                     </Dropdown.Toggle>
@@ -282,34 +285,40 @@ const NewCategory = () => {
                         <div className="d-flex align-items-center product_input position-sticky top-0">
                           <img src={SearchIcon} alt="SearchIcon" />
                           <input
-                            onChange={handleInputChange}
+                            onChange={(e) => setSearchvalue(e.target.value)}
                             placeholder="search for category"
                             className="fade_grey fw-400 border-0 outline_none ms-2 w-100"
                             type="text"
                           />
                         </div>
                         <div>
-                          {filtereddata.map((category) => (
-                            <Dropdown.Item>
-                              <div
-                                className={`d-flex justify-content-between ${
-                                  selectedCategory && selectedCategory.name === category.name
+                          {mainCategory
+                            .filter((items) => {
+                              return (
+                                searchvalue.toLowerCase() === '' ||
+                                items.title.toLowerCase().includes(searchvalue)
+                              );
+                            })
+                            .map((category) => (
+                              <Dropdown.Item key={category.id}>
+                                <div
+                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
                                     ? 'selected'
                                     : ''
-                                }`}
-                                onClick={() => handleSelectCategory(category)}>
-                                <p className="fs-xs fw-400 black mb-0">{category.name}</p>
-                                {selectedCategory && selectedCategory.name === category.name && (
-                                  <img src={savegreenicon} alt="savegreenicon" />
-                                )}
-                              </div>
-                            </Dropdown.Item>
-                          ))}
-                          {searchquery && !filtereddata.length && (
+                                    }`}
+                                  onClick={() => handleSelectCategory(category)}
+                                >
+                                  <p className="fs-xs fw-400 black mb-0">{category.title}</p>
+                                  {selectedCategory && selectedCategory.id === category.id && (
+                                    <img src={savegreenicon} alt="savegreenicon" />
+                                  )}
+                                </div>
+                              </Dropdown.Item>
+                            ))}
+                          {searchvalue && !mainCategory.some((category) => category.title.toLowerCase().includes(searchvalue.toLowerCase())) && (
                             <NavLink to="/newcategory/parentcategories">
                               <button className="addnew_category_btn fs-xs green">
-                                +Add <span className="black">"{searchquery}"</span> in Parent
-                                Category
+                                +Add <span className="black">"{searchvalue}"</span> in Parent Category
                               </button>
                             </NavLink>
                           )}

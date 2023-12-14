@@ -20,11 +20,14 @@ const Categories = () => {
   const [data, setData] = useState([]);
   const [mainCategory, setMainCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectAll, setSelectAll] = useState(false);
   const [name, setName] = useState();
   const [imageupload, setImageupload] = useState('');
   const [addCatPopup, setAddCatPopup] = useState(false);
   const [status, setStatus] = useState();
+  const [searchvalue, setSearchvalue] = useState('')
+
+
+
   const pubref = useRef();
   const hidref = useRef();
   const handleModifyClicked = (index) => {
@@ -36,22 +39,22 @@ const Categories = () => {
   function handleDelete22(index) {
     setImageupload();
   }
-  useEffect(() => {
-    const fetchData = async () => {
-      let list = [];
-      try {
-        const querySnapshot = await getDocs(collection(db, 'sub_categories'));
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          list.push({ id: doc.id, ...doc.data() });
-        });
-        setData([...list]);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     let list = [];
+  //     try {
+  //       const querySnapshot = await getDocs(collection(db, 'sub_categories'));
+  //       querySnapshot.forEach((doc) => {
+  //         // doc.data() is never undefined for query doc snapshots
+  //         list.push({ id: doc.id, ...doc.data() });
+  //       });
+  //       setData([...list]);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,15 +73,73 @@ const Categories = () => {
     fetchData();
   }, []);
 
-  async function handleDelete(id) {
-    try {
-      await deleteDoc(doc(db, 'sub_categories', id)).then(() => {
-        setData(data.filter((item) => item.id !== id));
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  // async function handleDelete(id) {
+  //   try {
+  //     await deleteDoc(doc(db, 'sub_categories', id)).then(() => {
+  //       setData(data.filter((item) => item.id !== id));
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+
+  /*  *******************************
+    checkbox functionality start 
+  *********************************************   **/
+  const [selectAll, setSelectAll] = useState(false);
+
+
+  useEffect(() => {
+    // Check if all checkboxes are checked
+    const allChecked = mainCategory.every((item) => item.checked);
+    setSelectAll(allChecked);
+  }, [mainCategory]);
+
+  // Main checkbox functionality start from here 
+
+  const handleMainCheckboxChange = () => {
+    const updatedData = mainCategory.map((item) => ({
+      ...item,
+      checked: !selectAll,
+    }));
+    setMainCategory(updatedData);
+    setSelectAll(!selectAll);
+  };
+
+  // Datacheckboxes functionality strat from here 
+  const handleCheckboxChange = (index) => {
+    const updatedData = [...mainCategory];
+    updatedData[index].checked = !mainCategory[index].checked;
+    setData(updatedData);
+
+    // Check if all checkboxes are checked
+    const allChecked = updatedData.every((item) => item.checked);
+    setSelectAll(allChecked);
+  };
+
+
+
+  /*  *******************************
+      Checbox  functionality end 
+    *********************************************   **/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   return (
     <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
@@ -95,6 +156,7 @@ const Categories = () => {
                 type="text"
                 className="fw-400 categorie_input  "
                 placeholder="Search for categories..."
+                onChange={(e) => setSearchvalue(e.target.value)}
               />
             </div>
             <div>
@@ -239,7 +301,7 @@ const Categories = () => {
                         <input
                           type="checkbox"
                           checked={selectAll}
-                          onChange={() => setSelectAll(!selectAll)}
+                          onChange={handleMainCheckboxChange}
                         />
                         <span class="checkmark"></span>
                       </label>
@@ -255,7 +317,9 @@ const Categories = () => {
                     <h3 className="fs-sm fw-400 black mb-0">Action</h3>
                   </th>
                 </tr>
-                {data.map((value, index) => {
+                {mainCategory.filter((data) => {
+                  return search.toLowerCase() === '' ? data : (data.title.toLowerCase().includes(searchvalue))
+                }).map((value, index) => {
                   return (
                     <tr key={index} className="product_borderbottom">
                       <td className="py-3 ps-3">
@@ -269,7 +333,8 @@ const Categories = () => {
                                 <p className="fw-400 fs-sm black mb-0">{value.title}</p>
                               </div>
                             </div>
-                            <input type="checkbox" checked={selectAll} />
+                            <input type="checkbox" checked={value.checked || false}
+                              onChange={() => handleCheckboxChange(index)} />
                             <span className="checkmark me-5"></span>
                           </label>
                         </div>
@@ -279,7 +344,7 @@ const Categories = () => {
                       </td>
                       <td>
                         <h3 className="fs-sm fw-400 black mb-0 width_10 color_green">
-                          {value.status}
+                          hidden
                         </h3>
                       </td>
                       <td className="text-center">
