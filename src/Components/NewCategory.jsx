@@ -111,13 +111,9 @@ const NewCategory = () => {
           {/* NEW PRODUCT DETAILSS  */}
           <form>
             {' '}
-            <div className="d-flex">
-              <Col>
-                {' '}
+            <div className="d-flex justify-content-between align-items-center">
                 <h1 className="fw-500  mb-0 black fs-lg">New Category</h1>
-              </Col>
-              <Col className="d-flex justify-content-center">
-                {' '}
+              <div className="d-flex justify-content-center">
                 <div className="d-flex  align-items-center flex-column flex-sm-row gap-2 gap-sm-0  justify-content-between">
                   <div className="d-flex align-itmes-center gap-3">
                     <button className="reset_border">
@@ -133,7 +129,7 @@ const NewCategory = () => {
                     </button>
                   </div>
                 </div>
-              </Col>
+              </div>
             </div>
             <Row className="mt-3">
               <Col xxl={8}>
@@ -240,7 +236,9 @@ const NewCategory = () => {
                 <div className="mt-4 product_shadow bg_white p-3">
                   <div className="d-flex align-items-center justify-content-between">
                     <h2 className="fw-400 fs-2sm black mb-0">Parent Category</h2>
-                    <Link className="fs-2sm fw-400 red">View All</Link>
+                    <Link to="/newcategory/parentcategories" className="fs-2sm fw-400 red">
+                      View All
+                    </Link>
                   </div>
                   <select
                     onChange={(e) => setCategory(e.target.value)}

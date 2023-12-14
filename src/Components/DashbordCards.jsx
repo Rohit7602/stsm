@@ -144,87 +144,268 @@ function DashbordCards() {
                     <img src={Dots} alt="dots" />
                   </div>
                 </div>
-
-                <div className="d-flex px-2  mt-2 row align-items-center py-2 bottom_border  justify-content-between">
-                  <h4 className="fw-400 col fade_grey mb-0 fs-xs"> No</h4>
-                  <h4 className="fw-400 col fade_grey mb-0 fs-xs"> Status</h4>
-                  <h4 className="fw-400 col fade_grey mb-0 fs-xs"> City</h4>
-                  <h4 className="fw-400 col-xl-4 col  fade_grey mb-0 fs-xs">Customer</h4>
-                  <h4 className="fw-400 col fade_grey mb-0 fs-xs"> Date</h4>
-                  <h4 className="fw-400 col fade_grey mb-0 fs-xs"> Total</h4>
-                </div>
-                <div className="d-flex px-2 row align-items-center py-2 bottom_border  justify-content-between">
-                  <h4 className="fw-400 col black mb-0  fs-xs"> #0012</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Status</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Hisar</h4>
-                  <h4 className="fw-400 col-xl-4 col black mb-0  fs-xs">John Doe</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> 18-10-2023</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> ₹ 360.00</h4>
-                </div>
-                <div className="d-flex px-2 row align-items-center py-2 bottom_border  justify-content-between">
-                  <h4 className="fw-400 col black mb-0  fs-xs"> #0012</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Status</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Hisar</h4>
-                  <h4 className="fw-400 col-xl-4 col black mb-0  fs-xs">John Doe</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> 18-10-2023</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> ₹ 360.00</h4>
-                </div>
-                <div className="d-flex px-2 row align-items-center py-2 bottom_border  justify-content-between">
-                  <h4 className="fw-400 col black mb-0  fs-xs"> #0012</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Status</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Hisar</h4>
-                  <h4 className="fw-400 col-xl-4 col black mb-0  fs-xs">John Doe</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> 18-10-2023</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> ₹ 360.00</h4>
-                </div>
-                <div className="d-flex px-2 row align-items-center py-2 bottom_border  justify-content-between">
-                  <h4 className="fw-400 col black mb-0  fs-xs"> #0012</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Status</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Hisar</h4>
-                  <h4 className="fw-400 col-xl-4 col black mb-0  fs-xs">John Doe</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> 18-10-2023</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> ₹ 360.00</h4>
-                </div>
-                <div className="d-flex px-2 row align-items-center py-2 bottom_border  justify-content-between">
-                  <h4 className="fw-400 col black mb-0  fs-xs"> #0012</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Status</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Hisar</h4>
-                  <h4 className="fw-400 col-xl-4 col black mb-0  fs-xs">John Doe</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> 18-10-2023</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> ₹ 360.00</h4>
-                </div>
-                <div className="d-flex px-2 row align-items-center py-2 bottom_border  justify-content-between">
-                  <h4 className="fw-400 col black mb-0  fs-xs"> #0012</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Status</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Hisar</h4>
-                  <h4 className="fw-400 col-xl-4 col black mb-0  fs-xs">John Doe</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> 18-10-2023</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> ₹ 360.00</h4>
-                </div>
-                <div className="d-flex px-2 row align-items-center py-2 bottom_border  justify-content-between">
-                  <h4 className="fw-400 col black mb-0  fs-xs"> #0012</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Status</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Hisar</h4>
-                  <h4 className="fw-400 col-xl-4 col black mb-0  fs-xs">John Doe</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> 18-10-2023</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> ₹ 360.00</h4>
-                </div>
-                <div className="d-flex px-2 row align-items-center py-2 bottom_border  justify-content-between">
-                  <h4 className="fw-400 col black mb-0  fs-xs"> #0012</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Status</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Hisar</h4>
-                  <h4 className="fw-400  col-xl-4 col black mb-0  fs-xs">John Doe</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> 18-10-2023</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> ₹ 360.00</h4>
-                </div>
-                <div className="d-flex px-2 row align-items-center py-2 bottom_border  justify-content-between">
-                  <h4 className="fw-400 col black mb-0  fs-xs"> #0012</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Status</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> Hisar</h4>
-                  <h4 className="fw-400  col-xl-4 col black mb-0  fs-xs">John Doe</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> 18-10-2023</h4>
-                  <h4 className="fw-400 col black mb-0  fs-xs"> ₹ 360.00</h4>
-                </div>
+                <table className="w-100">
+                  <tr className="product_borderbottom">
+                    <th className="py-2 px-3 mw_50">
+                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> No</h4>
+                    </th>
+                    <th className="py-2 px-3 mx_100">
+                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> Status</h4>
+                    </th>
+                    <th className="py-2 px-3 mx_100">
+                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> City</h4>
+                    </th>
+                    <th className="py-2 px-3 mw-250">
+                      <h4 className="fw-400 fade_grey mb-0 fs-xs">Customer</h4>
+                    </th>
+                    <th className="py-2 px-3 mx_160">
+                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> Date</h4>
+                    </th>
+                    <th className="py-2 px-3 mx_100">
+                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> Total</h4>
+                    </th>
+                  </tr>
+                  <tr className="product_borderbottom">
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
+                    </td>
+                  </tr>
+                  <tr className="product_borderbottom">
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
+                    </td>
+                  </tr>
+                  <tr className="product_borderbottom">
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
+                    </td>
+                  </tr>
+                  <tr className="product_borderbottom">
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
+                    </td>
+                  </tr>
+                  <tr className="product_borderbottom">
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
+                    </td>
+                  </tr>
+                  <tr className="product_borderbottom">
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
+                    </td>
+                  </tr>
+                  <tr className="product_borderbottom">
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
+                    </td>
+                  </tr>
+                  <tr className="product_borderbottom">
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
+                    </td>
+                  </tr>
+                  <tr className="product_borderbottom">
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
+                    </td>
+                  </tr>
+                  <tr className="product_borderbottom">
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
+                    </td>
+                  </tr>
+                  <tr className="product_borderbottom">
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
+                    </td>
+                  </tr>
+                  <tr className="product_borderbottom">
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
+                    </td>
+                    <td className="py-2 px-3">
+                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
+                    </td>
+                  </tr>
+                </table>
               </div>
             </div>
             <div className="col-xl-3 col-lg-5 col-12 h-100 ">

@@ -1,5 +1,5 @@
 import React from 'react';
-import whitesaveicon from '../Images/svgs/white_saveicon.svg';
+import saveicon from '../Images/svgs/saveicon.svg';
 import mobileicon from '../Images/Png/mobile_icon_40.png';
 import profile from '../Images/Png/customer_profile.png';
 import billicon from '../Images/svgs/bill_icon.svg';
@@ -14,9 +14,9 @@ export default function NewOrder() {
         </div>
         <div className="d-flex align-items-center">
           <button
-            className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 white"
+            className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black"
             type="submit">
-            <img src={whitesaveicon} alt="whitesaveicon" />
+            <img src={saveicon} alt="saveicon" />
             Mark as Refunded
           </button>
         </div>

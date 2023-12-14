@@ -170,8 +170,7 @@ function Sidebar() {
                   </Accordion.Item>
                   <li className="dash_links py-2 px-3 d-flex align-item-center">
                     <div className="d-flex py-1 w-100">
-                      <NavLink className="d-flex py-1" to="/customer">
-                        {' '}
+                      <NavLink className="d-flex py-1 w-100" to="/customer">
                         <svg
                           className="list_icons"
                           width="14"
@@ -188,10 +187,9 @@ function Sidebar() {
                       </NavLink>
                     </div>
                   </li>
-
-                  <Accordion.Item className="py-1" eventKey="6">
-                    <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400  white mb-0 ">
-                      <div className="fs-xs fw-400d white d-flex align-items-center">
+                  <li className="dash_links py-2 px-3 d-flex align-item-center">
+                    <div className="d-flex py-1 w-100">
+                      <NavLink className="d-flex py-1 w-100" to="/OrdersList">
                         <svg
                           className="list_icons"
                           width="16"
@@ -205,14 +203,9 @@ function Sidebar() {
                           />
                         </svg>
                         <h3 className="fs-xs fw-400  white mb-0">Orders</h3>
-                      </div>
-                    </Accordion.Header>
-                    <Accordion.Body className="py-2">
-                      <NavLink to="OrdersList" className="d-flex py-1">
-                        <h3 className="fs-xs fw-400  white mb-0">Orders</h3>
                       </NavLink>
-                    </Accordion.Body>
-                  </Accordion.Item>
+                    </div>
+                  </li>
 
                   <Accordion.Item className="py-1     " eventKey="7">
                     <Accordion.Header className="bg_grey px-3 py-2   fs-xs fw-400  white mb-0 ">

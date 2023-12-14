@@ -7,7 +7,7 @@ import eye_icon from '../Images/svgs/eye.svg';
 import pencil_icon from '../Images/svgs/pencil.svg';
 import delete_icon from '../Images/svgs/delte.svg';
 import updown_icon from '../Images/svgs/arross.svg';
-import { ProductList } from '../Common/Helper';
+import { OrderTable } from '../Common/Helper';
 import { collection, doc, getDocs, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Link, NavLink } from 'react-router-dom';
@@ -81,502 +81,125 @@ const ProductListComponent = () => {
                     <h3 className="fs-sm fw-400 black mb-0">Action</h3>
                   </th>
                 </tr>
-                <tr>
-                  <td className="p-3">
-                    <label className="check1 fw-400 fs-sm black mb-0">
-                      #1002
-                      <div className="d-flex align-items-center"></div>
-                      <input type="checkbox" checked={selectAll} />
-                      <span className="checkmark"></span>
-                    </label>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-xs fw-400 black mb-0">01-01-2023 | 10:20 AM</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">John Doe</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0 stock_bg">Paid</h3>
-                  </td>
-                  <td className="p-3">
-                    <NavLink
-                      to="/orderslist/neworder"
-                      className="fs-sm fw-400 black mb-0 new_order">
-                      New Order
-                    </NavLink>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">2 items</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">₹ 1,260.00</h3>
-                  </td>
-                  <td className="text-center">
-                    <div class="dropdown">
-                      <button
-                        class="btn dropdown-toggle"
-                        type="button"
-                        id="dropdownMenuButton3"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <img
-                          // onClick={() => {
-                          //   handleDelete(value.id);
-                          // }}
-                          src={dropdownDots}
-                          alt="dropdownDots"
-                        />
-                      </button>
-                      <ul
-                        class="dropdown-menu categories_dropdown"
-                        aria-labelledby="dropdownMenuButton3">
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={eye_icon} alt="" />
-                              <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={pencil_icon} alt="" />
-                              <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={updown_icon} alt="" />
-                              <p className="fs-sm fw-400 green mb-0 ms-2">Change to Hidden</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={delete_icon} alt="" />
-                              <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-3">
-                    <label className="check1 fw-400 fs-sm black mb-0">
-                      #1002
-                      <div className="d-flex align-items-center"></div>
-                      <input type="checkbox" checked={selectAll} />
-                      <span className="checkmark"></span>
-                    </label>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-xs fw-400 black mb-0">01-01-2023 | 10:20 AM</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">John Doe</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0 stock_bg">Paid</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0 new_order">New Order</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">2 items</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">₹ 1,260.00</h3>
-                  </td>
-                  <td className="text-center">
-                    <div class="dropdown">
-                      <button
-                        class="btn dropdown-toggle"
-                        type="button"
-                        id="dropdownMenuButton3"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <img
-                          // onClick={() => {
-                          //   handleDelete(value.id);
-                          // }}
-                          src={dropdownDots}
-                          alt="dropdownDots"
-                        />
-                      </button>
-                      <ul
-                        class="dropdown-menu categories_dropdown"
-                        aria-labelledby="dropdownMenuButton3">
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={eye_icon} alt="" />
-                              <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={pencil_icon} alt="" />
-                              <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={updown_icon} alt="" />
-                              <p className="fs-sm fw-400 green mb-0 ms-2">Change to Hidden</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={delete_icon} alt="" />
-                              <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-3">
-                    <label className="check1 fw-400 fs-sm black mb-0">
-                      #1002
-                      <div className="d-flex align-items-center"></div>
-                      <input type="checkbox" checked={selectAll} />
-                      <span className="checkmark"></span>
-                    </label>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-xs fw-400 black mb-0">01-01-2023 | 10:20 AM</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">John Doe</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0 stock_bg">Paid</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0 new_order">New Order</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">2 items</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">₹ 1,260.00</h3>
-                  </td>
-                  <td className="text-center">
-                    <div class="dropdown">
-                      <button
-                        class="btn dropdown-toggle"
-                        type="button"
-                        id="dropdownMenuButton3"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <img
-                          // onClick={() => {
-                          //   handleDelete(value.id);
-                          // }}
-                          src={dropdownDots}
-                          alt="dropdownDots"
-                        />
-                      </button>
-                      <ul
-                        class="dropdown-menu categories_dropdown"
-                        aria-labelledby="dropdownMenuButton3">
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={eye_icon} alt="" />
-                              <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={pencil_icon} alt="" />
-                              <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={updown_icon} alt="" />
-                              <p className="fs-sm fw-400 green mb-0 ms-2">Change to Hidden</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={delete_icon} alt="" />
-                              <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-3">
-                    <label className="check1 fw-400 fs-sm black mb-0">
-                      #1002
-                      <div className="d-flex align-items-center"></div>
-                      <input type="checkbox" checked={selectAll} />
-                      <span className="checkmark"></span>
-                    </label>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-xs fw-400 black mb-0">01-01-2023 | 10:20 AM</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">John Doe</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0 stock_bg">Paid</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0 new_order">New Order</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">2 items</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">₹ 1,260.00</h3>
-                  </td>
-                  <td className="text-center">
-                    <div class="dropdown">
-                      <button
-                        class="btn dropdown-toggle"
-                        type="button"
-                        id="dropdownMenuButton3"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <img
-                          // onClick={() => {
-                          //   handleDelete(value.id);
-                          // }}
-                          src={dropdownDots}
-                          alt="dropdownDots"
-                        />
-                      </button>
-                      <ul
-                        class="dropdown-menu categories_dropdown"
-                        aria-labelledby="dropdownMenuButton3">
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={eye_icon} alt="" />
-                              <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={pencil_icon} alt="" />
-                              <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={updown_icon} alt="" />
-                              <p className="fs-sm fw-400 green mb-0 ms-2">Change to Hidden</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={delete_icon} alt="" />
-                              <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-3">
-                    <label className="check1 fw-400 fs-sm black mb-0">
-                      #1002
-                      <div className="d-flex align-items-center"></div>
-                      <input type="checkbox" checked={selectAll} />
-                      <span className="checkmark"></span>
-                    </label>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-xs fw-400 black mb-0">01-01-2023 | 10:20 AM</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">John Doe</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0 stock_bg">Paid</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0 new_order">New Order</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">2 items</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">₹ 1,260.00</h3>
-                  </td>
-                  <td className="text-center">
-                    <div class="dropdown">
-                      <button
-                        class="btn dropdown-toggle"
-                        type="button"
-                        id="dropdownMenuButton3"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <img
-                          // onClick={() => {
-                          //   handleDelete(value.id);
-                          // }}
-                          src={dropdownDots}
-                          alt="dropdownDots"
-                        />
-                      </button>
-                      <ul
-                        class="dropdown-menu categories_dropdown"
-                        aria-labelledby="dropdownMenuButton3">
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={eye_icon} alt="" />
-                              <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={pencil_icon} alt="" />
-                              <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={updown_icon} alt="" />
-                              <p className="fs-sm fw-400 green mb-0 ms-2">Change to Hidden</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={delete_icon} alt="" />
-                              <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-3">
-                    <label className="check1 fw-400 fs-sm black mb-0">
-                      #1002
-                      <div className="d-flex align-items-center"></div>
-                      <input type="checkbox" checked={selectAll} />
-                      <span className="checkmark"></span>
-                    </label>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-xs fw-400 black mb-0">01-01-2023 | 10:20 AM</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">John Doe</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0 stock_bg">Paid</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0 new_order">New Order</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">2 items</h3>
-                  </td>
-                  <td className="p-3">
-                    <h3 className="fs-sm fw-400 black mb-0">₹ 1,260.00</h3>
-                  </td>
-                  <td className="text-center">
-                    <div class="dropdown">
-                      <button
-                        class="btn dropdown-toggle"
-                        type="button"
-                        id="dropdownMenuButton3"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <img
-                          // onClick={() => {
-                          //   handleDelete(value.id);
-                          // }}
-                          src={dropdownDots}
-                          alt="dropdownDots"
-                        />
-                      </button>
-                      <ul
-                        class="dropdown-menu categories_dropdown"
-                        aria-labelledby="dropdownMenuButton3">
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={eye_icon} alt="" />
-                              <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={pencil_icon} alt="" />
-                              <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={updown_icon} alt="" />
-                              <p className="fs-sm fw-400 green mb-0 ms-2">Change to Hidden</p>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="dropdown-item" href="#">
-                            <div className="d-flex align-items-center categorie_dropdown_options">
-                              <img src={delete_icon} alt="" />
-                              <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
+                {OrderTable.map((orderTableData, index) => {
+                  return (
+                    <tr>
+                      <td className="p-3">
+                        <label className="check1 fw-400 fs-sm black mb-0">
+                          {orderTableData.OrderNumber}
+                          <div className="d-flex align-items-center"></div>
+                          <input type="checkbox" checked={selectAll} />
+                          <span className="checkmark"></span>
+                        </label>
+                      </td>
+                      <td className="p-3">
+                        <h3 className="fs-xs fw-400 black mb-0">{orderTableData.Date}</h3>
+                      </td>
+                      <td className="p-3">
+                        <h3 className="fs-sm fw-400 black mb-0">{orderTableData.Customer}</h3>
+                      </td>
+                      <td className="p-3">
+                        <h3
+                          className={`fs-sm fw-400 mb-0 d-inline-block ${
+                            orderTableData.PaymentStatus === 'Paid'
+                              ? 'black stock_bg'
+                              : orderTableData.PaymentStatus === 'COD'
+                              ? 'black cancel_gray'
+                              : orderTableData.PaymentStatus === 'Refund'
+                              ? 'new_order red'
+                              : 'color_brown on_credit_bg'
+                          }`}>
+                          {orderTableData.PaymentStatus}
+                        </h3>
+                      </td>
+                      <td className="p-3">
+                        <p
+                          className={`d-inline-block ${
+                            orderTableData.OrderStatus === 'New Order'
+                              ? 'fs-sm fw-400 red mb-0 new_order'
+                              : orderTableData.OrderStatus === 'Processing'
+                              ? 'fs-sm fw-400 mb-0 processing_skyblue'
+                              : orderTableData.OrderStatus === 'Delivered'
+                              ? 'fs-sm fw-400 mb-0 green stock_bg'
+                              : 'fs-sm fw-400 mb-0 black cancel_gray'
+                          }`}>
+                          {orderTableData.OrderStatus}
+                        </p>
+                      </td>
+                      <td className="p-3">
+                        <h3 className="fs-sm fw-400 black mb-0">{orderTableData.Items} items</h3>
+                      </td>
+                      <td className="p-3">
+                        <h3 className="fs-sm fw-400 black mb-0">{orderTableData.OrderPrice}</h3>
+                      </td>
+                      <td className="text-center">
+                        <div class="dropdown">
+                          <button
+                            class="btn dropdown-toggle"
+                            type="button"
+                            id="dropdownMenuButton3"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <img
+                              // onClick={() => {
+                              //   handleDelete(value.id);
+                              // }}
+                              src={dropdownDots}
+                              alt="dropdownDots"
+                            />
+                          </button>
+                          <ul
+                            class="dropdown-menu categories_dropdown"
+                            aria-labelledby="dropdownMenuButton3">
+                            <li>
+                              <div class="dropdown-item" href="#">
+                                <div className="d-flex align-items-center categorie_dropdown_options">
+                                  <img src={eye_icon} alt="" />
+                                  <Link
+                                    to={`/orderslist/${
+                                      orderTableData.OrderStatus === 'New Order'
+                                        ? 'neworder'
+                                        : orderTableData.OrderStatus === 'Processing'
+                                        ? 'processing'
+                                        : orderTableData.OrderStatus === 'Delivered'
+                                        ? 'delivered'
+                                        : 'canceled'
+                                    }`}>
+                                    <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
+                                  </Link>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div class="dropdown-item" href="#">
+                                <div className="d-flex align-items-center categorie_dropdown_options">
+                                  <img src={pencil_icon} alt="" />
+                                  <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div class="dropdown-item" href="#">
+                                <div className="d-flex align-items-center categorie_dropdown_options">
+                                  <img src={updown_icon} alt="" />
+                                  <p className="fs-sm fw-400 green mb-0 ms-2">Change to Hidden</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div class="dropdown-item" href="#">
+                                <div className="d-flex align-items-center categorie_dropdown_options">
+                                  <img src={delete_icon} alt="" />
+                                  <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
+                                </div>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </table>
             </div>
           </div>

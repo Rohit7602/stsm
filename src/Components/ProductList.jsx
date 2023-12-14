@@ -6,16 +6,38 @@ import eye_icon from '../Images/svgs/eye.svg';
 import pencil_icon from '../Images/svgs/pencil.svg';
 import delete_icon from '../Images/svgs/delte.svg';
 import updown_icon from '../Images/svgs/arross.svg';
-import { ProductList } from '../Common/Helper';
 import { collection, doc, getDocs, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import Modifyproduct from './Modifyproduct';
 
 const ProductListComponent = () => {
   const [selectedProduct, setselectedProduct] = useState(null);
   const [data, setData] = useState([]);
+  // checkbox all functionlatiy start from here
   const [selectAll, setSelectAll] = useState(false);
+  const [individualCheckboxes, setIndividualCheckboxes] = useState(
+    Array.from({ length: data.length }, () => false)
+  );
+
+  const handleMainCheckboxChange = () => {
+    setSelectAll(!selectAll);
+    setIndividualCheckboxes(Array.from({ length: data.length }, () => !selectAll));
+  };
+
+  const handleIndividualCheckboxChange = (index) => {
+    const newCheckboxes = [...individualCheckboxes];
+    newCheckboxes[index] = !newCheckboxes[index];
+    setIndividualCheckboxes(newCheckboxes);
+    if (newCheckboxes.every((checkbox) => checkbox)) {
+      setSelectAll(true);
+    } else if (newCheckboxes.some((checkbox) => !checkbox)) {
+      setSelectAll(false);
+    }
+    console.log(setSelectAll);
+  };
+
+  // checbox all functionality end from here
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,7 +98,7 @@ const ProductListComponent = () => {
                         <input
                           type="checkbox"
                           checked={selectAll}
-                          onChange={() => setSelectAll(!selectAll)}
+                          onChange={handleMainCheckboxChange}
                         />
                         <span className="checkmark"></span>
                       </label>
@@ -106,15 +128,26 @@ const ProductListComponent = () => {
                     <tr key={index}>
                       <td className="p-3">
                         <label className="check1 fw-400 fs-sm black mb-0">
-                          {value.name}
                           <div className="d-flex align-items-center">
-                            <p className="mb-0 fs-xxs fw-400 fade_grey">
-                              <span className="pe-1"> ID : {value.id} </span>|{' '}
-                              <span className="ps-1">SKU : {value.sku}</span>
-                            </p>
+                            <div className="w_40">
+                              <img src={value.productImages} alt="" />
+                            </div>
+                            <div className="ps-3 ms-1">
+                              <p className="fw-400 fs-sm black mb-0">{value.name}</p>
+                              <div className="d-flex align-items-center">
+                                <p className="mb-0 fs-xxs fw-400 fade_grey d-flex flex-column">
+                                  <span className="pe-1"> ID : {value.id} </span>
+                                  <span>SKU : {value.sku}</span>
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                          <input type="checkbox" checked={selectAll} />
-                          <span className="checkmark"></span>
+                          <input
+                            type="checkbox"
+                            checked={individualCheckboxes[index]}
+                            onChange={() => handleIndividualCheckboxChange(index)}
+                          />
+                          <span className="checkmark me-5"></span>
                         </label>
                       </td>
                       <td className="p-3">
@@ -124,7 +157,9 @@ const ProductListComponent = () => {
                         <h3 className="fs-sm fw-400 black mb-0">{value.categories}</h3>
                       </td>
                       <td className="p-3">
-                        <h3 className="fs-sm fw-400 black mb-0 stock_bg">50 in Stock</h3>
+                        <h3 className="fs-sm fw-400 black mb-0 stock_bg white_space_nowrap">
+                          50 in Stock
+                        </h3>
                       </td>
                       <td className="p-3">
                         <h3 className="fs-sm fw-400 black mb-0">{value.status}</h3>
@@ -142,7 +177,7 @@ const ProductListComponent = () => {
                             aria-expanded="false">
                             <img
                               // onClick={() => {
-                              //   handleDelete(value.id);
+                              //  ;
                               // }}
                               src={dropdownDots}
                               alt="dropdownDots"
@@ -177,7 +212,9 @@ const ProductListComponent = () => {
                             </li>
                             <li>
                               <div class="dropdown-item" href="#">
-                                <div className="d-flex align-items-center categorie_dropdown_options">
+                                <div
+                                  onClick={() => handleDelete(value.id)}
+                                  className="d-flex align-items-center categorie_dropdown_options">
                                   <img src={delete_icon} alt="" />
                                   <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
                                 </div>

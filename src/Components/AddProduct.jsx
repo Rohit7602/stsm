@@ -63,7 +63,6 @@ const AddProduct = () => {
   const handleInputChange = (event) => {
     const input = event.target.value;
     setSearchquery(input);
-
     // Filter data based on the entered letter
     const filtered = catdata.filter((category) =>
       category.name.toLowerCase().startsWith(input.toLowerCase())
@@ -81,6 +80,7 @@ const AddProduct = () => {
   const handleSelectCategory = (category) => {
     setSearchquery(category.name);
     setSelectedCategory(category);
+    setCatval(category.name);
   };
   const handleAddVariant = () => {
     const newVariant = {
@@ -192,31 +192,13 @@ const AddProduct = () => {
           list.push({ id: doc.id, ...doc.data() });
         });
         setData([...list]);
-        // console.log(list);
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
   }, []);
-  // function handlesave(e) {
-  //   e.preventDefault();
-  //   console.log(
-  //     name,
-  //     shortDes,
-  //     longDes,
-  //     discountType,
-  //     originalPrice,
-  //     discount,
-  //     imageUpload22,
-  //     status,
-  //     categories,
-  //     totalStock,
-  //     sku,
-  //     delivery,
-  //     varientvalue
-  //   );
-  // }
+
   function handleSearch(e) {
     const mylist = [];
     function search(nameKey, myArray) {
@@ -528,7 +510,7 @@ const AddProduct = () => {
                                 alt=""
                               />
                               <img
-                                className="position-absolute top-0 end-0 cursor_pointer"
+                                className="position-absolute top-0 end-0 cursor_pointer p-1"
                                 src={deleteicon}
                                 alt="deleteicon"
                                 onClick={() => handleDelete22(index)}
@@ -549,7 +531,6 @@ const AddProduct = () => {
 
               <Col xxl={4}>
                 {/* Status */}
-
                 <div className="product_shadow bg_white p-3 mt-3 mt-xxl-0">
                   <div className="product_borderbottom">
                     <h2 className="fw-400 fs-2sm black mb-0">Status</h2>
@@ -697,7 +678,7 @@ const AddProduct = () => {
 
                     <Dropdown.Menu className="w-100">
                       {filtereddata.map((category) => (
-                        <Dropdown.Item href="#/action-1">
+                        <Dropdown.Item>
                           <div
                             className={`d-flex justify-content-between ${
                               selectedCategory && selectedCategory.name === category.name
@@ -713,7 +694,7 @@ const AddProduct = () => {
                         </Dropdown.Item>
                       ))}
                       {searchquery && !filtereddata.length && (
-                        <NavLink onClick={handleAddCategory}>
+                        <NavLink onClick={handleAddCategory} to="/newcategory/parentcategories">
                           <button className="addnew_category_btn fs-xs green">
                             +Add <span className="black">"{searchquery}"</span> in Parent Category
                           </button>
