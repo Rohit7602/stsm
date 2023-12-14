@@ -58,8 +58,7 @@ const AddProduct = () => {
     { name: 'Animal Suppliments' },
     { name: 'Grocery' },
   ]);
-  const [filtereddata, setFiltereddata] = useState([]);
-
+  const [filtereddata, setFiltereddata] = useState(catdata);
   const handleInputChange = (event) => {
     const input = event.target.value;
     setSearchquery(input);
@@ -68,14 +67,6 @@ const AddProduct = () => {
       category.name.toLowerCase().startsWith(input.toLowerCase())
     );
     setFiltereddata(filtered);
-  };
-
-  const handleAddCategory = () => {
-    if (searchquery && !catdata.some((category) => category.name === searchquery)) {
-      setCatdata((prevdata) => [...prevdata, { name: searchquery }]);
-      setSearchquery('');
-      setFiltereddata([]);
-    }
   };
   const handleSelectCategory = (category) => {
     setSearchquery(category.name);
@@ -407,7 +398,7 @@ const AddProduct = () => {
                                   id="ddisc"
                                   value={discount}
                                   onChange={(e) => {
-                                    if (discountType == 'Percentage') {
+                                    if (discountType === 'Percentage') {
                                       if (e.target.value < 101 && e.target.value >= 0) {
                                         setDiscount(e.target.value);
                                       }
@@ -661,45 +652,45 @@ const AddProduct = () => {
                 {/* Categories */}
                 <div className="mt-4 product_shadow bg_white p-3">
                   <lable className="fw-400 fs-2sm black mb-0">Categories</lable>
-
                   <Dropdown className="category_dropdown">
                     <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
-                      <div className="d-flex align-items-center product_input">
-                        <img src={SearchIcon} alt="SearchIcon" />
-                        <input
-                          value={searchquery}
-                          onChange={handleInputChange}
-                          placeholder="search for category"
-                          className="fade_grey fw-400 border-0 outline_none ms-2 w-100"
-                          type="text"
-                        />
+                      <div className="product_input">
+                        <p className="fade_grey fw-400 w-100 mb-0 text-start">
+                          {selectedCategory ? selectedCategory.name : 'Select category'}
+                        </p>
                       </div>
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu className="w-100">
-                      {filtereddata.map((category) => (
-                        <Dropdown.Item>
-                          <div
-                            className={`d-flex justify-content-between ${
-                              selectedCategory && selectedCategory.name === category.name
-                                ? 'selected'
-                                : ''
-                            }`}
-                            onClick={() => handleSelectCategory(category)}>
-                            <p className="fs-xs fw-400 black mb-0">{category.name}</p>
-                            {selectedCategory && selectedCategory.name === category.name && (
-                              <img src={savegreenicon} alt="savegreenicon" />
-                            )}
-                          </div>
-                        </Dropdown.Item>
-                      ))}
-                      {searchquery && !filtereddata.length && (
-                        <NavLink onClick={handleAddCategory} to="/newcategory/parentcategories">
-                          <button className="addnew_category_btn fs-xs green">
-                            +Add <span className="black">"{searchquery}"</span> in Parent Category
-                          </button>
-                        </NavLink>
-                      )}
+                      <div className="d-flex flex-column">
+                        <div className="d-flex align-items-center product_input position-sticky top-0">
+                          <img src={SearchIcon} alt="SearchIcon" />
+                          <input
+                            onChange={handleInputChange}
+                            placeholder="search for category"
+                            className="fade_grey fw-400 border-0 outline_none ms-2 w-100"
+                            type="text"
+                          />
+                        </div>
+                        <div>
+                          {filtereddata.map((category) => (
+                            <Dropdown.Item>
+                              <div
+                                className={`d-flex justify-content-between ${
+                                  selectedCategory && selectedCategory.name === category.name
+                                    ? 'selected'
+                                    : ''
+                                }`}
+                                onClick={() => handleSelectCategory(category)}>
+                                <p className="fs-xs fw-400 black mb-0">{category.name}</p>
+                                {selectedCategory && selectedCategory.name === category.name && (
+                                  <img src={savegreenicon} alt="savegreenicon" />
+                                )}
+                              </div>
+                            </Dropdown.Item>
+                          ))}
+                        </div>
+                      </div>
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
