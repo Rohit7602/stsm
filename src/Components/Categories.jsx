@@ -7,16 +7,18 @@ import pencil_icon from '../Images/svgs/pencil.svg';
 import delete_icon from '../Images/svgs/delte.svg';
 import updown_icon from '../Images/svgs/arross.svg';
 import Modifyproduct from './Modifyproduct';
-import { collection, doc, getDocs, deleteDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, deleteDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CategoryItems } from '../Common/Helper';
 const Categories = () => {
   const [data, setData] = useState([]);
-  const [mainCategory, setMainCategory] = useState([]);
+  const [mainCategoryies, setMainCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectAll, setSelectAll] = useState(false);
+  const [searchvalue, setSearchvalue] = useState('')
+
+
 
   const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);
@@ -56,6 +58,10 @@ const Categories = () => {
     fetchData();
   }, []);
 
+  /*  *******************************
+     Delete functionality start 
+   *********************************************   **/
+
   async function handleDelete(id) {
     try {
       await deleteDoc(doc(db, 'sub_categories', id)).then(() => {
@@ -65,6 +71,91 @@ const Categories = () => {
       console.log(error);
     }
   }
+
+  /*  *******************************
+      Delete functionality end 
+    *********************************************   **/
+
+  /*  *******************************
+     Change status functionality start 
+   *********************************************   **/
+
+  async function handleChangeStatus(id, status) {
+    try {
+      // Toggle the status between 'publish' and 'hidden'
+      const newStatus = status === 'hidden' ? 'publish' : 'hidden';
+      await updateDoc(doc(db, 'sub_categories', id), {
+        status: newStatus,
+      });
+      alert("status Change succesffuly ")
+      let list = [];
+      const querySnapshot = await getDocs(collection(db, 'sub_categories'));
+      querySnapshot.forEach((doc) => {
+        list.push({ id: doc.id, ...doc.data() });
+      });
+      setData([...list]);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  /*  *******************************
+      Change status functionality end 
+    *********************************************   **/
+
+
+
+
+
+  /*  *******************************
+      checkbox functionality start 
+    *********************************************   **/
+  const [selectAll, setSelectAll] = useState(false);
+
+
+  useEffect(() => {
+    // Check if all checkboxes are checked
+    const allChecked = data.every((item) => item.checked);
+    setSelectAll(allChecked);
+  }, [data]);
+
+  // Main checkbox functionality start from here 
+
+  const handleMainCheckboxChange = () => {
+    const updatedData = data.map((item) => ({
+      ...item,
+      checked: !selectAll,
+    }));
+    setData(updatedData);
+    setSelectAll(!selectAll);
+  };
+  // Datacheckboxes functionality strat from here 
+  const handleCheckboxChange = (index) => {
+    const updatedData = [...data];
+    updatedData[index].checked = !data[index].checked;
+    setData(updatedData);
+
+    // Check if all checkboxes are checked
+    const allChecked = updatedData.every((item) => item.checked);
+    setSelectAll(allChecked);
+  };
+
+
+
+  /*  *******************************
+      Checbox  functionality end 
+    *********************************************   **/
+
+
+  //  get parent category  code start from here 
+
+  const getParentCategoryName = (catID) => {
+    const mainCategory = mainCategoryies.find((category) => category.id === catID);
+    return mainCategory ? mainCategory.title : '';
+  };
+
+  //  get parent category  code end  from here
+
 
   return (
     <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
@@ -80,6 +171,7 @@ const Categories = () => {
                 type="text"
                 className="fw-400 categorie_input  "
                 placeholder="Search for categories..."
+                onChange={(e) => setSearchvalue(e.target.value)}
               />
             </div>
             <Link
@@ -103,7 +195,8 @@ const Categories = () => {
                         <input
                           type="checkbox"
                           checked={selectAll}
-                          onChange={() => setSelectAll(!selectAll)}
+                          onChange={handleMainCheckboxChange}
+
                         />
                         <span class="checkmark"></span>
                       </label>
@@ -122,20 +215,24 @@ const Categories = () => {
                     <h3 className="fs-sm fw-400 black mb-0">Action</h3>
                   </th>
                 </tr>
-                {data.map((value, index) => {
+                {data.filter((item) => {
+                  const mainCategory = mainCategoryies.find((category) => category.id === item.cat_ID);
+                  return search.toLowerCase() === '' ? item : (item.title.toLowerCase().includes(searchvalue) || mainCategory.title.toLowerCase().includes(searchvalue))
+                }).map((value, index) => {
                   return (
                     <tr key={index} className="product_borderbottom">
                       <td className="py-3 ps-3">
                         <div className="d-flex align-items-center gap-3">
                           <label class="check1 fw-400 fs-sm black mb-0">
                             {value.title}
-                            <input type="checkbox" checked={selectAll} />
+                            <input type="checkbox" checked={value.checked || false}
+                              onChange={() => handleCheckboxChange(index)} />
                             <span class="checkmark"></span>
                           </label>
                         </div>
                       </td>
                       <td className="px-2">
-                        <h3 className="fs-sm fw-400 black mb-0">{value.cat_ID}</h3>
+                        <h3 className="fs-sm fw-400 black mb-0">{getParentCategoryName(value.cat_ID)}</h3>
                       </td>
                       <td className="ps-4">
                         <h3 className="fs-sm fw-400 black mb-0 width_10">10</h3>
@@ -154,9 +251,7 @@ const Categories = () => {
                             data-bs-toggle="dropdown"
                             aria-expanded="false">
                             <img
-                              // onClick={() => {
-                              //   handleDelete(value.id);
-                              // }}
+
                               src={dropdownDots}
                               alt="dropdownDots"
                             />
@@ -182,15 +277,19 @@ const Categories = () => {
                             </li>
                             <li>
                               <div class="dropdown-item" href="#">
-                                <div className="d-flex align-items-center categorie_dropdown_options">
+                                <div className="d-flex align-items-center categorie_dropdown_options" onClick={() => {
+                                  handleChangeStatus(value.id, value.status)
+                                }}>
                                   <img src={updown_icon} alt="" />
-                                  <p className="fs-sm fw-400 green mb-0 ms-2">Change to Hidden</p>
+                                  <p className="fs-sm fw-400 green mb-0 ms-2">{value.status === 'hidden' ? 'change to  publish' : 'Change to hidden'}</p>
                                 </div>
                               </div>
                             </li>
                             <li>
                               <div class="dropdown-item" href="#">
-                                <div className="d-flex align-items-center categorie_dropdown_options">
+                                <div className="d-flex align-items-center categorie_dropdown_options" onClick={() => {
+                                  handleDelete(value.id);
+                                }}>
                                   <img src={delete_icon} alt="" />
                                   <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
                                 </div>

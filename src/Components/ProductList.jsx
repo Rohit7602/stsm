@@ -14,6 +14,8 @@ import Modifyproduct from './Modifyproduct';
 const ProductListComponent = () => {
   const [selectedProduct, setselectedProduct] = useState(null);
   const [data, setData] = useState([]);
+ 
+ 
   // checkbox all functionlatiy start from here
   const [selectAll, setSelectAll] = useState(false);
   const [individualCheckboxes, setIndividualCheckboxes] = useState(
@@ -37,7 +39,7 @@ const ProductListComponent = () => {
     console.log(setSelectAll);
   };
 
-  // checbox all functionality end from here
+  // checbox all functionality end  here
 
   useEffect(() => {
     const fetchData = async () => {
