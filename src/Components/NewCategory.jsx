@@ -1,7 +1,9 @@
 import React from 'react';
 import saveicon from '../Images/svgs/saveicon.svg';
+import savegreenicon from '../Images/svgs/save_green_icon.svg';
 import deleteicon from '../Images/svgs/deleteicon.svg';
 import { Col, Row } from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
 import SearchIcon from '../Images/svgs/search.svg';
 import { useState } from 'react';
 import { collection, doc, addDoc, getDocs, deleteDoc } from 'firebase/firestore';
@@ -20,7 +22,33 @@ const NewCategory = () => {
   const [name, setName] = useState();
   const [category, setCategory] = useState();
   const [loaderstatus, setLoaderstatus] = useState(false);
-
+  const [searchquery, setSearchquery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [catval, setCatval] = useState([]);
+  const [catdata, setCatdata] = useState([
+    { name: 'Led TV' },
+    { name: 'Washing Machine' },
+    { name: 'Mobile Phone' },
+    { name: 'Electronic' },
+    { name: 'Footwear' },
+    { name: 'Animal Suppliments' },
+    { name: 'Grocery' },
+  ]);
+  const [filtereddata, setFiltereddata] = useState(catdata);
+  const handleInputChange = (event) => {
+    const input = event.target.value;
+    setSearchquery(input);
+    // Filter data based on the entered letter
+    const filtered = catdata.filter((category) =>
+      category.name.toLowerCase().startsWith(input.toLowerCase())
+    );
+    setFiltereddata(filtered);
+  };
+  const handleSelectCategory = (category) => {
+    setSearchquery(category.name);
+    setSelectedCategory(category);
+    setCatval(category.name);
+  };
   const pubref = useRef();
   const hidref = useRef();
 
@@ -112,7 +140,7 @@ const NewCategory = () => {
           <form>
             {' '}
             <div className="d-flex justify-content-between align-items-center">
-                <h1 className="fw-500  mb-0 black fs-lg">New Category</h1>
+              <h1 className="fw-500  mb-0 black fs-lg">New Category</h1>
               <div className="d-flex justify-content-center">
                 <div className="d-flex  align-items-center flex-column flex-sm-row gap-2 gap-sm-0  justify-content-between">
                   <div className="d-flex align-itmes-center gap-3">
@@ -240,20 +268,55 @@ const NewCategory = () => {
                       View All
                     </Link>
                   </div>
-                  <select
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="mt-3 product_input  black fw-400"
-                    id="Discount">
-                    <option className="mt-2 product_input black fw-400">Select category</option>
-                    {mainCategory.map((item, index) => {
-                      const { id, title } = item;
-                      return (
-                        <option className="mt-2 product_input black fw-400" value={id}>
-                          {title}
-                        </option>
-                      );
-                    })}
-                  </select>
+                  <Dropdown className="category_dropdown">
+                    <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
+                      <div className="product_input">
+                        <p className="fade_grey fw-400 w-100 mb-0 text-start">
+                          {selectedCategory ? selectedCategory.name : 'Select category'}
+                        </p>
+                      </div>
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu className="w-100">
+                      <div className="d-flex flex-column">
+                        <div className="d-flex align-items-center product_input position-sticky top-0">
+                          <img src={SearchIcon} alt="SearchIcon" />
+                          <input
+                            onChange={handleInputChange}
+                            placeholder="search for category"
+                            className="fade_grey fw-400 border-0 outline_none ms-2 w-100"
+                            type="text"
+                          />
+                        </div>
+                        <div>
+                          {filtereddata.map((category) => (
+                            <Dropdown.Item>
+                              <div
+                                className={`d-flex justify-content-between ${
+                                  selectedCategory && selectedCategory.name === category.name
+                                    ? 'selected'
+                                    : ''
+                                }`}
+                                onClick={() => handleSelectCategory(category)}>
+                                <p className="fs-xs fw-400 black mb-0">{category.name}</p>
+                                {selectedCategory && selectedCategory.name === category.name && (
+                                  <img src={savegreenicon} alt="savegreenicon" />
+                                )}
+                              </div>
+                            </Dropdown.Item>
+                          ))}
+                          {searchquery && !filtereddata.length && (
+                            <NavLink to="/newcategory/parentcategories">
+                              <button className="addnew_category_btn fs-xs green">
+                                +Add <span className="black">"{searchquery}"</span> in Parent
+                                Category
+                              </button>
+                            </NavLink>
+                          )}
+                        </div>
+                      </div>
+                    </Dropdown.Menu>
+                  </Dropdown>
                   <p className="black fw-400 fs-xxs mb-0 mt-3">
                     Select a category that will be the parent of the current one.
                   </p>

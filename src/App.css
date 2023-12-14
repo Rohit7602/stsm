@@ -888,7 +888,7 @@ body {
   max-height: 46px !important;
 }
 .category_dropdown .dropdown-menu {
-  padding: 0 10px;
+  padding: 5px 10px;
   border: 0.5px solid #00000011;
   max-height: 200px;
   overflow-y: scroll;
@@ -985,6 +985,9 @@ body {
 .mx_70 {
   max-width: 70px;
   width: 70px;
+}
+.top-15 {
+  top: 15px;
 }
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
