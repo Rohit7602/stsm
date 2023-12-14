@@ -150,14 +150,14 @@ body {
 
 /* -----------------------------------COMMON-CSS-------------------------- */
 .sidebar {
-  max-width: 367px;
-  width: 367px;
+  max-width: 270px;
+  width: 270px;
   background-color: var(--color-grey-01);
   min-height: 100vh;
 }
 .sidebar_position {
   position: fixed;
-  width: 366px;
+  width: 269px;
   z-index: 2;
   height: 100%;
   max-height: 100vh;
@@ -167,7 +167,7 @@ body {
   width: 0;
 }
 .content {
-  width: calc(100% - 366px);
+  width: calc(100% - 270px);
 }
 .top_bar {
   position: sticky;
@@ -205,7 +205,7 @@ body {
   color: red;
 }
 .green {
-  color: green;
+  color: green !important;
 }
 
 .cursor {
@@ -500,7 +500,7 @@ body {
 .check1 {
   display: block;
   position: relative;
-  padding-left: 35px;
+  padding-left: 45px;
   margin-bottom: 12px;
   cursor: pointer;
   font-size: 22px;
@@ -719,7 +719,7 @@ body {
   border-bottom: 1px solid #d9d9d9;
 }
 .donut {
-  height: 200px;
+  height: 300px;
 }
 
 .upload_btn {
@@ -789,15 +789,202 @@ body {
   background-color: var(--color-green);
 }
 .categories_dropdown {
-  width: 182px;
-  background-color: var(--color-white);
-  position: absolute;
-  right: 0;
-  top: 30px;
-  display: none;
+  width: 182px !important;
+  background-color: var(--color-white) !important;
+  position: absolute !important;
+  right: 0 !important;
+  padding: 0 !important;
+}
+.dropdown-menu.show {
+  transition: 0s !important;
+}
+.categories_dropdown .dropdown-item {
+  padding: 0 !important;
+}
+.dropdown-toggle::after {
+  border: 0 !important;
 }
 .categorie_dropdown_options {
   padding: 10px;
+  cursor: pointer;
+}
+.btn-check:checked + .btn,
+:not(.btn-check) + .btn:active,
+.btn:first-child:active,
+.btn.active,
+.btn.show {
+  color: var(--bs-btn-active-color);
+  background-color: var(--bs-btn-active-bg);
+  border: 0 !important;
+}
+.stock_save_btn {
+  border: none;
+  outline: none;
+  background-color: var(--color-green);
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+.stock_popup {
+  background-color: var(--color-white);
+  padding: 6px 20px 20px;
+  border-radius: 10px;
+  width: 404px;
+  position: absolute;
+  right: 20px;
+  bottom: -20px;
+  border: 0.5px solid #00000033;
+}
+.mw_300 {
+  max-width: 300px;
+  width: 300px;
+}
+.mw_130 {
+  max-width: 130px;
+  width: 130px;
+}
+.mw_160 {
+  max-width: 160px;
+  width: 160px;
+}
+.min_width_1350 {
+  min-width: 1350px;
+}
+.stock_bg {
+  background-color: #54b43533;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+.mw-250 {
+  max-width: 250px;
+  width: 250px;
+}
+.mw_140 {
+  max-width: 140px;
+  width: 140px;
+}
+.new_order {
+  padding: 5px 10px;
+  background-color: #dd000026;
+  border-radius: 5px;
+  display: inline-block;
+}
+.addnew_category_btn {
+  background-color: #eafde1 !important;
+  padding: 8px 2px !important;
+  border: 0;
+  outline: 0;
+  width: 100%;
+  text-align: center;
+}
+.category_dropdown .dropdown_input_btn {
+  padding: 0 !important;
+  background-color: var(--color-white) !important;
+  border: 0;
+  width: 100% !important;
+  margin-top: 16px !important;
+  max-height: 46px !important;
+}
+.category_dropdown .dropdown-menu {
+  padding: 0 10px;
+  border: 0.5px solid #00000011;
+  max-height: 200px;
+  overflow-y: scroll;
+}
+.category_dropdown .dropdown-menu::-webkit-scrollbar {
+  width: 3px;
+}
+.category_dropdown .dropdown-menu::-webkit-scrollbar-track {
+  background-color: #ffffff;
+}
+.category_dropdown .dropdown-menu::-webkit-scrollbar-thumb {
+  background-color: #bbbbbb;
+  border-radius: 10px;
+}
+.neworder_red {
+  padding: 5px 10px;
+  background-color: #dd000026;
+  border-radius: 5px;
+}
+.bill_generate {
+  padding: 10px 15px;
+  background-color: #b5b5b5;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  margin-top: 20px;
+}
+.cancel_gray {
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: #eeeeee;
+  display: inline-block;
+}
+.processing_skyblue {
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: #01bbbd;
+  background-color: #01bbbd33;
+}
+.green_btn {
+  padding: 10px 15px;
+  background-color: var(--color-green);
+  border-radius: 10px;
+  border: none;
+  outline: none;
+}
+.white_space_nowrap {
+  white-space: nowrap;
+}
+.w_40 {
+  width: 40px;
+}
+.w_40 img {
+  width: 100%;
+}
+.on_credit_bg {
+  background-color: #ffae0033;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+.parent_category_popup {
+  width: 600px;
+  padding: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--color-white);
+  border-radius: 10px;
+  border: 1px solid #dfdfdfcd;
+  z-index: 2;
+}
+.bg_black_overlay {
+  background-color: #0000008e;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+}
+.mx_140 {
+  max-width: 140px;
+  width: 140px;
+}
+.mw_50 {
+  max-width: 50px;
+  width: 50px;
+}
+.mx_85 {
+  max-width: 85px;
+  width: 85px;
+}
+.mx_70 {
+  max-width: 70px;
+  width: 70px;
 }
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
