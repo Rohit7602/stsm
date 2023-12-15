@@ -21,7 +21,7 @@ const AddProduct = () => {
   const [name, setName] = useState('');
   const [shortDes, setShortDes] = useState('');
   const [longDes, setLongDes] = useState('');
-  const [varient, setVarient] = useState(false);
+  const [varient, setVarient] = useState([]);
   const [variants, setVariants] = useState([
     {
       id: 1,
@@ -36,43 +36,37 @@ const AddProduct = () => {
   const [discountType, setDiscountType] = useState('Amount');
   const [deliveryCharges, setDeliveryCharges] = useState(0);
   const [discount, setDiscount] = useState('');
-  const [status, setStatus] = useState('');
-  const [delivery, setDelivery] = useState('');
+  const [status, setStatus] = useState();
+  const [Freedelivery, setFreeDelivery] = useState('');
   const [sku, setSku] = useState('');
-  const [totalStock, setTotalStock] = useState('');
+  const [totalStock, setTotalStock] = useState();
   const [categories, setCategories] = useState('');
   const [imageUpload22, setImageUpload22] = useState([]);
   const [data, setData] = useState([]);
   const [searchdata, setSearchdata] = useState([]);
-  const [catval, setCatval] = useState([]);
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [stockpopup, setStockpopup] = useState(false);
-  const [searchquery, setSearchquery] = useState('');
+
+
+  //  search functionaltiy in categories and selected categories 
+  const [searchvalue, setSearchvalue] = useState('')
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [catdata, setCatdata] = useState([
-    { name: 'Led TV' },
-    { name: 'Washing Machine' },
-    { name: 'Mobile Phone' },
-    { name: 'Electronic' },
-    { name: 'Footwear' },
-    { name: 'Animal Suppliments' },
-    { name: 'Grocery' },
-  ]);
-  const [filtereddata, setFiltereddata] = useState(catdata);
-  const handleInputChange = (event) => {
-    const input = event.target.value;
-    setSearchquery(input);
-    // Filter data based on the entered letter
-    const filtered = catdata.filter((category) =>
-      category.name.toLowerCase().startsWith(input.toLowerCase())
-    );
-    setFiltereddata(filtered);
-  };
+
   const handleSelectCategory = (category) => {
-    setSearchquery(category.name);
+    setSearchvalue('');
     setSelectedCategory(category);
-    setCatval(category.name);
   };
+
+
+
+
+
+
+
+
+
+
+
   const handleAddVariant = () => {
     const newVariant = {
       id: variants.length + 1,
@@ -105,12 +99,14 @@ const AddProduct = () => {
     setCategories();
     setDiscount();
     setStatus();
+    setFreeDelivery()
     setSku();
     setTotalStock();
     setImageUpload22([]);
+    setSelectedCategory(null)
     pubref.current.checked = false;
     hidref.current.checked = false;
-    setSearchdata([]);
+    // setSearchdata([]);
   }
   async function handlesave(e) {
     e.preventDefault();
@@ -119,7 +115,13 @@ const AddProduct = () => {
       alert('set status');
     } else if (imageUpload22.length === 0) {
       alert('set image ');
-    } else {
+
+    } else if (!name || !longDes || !shortDes || !totalStock) {
+      alert('Please enter name or LongDescription or ShortDescription or TotalStock ');
+    } else if (!selectedCategory) {
+      alert('please select category ')
+    }
+    else {
       try {
         setLoaderstatus(true);
         const imagelinks = [];
@@ -141,8 +143,12 @@ const AddProduct = () => {
           deliveryCharges: deliveryCharges,
           status: status,
           sku: sku,
+          Freedelivery: Freedelivery,
           totalStock: totalStock,
-          categories: catval,
+          categories: {
+            id: selectedCategory.id,
+            name: selectedCategory.title
+          },
           productImages: imagelinks,
         });
         setSearchdata([]);
@@ -162,12 +168,23 @@ const AddProduct = () => {
 
   // image upload section
 
-  function handelUpload22(event) {
+  function handelUploadImages(event) {
     const selectedImages = Array.from(event.target.files);
-    setImageUpload22([...imageUpload22, ...selectedImages]);
+
+    selectedImages.forEach((selectedFile) => {
+      const allowedExtensions = ['.png', '.jpeg', '.jpg'];
+      const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
+
+      if (!allowedExtensions.includes(`.${fileExtension}`)) {
+        toast.error('Invalid file type. Please select a valid image file.');
+      } else {
+        setImageUpload22((prevImages) => [...prevImages, selectedFile]);
+      }
+    });
   }
 
-  function handleDelete22(index) {
+
+  function handleDeleteImages(index) {
     const updatedImages = [...imageUpload22];
     updatedImages.splice(index, 1);
     setImageUpload22(updatedImages);
@@ -190,23 +207,23 @@ const AddProduct = () => {
     fetchData();
   }, []);
 
-  function handleSearch(e) {
-    const mylist = [];
-    function search(nameKey, myArray) {
-      if (e.target.value.length === 0) {
-        setSearchdata(null);
-      } else {
-        for (let i = 0; i < myArray.length; i++) {
-          if (String(myArray[i].title).includes(nameKey)) {
-            mylist.push(myArray[i]);
-          }
-        }
-      }
-    }
+  // function handleSearch(e) {
+  //   const mylist = [];
+  //   function search(nameKey, myArray) {
+  //     if (e.target.value.length === 0) {
+  //       setSearchdata(null);
+  //     } else {
+  //       for (let i = 0; i < myArray.length; i++) {
+  //         if (String(myArray[i].title).includes(nameKey)) {
+  //           mylist.push(myArray[i]);
+  //         }
+  //       }
+  //     }
+  //   }
 
-    search(e.target.value, data);
-    setSearchdata(mylist);
-  }
+  //   search(e.target.value, data);
+  //   setSearchdata(mylist);
+  // }
   if (loaderstatus) {
     return (
       <>
@@ -347,7 +364,7 @@ const AddProduct = () => {
                               />
                             </div>
                             <div className="d-flex flex-column flex-sm-row gap-3">
-                              {/* ist input */}
+
                               <div className="width_33 w_xsm_100">
                                 <label htmlFor="origi" className="fs-xs fw-400 mt-3 black">
                                   Original Price
@@ -361,11 +378,83 @@ const AddProduct = () => {
                                   onChange={(e) => setOriginalPrice(e.target.value)}
                                 />{' '}
                               </div>
-                              {/* 2nd input */}
+
                               <div className="width_33 w_xsm_100">
                                 <label htmlFor="Discount" className="fs-xs fw-400 mt-3 black">
                                   Discount Type
                                 </label>{' '}
+                                <select
+                                  className="mt-2 product_input  fade_grey fw-400"
+                                  id="Discount"
+                                  value={discountType}
+                                  onChange={(e) => {
+                                    setDiscountType(e.target.value);
+                                    setDiscount(0);
+                                  }}>
+                                  <option
+                                    className="mt-2 product_input fade_grey fw-400"
+                                    value="Amount">
+                                    Amount
+                                  </option>
+                                  <option
+                                    className="mt-2 product_input fade_grey fw-400"
+                                    value="Percentage">
+                                    Percentage
+                                  </option>
+                                </select>
+                              </div>
+
+                              <div className="width_33 w_xsm_100">
+                                <label htmlFor="ddisc" className="fs-xs fw-400 mt-3 black">
+                                  Discount
+                                </label>
+                                <input
+                                  type="number"
+                                  className="mt-2 product_input fade_grey fw-400"
+                                  placeholder={discountType !== 'Percentage' ? '₹ 0.00' : '%'}
+                                  id="ddisc"
+                                  value={discount}
+                                  onChange={(e) => {
+                                    if (discountType === 'Percentage') {
+                                      if (e.target.value < 101 && e.target.value >= 0) {
+                                        setDiscount(e.target.value);
+                                      }
+                                    } else {
+                                      setDiscount(e.target.value);
+                                    }
+                                  }}
+                                />{' '}
+
+
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) :
+                        // if user select no here 
+                        (
+                          <div>
+                            <h2 className="fw-400 fs-2sm black mb-0">Pricing</h2>
+                            <div className="d-flex flex-column flex-sm-row gap-3">
+                              {/* ist input */}
+                              <div className="width_33 w_xsm_100">
+                                <label htmlFor="origi" className="fs-xs fw-400 mt-3 black">
+                                  Original Price
+                                </label>
+                                <input
+                                  type="number"
+                                  className="mt-2 product_input fade_grey fw-400"
+                                  placeholder="₹ 0.00"
+                                  id="origi"
+                                  value={originalPrice}
+                                  onChange={(e) => setOriginalPrice(e.target.value)}
+                                />
+                              </div>
+                              {/* 2nd input */}
+                              <div className="width_33 w_xsm_100">
+                                <label htmlFor="Discount" className="fs-xs fw-400 mt-3 black">
+                                  Discount Type
+                                </label>
                                 <select
                                   className="mt-2 product_input  fade_grey fw-400"
                                   id="Discount"
@@ -406,79 +495,11 @@ const AddProduct = () => {
                                       setDiscount(e.target.value);
                                     }
                                   }}
-                                />{' '}
+                                />
                               </div>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div>
-                          <h2 className="fw-400 fs-2sm black mb-0">Pricing</h2>
-                          <div className="d-flex flex-column flex-sm-row gap-3">
-                            {/* ist input */}
-                            <div className="width_33 w_xsm_100">
-                              <label htmlFor="origi" className="fs-xs fw-400 mt-3 black">
-                                Original Price
-                              </label>
-                              <input
-                                type="number"
-                                className="mt-2 product_input fade_grey fw-400"
-                                placeholder="₹ 0.00"
-                                id="origi"
-                                value={originalPrice}
-                                onChange={(e) => setOriginalPrice(e.target.value)}
-                              />
-                            </div>
-                            {/* 2nd input */}
-                            <div className="width_33 w_xsm_100">
-                              <label htmlFor="Discount" className="fs-xs fw-400 mt-3 black">
-                                Discount Type
-                              </label>
-                              <select
-                                className="mt-2 product_input  fade_grey fw-400"
-                                id="Discount"
-                                value={discountType}
-                                onChange={(e) => {
-                                  setDiscountType(e.target.value);
-                                  setDiscount(0);
-                                }}>
-                                <option
-                                  className="mt-2 product_input fade_grey fw-400"
-                                  value="Amount">
-                                  Amount
-                                </option>
-                                <option
-                                  className="mt-2 product_input fade_grey fw-400"
-                                  value="Percentage">
-                                  Percentage
-                                </option>
-                              </select>
-                            </div>
-                            {/* 3rd input */}
-                            <div className="width_33 w_xsm_100">
-                              <label htmlFor="ddisc" className="fs-xs fw-400 mt-3 black">
-                                Discount
-                              </label>
-                              <input
-                                type="number"
-                                className="mt-2 product_input fade_grey fw-400"
-                                placeholder={discountType !== 'Percentage' ? '₹ 0.00' : '%'}
-                                id="ddisc"
-                                value={discount}
-                                onChange={(e) => {
-                                  if (discountType === 'Percentage') {
-                                    if (e.target.value < 101 && e.target.value >= 0) {
-                                      setDiscount(e.target.value);
-                                    }
-                                  } else {
-                                    setDiscount(e.target.value);
-                                  }
-                                }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                     {/* images  */}
                     <div className="product_shadow bg_white p-3 mt-4">
@@ -490,7 +511,7 @@ const AddProduct = () => {
                           hidden
                           accept="/*"
                           multiple
-                          onChange={handelUpload22}
+                          onChange={handelUploadImages}
                         />
                         {imageUpload22.map((img, index) => (
                           <div className=" d-flex flex-wrap">
@@ -504,7 +525,7 @@ const AddProduct = () => {
                                 className="position-absolute top-0 end-0 cursor_pointer p-1"
                                 src={deleteicon}
                                 alt="deleteicon"
-                                onClick={() => handleDelete22(index)}
+                                onClick={() => handleDeleteImages(index)}
                               />
                             </div>
                           </div>
@@ -555,9 +576,9 @@ const AddProduct = () => {
                         <label className="check fw-400 fs-sm black mb-0">
                           Yes
                           <input
-                            onChange={() => setDelivery('yes')}
+                            onChange={() => setFreeDelivery('yes')}
                             type="radio"
-                            checked={delivery === 'yes'}
+                            checked={Freedelivery === 'yes'}
                           />
                           <span className="checkmark"></span>
                         </label>
@@ -566,9 +587,9 @@ const AddProduct = () => {
                         <label className="check fw-400 fs-sm black mb-0">
                           No
                           <input
-                            onChange={() => setDelivery('no')}
+                            onChange={() => setFreeDelivery('no')}
                             type="radio"
-                            checked={delivery === 'no'}
+                            checked={Freedelivery === 'no'}
                           />
                           <span className="checkmark"></span>
                         </label>
@@ -606,7 +627,6 @@ const AddProduct = () => {
                         type="text"
                         className="black fw-400 border-0 outline_none bg-white"
                         placeholder="50"
-                        disabled
                         disa
                         bled
                         id="total"
@@ -656,7 +676,7 @@ const AddProduct = () => {
                     <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
                       <div className="product_input">
                         <p className="fade_grey fw-400 w-100 mb-0 text-start">
-                          {selectedCategory ? selectedCategory.name : 'Select category'}
+                          {selectedCategory ? selectedCategory.title : 'Select Category'}
                         </p>
                       </div>
                     </Dropdown.Toggle>
@@ -666,24 +686,28 @@ const AddProduct = () => {
                         <div className="d-flex align-items-center product_input position-sticky top-0">
                           <img src={SearchIcon} alt="SearchIcon" />
                           <input
-                            onChange={handleInputChange}
+                            onChange={(e) => setSearchvalue(e.target.value)}
                             placeholder="search for category"
                             className="fade_grey fw-400 border-0 outline_none ms-2 w-100"
                             type="text"
                           />
                         </div>
                         <div>
-                          {filtereddata.map((category) => (
+                          {data.filter((items) => {
+                            return (
+                              searchvalue.toLowerCase() === '' ? items : (items.title.toLowerCase().includes(searchvalue))
+                            )
+                          }).map((category) => (
                             <Dropdown.Item>
                               <div
-                                className={`d-flex justify-content-between ${
-                                  selectedCategory && selectedCategory.name === category.name
-                                    ? 'selected'
-                                    : ''
-                                }`}
-                                onClick={() => handleSelectCategory(category)}>
-                                <p className="fs-xs fw-400 black mb-0">{category.name}</p>
-                                {selectedCategory && selectedCategory.name === category.name && (
+                                className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
+                                  ? 'selected'
+                                  : ''
+                                  }`}
+                                onClick={() => handleSelectCategory(category)}
+                              >
+                                <p className="fs-xs fw-400 black mb-0">{category.title}</p>
+                                {selectedCategory && selectedCategory.id === category.id && (
                                   <img src={savegreenicon} alt="savegreenicon" />
                                 )}
                               </div>

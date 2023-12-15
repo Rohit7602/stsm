@@ -8,10 +8,11 @@ import delete_icon from '../Images/svgs/delte.svg';
 import updown_icon from '../Images/svgs/arross.svg';
 import Modifyproduct from './Modifyproduct';
 import { collection, doc, getDocs, deleteDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CategoryItems } from '../Common/Helper';
+import { ref, getStorage, deleteObject } from 'firebase/storage';
 const Categories = () => {
   const [data, setData] = useState([]);
   const [mainCategoryies, setMainCategory] = useState([]);
@@ -62,9 +63,15 @@ const Categories = () => {
      Delete functionality start 
    *********************************************   **/
 
-  async function handleDelete(id) {
+  async function handleDelete(id, image) {
+
     try {
       await deleteDoc(doc(db, 'sub_categories', id)).then(() => {
+        if (image.length != 0) {
+          var st = getStorage();
+          var reference = ref(st, image)
+          deleteObject(reference)
+        }
         setData(data.filter((item) => item.id !== id));
       });
     } catch (error) {
@@ -147,14 +154,14 @@ const Categories = () => {
     *********************************************   **/
 
 
-  //  get parent category  code start from here 
+  //  get parent category  function  start from here 
 
   const getParentCategoryName = (catID) => {
     const mainCategory = mainCategoryies.find((category) => category.id === catID);
     return mainCategory ? mainCategory.title : '';
   };
 
-  //  get parent category  code end  from here
+  //  get parent category  function  end  from here
 
 
   return (
@@ -224,7 +231,14 @@ const Categories = () => {
                       <td className="py-3 ps-3">
                         <div className="d-flex align-items-center gap-3">
                           <label class="check1 fw-400 fs-sm black mb-0">
-                            {value.title}
+                            <div className="d-flex align-items-center">
+                              <div className="w_40">
+                                <img src={value.image} alt="categoryImg" />
+                              </div>
+                              <div className="ps-3 ms-1">
+                                <p className="fw-400 fs-sm black mb-0">{value.title}</p>
+                              </div>
+                            </div>
                             <input type="checkbox" checked={value.checked || false}
                               onChange={() => handleCheckboxChange(index)} />
                             <span class="checkmark"></span>
@@ -271,7 +285,7 @@ const Categories = () => {
                               <div class="dropdown-item" href="#">
                                 <div className="d-flex align-items-center categorie_dropdown_options">
                                   <img src={pencil_icon} alt="" />
-                                  <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
+                                  <p className="fs-sm fw-400 black mb-0 ms-2">Edit Category</p>
                                 </div>
                               </div>
                             </li>
@@ -288,7 +302,7 @@ const Categories = () => {
                             <li>
                               <div class="dropdown-item" href="#">
                                 <div className="d-flex align-items-center categorie_dropdown_options" onClick={() => {
-                                  handleDelete(value.id);
+                                  handleDelete(value.id, value.image);
                                 }}>
                                   <img src={delete_icon} alt="" />
                                   <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>

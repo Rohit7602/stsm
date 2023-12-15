@@ -14,8 +14,8 @@ import Modifyproduct from './Modifyproduct';
 const ProductListComponent = () => {
   const [selectedProduct, setselectedProduct] = useState(null);
   const [data, setData] = useState([]);
- 
- 
+
+
   // checkbox all functionlatiy start from here
   const [selectAll, setSelectAll] = useState(false);
   const [individualCheckboxes, setIndividualCheckboxes] = useState(
@@ -156,7 +156,7 @@ const ProductListComponent = () => {
                         <h3 className="fs-xs fw-400 black mb-0">{value.shortDescription}</h3>
                       </td>
                       <td className="p-3">
-                        <h3 className="fs-sm fw-400 black mb-0">{value.categories}</h3>
+                        <h3 className="fs-sm fw-400 black mb-0">{value.categories.name}</h3>
                       </td>
                       <td className="p-3">
                         <h3 className="fs-sm fw-400 black mb-0 stock_bg white_space_nowrap">

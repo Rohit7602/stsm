@@ -56,7 +56,7 @@ const NewCategory = () => {
       } else {
         setLoaderstatus(true);
         const filename = Math.floor(Date.now() / 1000) + '-' + imageupload.name;
-        const storageRef = ref(storage, `/Main-category/${filename}`);
+        const storageRef = ref(storage, `/Sub-categories/${filename}`);
         const upload = await uploadBytes(storageRef, imageupload);
         const imageUrl = await getDownloadURL(storageRef);
 
