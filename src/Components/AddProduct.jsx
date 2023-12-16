@@ -22,16 +22,6 @@ const AddProduct = () => {
   const [shortDes, setShortDes] = useState('');
   const [longDes, setLongDes] = useState('');
   const [varient, setVarient] = useState(false);
-  const [variants, setVariants] = useState([
-    {
-      id: 1,
-      value: 'XL',
-      originalPrice: 0,
-      discountType: 'Amount',
-      discount: 0,
-    },
-  ]);
-  const [varientvalue, setVarientvalue] = useState('M');
   const [originalPrice, setOriginalPrice] = useState('');
   const [discountType, setDiscountType] = useState('Amount');
   const [deliveryCharges, setDeliveryCharges] = useState(0);
@@ -73,26 +63,7 @@ const AddProduct = () => {
     setSelectedCategory(category);
     setCatval(category.name);
   };
-  const handleAddVariant = () => {
-    const newVariant = {
-      id: variants.length + 1,
-      value: '',
-      originalPrice: 0,
-      discountType: 'Amount',
-      discount: 0,
-    };
-    setVariants([...variants, newVariant]);
-  };
 
-  const handleDeleteVariant = (id) => {
-    const updatedVariants = variants.filter((variant) => variant.id !== id);
-    setVariants(updatedVariants);
-  };
-  const handleVariantValueChange = (id, newValue) => {
-    setVariants((prevVariants) =>
-      prevVariants.map((variant) => (variant.id === id ? { ...variant, value: newValue } : variant))
-    );
-  };
   const pubref = useRef();
   const hidref = useRef();
 
@@ -322,95 +293,81 @@ const AddProduct = () => {
                         <div className="text-end">
                           <button
                             type="button"
-                            onClick={handleAddVariant}
                             className="fs-2sm fw-400 color_green add_varient_btn">
                             +Add Varient
                           </button>
                         </div>
                       ) : null}
                       {varient === true ? (
-                        variants.map((variant) => (
-                          <div key={variant.id} className="varient_form_border">
-                            <div className=" d-flex align-items-center justify-content-between">
+                        <div className="varient_form_border">
+                          <div className=" d-flex align-items-center justify-content-between">
+                            <input className="varient_value fs-2sm fw-400 color_red" type="text" value={"XL"} />
+                            <img src={deleteicon} alt="deleteicon" />
+                          </div>
+                          <div className="d-flex flex-column flex-sm-row gap-3">
+                            {/* ist input */}
+                            <div className="width_33 w_xsm_100">
+                              <label htmlFor="origi" className="fs-xs fw-400 mt-3 black">
+                                Original Price
+                              </label>
                               <input
-                                onChange={(e) =>
-                                  handleVariantValueChange(variant.id, e.target.value)
-                                }
-                                className="varient_value fs-2sm fw-400 color_red"
-                                type="text"
-                                value={variant.value}
-                              />
-                              <img
-                                onClick={() => handleDeleteVariant(variant.id)}
-                                src={deleteicon}
-                                alt="deleteicon"
-                              />
+                                type="number"
+                                className="mt-2 product_input fade_grey fw-400"
+                                placeholder="₹ 0.00"
+                                id="origi"
+                                value={originalPrice}
+                                onChange={(e) => setOriginalPrice(e.target.value)}
+                              />{' '}
                             </div>
-                            <div className="d-flex flex-column flex-sm-row gap-3">
-                              {/* ist input */}
-                              <div className="width_33 w_xsm_100">
-                                <label htmlFor="origi" className="fs-xs fw-400 mt-3 black">
-                                  Original Price
-                                </label>
-                                <input
-                                  type="number"
+                            {/* 2nd input */}
+                            <div className="width_33 w_xsm_100">
+                              <label htmlFor="Discount" className="fs-xs fw-400 mt-3 black">
+                                Discount Type
+                              </label>{' '}
+                              <select
+                                className="mt-2 product_input  fade_grey fw-400"
+                                id="Discount"
+                                value={discountType}
+                                onChange={(e) => {
+                                  setDiscountType(e.target.value);
+                                  setDiscount(0);
+                                }}>
+                                <option
                                   className="mt-2 product_input fade_grey fw-400"
-                                  placeholder="₹ 0.00"
-                                  id="origi"
-                                  value={originalPrice}
-                                  onChange={(e) => setOriginalPrice(e.target.value)}
-                                />{' '}
-                              </div>
-                              {/* 2nd input */}
-                              <div className="width_33 w_xsm_100">
-                                <label htmlFor="Discount" className="fs-xs fw-400 mt-3 black">
-                                  Discount Type
-                                </label>{' '}
-                                <select
-                                  className="mt-2 product_input  fade_grey fw-400"
-                                  id="Discount"
-                                  value={discountType}
-                                  onChange={(e) => {
-                                    setDiscountType(e.target.value);
-                                    setDiscount(0);
-                                  }}>
-                                  <option
-                                    className="mt-2 product_input fade_grey fw-400"
-                                    value="Amount">
-                                    Amount
-                                  </option>
-                                  <option
-                                    className="mt-2 product_input fade_grey fw-400"
-                                    value="Percentage">
-                                    Percentage
-                                  </option>
-                                </select>
-                              </div>
-                              {/* 3rd input */}
-                              <div className="width_33 w_xsm_100">
-                                <label htmlFor="ddisc" className="fs-xs fw-400 mt-3 black">
-                                  Discount
-                                </label>
-                                <input
-                                  type="number"
+                                  value="Amount">
+                                  Amount
+                                </option>
+                                <option
                                   className="mt-2 product_input fade_grey fw-400"
-                                  placeholder={discountType !== 'Percentage' ? '₹ 0.00' : '%'}
-                                  id="ddisc"
-                                  value={discount}
-                                  onChange={(e) => {
-                                    if (discountType === 'Percentage') {
-                                      if (e.target.value < 101 && e.target.value >= 0) {
-                                        setDiscount(e.target.value);
-                                      }
-                                    } else {
+                                  value="Percentage">
+                                  Percentage
+                                </option>
+                              </select>
+                            </div>
+                            {/* 3rd input */}
+                            <div className="width_33 w_xsm_100">
+                              <label htmlFor="ddisc" className="fs-xs fw-400 mt-3 black">
+                                Discount
+                              </label>
+                              <input
+                                type="number"
+                                className="mt-2 product_input fade_grey fw-400"
+                                placeholder={discountType !== 'Percentage' ? '₹ 0.00' : '%'}
+                                id="ddisc"
+                                value={discount}
+                                onChange={(e) => {
+                                  if (discountType === 'Percentage') {
+                                    if (e.target.value < 101 && e.target.value >= 0) {
                                       setDiscount(e.target.value);
                                     }
-                                  }}
-                                />{' '}
-                              </div>
+                                  } else {
+                                    setDiscount(e.target.value);
+                                  }
+                                }}
+                              />{' '}
                             </div>
                           </div>
-                        ))
+                        </div>
                       ) : (
                         <div>
                           <h2 className="fw-400 fs-2sm black mb-0">Pricing</h2>
