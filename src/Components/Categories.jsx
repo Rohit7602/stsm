@@ -265,7 +265,6 @@ const Categories = () => {
                             data-bs-toggle="dropdown"
                             aria-expanded="false">
                             <img
-
                               src={dropdownDots}
                               alt="dropdownDots"
                             />

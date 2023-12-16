@@ -160,7 +160,7 @@ const ProductListComponent = () => {
                       </td>
                       <td className="p-3">
                         <h3 className="fs-sm fw-400 black mb-0 stock_bg white_space_nowrap">
-                          50 in Stock
+                          {value.totalStock}
                         </h3>
                       </td>
                       <td className="p-3">
