@@ -210,6 +210,8 @@ const Categories = () => {
       Checbox  functionality end 
     *********************************************   **/
 
+  
+
   /*  *******************************
       get count of items in maincategory   functionality start 
    *********************************************   **/

@@ -21,16 +21,7 @@ export default function Topbar({ setOpen, open }) {
               fill="black"
             />
           </svg>
-          <form className="form_box   mx-2 d-flex p-2 align-items-center" action="">
-            <div className="d-flex">
-              <img src={SearchIcon} alt=" search icon" />
-            </div>
-            <input
-              type="text"
-              className="bg-transparent  border-0 px-2 fw-400  outline-none"
-              placeholder="Search in the admin panel"
-            />
-          </form>
+
         </div>
         <svg
           width="24"

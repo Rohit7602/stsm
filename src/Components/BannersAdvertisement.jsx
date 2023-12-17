@@ -216,7 +216,6 @@ const BannersAdvertisement = () => {
                 <h3 className="fs-sm fw-400  black mb-0">Large Banner</h3>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
-                <h2 className="fw-400 fs-sm black mb-0">Single Medium Banner</h2>
 
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white">
                   {/*Single Medium Banner */}
@@ -291,7 +290,6 @@ const BannersAdvertisement = () => {
                 <h3 className="fs-sm fw-400  black mb-0">Banner Slider for Sales / Offers</h3>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
-                <h2 className="fw-400 fs-sm black mb-0">Banner Slider 1</h2>
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white">
                   {/*Single Medium Banner */}
                   <div className="bg_white pe-1">
@@ -329,7 +327,6 @@ const BannersAdvertisement = () => {
                 <h3 className="fs-sm fw-400  black mb-0">Small Patti Banner</h3>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
-                <h2 className="fw-400 fs-sm black mb-0">Single Small Banner</h2>
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2 justify-content-between">
                   {/*Single Medium Banner */}
                   <div className="bg_white">
@@ -421,7 +418,6 @@ const BannersAdvertisement = () => {
                 <h3 className="fs-sm fw-400  black mb-0">Banner Slider for Animal Suppliments</h3>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
-                <h2 className="fw-400 fs-sm black mb-0">Banner Slider 1</h2>
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2">
                   {/*Single Medium Banner */}
                   <div className="bg_white">
@@ -460,7 +456,6 @@ const BannersAdvertisement = () => {
                 <h3 className="fs-sm fw-400  black mb-0">Slider for Men</h3>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
-                <h2 className="fw-400 fs-sm black mb-0">Banner Slider 1</h2>
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2">
                   {/*Single Medium Banner */}
                   <div className="bg_white">
@@ -498,7 +493,6 @@ const BannersAdvertisement = () => {
                 <h3 className="fs-sm fw-400  black mb-0">Slider for Women</h3>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
-                <h2 className="fw-400 fs-sm black mb-0">Banner Slider 1</h2>
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2">
                   {/*Single Medium Banner */}
                   <div className="bg_white">
@@ -536,7 +530,6 @@ const BannersAdvertisement = () => {
                 <h3 className="fs-sm fw-400  black mb-0">Slider for Electronics</h3>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
-                <h2 className="fw-400 fs-sm black mb-0">Banner Slider 1</h2>
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2">
                   {/*Single Medium Banner */}
                   <div className="bg_white">

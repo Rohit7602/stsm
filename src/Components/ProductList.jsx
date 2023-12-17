@@ -6,7 +6,8 @@ import eye_icon from '../Images/svgs/eye.svg';
 import pencil_icon from '../Images/svgs/pencil.svg';
 import delete_icon from '../Images/svgs/delte.svg';
 import updown_icon from '../Images/svgs/arross.svg';
-import { collection, doc, getDocs, deleteDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, deleteDoc, updateDoc } from 'firebase/firestore';
+import { deleteObject, getStorage, ref } from 'firebase/storage';
 import { db } from '../firebase';
 import { Link, NavLink } from 'react-router-dom';
 import Modifyproduct from './Modifyproduct';
@@ -16,30 +17,52 @@ const ProductListComponent = () => {
   const [data, setData] = useState([]);
 
 
-  // checkbox all functionlatiy start from here
+  /*  *******************************
+   checkbox functionality start 
+ *********************************************   **/
   const [selectAll, setSelectAll] = useState(false);
-  const [individualCheckboxes, setIndividualCheckboxes] = useState(
-    Array.from({ length: data.length }, () => false)
-  );
+
+
+  useEffect(() => {
+    // Check if all checkboxes are checked
+    const allChecked = data.every((item) => item.checked);
+    setSelectAll(allChecked);
+  }, [data]);
+
+  // Main checkbox functionality start from here 
 
   const handleMainCheckboxChange = () => {
+    const updatedData = data.map((item) => ({
+      ...item,
+      checked: !selectAll,
+    }));
+    setData(updatedData);
     setSelectAll(!selectAll);
-    setIndividualCheckboxes(Array.from({ length: data.length }, () => !selectAll));
   };
 
-  const handleIndividualCheckboxChange = (index) => {
-    const newCheckboxes = [...individualCheckboxes];
-    newCheckboxes[index] = !newCheckboxes[index];
-    setIndividualCheckboxes(newCheckboxes);
-    if (newCheckboxes.every((checkbox) => checkbox)) {
-      setSelectAll(true);
-    } else if (newCheckboxes.some((checkbox) => !checkbox)) {
-      setSelectAll(false);
-    }
-    console.log(setSelectAll);
+  // Datacheckboxes functionality strat from here 
+  const handleCheckboxChange = (index) => {
+    const updatedData = [...data];
+    updatedData[index].checked = !data[index].checked;
+    setData(updatedData);
+
+    // Check if all checkboxes are checked
+    const allChecked = updatedData.every((item) => item.checked);
+    setSelectAll(allChecked);
   };
 
-  // checbox all functionality end  here
+
+
+  /*  *******************************
+      Checbox  functionality end 
+    *********************************************   **/
+
+  /**
+   ******************************************************
+      Fetching Product list  Data functionality start from here 
+  *************************************************
+     */
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,15 +81,86 @@ const ProductListComponent = () => {
     fetchData();
   }, []);
 
-  async function handleDelete(id) {
+
+  /**
+   ******************************************************
+      Fetching Product list  Data functionality start from here 
+  *************************************************
+     */
+
+
+  /**
+   ******************************************************
+      Change Status  functionality start from here 
+  *************************************************
+     */
+
+  async function handleStatus(id, status) {
     try {
+      // Toggle the status between 'publish' and 'hidden'
+      const newStatus = status === 'hidden' ? 'published' : 'hidden';
+      await updateDoc(doc(db, 'products', id), {
+        status: newStatus,
+      });
+      alert("status Change succesffuly ")
+      let updatedData = []
+      const snapshots = await getDocs(collection(db, 'products'));
+      snapshots.forEach((data) => {
+        updatedData.push({ id: data.id, ...data.data() })
+
+      })
+      setData([...updatedData])
+
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+
+
+
+  /**
+   ******************************************************
+      Change Status  functionality end  here 
+  *************************************************
+     */
+
+
+
+
+
+
+  /**
+   ******************************************************
+      Handle Delete functionality start from here 
+  *************************************************
+     */
+
+  async function handleDelete(id, image) {
+    try {
+      var st = getStorage();
       await deleteDoc(doc(db, 'products', id)).then(() => {
+
+        for (const images of image) {
+          if (image.length !== 0) {
+            var reference = ref(st, images)
+            deleteObject(reference)
+          }
+        }
         setData(data.filter((item) => item.id !== id));
       });
     } catch (error) {
       console.log(error);
     }
   }
+
+
+
+  /**
+   ******************************************************
+      Handle Delete functionality end from here 
+  *************************************************
+     */
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
@@ -146,8 +240,8 @@ const ProductListComponent = () => {
                           </div>
                           <input
                             type="checkbox"
-                            checked={individualCheckboxes[index]}
-                            onChange={() => handleIndividualCheckboxChange(index)}
+                            checked={value.checked || false}
+                            onChange={() => handleCheckboxChange(index)}
                           />
                           <span className="checkmark me-5"></span>
                         </label>
@@ -167,7 +261,7 @@ const ProductListComponent = () => {
                         <h3 className="fs-sm fw-400 black mb-0">{value.status}</h3>
                       </td>
                       <td className="p-3">
-                        <h3 className="fs-sm fw-400 black mb-0">{value.originalPrice}</h3>
+                        <h3 className="fs-sm fw-400 black mb-0">{value.varients[0].originalPrice}</h3>
                       </td>
                       <td className="text-center">
                         <div class="dropdown">
@@ -205,17 +299,17 @@ const ProductListComponent = () => {
                               </div>
                             </li>
                             <li>
-                              <div class="dropdown-item" href="#">
+                              <div class="dropdown-item" href="#" onClick={() => handleStatus(value.id, value.status)}>
                                 <div className="d-flex align-items-center categorie_dropdown_options">
                                   <img src={updown_icon} alt="" />
-                                  <p className="fs-sm fw-400 green mb-0 ms-2">Change to Hidden</p>
+                                  <p className="fs-sm fw-400 green mb-0 ms-2">{value.status === 'hidden' ? 'change to  publish' : 'Change to hidden'}</p>
                                 </div>
                               </div>
                             </li>
                             <li>
                               <div class="dropdown-item" href="#">
                                 <div
-                                  onClick={() => handleDelete(value.id)}
+                                  onClick={() => handleDelete(value.id, value.productImages)}
                                   className="d-flex align-items-center categorie_dropdown_options">
                                   <img src={delete_icon} alt="" />
                                   <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
