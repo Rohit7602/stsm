@@ -175,6 +175,17 @@ body {
   z-index: 1;
 }
 /* --------------------Page-css---------------- */
+::-webkit-scrollbar {
+  width: 10px;
+  background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-brown);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background-color: rgba(128, 128, 128, 0.175);
+}
 .admin_btn {
   padding: 10px 10px !important;
   cursor: auto !important;
@@ -429,7 +440,6 @@ body {
 
 /* addsmall_btn */
 .addsmall_btn {
-  width: 450px;
   height: 70px;
   border-radius: 5px;
   border: 1px dashed var(--Other-Colors, #50b848);
