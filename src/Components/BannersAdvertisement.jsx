@@ -10,7 +10,9 @@ import uploadIcon from '../Images/svgs/upload.svg';
 import checkBlack from '../Images/svgs/check_black_icon.svg';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage, db } from '../firebase';
-import { getDocs, collection } from 'firebase/firestore';
+import { getDocs, collection, addDoc } from 'firebase/firestore';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -31,63 +33,272 @@ const BannersAdvertisement = () => {
 
 
 
-  async function imageSet(file) {
+  // async function imageSet(file) {
+  //   try {
+  //     const name = Math.floor(Date.now() / 1000) + '-' + file.name;
+  //     const storageRef = ref(storage, `banner/${file.name}`);
+  //     const uploadTask = await uploadBytesResumable(storageRef, file);
+  //     const url = await getDownloadURL(storageRef);
+  //     console.log(url);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+
+
+
+  // }
+
+
+
+
+
+
+  /*
+ *********************************************************
+ Large Banner   functionaltiy start from here 
+ 
+ */
+
+
+  const [selectedImagesLargeBanner, setSelectedImagesLargeBanner] = useState([null, null]);
+
+  const handleUploadLargeBanner = (index, e) => {
+    const newImages = [...selectedImagesLargeBanner];
+    newImages[index] = e.target.files[0];
+    setSelectedImagesLargeBanner(newImages);
+  };
+
+  const handleDeleteLargeBanner = (index) => {
+    const newImages = [...selectedImagesLargeBanner];
+    newImages[index] = null;
+    setSelectedImagesLargeBanner(newImages);
+  };
+
+
+  async function handleSaveLargeBanner() {
     try {
-      const name = Math.floor(Date.now() / 1000) + '-' + file.name;
-      const storageRef = ref(storage, `banner/${file.name}`);
-      const uploadTask = await uploadBytesResumable(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      console.log(url);
+      if (selectedImagesLargeBanner.length === 2 && selectedImagesLargeBanner.every(Boolean)) {
+        const imagelinks = [];
+
+        for await (const file of selectedImagesLargeBanner) {
+          const filename = Math.floor(Date.now() / 1000) + '-' + file.name;
+          const storageRef = ref(storage, `banner/${filename}`);
+          const upload = await uploadBytesResumable(storageRef, file);
+          const imageUrl = await getDownloadURL(storageRef);
+          imagelinks.push(imageUrl);
+        }
+
+        if (imagelinks.length > 0) {
+          try {
+            const docRef = await addDoc(collection(db, 'Banner'), {
+              title: 'Large banner',
+              imgUrl: imagelinks,
+            });
+            toast.success('Large Banner Added Successfully !', {
+              position: toast.POSITION.TOP_RIGHT,
+            });
+            setSelectedImagesLargeBanner([null, null])
+
+          } catch (error) {
+            console.log(error)
+
+          }
+        } else {
+          console.log("No images uploaded");
+        }
+      } else {
+        console.log("Select both images before uploading");
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
 
 
-  const [imageUpload1, setImageUpload1] = useState();
-  const [imageUploadUrl1, setImageUploadUrl1] = useState();
-  function handelUpload1(e) {
-    setImageUpload1(e.target.files[0]);
-  }
-  function handeldelete1() {
-    setImageUpload1(null);
-  }
-
-  function imageSet1() {
-    imageSet(imageUpload1);
-  }
-  function handelBannnersImg(e) {
-    e.preventDefault();
-    console.log(imageUpload1);
-  }
+  /*
+ *********************************************************
+ Large  Banner functionaltiy end  
+ 
+ */
 
 
 
-  // 2
-  const [imageUpload2, setImageUpload2] = useState('');
-  function handelUpload2(e) {
-    setImageUpload2(e.target.files[0]);
+
+  /*  
+  *******************************
+  Small Patti Banner Added functionlaity  start from here 
+  ************************************
+  */
+  const [selectedImagesSmallPatii, setselectedImagesSmallPatii] = useState([null, null, null]);
+
+  const handleUploadSmallPatti = (index, e) => {
+    const newImages = [...selectedImagesSmallPatii];
+    newImages[index] = e.target.files[0];
+    setselectedImagesSmallPatii(newImages);
+  };
+
+  const handleDeleteSmallPatti = (index) => {
+    const newImages = [...selectedImagesSmallPatii];
+    newImages[index] = null;
+    setselectedImagesSmallPatii(newImages);
+  };
+
+
+  async function handleSaveSmallPattiBanner() {
+    try {
+      if (selectedImagesSmallPatii.length === 3 && selectedImagesSmallPatii.every(Boolean)) {
+        const imagelinks = [];
+
+        for await (const file of selectedImagesSmallPatii) {
+          const filename = Math.floor(Date.now() / 1000) + '-' + file.name;
+          const storageRef = ref(storage, `banner/${filename}`);
+          const upload = await uploadBytesResumable(storageRef, file);
+          const imageUrl = await getDownloadURL(storageRef);
+          imagelinks.push(imageUrl);
+        }
+
+        if (imagelinks.length > 0) {
+          try {
+            const docRef = await addDoc(collection(db, 'Banner'), {
+              title: 'Small_Patti banner',
+              imgUrl: imagelinks,
+            });
+            toast.success('SmallPatti Banner  Added Successfully !', {
+              position: toast.POSITION.TOP_RIGHT,
+            });
+            setselectedImagesSmallPatii([null, null, null])
+
+          } catch (error) {
+            console.log(error)
+
+          }
+        } else {
+          console.log("No images uploaded");
+        }
+      } else {
+        console.log("Select all  images before uploading");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
-  function handeldelete2() {
-    setImageUpload2(null);
+
+
+
+  /*
+  *******************************
+  Small Patti Banner Added functionlaity  end here 
+  ************************************
+  */
+
+
+
+
+  /*
+ *********************************************************
+ Sales and offer   Banner functionaltiy start from here 
+ 
+ */
+
+  const [BannerSaleImg, SetBannerSaleImg] = useState('');
+  function handelSaleBannerImg(e) {
+    SetBannerSaleImg(e.target.files[0]);
   }
-  // 3
-  const [imageUpload3, setImageUpload3] = useState('');
-  function handelUpload3(e) {
-    setImageUpload3(e.target.files[0]);
+  function handeldeleteSaleBannerImg() {
+    SetBannerSaleImg(null);
   }
-  function handeldelete3() {
-    setImageUpload3(null);
+
+  async function handleSaveBannerSliderSale() {
+    try {
+      if (BannerSaleImg) {
+        const name = Math.floor(Date.now() / 1000) + '-' + BannerSaleImg.name;
+        const storageRef = ref(storage, `banner/${name}`);
+        const uploadTask = await uploadBytesResumable(storageRef, BannerSaleImg);
+        const url = await getDownloadURL(storageRef);
+        const docRef = await addDoc(collection(db, 'Banner'), {
+          title: 'Sales/Offers',
+          imgUrl: [url],
+        });
+        toast.success('Sale/Offer Banner Added   Successfully !', {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        SetBannerSaleImg(null)
+      } else {
+        console.warn('No image selected for upload');
+      }
+    } catch (error) {
+      console.error('Error uploading image or adding document:', error);
+    }
   }
-  // 4
-  const [imageUpload4, setImageUpload4] = useState('');
-  function handelUpload4(e) {
-    setImageUpload4(e.target.files[0]);
+
+
+
+  /*
+ *********************************************************
+ Sales and offer   Banner functionaltiy end   here 
+ 
+ */
+
+
+
+
+  /*  
+  *********************************************************
+  Animal And it's suplliments Banner functionaltiy start from here 
+  
+  */
+
+  const [AnimalSuplimentsImages, SetAnimalSuplimentsImages] = useState('');
+  function handelAnimalSuplimentImg(e) {
+
+    SetAnimalSuplimentsImages(e.target.files[0]);
   }
-  function handeldelete4() {
-    setImageUpload4(null);
+  function handeldeleteAnimalSupliment() {
+    SetAnimalSuplimentsImages(null);
   }
+
+
+  async function HandleSaveAnimalSuppliments() {
+    try {
+      if (AnimalSuplimentsImages) {
+        const name = Math.floor(Date.now() / 1000) + '-' + AnimalSuplimentsImages.name;
+        const storageRef = ref(storage, `banner/${name}`);
+        const uploadTask = await uploadBytesResumable(storageRef, AnimalSuplimentsImages);
+        const url = await getDownloadURL(storageRef);
+        try {
+          const docRef = await addDoc(collection(db, 'Banner'), {
+            title: 'AnimalSupliments ',
+            imgUrl: [url],
+          });
+          toast.success('Animal Supliments  Banner Added   Successfully !', {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          SetAnimalSuplimentsImages(null)
+
+        } catch (error) {
+          console.log("Error Adding Image To The Database", error);
+
+        }
+      } else {
+        console.warn('No image selected for upload');
+      }
+    } catch (error) {
+      console.error('Error uploading image or adding document:', error);
+    }
+  }
+
+
+  /*
+ *********************************************************
+  Animal And it's suplliments Banner functionaltiy end from here 
+ 
+ */
+
+
+
+
+
 
 
   /** *******************************************************
@@ -133,6 +344,10 @@ const BannersAdvertisement = () => {
 
 
 
+
+
+
+
   /** *******************************************************
      Fetching main categoreis  end 
   */
@@ -140,7 +355,7 @@ const BannersAdvertisement = () => {
 
   return (
     <div className="main_panel_wrapper pb-2  bg_light_grey w-100">
-      <form onSubmit={handelBannnersImg}>
+      <form >
         <div className="banner_advertisement">
           <div className=" d-flex align-items-center justify-content-between  mt-4">
             <h1 className="fw-500  mb-0 black fs-lg">Banners / Advertisement</h1>
@@ -155,7 +370,7 @@ const BannersAdvertisement = () => {
                 <div className="d-flex justify-content-between w-100">
                   <h3 className="fs-sm fw-400 black mb-0">Large Banner</h3>
                   {activeAccordion === '0' ? (
-                    <button
+                    <button onClick={handleSaveLargeBanner}
                       className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 py-1 save_btn fw-400 black me-3"
                       type="submit">
                       <img src={saveicon} alt="saveicon" />
@@ -168,24 +383,24 @@ const BannersAdvertisement = () => {
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white">
                   {/*Single Medium Banner */}
                   <div className="bg_white pe-1">
-                    <input type="file" id="file1" onChange={handelUpload1} hidden />
+                    <input type="file" id="largeBanner1" onChange={(e) => handleUploadLargeBanner(0, e)} hidden />
 
-                    {!imageUpload1 ? (
+                    {!selectedImagesLargeBanner[0] ? (
                       <label
-                        htmlFor="file1"
+                        htmlFor="largeBanner1"
                         className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center">
                         + Add Media
                       </label>
                     ) : (
-                      imageUpload1 && (
+                      selectedImagesLargeBanner[0] && (
                         <div className="position-relative imagemedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(imageUpload1)}
+                            src={URL.createObjectURL(selectedImagesLargeBanner[0])}
                             alt=""
                           />
                           <img
-                            onClick={handeldelete1}
+                            onClick={() => handleDeleteLargeBanner(0)}
                             className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
                             src={deleteicon}
                             alt="deleteicon"
@@ -194,27 +409,26 @@ const BannersAdvertisement = () => {
                       )
                     )}
                   </div>
-                  {/*Single Large Banner */}
                   <div className="mt-3 mt-lg-0">
                     <div className="bg_white ps-2">
-                      <input type="file" id="file2" onChange={handelUpload2} hidden />
+                      <input type="file" id="largeBanner2" onChange={(e) => handleUploadLargeBanner(1, e)} hidden />
 
-                      {!imageUpload2 ? (
+                      {!selectedImagesLargeBanner[1] ? (
                         <label
-                          htmlFor="file2"
+                          htmlFor="largeBanner2"
                           className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center">
                           + Add Media
                         </label>
                       ) : (
-                        imageUpload2 && (
+                        selectedImagesLargeBanner[1] && (
                           <div className="position-relative imagemedia_btn">
                             <img
                               className="w-100 h-100 object-fit-cover"
-                              src={URL.createObjectURL(imageUpload2)}
+                              src={URL.createObjectURL(selectedImagesLargeBanner[1])}
                               alt=""
                             />
                             <img
-                              onClick={handeldelete2}
+                              onClick={() => handleDeleteLargeBanner(1)}
                               className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
                               src={deleteicon}
                               alt="deleteicon"
@@ -227,12 +441,15 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Body>
             </Accordion.Item>
+
+
+            {/* Banner Slider for sales / offers  */}
             <Accordion.Item className="py-1 bg-white rounded" eventKey="1">
               <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
                 <div className="d-flex justify-content-between w-100">
                   <h3 className="fs-sm fw-400  black mb-0">Banner Slider for Sales / Offers</h3>
                   {activeAccordion === '1' ? (
-                    <button
+                    <button onClick={handleSaveBannerSliderSale}
                       className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 py-1 save_btn fw-400 black me-3"
                       type="submit">
                       <img src={saveicon} alt="saveicon" />
@@ -245,24 +462,24 @@ const BannersAdvertisement = () => {
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white">
                   {/*Single Medium Banner */}
                   <div className="bg_white pe-1">
-                    <input type="file" id="file4" onChange={handelUpload4} hidden />
+                    <input type="file" id="file4" onChange={handelSaleBannerImg} hidden />
 
-                    {!imageUpload4 ? (
+                    {!BannerSaleImg ? (
                       <label
                         htmlFor="file4"
                         className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center">
                         + Add Media
                       </label>
                     ) : (
-                      imageUpload4 && (
+                      BannerSaleImg && (
                         <div className="position-relative imagemedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(imageUpload4)}
+                            src={URL.createObjectURL(BannerSaleImg)}
                             alt=""
                           />
                           <img
-                            onClick={handeldelete4}
+                            onClick={handeldeleteSaleBannerImg}
                             className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
                             src={deleteicon}
                             alt="deleteicon"
@@ -274,12 +491,15 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Body>
             </Accordion.Item>
+
+
+            {/* small patti banners  */}
             <Accordion.Item className="py-1 bg-white rounded" eventKey="2">
               <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
                 <div className="d-flex justify-content-between w-100">
                   <h3 className="fs-sm fw-400  black mb-0">Small Patti Banner</h3>
                   {activeAccordion === '2' ? (
-                    <button
+                    <button onClick={handleSaveSmallPattiBanner}
                       className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 py-1 save_btn fw-400 black me-3"
                       type="submit">
                       <img src={saveicon} alt="saveicon" />
@@ -290,26 +510,25 @@ const BannersAdvertisement = () => {
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2 justify-content-between">
-                  {/*Single Medium Banner */}
                   <div className="bg_white w-100">
-                    <input type="file" id="file3" onChange={handelUpload3} hidden />
+                    <input type="file" id="smallPatti1" onChange={(e) => handleUploadSmallPatti(0, e)} hidden />
 
-                    {!imageUpload3 ? (
+                    {!selectedImagesSmallPatii[0] ? (
                       <label
-                        htmlFor="file3"
+                        htmlFor="smallPatti1"
                         className="color_green cursor_pointer fs-sm addsmall_btn d-flex justify-content-center align-items-center">
                         + Add Media
                       </label>
                     ) : (
-                      imageUpload3 && (
+                      selectedImagesSmallPatii[0] && (
                         <div className="position-relative imagesmallmedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(imageUpload3)}
+                            src={URL.createObjectURL(selectedImagesSmallPatii[0])}
                             alt=""
                           />
                           <img
-                            onClick={handeldelete3}
+                            onClick={() => handleDeleteSmallPatti(0)}
                             className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
                             src={deleteicon}
                             alt="deleteicon"
@@ -319,24 +538,24 @@ const BannersAdvertisement = () => {
                     )}
                   </div>
                   <div className="bg_white w-100">
-                    <input type="file" id="file3" onChange={handelUpload3} hidden />
+                    <input type="file" id="smallPatti2" onChange={(e) => handleUploadSmallPatti(1, e)} hidden />
 
-                    {!imageUpload3 ? (
+                    {!selectedImagesSmallPatii[1] ? (
                       <label
-                        htmlFor="file3"
+                        htmlFor="smallPatti2"
                         className="color_green cursor_pointer fs-sm addsmall_btn d-flex justify-content-center align-items-center">
                         + Add Media
                       </label>
                     ) : (
-                      imageUpload3 && (
+                      selectedImagesSmallPatii[1] && (
                         <div className="position-relative imagesmallmedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(imageUpload3)}
+                            src={URL.createObjectURL(selectedImagesSmallPatii[1])}
                             alt=""
                           />
                           <img
-                            onClick={handeldelete3}
+                            onClick={() => selectedImagesSmallPatii[1]}
                             className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
                             src={deleteicon}
                             alt="deleteicon"
@@ -346,24 +565,24 @@ const BannersAdvertisement = () => {
                     )}
                   </div>
                   <div className="bg_white w-100">
-                    <input type="file" id="file3" onChange={handelUpload3} hidden />
+                    <input type="file" id="smallPatti3" onChange={(e) => handleUploadSmallPatti(2, e)} hidden />
 
-                    {!imageUpload3 ? (
+                    {!selectedImagesSmallPatii[2] ? (
                       <label
-                        htmlFor="file3"
+                        htmlFor="smallPatti3"
                         className="color_green cursor_pointer fs-sm addsmall_btn d-flex justify-content-center align-items-center">
                         + Add Media
                       </label>
                     ) : (
-                      imageUpload3 && (
+                      selectedImagesSmallPatii[2] && (
                         <div className="position-relative imagesmallmedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(imageUpload3)}
+                            src={URL.createObjectURL(selectedImagesSmallPatii[2])}
                             alt=""
                           />
                           <img
-                            onClick={handeldelete3}
+                            onClick={() => handleDeleteSmallPatti(2)}
                             className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
                             src={deleteicon}
                             alt="deleteicon"
@@ -375,12 +594,14 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Body>
             </Accordion.Item>
+            {/* banner slider for animal suppliments */}
+
             <Accordion.Item className="py-1 bg-white rounded" eventKey="3">
               <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
                 <div className="d-flex justify-content-between w-100">
                   <h3 className="fs-sm fw-400  black mb-0">Banner Slider for Animal Suppliments</h3>
                   {activeAccordion === '3' ? (
-                    <button
+                    <button onClick={HandleSaveAnimalSuppliments}
                       className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 py-1 save_btn fw-400 black me-3"
                       type="submit">
                       <img src={saveicon} alt="saveicon" />
@@ -391,26 +612,26 @@ const BannersAdvertisement = () => {
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2">
-                  {/*Single Medium Banner */}
-                  <div className="bg_white">
-                    <input type="file" id="file4" onChange={handelUpload4} hidden />
 
-                    {!imageUpload4 ? (
+                  <div className="bg_white">
+                    <input type="file" id="animal_suppliments" onChange={handelAnimalSuplimentImg} hidden />
+
+                    {!AnimalSuplimentsImages ? (
                       <label
-                        htmlFor="file4"
+                        htmlFor="animal_suppliments"
                         className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center">
                         + Add Media
                       </label>
                     ) : (
-                      imageUpload4 && (
+                      AnimalSuplimentsImages && (
                         <div className="position-relative imagemedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(imageUpload4)}
+                            src={URL.createObjectURL(AnimalSuplimentsImages)}
                             alt=""
                           />
                           <img
-                            onClick={handeldelete4}
+                            onClick={handeldeleteAnimalSupliment}
                             className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
                             src={deleteicon}
                             alt="deleteicon"
@@ -423,7 +644,7 @@ const BannersAdvertisement = () => {
               </Accordion.Body>
             </Accordion.Item>
             <p className="fs-sm fw-700 black pt-1 mt-3">Categorized Banners</p>
-            {MainCategories.map((data, index) => {
+            {/* {MainCategories.map((data, index) => {
               return (
                 <Accordion.Item className="py-1 bg-white rounded" eventKey={index}>
                   <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
@@ -441,7 +662,6 @@ const BannersAdvertisement = () => {
                   </Accordion.Header>
                   <Accordion.Body className="py-2 px-3">
                     <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2">
-                      {/*Single Medium Banner */}
                       <div className="bg_white">
                         <input type="file" id="file4" onChange={handelUpload4} hidden />
 
@@ -474,11 +694,15 @@ const BannersAdvertisement = () => {
                 </Accordion.Item>
               )
             })
-            }
+            } */}
           </Accordion>
         </div>
       </form>
+
+      <ToastContainer />
     </div>
+
+
   );
 };
 

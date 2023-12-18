@@ -137,6 +137,7 @@ const AddProduct = () => {
           const upload = await uploadBytes(storageRef, file);
           const imageUrl = await getDownloadURL(storageRef);
           imagelinks.push(imageUrl);
+          
         }
 
         const docRef = await addDoc(collection(db, 'products'), {
