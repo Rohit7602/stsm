@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
+import saveicon from '../Images/svgs/saveicon.svg';
 import { Col, Row } from 'react-bootstrap';
 import SearchIcon from '../Images/svgs/search.svg';
 import deleteicon from '../Images/svgs/deleteicon.svg';
 import uploadIcon from '../Images/svgs/upload.svg';
 import checkBlack from '../Images/svgs/check_black_icon.svg';
-import { ref, uploadBytesResumable, getDownloadURL, } from 'firebase/storage';
-import { db, storage } from '../firebase';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { storage, db } from '../firebase';
 import { getDocs, collection } from 'firebase/firestore';
 
 
+
+
 const BannersAdvertisement = () => {
+  const [activeAccordion, setActiveAccordion] = useState(null);
 
   const handleAccordionSelect = (key) => {
     setActiveAccordion(key);
   };
+
+
 
 
   async function imageSet(file) {
@@ -28,6 +34,9 @@ const BannersAdvertisement = () => {
       console.log(error);
     }
   }
+
+
+
 
 
 
@@ -46,10 +55,10 @@ const BannersAdvertisement = () => {
   }
   function handelBannnersImg(e) {
     e.preventDefault();
-    console.log(imageUpload1)
+    console.log(imageUpload1);
   }
 
-  
+
 
   // 2
   const [imageUpload2, setImageUpload2] = useState('');
@@ -77,22 +86,25 @@ const BannersAdvertisement = () => {
   }
 
 
-  /**  *************************************************
-      fecthing categories here 
-    *************************************************
+  /** *******************************************************
+      Fetching main categoreis 
    */
-  const [MainCategories, SetMainCategories] = useState([])
+
+  const [MainCategories, SetMainCategories] = useState([]);
+
+
   useEffect(() => {
     const fetchData = async () => {
       let list = [];
       try {
         const querySnapshot = await getDocs(collection(db, 'categories'));
         querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
           list.push({ id: doc.id, ...doc.data() });
         });
         SetMainCategories([...list]);
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     };
     fetchData();
@@ -103,13 +115,23 @@ const BannersAdvertisement = () => {
 
 
 
-  /**  *************************************************
-      fecthing categories end  here 
-    *************************************************
-   */
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+  /** *******************************************************
+     Fetching main categoreis  end 
+  */
 
 
   return (
@@ -118,22 +140,27 @@ const BannersAdvertisement = () => {
         <div className="banner_advertisement">
           <div className=" d-flex align-items-center justify-content-between  mt-4">
             <h1 className="fw-500  mb-0 black fs-lg">Banners / Advertisement</h1>
-            <button className="update_banners_btn d-flex align-items-center">
-              <img src={checkBlack} alt="checkBlack" />
-              <p className="fs-sm fw-400 black ms-2 mb-0">Update Banners</p>
-            </button>
           </div>
 
-          <Accordion className="border-0  w-100 rounded-none">
-
-            {/*  Large Banner Accordian  */}
-
+          <Accordion
+            className="border-0 w-100 rounded-none"
+            activeKey={activeAccordion}
+            onSelect={handleAccordionSelect}>
             <Accordion.Item className="py-1 bg-white" eventKey="0">
-              <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
-                <h3 className="fs-sm fw-400  black mb-0">Large Banner</h3>
+              <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white d-flex justify-content-between">
+                <div className="d-flex justify-content-between w-100">
+                  <h3 className="fs-sm fw-400 black mb-0">Large Banner</h3>
+                  {activeAccordion === '0' ? (
+                    <button
+                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 py-1 save_btn fw-400 black me-3"
+                      type="submit">
+                      <img src={saveicon} alt="saveicon" />
+                      Save
+                    </button>
+                  ) : null}
+                </div>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
-
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white">
                   {/*Single Medium Banner */}
                   <div className="bg_white pe-1">
@@ -159,12 +186,6 @@ const BannersAdvertisement = () => {
                             src={deleteicon}
                             alt="deleteicon"
                           />
-                          {/* <img
-                            onClick={imageSet1}
-                            className="position-absolute upload_btn mt-2 me-2 cursor_pointer"
-                            src={uploadIcon}
-                            alt="deleteicon"
-                          /> */}
                         </div>
                       )
                     )}
@@ -202,11 +223,19 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Body>
             </Accordion.Item>
-
-            {/*  Slider and Sales  Banner Accordian  */}
             <Accordion.Item className="py-1 bg-white rounded" eventKey="1">
               <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
-                <h3 className="fs-sm fw-400  black mb-0">Banner Slider for Sales / Offers</h3>
+                <div className="d-flex justify-content-between w-100">
+                  <h3 className="fs-sm fw-400  black mb-0">Banner Slider for Sales / Offers</h3>
+                  {activeAccordion === '1' ? (
+                    <button
+                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 py-1 save_btn fw-400 black me-3"
+                      type="submit">
+                      <img src={saveicon} alt="saveicon" />
+                      Save
+                    </button>
+                  ) : null}
+                </div>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white">
@@ -241,17 +270,24 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Body>
             </Accordion.Item>
-
-            {/* Small Patti   Banner Accordian  */}
-
             <Accordion.Item className="py-1 bg-white rounded" eventKey="2">
               <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
-                <h3 className="fs-sm fw-400  black mb-0">Small Patti Banner</h3>
+                <div className="d-flex justify-content-between w-100">
+                  <h3 className="fs-sm fw-400  black mb-0">Small Patti Banner</h3>
+                  {activeAccordion === '2' ? (
+                    <button
+                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 py-1 save_btn fw-400 black me-3"
+                      type="submit">
+                      <img src={saveicon} alt="saveicon" />
+                      Save
+                    </button>
+                  ) : null}
+                </div>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2 justify-content-between">
                   {/*Single Medium Banner */}
-                  <div className="bg_white">
+                  <div className="bg_white w-100">
                     <input type="file" id="file3" onChange={handelUpload3} hidden />
 
                     {!imageUpload3 ? (
@@ -278,7 +314,7 @@ const BannersAdvertisement = () => {
                       )
                     )}
                   </div>
-                  <div className="bg_white">
+                  <div className="bg_white w-100">
                     <input type="file" id="file3" onChange={handelUpload3} hidden />
 
                     {!imageUpload3 ? (
@@ -305,7 +341,7 @@ const BannersAdvertisement = () => {
                       )
                     )}
                   </div>
-                  <div className="bg_white">
+                  <div className="bg_white w-100">
                     <input type="file" id="file3" onChange={handelUpload3} hidden />
 
                     {!imageUpload3 ? (
@@ -335,12 +371,19 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Body>
             </Accordion.Item>
-
-
-            {/* Animal Suplliments   Banner Accordian  */}
             <Accordion.Item className="py-1 bg-white rounded" eventKey="3">
               <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
-                <h3 className="fs-sm fw-400  black mb-0">Banner Slider for Animal Suppliments</h3>
+                <div className="d-flex justify-content-between w-100">
+                  <h3 className="fs-sm fw-400  black mb-0">Banner Slider for Animal Suppliments</h3>
+                  {activeAccordion === '3' ? (
+                    <button
+                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 py-1 save_btn fw-400 black me-3"
+                      type="submit">
+                      <img src={saveicon} alt="saveicon" />
+                      Save
+                    </button>
+                  ) : null}
+                </div>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2">
@@ -375,14 +418,22 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Body>
             </Accordion.Item>
-            {/*  Categories Banner start from here  */}
             <p className="fs-sm fw-700 black pt-1 mt-3">Categorized Banners</p>
-
-            {MainCategories.map((value, index) => {
+            {MainCategories.map((data, index) => {
               return (
                 <Accordion.Item className="py-1 bg-white rounded" eventKey={index}>
                   <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
-                    <h3 className="fs-sm fw-400  black mb-0">{value.title}</h3>
+                    <div className="d-flex justify-content-between w-100">
+                      <h3 className="fs-sm fw-400  black mb-0">{data.title}</h3>
+                      {activeAccordion === index ? (
+                        <button
+                          className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 py-1 save_btn fw-400 black me-3"
+                          type="submit">
+                          <img src={saveicon} alt="saveicon" />
+                          Save
+                        </button>
+                      ) : null}
+                    </div>
                   </Accordion.Header>
                   <Accordion.Body className="py-2 px-3">
                     <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2">
@@ -418,12 +469,13 @@ const BannersAdvertisement = () => {
                   </Accordion.Body>
                 </Accordion.Item>
               )
-            })}
+            })
+            }
           </Accordion>
         </div>
       </form>
     </div>
   );
-}
+};
 
 export default BannersAdvertisement;
