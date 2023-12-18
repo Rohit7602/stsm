@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import saveicon from '../Images/svgs/saveicon.svg';
+
+
 import { Col, Row } from 'react-bootstrap';
 import SearchIcon from '../Images/svgs/search.svg';
 import deleteicon from '../Images/svgs/deleteicon.svg';
@@ -23,6 +25,9 @@ const BannersAdvertisement = () => {
 
 
 
+
+
+
   async function imageSet(file) {
     try {
       const name = Math.floor(Date.now() / 1000) + '-' + file.name;
@@ -40,6 +45,9 @@ const BannersAdvertisement = () => {
 
 
 
+
+
+  
 
   const [imageUpload1, setImageUpload1] = useState();
   const [imageUploadUrl1, setImageUploadUrl1] = useState();
