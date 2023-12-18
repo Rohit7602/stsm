@@ -42,13 +42,6 @@ const BannersAdvertisement = () => {
 
 
 
-
-
-
-
-
-  
-
   const [imageUpload1, setImageUpload1] = useState();
   const [imageUploadUrl1, setImageUploadUrl1] = useState();
   function handelUpload1(e) {
