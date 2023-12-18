@@ -9,12 +9,17 @@ import checkBlack from '../Images/svgs/check_black_icon.svg';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '../firebase';
 
+
+
+
 const BannersAdvertisement = () => {
   const [activeAccordion, setActiveAccordion] = useState(null);
 
   const handleAccordionSelect = (key) => {
     setActiveAccordion(key);
   };
+
+
 
 
   async function imageSet(file) {
@@ -31,6 +36,9 @@ const BannersAdvertisement = () => {
 
 
 
+
+
+  
 
   const [imageUpload1, setImageUpload1] = useState();
   const [imageUploadUrl1, setImageUploadUrl1] = useState();
@@ -49,7 +57,7 @@ const BannersAdvertisement = () => {
     console.log(imageUpload1);
   }
 
-  
+
 
   // 2
   const [imageUpload2, setImageUpload2] = useState('');
