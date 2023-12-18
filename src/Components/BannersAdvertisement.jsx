@@ -12,6 +12,10 @@ import { getDocs, collection } from 'firebase/firestore';
 
 const BannersAdvertisement = () => {
 
+  const handleAccordionSelect = (key) => {
+    setActiveAccordion(key);
+  };
+
 
   async function imageSet(file) {
     try {
@@ -24,6 +28,9 @@ const BannersAdvertisement = () => {
       console.log(error);
     }
   }
+
+
+
 
   const [imageUpload1, setImageUpload1] = useState();
   const [imageUploadUrl1, setImageUploadUrl1] = useState();
@@ -41,6 +48,8 @@ const BannersAdvertisement = () => {
     e.preventDefault();
     console.log(imageUpload1)
   }
+
+  
 
   // 2
   const [imageUpload2, setImageUpload2] = useState('');
