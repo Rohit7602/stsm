@@ -152,6 +152,12 @@ const BannersAdvertisement = () => {
                             src={deleteicon}
                             alt="deleteicon"
                           />
+                          {/* <img
+                            onClick={imageSet1}
+                            className="position-absolute upload_btn mt-2 me-2 cursor_pointer"
+                            src={uploadIcon}
+                            alt="deleteicon"
+                          /> */}
                         </div>
                       )
                     )}
@@ -362,7 +368,6 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Body>
             </Accordion.Item>
-
             {/*  Categories Banner start from here  */}
             <p className="fs-sm fw-700 black pt-1 mt-3">Categorized Banners</p>
           
@@ -407,8 +412,6 @@ const BannersAdvertisement = () => {
                   </Accordion.Item>
                 )
               })}
-            
-
           </Accordion>
         </div>
       </form>
