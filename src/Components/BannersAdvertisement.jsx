@@ -14,6 +14,9 @@ import { getDocs, collection } from 'firebase/firestore';
 
 
 
+//  banner advertisement up start from here
+// check accordian and save button
+
 
 const BannersAdvertisement = () => {
   const [activeAccordion, setActiveAccordion] = useState(null);
