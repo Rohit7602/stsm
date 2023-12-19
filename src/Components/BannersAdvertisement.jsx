@@ -102,9 +102,7 @@ const BannersAdvertisement = () => {
               title: 'Large banner',
               imgUrl: imagelinks,
             });
-            toast.success('Large Banner Added Successfully !', {
-              position: toast.POSITION.TOP_RIGHT,
-            });
+
             setSelectedImagesLargeBanner([null, null])
 
           } catch (error) {
@@ -117,6 +115,9 @@ const BannersAdvertisement = () => {
       } else {
         console.log("Select both images before uploading");
       }
+      toast.success('Large Banner Added Successfully !', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     } catch (error) {
       console.error(error);
     }
@@ -172,9 +173,7 @@ const BannersAdvertisement = () => {
               title: 'Small_Patti banner',
               imgUrl: imagelinks,
             });
-            toast.success('SmallPatti Banner  Added Successfully !', {
-              position: toast.POSITION.TOP_RIGHT,
-            });
+
             setselectedImagesSmallPatii([null, null, null])
 
           } catch (error) {
@@ -187,6 +186,9 @@ const BannersAdvertisement = () => {
       } else {
         console.log("Select all  images before uploading");
       }
+      toast.success('SmallPatti Banner  Added Successfully !', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     } catch (error) {
       console.error(error);
     }
@@ -279,9 +281,7 @@ const BannersAdvertisement = () => {
             title: 'AnimalSupliments ',
             imgUrl: [url],
           });
-          toast.success('Animal Supliments  Banner Added   Successfully !', {
-            position: toast.POSITION.TOP_RIGHT,
-          });
+
           SetAnimalSuplimentsImages(null)
 
         } catch (error) {
@@ -291,6 +291,9 @@ const BannersAdvertisement = () => {
       } else {
         console.warn('No image selected for upload');
       }
+      toast.success('Animal Supliments  Banner Added   Successfully !', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     } catch (error) {
       console.error('Error uploading image or adding document:', error);
     }

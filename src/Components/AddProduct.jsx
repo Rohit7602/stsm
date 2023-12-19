@@ -625,7 +625,7 @@ const AddProduct = () => {
                   <label htmlFor="sku" className="fs-xs fw-400 mt-3 black">
                     SKU
                   </label>
-                  <br /> 
+                  <br />
                   <input required
                     type="text"
                     className="mt-2 product_input fade_grey fw-400"
