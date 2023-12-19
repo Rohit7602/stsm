@@ -86,7 +86,19 @@ const ProductListComponent = () => {
                     <tr>
                       <td className="p-3">
                         <label className="check1 fw-400 fs-sm black mb-0">
-                          {orderTableData.OrderNumber}
+                          <Link
+                            className="fw-400 fs-sm black"
+                            to={`/orderslist/${
+                              orderTableData.OrderStatus === 'New Order'
+                                ? 'neworder'
+                                : orderTableData.OrderStatus === 'Processing'
+                                ? 'processing'
+                                : orderTableData.OrderStatus === 'Delivered'
+                                ? 'delivered'
+                                : 'canceled'
+                            }`}>
+                            {orderTableData.OrderNumber}
+                          </Link>
                           <div className="d-flex align-items-center"></div>
                           <input type="checkbox" checked={selectAll} />
                           <span className="checkmark"></span>
@@ -96,7 +108,9 @@ const ProductListComponent = () => {
                         <h3 className="fs-xs fw-400 black mb-0">{orderTableData.Date}</h3>
                       </td>
                       <td className="p-3">
-                        <h3 className="fs-sm fw-400 black mb-0">{orderTableData.Customer}</h3>
+                        <Link to="viewcustomerdetails">
+                          <h3 className="fs-sm fw-400 black mb-0">{orderTableData.Customer}</h3>
+                        </Link>
                       </td>
                       <td className="p-3">
                         <h3

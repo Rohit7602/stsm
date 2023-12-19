@@ -100,7 +100,7 @@ const AddProduct = () => {
     setOriginalPrice(0);
     setDiscountType('Amount');
     setDiscount(0);
-    setVariantsNAME('')
+    setVariants([])
     setCategories();
     setStatus('published');
     setFreeDelivery(true)
@@ -137,7 +137,7 @@ const AddProduct = () => {
           const upload = await uploadBytes(storageRef, file);
           const imageUrl = await getDownloadURL(storageRef);
           imagelinks.push(imageUrl);
-          
+
         }
 
         const docRef = await addDoc(collection(db, 'products'), {
@@ -149,6 +149,7 @@ const AddProduct = () => {
           Freedelivery: Freedelivery,
           totalStock: totalStock,
           categories: {
+            parent_id: selectedCategory.cat_ID,
             id: selectedCategory.id,
             name: selectedCategory.title
           },
@@ -160,14 +161,13 @@ const AddProduct = () => {
                 {
                   originalPrice: originalPrice,
                   discountType: discountType,
-                  deliveryCharges: deliveryCharges,
+                  discount: deliveryCharges,
                 }
               ]
             }
             : {
               varients: variants
             }), // Include the actual list of variants if varient is true
-
 
         });
         setSearchdata([]);
@@ -376,7 +376,7 @@ const AddProduct = () => {
                                 onChange={(e) =>
                                   setVariants((prevVariants) =>
                                     prevVariants.map((v, i) =>
-                                      i === index ? { ...v, VarintName: e.target.value } : v
+                                      i === index ? { ...v, VarientName: e.target.value } : v
                                     )
                                   )
                                 }

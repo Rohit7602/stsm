@@ -321,6 +321,50 @@ const BannersAdvertisement = () => {
     SetCategoryImage(newCategoryImages);
   }
 
+  async function handleUpdateCategoryBanner(e) {
+    e.preventDefault();
+    console.log("wpr");
+
+    try {
+      const bannerArray = []; // Initialize an array to store banner objects
+
+      for (let index = 0; index < MainCategories.length; index++) {
+        const category = MainCategories[index];
+
+        if (CategoryImage[index]) {
+          const name = Math.floor(Date.now() / 1000) + '-' + CategoryImage[index].name;
+          const storageRef = ref(storage, `banner/${name}`);
+          const uploadTask = await uploadBytesResumable(storageRef, CategoryImage[index]);
+          const url = await getDownloadURL(storageRef);
+
+          // Push the banner object into the array
+          bannerArray.push({
+            categoryId: category.id,
+            categoryTitle: category.title,
+            imgUrl: url,
+          });
+
+        }
+      }
+
+      // Add the array of banners as a single document in the 'Banner' collection
+      await addDoc(collection(db, 'Banner'), {
+        CategoryBanners: bannerArray,
+      });
+
+      // Clear the selected images after successful upload
+      SetCategoryImage(Array(MainCategories.length).fill(''));
+      toast.success(`Banner for Categories added successfully!`, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      console.error('Error uploading images:', error);
+    }
+  }
+
+
+
+
 
 
   /*
@@ -338,7 +382,6 @@ const BannersAdvertisement = () => {
           <div className=" d-flex align-items-center justify-content-between  mt-4">
             <h1 className="fw-500  mb-0 black fs-lg">Banners / Advertisement</h1>
           </div>
-
           <Accordion
             className="border-0 w-100 rounded-none"
             activeKey={activeAccordion}
@@ -621,21 +664,19 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Body>
             </Accordion.Item>
-            <p className="fs-sm fw-700 black pt-1 mt-3">Categorized Banners</p>
+            <div className="d-flex align-items-center justify-content-between mt-3">
+              <p className="fs-sm fw-700 black pt-1 mt-3">Categorized Banners</p>
+              <button className="d-flex align-items-center update_banners_btn" onClick={(e) => handleUpdateCategoryBanner(e)}>
+                <img src={saveicon} alt="saveicon" />
+                <p className="fs-sm fw-600 black mb-0 ms-2">Update Banner</p>
+              </button>
+            </div>
             {MainCategories.map((data, index) => {
               return (
                 <Accordion.Item className="py-1 bg-white rounded" eventKey={index}>
                   <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
                     <div className="d-flex justify-content-between w-100">
                       <h3 className="fs-sm fw-400  black mb-0">{data.title}</h3>
-                      {activeAccordion === index ? (
-                        <button
-                          className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 py-1 save_btn fw-400 black me-3"
-                          type="submit">
-                          <img src={saveicon} alt="saveicon" />
-                          Save
-                        </button>
-                      ) : null}
                     </div>
                   </Accordion.Header>
                   <Accordion.Body className="py-2 px-3">
@@ -676,11 +717,8 @@ const BannersAdvertisement = () => {
           </Accordion>
         </div>
       </form>
-
       <ToastContainer />
     </div>
-
-
   );
 };
 
