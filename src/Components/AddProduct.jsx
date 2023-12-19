@@ -287,7 +287,7 @@ const AddProduct = () => {
                       </label>
                       <br />
                       <input
-                        type="text"
+                        type="text" required
                         className="mt-2 product_input fade_grey fw-400"
                         placeholder="Enter product name"
                         id="Name"
@@ -301,7 +301,7 @@ const AddProduct = () => {
                       </label>{' '}
                       <br />
                       <input
-                        type="text"
+                        type="text" required
                         className="mt-2 product_input fade_grey fw-400"
                         placeholder="Enter short description"
                         id="short"
@@ -315,7 +315,7 @@ const AddProduct = () => {
                       </label>{' '}
                       <br />
                       <textarea
-                        id="des"
+                        id="des" required
                         className="mt-2 product_input resize_none fade_grey fw-400"
                         cols="30"
                         rows="5"
@@ -367,7 +367,7 @@ const AddProduct = () => {
                         variants.map((variant, index) => (
                           <div key={index} className="varient_form_border">
                             <div className="d-flex align-items-center justify-content-between">
-                              <input
+                              <input required
                                 className="varient_value fs-2sm fw-400 color_red"
                                 placeholder='Enter Varient Name'
                                 type="text"
@@ -387,7 +387,7 @@ const AddProduct = () => {
                                 <label htmlFor="origi" className="fs-xs fw-400 mt-3 black">
                                   Original Price
                                 </label>
-                                <input
+                                <input required
                                   type="number"
                                   className="mt-2 product_input fade_grey fw-400"
                                   placeholder="₹ 0.00"
@@ -433,7 +433,7 @@ const AddProduct = () => {
                                 <label htmlFor="ddisc" className="fs-xs fw-400 mt-3 black">
                                   Discount
                                 </label>
-                                <input
+                                <input required
                                   type="number"
                                   className="mt-2 product_input fade_grey fw-400"
                                   placeholder={variant.discountType !== 'Percentage' ? '₹ 0.00' : '%'}
@@ -460,7 +460,7 @@ const AddProduct = () => {
                               <label htmlFor="origi" className="fs-xs fw-400 mt-3 black">
                                 Original Price
                               </label>
-                              <input
+                              <input required
                                 type="number"
                                 className="mt-2 product_input fade_grey fw-400"
                                 placeholder="₹ 0.00"
@@ -499,7 +499,7 @@ const AddProduct = () => {
                               <label htmlFor="ddisc" className="fs-xs fw-400 mt-3 black">
                                 Discount
                               </label>
-                              <input
+                              <input required
                                 type="number"
                                 className="mt-2 product_input fade_grey fw-400"
                                 placeholder={discountType !== 'Percentage' ? '₹ 0.00' : '%'}
@@ -524,7 +524,7 @@ const AddProduct = () => {
                     <div className="product_shadow bg_white p-3 mt-4">
                       <h2 className="fw-400 fs-2sm black mb-0">Images</h2>
                       <div className="d-flex flex-wrap gap-4 mt-3 align-items-center">
-                        <input
+                        <input required
                           type="file"
                           id="file22"
                           hidden
@@ -624,8 +624,8 @@ const AddProduct = () => {
                   <label htmlFor="sku" className="fs-xs fw-400 mt-3 black">
                     SKU
                   </label>
-                  <br />
-                  <input
+                  <br /> 
+                  <input required
                     type="text"
                     className="mt-2 product_input fade_grey fw-400"
                     placeholder="6HK3I5"
@@ -642,7 +642,7 @@ const AddProduct = () => {
                   <br />
                   <div className="position-relative">
                     <div className="product_input d-flex align-items-center justify-content-between mt-2">
-                      <input
+                      <input required
                         type="text"
                         className="black fw-400 border-0 outline_none bg-white"
                         placeholder="50"
@@ -697,7 +697,7 @@ const AddProduct = () => {
                   <Dropdown className="category_dropdown">
                     <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
                       <div className="product_input">
-                        <p className="fade_grey fw-400 w-100 mb-0 text-start">
+                        <p className="fade_grey fw-400 w-100 mb-0 text-start" required>
                           {selectedCategory ? selectedCategory.title : 'Select Category'}
                         </p>
                       </div>
