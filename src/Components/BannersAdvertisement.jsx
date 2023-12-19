@@ -27,26 +27,34 @@ const BannersAdvertisement = () => {
     setActiveAccordion(key);
   };
 
+  /** *******************************************************
+     Fetching main categoreis 
+  */
+
+  const [MainCategories, SetMainCategories] = useState([]);
 
 
+  useEffect(() => {
+    const fetchData = async () => {
+      let list = [];
+      try {
+        const querySnapshot = await getDocs(collection(db, 'categories'));
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          list.push({ id: doc.id, ...doc.data() });
+        });
+        SetMainCategories([...list]);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
 
+  /** *******************************************************
+     Fetching main categoreis  end 
+  */
 
-
-
-  // async function imageSet(file) {
-  //   try {
-  //     const name = Math.floor(Date.now() / 1000) + '-' + file.name;
-  //     const storageRef = ref(storage, `banner/${file.name}`);
-  //     const uploadTask = await uploadBytesResumable(storageRef, file);
-  //     const url = await getDownloadURL(storageRef);
-  //     console.log(url);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-
-
-
-  // }
 
 
 
@@ -295,62 +303,32 @@ const BannersAdvertisement = () => {
  
  */
 
+  /*
+*********************************************************
+ Categoroies  Banner functionaltiy start 
+*/
+
+  const [CategoryImage, SetCategoryImage] = useState(Array(MainCategories.length).fill(''));
+
+  function handleCategoryImages(e, index) {
+    const newCategoryImages = [...CategoryImage];
+    newCategoryImages[index] = e.target.files[0];
+    SetCategoryImage(newCategoryImages);
+  }
+  function handleCategoryImagesDelete(index) {
+    const newCategoryImages = [...CategoryImage];
+    newCategoryImages[index] = ''; // Set the image for the specified index to an empty string
+    SetCategoryImage(newCategoryImages);
+  }
 
 
 
+  /*
+*********************************************************
+ Categoroies  Banner functionaltiy end 
+ 
+*/
 
-
-
-  /** *******************************************************
-      Fetching main categoreis 
-   */
-
-  const [MainCategories, SetMainCategories] = useState([]);
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      let list = [];
-      try {
-        const querySnapshot = await getDocs(collection(db, 'categories'));
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          list.push({ id: doc.id, ...doc.data() });
-        });
-        SetMainCategories([...list]);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, []);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /** *******************************************************
-     Fetching main categoreis  end 
-  */
 
 
   return (
@@ -521,7 +499,7 @@ const BannersAdvertisement = () => {
                       </label>
                     ) : (
                       selectedImagesSmallPatii[0] && (
-                        <div className="position-relative imagesmallmedia_btn">
+                        <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
                             src={URL.createObjectURL(selectedImagesSmallPatii[0])}
@@ -548,14 +526,14 @@ const BannersAdvertisement = () => {
                       </label>
                     ) : (
                       selectedImagesSmallPatii[1] && (
-                        <div className="position-relative imagesmallmedia_btn">
+                        <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
                             src={URL.createObjectURL(selectedImagesSmallPatii[1])}
                             alt=""
                           />
                           <img
-                            onClick={() => selectedImagesSmallPatii[1]}
+                            onClick={() => handleDeleteSmallPatti(1)}
                             className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
                             src={deleteicon}
                             alt="deleteicon"
@@ -575,7 +553,7 @@ const BannersAdvertisement = () => {
                       </label>
                     ) : (
                       selectedImagesSmallPatii[2] && (
-                        <div className="position-relative imagesmallmedia_btn">
+                        <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
                             src={URL.createObjectURL(selectedImagesSmallPatii[2])}
@@ -644,7 +622,7 @@ const BannersAdvertisement = () => {
               </Accordion.Body>
             </Accordion.Item>
             <p className="fs-sm fw-700 black pt-1 mt-3">Categorized Banners</p>
-            {/* {MainCategories.map((data, index) => {
+            {MainCategories.map((data, index) => {
               return (
                 <Accordion.Item className="py-1 bg-white rounded" eventKey={index}>
                   <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
@@ -663,24 +641,24 @@ const BannersAdvertisement = () => {
                   <Accordion.Body className="py-2 px-3">
                     <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2">
                       <div className="bg_white">
-                        <input type="file" id="file4" onChange={handelUpload4} hidden />
+                        <input type="file" id={`categoreis_${index}`} onChange={(e) => handleCategoryImages(e, index)} hidden />
 
-                        {!imageUpload4 ? (
+                        {!CategoryImage[index] ? (
                           <label
-                            htmlFor="file4"
+                            htmlFor={`categoreis_${index}`}
                             className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center">
                             + Add Media
                           </label>
                         ) : (
-                          imageUpload4 && (
+                          CategoryImage[index] && (
                             <div className="position-relative imagemedia_btn">
                               <img
                                 className="w-100 h-100 object-fit-cover"
-                                src={URL.createObjectURL(imageUpload4)}
+                                src={URL.createObjectURL(CategoryImage[index])}
                                 alt=""
                               />
                               <img
-                                onClick={handeldelete4}
+                                onClick={() => handleCategoryImagesDelete(index)}
                                 className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
                                 src={deleteicon}
                                 alt="deleteicon"
@@ -694,7 +672,7 @@ const BannersAdvertisement = () => {
                 </Accordion.Item>
               )
             })
-            } */}
+            }
           </Accordion>
         </div>
       </form>
