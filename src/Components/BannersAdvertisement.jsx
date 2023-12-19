@@ -9,18 +9,12 @@ import checkBlack from '../Images/svgs/check_black_icon.svg';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '../firebase';
 
-
-
-
 const BannersAdvertisement = () => {
   const [activeAccordion, setActiveAccordion] = useState(null);
 
   const handleAccordionSelect = (key) => {
     setActiveAccordion(key);
   };
-
-
-
 
   async function imageSet(file) {
     try {
@@ -33,12 +27,6 @@ const BannersAdvertisement = () => {
       console.log(error);
     }
   }
-
-
-
-
-
-  
 
   const [imageUpload1, setImageUpload1] = useState();
   const [imageUploadUrl1, setImageUploadUrl1] = useState();
@@ -56,8 +44,6 @@ const BannersAdvertisement = () => {
     e.preventDefault();
     console.log(imageUpload1);
   }
-
-
 
   // 2
   const [imageUpload2, setImageUpload2] = useState('');
@@ -383,7 +369,7 @@ const BannersAdvertisement = () => {
                       </label>
                     ) : (
                       imageUpload3 && (
-                        <div className="position-relative imagesmallmedia_btn">
+                        <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
                             src={URL.createObjectURL(imageUpload3)}
@@ -410,7 +396,7 @@ const BannersAdvertisement = () => {
                       </label>
                     ) : (
                       imageUpload3 && (
-                        <div className="position-relative imagesmallmedia_btn">
+                        <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
                             src={URL.createObjectURL(imageUpload3)}
@@ -437,7 +423,7 @@ const BannersAdvertisement = () => {
                       </label>
                     ) : (
                       imageUpload3 && (
-                        <div className="position-relative imagesmallmedia_btn">
+                        <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
                             src={URL.createObjectURL(imageUpload3)}
@@ -503,19 +489,17 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Body>
             </Accordion.Item>
-            <p className="fs-sm fw-700 black pt-1 mt-3">Categorized Banners</p>
+            <div className="d-flex align-items-center justify-content-between mt-3">
+              <p className="fs-sm fw-700 black pt-1 mt-3">Categorized Banners</p>
+              <button className="d-flex align-items-center update_banners_btn">
+                <img src={saveicon} alt="saveicon" />
+                <p className="fs-sm fw-600 black mb-0 ms-2">Update Banner</p>
+              </button>
+            </div>
             <Accordion.Item className="py-1 bg-white rounded" eventKey="4">
               <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
                 <div className="d-flex justify-content-between w-100">
                   <h3 className="fs-sm fw-400  black mb-0">Slider for Men</h3>
-                  {activeAccordion === '4' ? (
-                    <button
-                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 py-1 save_btn fw-400 black me-3"
-                      type="submit">
-                      <img src={saveicon} alt="saveicon" />
-                      Save
-                    </button>
-                  ) : null}
                 </div>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
@@ -555,14 +539,6 @@ const BannersAdvertisement = () => {
               <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
                 <div className="d-flex justify-content-between w-100">
                   <h3 className="fs-sm fw-400  black mb-0">Slider for Women</h3>
-                  {activeAccordion === '5' ? (
-                    <button
-                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 py-1 save_btn fw-400 black me-3"
-                      type="submit">
-                      <img src={saveicon} alt="saveicon" />
-                      Save
-                    </button>
-                  ) : null}
                 </div>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
@@ -602,14 +578,6 @@ const BannersAdvertisement = () => {
               <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
                 <div className="d-flex justify-content-between w-100">
                   <h3 className="fs-sm fw-400  black mb-0">Slider for Electronics</h3>
-                  {activeAccordion === '6' ? (
-                    <button
-                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 py-1 save_btn fw-400 black me-3"
-                      type="submit">
-                      <img src={saveicon} alt="saveicon" />
-                      Save
-                    </button>
-                  ) : null}
                 </div>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">

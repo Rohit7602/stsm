@@ -999,6 +999,32 @@ body {
 .top-15 {
   top: 15px;
 }
+.login-side-bg {
+  background-image: url('../src/Images/Png/login-side-img.png');
+  min-height: 100vh;
+  background-repeat: no-repeat;
+  object-fit: cover;
+  background-size: cover;
+  background-position: center;
+}
+.loin-btn {
+  padding: 14px 48px;
+  background-color: var(--color-brown);
+  border: 0;
+  outline: 0;
+  border-radius: 8px;
+}
+.login-form {
+  width: 370px;
+}
+.login-form input {
+  border: 0;
+  border-bottom: 1px solid #00000095;
+  padding: 10px 0;
+}
+.login-form input:focus {
+  outline: 0;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
   :root {
