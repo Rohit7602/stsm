@@ -13,6 +13,9 @@ import { storage, db } from '../firebase';
 import { getDocs, collection, addDoc } from 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useImageValidation } from '../context/validators';
+
+
 
 
 
@@ -21,7 +24,9 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 const BannersAdvertisement = () => {
+
   const [activeAccordion, setActiveAccordion] = useState(null);
+  const { validateImage } = useImageValidation();
 
   const handleAccordionSelect = (key) => {
     setActiveAccordion(key);
@@ -45,6 +50,7 @@ const BannersAdvertisement = () => {
         });
         SetMainCategories([...list]);
       } catch (error) {
+        console.log("hii how are yo")
         console.log(error);
       }
     };
@@ -56,11 +62,6 @@ const BannersAdvertisement = () => {
   */
 
 
-
-
-
-
-
   /*
  *********************************************************
  Large Banner   functionaltiy start from here 
@@ -70,10 +71,27 @@ const BannersAdvertisement = () => {
 
   const [selectedImagesLargeBanner, setSelectedImagesLargeBanner] = useState([null, null]);
 
-  const handleUploadLargeBanner = (index, e) => {
-    const newImages = [...selectedImagesLargeBanner];
-    newImages[index] = e.target.files[0];
-    setSelectedImagesLargeBanner(newImages);
+  const handleUploadLargeBanner = async (index, e) => {
+    const file = e.target.files[0];
+    try {
+      // Define desired aspect ratio and dimensions for large banner
+      const desiredAspectRatio = 1
+      const desiredWidth = 720;
+      const desiredHeight = 720;
+
+      // Validate the image using the context function
+      const validatedImage = await validateImage(file, desiredAspectRatio, desiredWidth, desiredHeight);
+
+      // If validation succeeds, update the state
+      const newImages = [...selectedImagesLargeBanner];
+      newImages[index] = validatedImage;
+      setSelectedImagesLargeBanner(newImages);
+    } catch (error) {
+      // Handle the validation error (e.g., show an error message)
+      toast.error(error.message, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
   };
 
   const handleDeleteLargeBanner = (index) => {
@@ -83,11 +101,11 @@ const BannersAdvertisement = () => {
   };
 
 
+
   async function handleSaveLargeBanner() {
     try {
       if (selectedImagesLargeBanner.length === 2 && selectedImagesLargeBanner.every(Boolean)) {
         const imagelinks = [];
-
         for await (const file of selectedImagesLargeBanner) {
           const filename = Math.floor(Date.now() / 1000) + '-' + file.name;
           const storageRef = ref(storage, `banner/${filename}`);
@@ -95,19 +113,14 @@ const BannersAdvertisement = () => {
           const imageUrl = await getDownloadURL(storageRef);
           imagelinks.push(imageUrl);
         }
-
         if (imagelinks.length > 0) {
           try {
             const docRef = await addDoc(collection(db, 'Banner'), {
-              title: 'Large banner',
-              imgUrl: imagelinks,
+              title: 'LargeBanner',
+              data: [{ imagelinks }]
             });
-
-            setSelectedImagesLargeBanner([null, null])
-
           } catch (error) {
             console.log(error)
-
           }
         } else {
           console.log("No images uploaded");
@@ -141,10 +154,26 @@ const BannersAdvertisement = () => {
   */
   const [selectedImagesSmallPatii, setselectedImagesSmallPatii] = useState([null, null, null]);
 
-  const handleUploadSmallPatti = (index, e) => {
-    const newImages = [...selectedImagesSmallPatii];
-    newImages[index] = e.target.files[0];
-    setselectedImagesSmallPatii(newImages);
+  const handleUploadSmallPatti = async (index, e) => {
+    let file = e.target.files[0]
+    try {
+      // Define desired aspect ratio and dimensions for large banner
+      const desiredAspectRatio = 16 / 2.5
+      const desiredWidth = 1280;
+      const desiredHeight = 200;
+
+      // Validate the image using the context function
+      const validatedImage = await validateImage(file, desiredAspectRatio, desiredWidth, desiredHeight);
+      const newImages = [...selectedImagesSmallPatii];
+      newImages[index] = validatedImage
+      setselectedImagesSmallPatii(newImages);
+    } catch (error) {
+      // Handle the validation error (e.g., show an error message)
+      toast.error(error.message, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+
   };
 
   const handleDeleteSmallPatti = (index) => {
@@ -170,12 +199,13 @@ const BannersAdvertisement = () => {
         if (imagelinks.length > 0) {
           try {
             const docRef = await addDoc(collection(db, 'Banner'), {
-              title: 'Small_Patti banner',
-              imgUrl: imagelinks,
+              // SmallPattBanner: [{
+              //   title: 'Small_Patti banner',
+              //   imgUrl: imagelinks,
+              // }]
+              title: "SmallPattBanner",
+              data: [{ imagelinks }]
             });
-
-            setselectedImagesSmallPatii([null, null, null])
-
           } catch (error) {
             console.log(error)
 
@@ -227,13 +257,16 @@ const BannersAdvertisement = () => {
         const uploadTask = await uploadBytesResumable(storageRef, BannerSaleImg);
         const url = await getDownloadURL(storageRef);
         const docRef = await addDoc(collection(db, 'Banner'), {
-          title: 'Sales/Offers',
-          imgUrl: [url],
+          // Sales_Offers: [{
+          //   title: 'Sales/Offers',
+          //   imgUrl: [url],
+          // }]
+          title: "SalesOffers",
+          data: [{ url }]
         });
         toast.success('Sale/Offer Banner Added   Successfully !', {
           position: toast.POSITION.TOP_RIGHT,
         });
-        SetBannerSaleImg(null)
       } else {
         console.warn('No image selected for upload');
       }
@@ -278,11 +311,15 @@ const BannersAdvertisement = () => {
         const url = await getDownloadURL(storageRef);
         try {
           const docRef = await addDoc(collection(db, 'Banner'), {
-            title: 'AnimalSupliments ',
-            imgUrl: [url],
+            // AnimalSupliments: [
+            //   {
+            //     title: 'AnimalSupliments ',
+            //     imgUrl: [url],
+            //   }
+            // ]
+            title: "AnimalSupliments",
+            data: [{ url }]
           });
-
-          SetAnimalSuplimentsImages(null)
 
         } catch (error) {
           console.log("Error Adding Image To The Database", error);
@@ -306,6 +343,8 @@ const BannersAdvertisement = () => {
  
  */
 
+
+
   /*
 *********************************************************
  Categoroies  Banner functionaltiy start 
@@ -313,10 +352,27 @@ const BannersAdvertisement = () => {
 
   const [CategoryImage, SetCategoryImage] = useState(Array(MainCategories.length).fill(''));
 
-  function handleCategoryImages(e, index) {
-    const newCategoryImages = [...CategoryImage];
-    newCategoryImages[index] = e.target.files[0];
-    SetCategoryImage(newCategoryImages);
+  async function handleCategoryImages(e, index) {
+    let file = e.target.files[0];
+    try {
+      // Define desired aspect ratio and dimensions for large banner
+      const desiredAspectRatio = 16 / 9
+      const desiredWidth = 1280;
+      const desiredHeight = 720;
+
+      // Validate the image using the context function
+      const validatedImage = await validateImage(file, desiredAspectRatio, desiredWidth, desiredHeight);
+
+      // If validation succeeds, update the state
+      const newCategoryImages = [...CategoryImage];
+      newCategoryImages[index] = validatedImage
+      SetCategoryImage(newCategoryImages);
+    } catch (error) {
+      // Handle the validation error (e.g., show an error message)
+      toast.error(error.message, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
   }
   function handleCategoryImagesDelete(index) {
     const newCategoryImages = [...CategoryImage];
@@ -326,14 +382,11 @@ const BannersAdvertisement = () => {
 
   async function handleUpdateCategoryBanner(e) {
     e.preventDefault();
-    console.log("wpr");
-
     try {
       const bannerArray = []; // Initialize an array to store banner objects
 
       for (let index = 0; index < MainCategories.length; index++) {
         const category = MainCategories[index];
-
         if (CategoryImage[index]) {
           const name = Math.floor(Date.now() / 1000) + '-' + CategoryImage[index].name;
           const storageRef = ref(storage, `banner/${name}`);
@@ -352,22 +405,18 @@ const BannersAdvertisement = () => {
 
       // Add the array of banners as a single document in the 'Banner' collection
       await addDoc(collection(db, 'Banner'), {
-        CategoryBanners: bannerArray,
+        // CategoryBanners: bannerArray,
+        title: "CategoryBanners",
+        data: [{ bannerArray }]
       });
-
-      // Clear the selected images after successful upload
-      SetCategoryImage(Array(MainCategories.length).fill(''));
       toast.success(`Banner for Categories added successfully!`, {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
       console.error('Error uploading images:', error);
     }
+
   }
-
-
-
-
 
 
   /*
@@ -686,7 +735,6 @@ const BannersAdvertisement = () => {
                     <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2">
                       <div className="bg_white">
                         <input type="file" id={`categoreis_${index}`} onChange={(e) => handleCategoryImages(e, index)} hidden />
-
                         {!CategoryImage[index] ? (
                           <label
                             htmlFor={`categoreis_${index}`}

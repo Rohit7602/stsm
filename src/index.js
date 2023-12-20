@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle';
 import { BrowserRouter } from 'react-router-dom';
+import { ImageValidationProvider } from './context/validators';
 
 // Put any other imports below so that CSS from your
 // components takes precedence over default styles.
@@ -13,7 +14,9 @@ import { BrowserRouter } from 'react-router-dom';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
-    <App />
+    <ImageValidationProvider>
+      <App />
+    </ImageValidationProvider>
   </BrowserRouter>
 );
 
