@@ -11,10 +11,10 @@ import { deleteObject, getStorage, ref } from 'firebase/storage';
 import { db } from '../firebase';
 import { Link, NavLink } from 'react-router-dom';
 import Modifyproduct from './Modifyproduct';
+import { useProductsContext } from '../context/productgetter';
 
 const ProductListComponent = () => {
-  const [selectedProduct, setselectedProduct] = useState(null);
-  const [data, setData] = useState([]);
+  const { data, setData } = useProductsContext()
 
 
   /*  *******************************
@@ -64,22 +64,22 @@ const ProductListComponent = () => {
      */
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      let list = [];
-      try {
-        const querySnapshot = await getDocs(collection(db, 'products'));
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          list.push({ id: doc.id, ...doc.data() });
-        });
-        setData([...list]);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     let list = [];
+  //     try {
+  //       const querySnapshot = await getDocs(collection(db, 'products'));
+  //       querySnapshot.forEach((doc) => {
+  //         // doc.data() is never undefined for query doc snapshots
+  //         list.push({ id: doc.id, ...doc.data() });
+  //       });
+  //       setData([...list]);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
 
   /**

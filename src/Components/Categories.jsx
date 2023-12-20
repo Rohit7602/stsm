@@ -13,9 +13,11 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CategoryItems } from '../Common/Helper';
 import { ref, getStorage, deleteObject } from 'firebase/storage';
+import { useSubCategories, useMainCategories } from '../context/categoriesGetter';
+
 const Categories = () => {
-  const [data, setData] = useState([]);
-  const [mainCategoryies, setMainCategory] = useState([]);
+  const mainCategoryies = useMainCategories()
+  const { data, setData } = useSubCategories()
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchvalue, setSearchvalue] = useState('')
 
@@ -25,39 +27,39 @@ const Categories = () => {
     setSelectedCategory(index === selectedCategory ? null : index);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      let list = [];
-      try {
-        const querySnapshot = await getDocs(collection(db, 'sub_categories'));
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          list.push({ id: doc.id, ...doc.data() });
-        });
-        setData([...list]);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     let list = [];
+  //     try {
+  //       const querySnapshot = await getDocs(collection(db, 'sub_categories'));
+  //       querySnapshot.forEach((doc) => {
+  //         // doc.data() is never undefined for query doc snapshots
+  //         list.push({ id: doc.id, ...doc.data() });
+  //       });
+  //       setData([...list]);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      let list = [];
-      try {
-        const querySnapshot = await getDocs(collection(db, 'categories'));
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          list.push({ id: doc.id, ...doc.data() });
-        });
-        setMainCategory([...list]);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     let list = [];
+  //     try {
+  //       const querySnapshot = await getDocs(collection(db, 'categories'));
+  //       querySnapshot.forEach((doc) => {
+  //         // doc.data() is never undefined for query doc snapshots
+  //         list.push({ id: doc.id, ...doc.data() });
+  //       });
+  //       setMainCategory([...list]);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   /*  *******************************
      Delete functionality start 
@@ -67,7 +69,7 @@ const Categories = () => {
 
     try {
       await deleteDoc(doc(db, 'sub_categories', id)).then(() => {
-        if (image.length != 0) {
+        if (image.length !== 0) {
           var st = getStorage();
           var reference = ref(st, image)
           deleteObject(reference)
@@ -90,7 +92,7 @@ const Categories = () => {
   async function handleChangeStatus(id, status) {
     try {
       // Toggle the status between 'publish' and 'hidden'
-      const newStatus = status === 'hidden' ? 'publish' : 'hidden';
+      const newStatus = status === 'hidden' ? 'published' : 'hidden';
       await updateDoc(doc(db, 'sub_categories', id), {
         status: newStatus,
       });

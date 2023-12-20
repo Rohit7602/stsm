@@ -7,6 +7,11 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle';
 import { BrowserRouter } from 'react-router-dom';
 import { ImageValidationProvider } from './context/validators';
+// import { LargeBannerProvider } from './context/BannerGetters';
+import { SubCategoriesProvider } from './context/categoriesGetter';
+import { MainCategoriesProvider } from './context/categoriesGetter';
+import { ProductsProvider } from './context/productgetter';
+
 
 // Put any other imports below so that CSS from your
 // components takes precedence over default styles.
@@ -15,7 +20,13 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <ImageValidationProvider>
-      <App />
+      <SubCategoriesProvider>
+        <MainCategoriesProvider>
+          <ProductsProvider>
+              <App />
+          </ProductsProvider>
+      </MainCategoriesProvider>
+      </SubCategoriesProvider>
     </ImageValidationProvider>
   </BrowserRouter>
 );

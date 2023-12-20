@@ -1,7 +1,6 @@
 import React, { createContext, useContext } from 'react';
 
 const ImageValidationContext = createContext();
-const emptyValkidato = createContext()
 
 export const useImageValidation = () => {
     const context = useContext(ImageValidationContext);
