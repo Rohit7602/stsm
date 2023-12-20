@@ -284,11 +284,12 @@ const AddProduct = () => {
                       <h2 className="fw-400 fs-2sm black mb-0">Basic Information</h2>
                       {/* ist input */}
                       <label htmlFor="Name" className="fs-xs fw-400 mt-3 black">
-                        Name
+                        Name <span className="red ms-1 fs-sm">*</span>
                       </label>
                       <br />
                       <input
-                        type="text" required
+                        type="text"
+                        required
                         className="mt-2 product_input fade_grey fw-400"
                         placeholder="Enter product name"
                         id="Name"
@@ -298,11 +299,12 @@ const AddProduct = () => {
                       <br />
                       {/* 2nd input */}
                       <label htmlFor="short" className="fs-xs fw-400 mt-3 black">
-                        Short Description
+                        Short Description <span className="red ms-1 fs-sm">*</span>
                       </label>{' '}
                       <br />
                       <input
-                        type="text" required
+                        type="text"
+                        required
                         className="mt-2 product_input fade_grey fw-400"
                         placeholder="Enter short description"
                         id="short"
@@ -312,11 +314,12 @@ const AddProduct = () => {
                       <br />
                       {/* 3rd input */}
                       <label htmlFor="des" className="fs-xs fw-400 mt-3 black">
-                        Description
+                        Description <span className="red ms-1 fs-sm">*</span>
                       </label>{' '}
                       <br />
                       <textarea
-                        id="des" required
+                        id="des"
+                        required
                         className="mt-2 product_input resize_none fade_grey fw-400"
                         cols="30"
                         rows="5"
@@ -328,7 +331,9 @@ const AddProduct = () => {
                     {/* [Pricing] */}
                     <div className="product_shadow bg_white p-3">
                       <div className=" d-flex align-items-center w-75 justify-content-between pb-3 mb-1">
-                        <h2 className="fw-400 fs-2sm black mb-0">Have More Varients?</h2>
+                        <h2 className="fw-400 fs-2sm black mb-0">
+                          Have More Varients? <span className="red ms-1 fs-sm">*</span>
+                        </h2>
                         <div className="d-flex align-items-center">
                           <label className="pe-3 me-1" for="varient_yes">
                             Yes
@@ -356,7 +361,8 @@ const AddProduct = () => {
                       </div>
                       {varient === true ? (
                         <div className="text-end">
-                          <button onClick={HandleAddVarients}
+                          <button
+                            onClick={HandleAddVarients}
                             type="button"
                             className="fs-2sm fw-400 color_green add_varient_btn">
                             +Add Varient
@@ -364,13 +370,13 @@ const AddProduct = () => {
                         </div>
                       ) : null}
                       {varient === true ? (
-
                         variants.map((variant, index) => (
                           <div key={index} className="varient_form_border">
                             <div className="d-flex align-items-center justify-content-between">
-                              <input required
+                              <input
+                                required
                                 className="varient_value fs-2sm fw-400 color_red"
-                                placeholder='Enter Varient Name'
+                                placeholder="Enter Varient Name"
                                 type="text"
                                 value={variant.VarintName}
                                 onChange={(e) =>
@@ -388,7 +394,8 @@ const AddProduct = () => {
                                 <label htmlFor="origi" className="fs-xs fw-400 mt-3 black">
                                   Original Price
                                 </label>
-                                <input required
+                                <input
+                                  required
                                   type="number"
                                   className="mt-2 product_input fade_grey fw-400"
                                   placeholder="₹ 0.00"
@@ -417,11 +424,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                            ...v,
-                                            discountType: selectedDiscountType,
-                                            // Reset discount value when changing the discount type to "Amount"
-                                            discount: selectedDiscountType === 'Amount' ? 0 : v.discount,
-                                          }
+                                              ...v,
+                                              discountType: selectedDiscountType,
+                                              // Reset discount value when changing the discount type to "Amount"
+                                              discount:
+                                                selectedDiscountType === 'Amount' ? 0 : v.discount,
+                                            }
                                           : v
                                       )
                                     );
@@ -434,10 +442,13 @@ const AddProduct = () => {
                                 <label htmlFor="ddisc" className="fs-xs fw-400 mt-3 black">
                                   Discount
                                 </label>
-                                <input required
+                                <input
+                                  required
                                   type="number"
                                   className="mt-2 product_input fade_grey fw-400"
-                                  placeholder={variant.discountType !== 'Percentage' ? '₹ 0.00' : '%'}
+                                  placeholder={
+                                    variant.discountType !== 'Percentage' ? '₹ 0.00' : '%'
+                                  }
                                   id="ddisc"
                                   value={variant.discount}
                                   onChange={(e) =>
@@ -461,7 +472,8 @@ const AddProduct = () => {
                               <label htmlFor="origi" className="fs-xs fw-400 mt-3 black">
                                 Original Price
                               </label>
-                              <input required
+                              <input
+                                required
                                 type="number"
                                 className="mt-2 product_input fade_grey fw-400"
                                 placeholder="₹ 0.00"
@@ -500,7 +512,8 @@ const AddProduct = () => {
                               <label htmlFor="ddisc" className="fs-xs fw-400 mt-3 black">
                                 Discount
                               </label>
-                              <input required
+                              <input
+                                required
                                 type="number"
                                 className="mt-2 product_input fade_grey fw-400"
                                 placeholder={discountType !== 'Percentage' ? '₹ 0.00' : '%'}
@@ -523,9 +536,12 @@ const AddProduct = () => {
                     </div>
                     {/* images  */}
                     <div className="product_shadow bg_white p-3 mt-4">
-                      <h2 className="fw-400 fs-2sm black mb-0">Images</h2>
+                      <h2 className="fw-400 fs-2sm black mb-0">
+                        Images <span className="red ms-1 fs-sm">*</span>
+                      </h2>
                       <div className="d-flex flex-wrap gap-4 mt-3 align-items-center">
-                        <input required
+                        <input
+                          required
                           type="file"
                           id="file22"
                           hidden
@@ -565,7 +581,9 @@ const AddProduct = () => {
                 {/* Status */}
                 <div className="product_shadow bg_white p-3 mt-3 mt-xxl-0">
                   <div className="product_borderbottom">
-                    <h2 className="fw-400 fs-2sm black mb-0">Status</h2>
+                    <h2 className="fw-400 fs-2sm black mb-0">
+                      Status <span className="red ms-1 fs-sm">*</span>
+                    </h2>
                     <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
                       <label className="check fw-400 fs-sm black mb-0">
                         Published
@@ -620,13 +638,16 @@ const AddProduct = () => {
 
                 {/* invertory */}
                 <div className="mt-4 product_shadow bg_white p-3">
-                  <h2 className="fw-400 fs-2sm black mb-0">Inventory</h2>
+                  <h2 className="fw-400 fs-2sm black mb-0">
+                    Inventory <span className="red ms-1 fs-sm">*</span>
+                  </h2>
                   {/* ist input */}
                   <label htmlFor="sku" className="fs-xs fw-400 mt-3 black">
                     SKU
                   </label>
                   <br />
-                  <input required
+                  <input
+                    required
                     type="text"
                     className="mt-2 product_input fade_grey fw-400"
                     placeholder="6HK3I5"
@@ -643,14 +664,14 @@ const AddProduct = () => {
                   <br />
                   <div className="position-relative">
                     <div className="product_input d-flex align-items-center justify-content-between mt-2">
-                      <input required
+                      <input
+                        required
                         type="text"
                         className="black fw-400 border-0 outline_none bg-white"
                         placeholder="50"
                         disabled
                         id="total"
                         value={totalStock}
-
                       />{' '}
                       <img onClick={() => setStockpopup(true)} src={addIcon} alt="addIcon" />
                     </div>
@@ -683,7 +704,9 @@ const AddProduct = () => {
                             onChange={handleSetTotalPrice}
                           />
                         </div>
-                        <button className="stock_save_btn d-flex align-items-center" onClick={HandleStockPopUpSave}>
+                        <button
+                          className="stock_save_btn d-flex align-items-center"
+                          onClick={HandleStockPopUpSave}>
                           <img src={whiteSaveicon} alt="whiteSaveicon" />
                           <p className="fs-sm fw-400 white ms-2 mb-0">Save</p>
                         </button>
@@ -694,7 +717,9 @@ const AddProduct = () => {
                 </div>
                 {/* Categories */}
                 <div className="mt-4 product_shadow bg_white p-3">
-                  <lable className="fw-400 fs-2sm black mb-0">Categories</lable>
+                  <lable className="fw-400 fs-2sm black mb-0">
+                    Categories <span className="red ms-1 fs-sm">*</span>
+                  </lable>
                   <Dropdown className="category_dropdown">
                     <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
                       <div className="product_input">
@@ -716,26 +741,28 @@ const AddProduct = () => {
                           />
                         </div>
                         <div>
-                          {data.filter((items) => {
-                            return (
-                              searchvalue.toLowerCase() === '' ? items : (items.title.toLowerCase().includes(searchvalue))
-                            )
-                          }).map((category) => (
-                            <Dropdown.Item>
-                              <div
-                                className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                  ? 'selected'
-                                  : ''
+                          {data
+                            .filter((items) => {
+                              return searchvalue.toLowerCase() === ''
+                                ? items
+                                : items.title.toLowerCase().includes(searchvalue);
+                            })
+                            .map((category) => (
+                              <Dropdown.Item>
+                                <div
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
                                   }`}
-                                onClick={() => handleSelectCategory(category)}
-                              >
-                                <p className="fs-xs fw-400 black mb-0">{category.title}</p>
-                                {selectedCategory && selectedCategory.id === category.id && (
-                                  <img src={savegreenicon} alt="savegreenicon" />
-                                )}
-                              </div>
-                            </Dropdown.Item>
-                          ))}
+                                  onClick={() => handleSelectCategory(category)}>
+                                  <p className="fs-xs fw-400 black mb-0">{category.title}</p>
+                                  {selectedCategory && selectedCategory.id === category.id && (
+                                    <img src={savegreenicon} alt="savegreenicon" />
+                                  )}
+                                </div>
+                              </Dropdown.Item>
+                            ))}
                         </div>
                       </div>
                     </Dropdown.Menu>
