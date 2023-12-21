@@ -16,14 +16,21 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { storage } from '../firebase';
 import { useRef } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useProductsContext } from '../context/productgetter';
 import { useSubCategories } from '../context/categoriesGetter';
 
 
 const AddProduct = () => {
+  // const { data } = useProductsContext()
   const [name, setName] = useState('');
   const [shortDes, setShortDes] = useState('');
   const [longDes, setLongDes] = useState('');
   const [varient, setVarient] = useState(false);
+
+  // context 
+  const { addData } = useProductsContext();
+  const { data } = useSubCategories()
+
 
 
 
@@ -34,7 +41,7 @@ const AddProduct = () => {
   const [stockPrice, setStockPrice] = useState('')
   const [categories, setCategories] = useState('');
   const [imageUpload22, setImageUpload22] = useState([]);
-  const [data, setData] = useState([]);
+  // const [categoriesdata, setSubcategoriesData] = useState([]);
   const [searchdata, setSearchdata] = useState([]);
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [stockpopup, setStockpopup] = useState(false);
@@ -172,7 +179,6 @@ const AddProduct = () => {
             : {
               varients: variants
             }), // Include the actual list of variants if varient is true
-
         });
         setSearchdata([]);
         setLoaderstatus(false);
@@ -180,6 +186,7 @@ const AddProduct = () => {
           position: toast.POSITION.TOP_RIGHT,
         });
         handleReset();
+        addData(docRef);
       } catch (e) {
         toast.error(e, {
           position: toast.POSITION.TOP_RIGHT,
@@ -195,7 +202,7 @@ const AddProduct = () => {
     const selectedImages = Array.from(event.target.files);
 
     selectedImages.forEach((selectedFile) => {
-      const allowedExtensions = ['.png', '.jpeg', '.jpg'];
+      const allowedExtensions = ['.png', '.jpeg', '.jpg', '.webp'];
       const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
 
       if (!allowedExtensions.includes(`.${fileExtension}`)) {
@@ -215,22 +222,22 @@ const AddProduct = () => {
 
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      let list = [];
-      try {
-        const querySnapshot = await getDocs(collection(db, 'sub_categories'));
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          list.push({ id: doc.id, ...doc.data() });
-        });
-        setData([...list]);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     let list = [];
+  //     try {
+  //       const querySnapshot = await getDocs(collection(db, 'sub_categories'));
+  //       querySnapshot.forEach((doc) => {
+  //         // doc.data() is never undefined for query doc snapshots
+  //         list.push({ id: doc.id, ...doc.data() });
+  //       });
+  //       setSubcategoriesData([...list]);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   // const  SubCategories  = useSubCategories()
 

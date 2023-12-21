@@ -21,10 +21,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../firebase';
-import NewCategory from './NewCategory';
+import { useImageHandleContext } from '../context/ImageHandler';
+import { useMainCategories, useSubCategories } from '../context/categoriesGetter';
 const Categories = () => {
-  const [data, setData] = useState([]);
-  const [mainCategory, setMainCategory] = useState([]);
+  // const [data, setData] = useState([]);
+  // const [mainCategory, setMainCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [name, setName] = useState();
   const [imageupload, setImageupload] = useState('');
@@ -37,6 +38,14 @@ const Categories = () => {
 
 
 
+
+  // context 
+  const { ImageisValidOrNot } = useImageHandleContext()
+  const { categoreis, updateData, addData } = useMainCategories()
+  const { data } = useSubCategories()
+
+
+
   const pubref = useRef();
   const hidref = useRef();
   const handleModifyClicked = (index) => {
@@ -46,22 +55,12 @@ const Categories = () => {
   // handle image upload functionality start from here 
   function handelUpload(e) {
     const selectedFile = e.target.files[0];
-    if (!selectedFile) {
-      toast.error("please select an image file ")
+    if (!ImageisValidOrNot(selectedFile)) {
+      toast.error("Invalid file type. Please select a valid image file.");
       setImageupload(null);
     } else {
-      const allowedExtensions = ['.png', '.jpeg', '.jpg'];
-      const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
-
-      if (!allowedExtensions.includes(`.${fileExtension}`)) {
-        toast.error('Invalid file type. Please select a valid image file.');
-        setImageupload(null);
-      } else {
-        setImageupload(selectedFile);
-      }
-
+      setImageupload(selectedFile);
     }
-
 
   }
 
@@ -101,6 +100,8 @@ const Categories = () => {
         HandleResetForm()
         setAddCatPopup(false)
         setRefreshData(prevState => !prevState)
+        // context 
+        addData(docRef)
       }
     } catch (e) {
       toast.error(e, {
@@ -125,46 +126,46 @@ const Categories = () => {
   function handleDelete22(index) {
     setImageupload();
   }
-  useEffect(() => {
-    const fetchDataSubCategories = async () => {
-      let list = [];
-      try {
-        const querySnapshot = await getDocs(collection(db, 'sub_categories'));
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          list.push({ id: doc.id, ...doc.data() });
-        });
-        setData([...list]);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchDataSubCategories();
-  }, []);
+  // useEffect(() => {
+  //   const fetchDataSubCategories = async () => {
+  //     let list = [];
+  //     try {
+  //       const querySnapshot = await getDocs(collection(db, 'sub_categories'));
+  //       querySnapshot.forEach((doc) => {
+  //         // doc.data() is never undefined for query doc snapshots
+  //         list.push({ id: doc.id, ...doc.data() });
+  //       });
+  //       setData([...list]);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchDataSubCategories();
+  // }, []);
 
-  useEffect(() => {
-    const fetchDataCategories = async () => {
-      let list = [];
-      try {
-        const querySnapshot = await getDocs(collection(db, 'categories'));
-        querySnapshot.forEach((doc) => {
-          list.push({ id: doc.id, ...doc.data() });
-        });
-        setMainCategory([...list]);
-      } catch (error) {
-        console.log('Error fetching data:', error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchDataCategories = async () => {
+  //     let list = [];
+  //     try {
+  //       const querySnapshot = await getDocs(collection(db, 'categories'));
+  //       querySnapshot.forEach((doc) => {
+  //         list.push({ id: doc.id, ...doc.data() });
+  //       });
+  //       setMainCategory([...list]);
+  //     } catch (error) {
+  //       console.log('Error fetching data:', error);
+  //     }
+  //   };
 
-    // Call fetchDataCategories when refreshData changes
-    if (initialRender || refreshData) {
-      fetchDataCategories();
+  //   // Call fetchDataCategories when refreshData changes
+  //   if (initialRender || refreshData) {
+  //     fetchDataCategories();
 
-      // Reset the state variables after running fetchDataCategories
-      setInitialRender(false);
-      setRefreshData(false);
-    }
-  }, [initialRender, refreshData]);
+  //     // Reset the state variables after running fetchDataCategories
+  //     setInitialRender(false);
+  //     setRefreshData(false);
+  //   }
+  // }, [initialRender, refreshData]);
 
 
 
@@ -178,14 +179,14 @@ const Categories = () => {
 
   useEffect(() => {
     // Check if all checkboxes are checked
-    const allChecked = mainCategory.every((item) => item.checked);
+    const allChecked = categoreis.every((item) => item.checked);
     setSelectAll(allChecked);
-  }, [mainCategory]);
+  }, [categoreis]);
 
   // Main checkbox functionality start from here 
 
   const handleMainCheckboxChange = () => {
-    const updatedData = mainCategory.map((item) => ({
+    const updatedData = categoreis.map((item) => ({
       ...item,
       checked: !selectAll,
     }));
@@ -195,8 +196,8 @@ const Categories = () => {
 
   // Datacheckboxes functionality strat from here 
   const handleCheckboxChange = (index) => {
-    const updatedData = [...mainCategory];
-    updatedData[index].checked = !mainCategory[index].checked;
+    const updatedData = [...categoreis];
+    updatedData[index].checked = !categoreis[index].checked;
     setData(updatedData);
 
     // Check if all checkboxes are checked
@@ -210,7 +211,7 @@ const Categories = () => {
       Checbox  functionality end 
     *********************************************   **/
 
-  
+
 
   /*  *******************************
       get count of items in maincategory   functionality start 
@@ -234,17 +235,18 @@ const Categories = () => {
   async function handleChangeStatus(id, status) {
     try {
       // Toggle the status between 'publish' and 'hidden'
-      const newStatus = status === 'hidden' ? 'publish' : 'hidden';
+      const newStatus = status === 'hidden' ? 'published' : 'hidden';
       await updateDoc(doc(db, 'categories', id), {
         status: newStatus,
       });
       alert("status Change succesffuly ")
-      let list = [];
-      const querySnapshot = await getDocs(collection(db, 'categories'));
-      querySnapshot.forEach((doc) => {
-        list.push({ id: doc.id, ...doc.data() });
-      });
-      setMainCategory([...list]);
+      // let list = [];
+      // const querySnapshot = await getDocs(collection(db, 'categories'));
+      // querySnapshot.forEach((doc) => {
+      //   list.push({ id: doc.id, ...doc.data() });
+      // });
+      // setMainCategory([...list]);
+      updateData({ id, status: newStatus })
     } catch (error) {
       console.log(error);
     }
@@ -441,7 +443,7 @@ const Categories = () => {
                       <h3 className="fs-sm fw-400 black mb-0">Action</h3>
                     </th>
                   </tr>
-                  {mainCategory.filter((data) => {
+                  {categoreis.filter((data) => {
                     return search.toLowerCase() === '' ? data : (data.title.toLowerCase().includes(searchvalue))
                   }).map((value, index) => {
                     return (

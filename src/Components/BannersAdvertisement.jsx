@@ -17,6 +17,7 @@ import { useLargeBannerContext } from '../context/BannerGetters';
 import { useMainCategories } from '../context/categoriesGetter';
 
 
+
 //  banner advertisement up start from here
 // check accordian and save button
 
@@ -57,7 +58,8 @@ const BannersAdvertisement = () => {
   /** *******************************************************
       Fetching main categoreis  end 
   */
-
+  
+  
   /*
  *********************************************************
  Large Banner   functionaltiy start from here 
@@ -248,23 +250,23 @@ const BannersAdvertisement = () => {
   async function handleSaveBannerSliderSale() {
     try {
       if (BannerSaleImg.every(Boolean)) {
-        let image_links = []
+        let imagelinks = []
         for await (let files of BannerSaleImg) {
           const name = Math.floor(Date.now() / 1000) + '-' + files.name;
           const storageRef = ref(storage, `banner/${name}`);
           const uploadTask = await uploadBytesResumable(storageRef, files);
           const url = await getDownloadURL(storageRef);
-          image_links.push(url)
+          imagelinks.push(url)
         }
 
-        if (image_links.length > 0) {
+        if (imagelinks.length > 0) {
           const docRef = await addDoc(collection(db, 'Banner'), {
             // Sales_Offers: [{
             //   title: 'Sales/Offers',
             //   imgUrl: [url],
             // }]
             title: "SalesOffers",
-            data: [{ image_links }]
+            data: [{ imagelinks }]
           });
         } else {
           alert('Please select at least one Image')
@@ -306,16 +308,16 @@ const BannersAdvertisement = () => {
   async function HandleSaveAnimalSuppliments() {
     try {
       if (AnimalSuplimentsImages.every(Boolean)) {
-        let links = []
+        let imagelinks = []
         for await (let files of AnimalSuplimentsImages) {
           const name = Math.floor(Date.now() / 1000) + '-' + files.name;
           const storageRef = ref(storage, `banner/${name}`);
           const uploadTask = await uploadBytesResumable(storageRef, files);
           const url = await getDownloadURL(storageRef);
-          links.push(url)
+          imagelinks.push(url)
         }
 
-        if (links.length > 0) {
+        if (imagelinks.length > 0) {
           try {
             const docRef = await addDoc(collection(db, 'Banner'), {
               // AnimalSupliments: [
@@ -325,7 +327,7 @@ const BannersAdvertisement = () => {
               //   }
               // ]
               title: "AnimalSupliments",
-              data: [{ links }]
+              data: [{ imagelinks }]
             });
           }
           catch (error) {
@@ -392,7 +394,7 @@ const BannersAdvertisement = () => {
   async function handleUpdateCategoryBanner(e) {
     e.preventDefault();
     try {
-      const bannerArray = []; // Initialize an array to store banner objects
+      const imagelinks = []; // Initialize an array to store banner objects
 
       for (let index = 0; index < MainCategories.length; index++) {
         const category = MainCategories[index];
@@ -403,7 +405,7 @@ const BannersAdvertisement = () => {
           const url = await getDownloadURL(storageRef);
 
           // Push the banner object into the array
-          bannerArray.push({
+          imagelinks.push({
             categoryId: category.id,
             categoryTitle: category.title,
             imgUrl: url,
@@ -415,7 +417,7 @@ const BannersAdvertisement = () => {
       await addDoc(collection(db, 'Banner'), {
         // CategoryBanners: bannerArray,
         title: "CategoryBanners",
-        data: [{ bannerArray }]
+        data: [{ imagelinks }]
       });
       toast.success(`Banner for Categories added successfully!`, {
         position: toast.POSITION.TOP_RIGHT,

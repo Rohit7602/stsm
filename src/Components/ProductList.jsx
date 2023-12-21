@@ -14,7 +14,8 @@ import Modifyproduct from './Modifyproduct';
 import { useProductsContext } from '../context/productgetter';
 
 const ProductListComponent = () => {
-  const { data, setData } = useProductsContext()
+  const { data, setData, updateData, deleteData } = useProductsContext()
+
 
 
   /*  *******************************
@@ -40,6 +41,7 @@ const ProductListComponent = () => {
     setSelectAll(!selectAll);
   };
 
+  
   // Datacheckboxes functionality strat from here 
   const handleCheckboxChange = (index) => {
     const updatedData = [...data];
@@ -103,13 +105,7 @@ const ProductListComponent = () => {
         status: newStatus,
       });
       alert("status Change succesffuly ")
-      let updatedData = []
-      const snapshots = await getDocs(collection(db, 'products'));
-      snapshots.forEach((data) => {
-        updatedData.push({ id: data.id, ...data.data() })
-
-      })
-      setData([...updatedData])
+      updateData({ id, status: newStatus })
 
     } catch (error) {
       console.log(error)
@@ -140,14 +136,13 @@ const ProductListComponent = () => {
     try {
       var st = getStorage();
       await deleteDoc(doc(db, 'products', id)).then(() => {
-
         for (const images of image) {
           if (image.length !== 0) {
             var reference = ref(st, images)
             deleteObject(reference)
           }
         }
-        setData(data.filter((item) => item.id !== id));
+        deleteData(id)
       });
     } catch (error) {
       console.log(error);

@@ -11,6 +11,7 @@ import { ImageValidationProvider } from './context/validators';
 import { SubCategoriesProvider } from './context/categoriesGetter';
 import { MainCategoriesProvider } from './context/categoriesGetter';
 import { ProductsProvider } from './context/productgetter';
+import { ImageHandleProvider } from './context/ImageHandler'
 
 
 // Put any other imports below so that CSS from your
@@ -23,7 +24,9 @@ root.render(
       <SubCategoriesProvider>
         <MainCategoriesProvider>
           <ProductsProvider>
+            <ImageHandleProvider>
               <App />
+            </ImageHandleProvider>
           </ProductsProvider>
       </MainCategoriesProvider>
       </SubCategoriesProvider>

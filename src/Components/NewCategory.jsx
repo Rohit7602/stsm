@@ -15,6 +15,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../firebase';
 import { NavLink, Link } from 'react-router-dom';
+import { useImageHandleContext } from '../context/ImageHandler';
+import { useSubCategories, useMainCategories } from '../context/categoriesGetter';
 // import { Toast } from 'react-toastify/dist/components';
 
 const NewCategory = () => {
@@ -24,8 +26,11 @@ const NewCategory = () => {
   const [category, setCategory] = useState();
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [searchvalue, setSearchvalue] = useState('')
+  const { ImageisValidOrNot } = useImageHandleContext()
 
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const { addData } = useSubCategories()
+  const { categoreis } = useMainCategories()
 
   const handleSelectCategory = (category) => {
     setSearchvalue('');
@@ -39,7 +44,7 @@ const NewCategory = () => {
 
 
 
-  const [mainCategory, setMainCategory] = useState([]);
+  // const [mainCategory, setMainCategory] = useState([]);
 
   async function handleSave(e) {
     e.preventDefault();
@@ -71,6 +76,7 @@ const NewCategory = () => {
           position: toast.POSITION.TOP_RIGHT,
         });
         handleReset();
+        addData(docRef)
       }
     } catch (e) {
       toast.error(e, {
@@ -83,19 +89,11 @@ const NewCategory = () => {
   const handelUpload = (e) => {
     const selectedFile = e.target.files[0];
 
-    if (!selectedFile) {
+    if (!ImageisValidOrNot(selectedFile)) {
       toast.error("please select an image file ")
       setImageupload(null);
     } else {
-      const allowedExtensions = ['.png', '.jpeg', '.jpg'];
-      const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
-
-      if (!allowedExtensions.includes(`.${fileExtension}`)) {
-        toast.error('Invalid file type. Please select a valid image file.');
-        setImageupload(null);
-      } else {
-        setImageupload(selectedFile);
-      }
+      setImageupload(selectedFile)
     }
   };
   function handleReset() {
@@ -110,22 +108,22 @@ const NewCategory = () => {
     setImageupload();
   }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      let list = [];
-      try {
-        const querySnapshot = await getDocs(collection(db, 'categories'));
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          list.push({ id: doc.id, ...doc.data() });
-        });
-        setMainCategory([...list]);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     let list = [];
+  //     try {
+  //       const querySnapshot = await getDocs(collection(db, 'categories'));
+  //       querySnapshot.forEach((doc) => {
+  //         // doc.data() is never undefined for query doc snapshots
+  //         list.push({ id: doc.id, ...doc.data() });
+  //       });
+  //       setMainCategory([...list]);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   if (loaderstatus) {
     return (
@@ -292,7 +290,7 @@ const NewCategory = () => {
                           />
                         </div>
                         <div>
-                          {mainCategory
+                          {categoreis
                             .filter((items) => {
                               return (
                                 searchvalue.toLowerCase() === '' ||
@@ -315,7 +313,7 @@ const NewCategory = () => {
                                 </div>
                               </Dropdown.Item>
                             ))}
-                          {searchvalue && !mainCategory.some((category) => category.title.toLowerCase().includes(searchvalue.toLowerCase())) && (
+                          {searchvalue && !categoreis.some((category) => category.title.toLowerCase().includes(searchvalue.toLowerCase())) && (
                             <NavLink to="/newcategory/parentcategories">
                               <button className="addnew_category_btn fs-xs green">
                                 +Add <span className="black">"{searchvalue}"</span> in Parent Category

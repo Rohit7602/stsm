@@ -16,12 +16,10 @@ import { ref, getStorage, deleteObject } from 'firebase/storage';
 import { useSubCategories, useMainCategories } from '../context/categoriesGetter';
 
 const Categories = () => {
-  const mainCategoryies = useMainCategories()
-  const { data, setData } = useSubCategories()
+  const { categoreis } = useMainCategories()
+  const { data, updateData, deleteData } = useSubCategories()
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchvalue, setSearchvalue] = useState('')
-
-
 
   const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);
@@ -74,7 +72,8 @@ const Categories = () => {
           var reference = ref(st, image)
           deleteObject(reference)
         }
-        setData(data.filter((item) => item.id !== id));
+        deleteData(id)
+
       });
     } catch (error) {
       console.log(error);
@@ -97,12 +96,13 @@ const Categories = () => {
         status: newStatus,
       });
       alert("status Change succesffuly ")
-      let list = [];
-      const querySnapshot = await getDocs(collection(db, 'sub_categories'));
-      querySnapshot.forEach((doc) => {
-        list.push({ id: doc.id, ...doc.data() });
-      });
-      setData([...list]);
+      // let list = [];
+      // const querySnapshot = await getDocs(collection(db, 'sub_categories'));
+      // querySnapshot.forEach((doc) => {
+      //   list.push({ id: doc.id, ...doc.data() });
+      // });
+      // setData([...list]);
+      updateData({ id, status: newStatus })
     } catch (error) {
       console.log(error);
     }
@@ -159,7 +159,7 @@ const Categories = () => {
   //  get parent category  function  start from here 
 
   const getParentCategoryName = (catID) => {
-    const mainCategory = mainCategoryies.find((category) => category.id === catID);
+    const mainCategory = categoreis.find((category) => category.id === catID);
     return mainCategory ? mainCategory.title : '';
   };
 
@@ -225,7 +225,7 @@ const Categories = () => {
                   </th>
                 </tr>
                 {data.filter((item) => {
-                  const mainCategory = mainCategoryies.find((category) => category.id === item.cat_ID);
+                  const mainCategory = categoreis.find((category) => category.id === item.cat_ID);
                   return search.toLowerCase() === '' ? item : (item.title.toLowerCase().includes(searchvalue) || mainCategory.title.toLowerCase().includes(searchvalue))
                 }).map((value, index) => {
                   return (
