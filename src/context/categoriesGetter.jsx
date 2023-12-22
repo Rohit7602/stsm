@@ -1,7 +1,9 @@
 
 import  { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { getDocs, collection,onSnapshot } from 'firebase/firestore';
-import { db } from '../firebase'; // Import your Firebase configuration
+import { db } from '../firebase';
+
+// Import your Firebase configuration
 
 const SubCategoriesContext = createContext();
 
@@ -87,7 +89,11 @@ export const SubCategoriesProvider = ({ children }) => {
             {children}
         </SubCategoriesContext.Provider>
     );
+
+    
 };
+
+
 
 
 const MainCategoriesContext = createContext();

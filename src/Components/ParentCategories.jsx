@@ -4,19 +4,13 @@ import search from '../Images/svgs/search.svg';
 import dropdownDots from '../Images/svgs/dots2.svg';
 import eye_icon from '../Images/svgs/eye.svg';
 import pencil_icon from '../Images/svgs/pencil.svg';
-import delete_icon from '../Images/svgs/delte.svg';
 import deleteicon from '../Images/svgs/deleteicon.svg';
 import updown_icon from '../Images/svgs/arross.svg';
-import categoryImg from '../Images/Png/mobile_icon_40.png';
 import saveicon from '../Images/svgs/saveicon.svg';
-import Modifyproduct from './Modifyproduct';
 import { useRef } from 'react';
 import { collection, doc, getDocs, deleteDoc, addDoc, updateDoc } from 'firebase/firestore';
-import { query, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { CategoryItems } from '../Common/Helper';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -34,7 +28,6 @@ const Categories = () => {
   const [searchvalue, setSearchvalue] = useState('')
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
-  const [initialRender, setInitialRender] = useState(true);
 
 
 
@@ -190,15 +183,16 @@ const Categories = () => {
       ...item,
       checked: !selectAll,
     }));
-    setMainCategory(updatedData);
+    updateData(updatedData);
     setSelectAll(!selectAll);
+
   };
 
   // Datacheckboxes functionality strat from here 
   const handleCheckboxChange = (index) => {
     const updatedData = [...categoreis];
     updatedData[index].checked = !categoreis[index].checked;
-    setData(updatedData);
+    updateData(updatedData);
 
     // Check if all checkboxes are checked
     const allChecked = updatedData.every((item) => item.checked);
@@ -528,6 +522,7 @@ const Categories = () => {
             </div>
           </div>
         </div>
+        <ToastContainer></ToastContainer>
       </div>
     );
   };

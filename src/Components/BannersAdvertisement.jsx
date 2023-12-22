@@ -35,7 +35,7 @@ const BannersAdvertisement = () => {
      Fetching main categoreis 
   */
 
-  const MainCategories = useMainCategories()
+  const { categoreis } = useMainCategories()
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -361,7 +361,7 @@ const BannersAdvertisement = () => {
  Categoroies  Banner functionaltiy start 
 */
 
-  const [CategoryImage, SetCategoryImage] = useState(Array(MainCategories.length).fill(''));
+  const [CategoryImage, SetCategoryImage] = useState(Array(categoreis.length).fill(''));
 
   async function handleCategoryImages(e, index) {
     let file = e.target.files[0];
@@ -396,8 +396,8 @@ const BannersAdvertisement = () => {
     try {
       const imagelinks = []; // Initialize an array to store banner objects
 
-      for (let index = 0; index < MainCategories.length; index++) {
-        const category = MainCategories[index];
+      for (let index = 0; index < categoreis.length; index++) {
+        const category = categoreis[index];
         if (CategoryImage[index]) {
           const name = Math.floor(Date.now() / 1000) + '-' + CategoryImage[index].name;
           const storageRef = ref(storage, `banner/${name}`);
@@ -790,7 +790,7 @@ const BannersAdvertisement = () => {
                 <p className="fs-sm fw-600 black mb-0 ms-2">Update Banner</p>
               </button>
             </div>
-            {MainCategories.map((data, index) => {
+            {categoreis.map((data, index) => {
               return (
                 <Accordion.Item className="py-1 bg-white rounded" eventKey={index}>
                   <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">

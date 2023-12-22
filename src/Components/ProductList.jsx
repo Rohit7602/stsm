@@ -14,8 +14,7 @@ import Modifyproduct from './Modifyproduct';
 import { useProductsContext } from '../context/productgetter';
 
 const ProductListComponent = () => {
-  const { data, setData, updateData, deleteData } = useProductsContext()
-
+  const { data, updateData, deleteData } = useProductsContext()
 
 
   /*  *******************************
@@ -37,21 +36,23 @@ const ProductListComponent = () => {
       ...item,
       checked: !selectAll,
     }));
-    setData(updatedData);
+    updateData(updatedData);
     setSelectAll(!selectAll);
   };
 
-  
+
   // Datacheckboxes functionality strat from here 
   const handleCheckboxChange = (index) => {
     const updatedData = [...data];
     updatedData[index].checked = !data[index].checked;
-    setData(updatedData);
+    updateData(updatedData);
 
     // Check if all checkboxes are checked
     const allChecked = updatedData.every((item) => item.checked);
     setSelectAll(allChecked);
   };
+
+  
 
 
 

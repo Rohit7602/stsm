@@ -16,8 +16,8 @@ import { ref, getStorage, deleteObject } from 'firebase/storage';
 import { useSubCategories, useMainCategories } from '../context/categoriesGetter';
 
 const Categories = () => {
-  const { categoreis } = useMainCategories()
-  const { data, updateData, deleteData } = useSubCategories()
+  const { categoreis } = useMainCategories();
+  const { data, updateData, deleteData } = useSubCategories();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchvalue, setSearchvalue] = useState('')
 
@@ -135,18 +135,19 @@ const Categories = () => {
       ...item,
       checked: !selectAll,
     }));
-    setData(updatedData);
+    updateData(updatedData);
     setSelectAll(!selectAll);
   };
   // Datacheckboxes functionality strat from here 
   const handleCheckboxChange = (index) => {
     const updatedData = [...data];
     updatedData[index].checked = !data[index].checked;
-    setData(updatedData);
+    updateData(updatedData);
 
     // Check if all checkboxes are checked
     const allChecked = updatedData.every((item) => item.checked);
     setSelectAll(allChecked);
+    
   };
 
 
