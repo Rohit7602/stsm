@@ -4,9 +4,6 @@ const ImageValidationContext = createContext();
 
 export const useImageValidation = () => {
     const context = useContext(ImageValidationContext);
-    if (!context) {
-        throw new Error('useImageValidation must be used within an ImageValidationProvider');
-    }
     return context;
 };
 

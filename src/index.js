@@ -12,6 +12,8 @@ import { SubCategoriesProvider } from './context/categoriesGetter';
 import { MainCategoriesProvider } from './context/categoriesGetter';
 import { ProductsProvider } from './context/productgetter';
 import { ImageHandleProvider } from './context/ImageHandler'
+import { BannerDataProvider } from './context/BannerGetters';
+
 
 
 // Put any other imports below so that CSS from your
@@ -25,10 +27,12 @@ root.render(
         <MainCategoriesProvider>
           <ProductsProvider>
             <ImageHandleProvider>
-              <App />
+              <BannerDataProvider>
+                <App />
+              </BannerDataProvider>
             </ImageHandleProvider>
           </ProductsProvider>
-      </MainCategoriesProvider>
+        </MainCategoriesProvider>
       </SubCategoriesProvider>
     </ImageValidationProvider>
   </BrowserRouter>

@@ -13,8 +13,10 @@ import { getDocs, collection, addDoc } from 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useImageValidation } from '../context/validators';
+import { useImageHandleContext } from '../context/ImageHandler';
 import { useLargeBannerContext } from '../context/BannerGetters';
 import { useMainCategories } from '../context/categoriesGetter';
+import { UseBannerData } from '../context/BannerGetters';
 
 
 
@@ -22,9 +24,66 @@ import { useMainCategories } from '../context/categoriesGetter';
 // check accordian and save button
 
 const BannersAdvertisement = () => {
+  // context 
+  const { BannerData } = UseBannerData()
+  const { ImageisValidOrNot } = useImageHandleContext();
+  const { validateImage } = useImageValidation();
+  const { categoreis } = useMainCategories();
+
+
+  useEffect(() => {
+    if (BannerData) {
+      const selectedImages = {};
+
+      BannerData.forEach((item) => {
+        const title = item.title.toLowerCase();
+        const imagelinks = item.data[0]?.imagelinks;
+
+        if (imagelinks) {
+          selectedImages[title] = imagelinks.map((itemurl) => itemurl.imgUrl);
+        }
+      });
+
+      // Now you have an object with selected images for each title
+      console.log(selectedImages);
+
+      // Example: Accessing images for largebanner
+      if (selectedImages['largebanner']) {
+        setSelectedImagesLargeBanner(selectedImages['largebanner']);
+      }
+
+      // Example: Accessing images for smallpatti
+      if (selectedImages['smallpattbanner']) {
+        // console.log("selectd image working if ")
+        // Handle smallpatti case
+        setselectedImagesSmallPatii(selectedImages['smallpattbanner']);
+      }
+
+      // Example: Accessing images for categories
+      if (selectedImages['categorybanners']) {
+        // Handle categories case
+        // console.log("selectedImages categories working ")
+        SetCategoryImage(selectedImages['categorybanners']);
+      }
+      if (selectedImages['salesoffers']) {
+        // Handle categories case
+        // console.log("selectedImages categories working ")
+        SetBannerSaleImg(selectedImages['salesoffers']);
+      }
+      if (selectedImages['animalsupliments']) {
+        // Handle categories case
+        // console.log("selectedImages categories working ")
+        SetAnimalSuplimentsImages(selectedImages['animalsupliments']);
+      }
+
+      // Add more cases as needed
+    }
+  }, [BannerData]);
+
+
 
   const [activeAccordion, setActiveAccordion] = useState(null);
-  const { validateImage } = useImageValidation();
+
   // const { LargeBannerContext } = useLargeBannerContext()
 
   const handleAccordionSelect = (key) => {
@@ -32,10 +91,10 @@ const BannersAdvertisement = () => {
   };
 
   /** *******************************************************
-     Fetching main categoreis 
+      Fetching main categoreis 
   */
 
-  const { categoreis } = useMainCategories()
+
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -58,28 +117,26 @@ const BannersAdvertisement = () => {
   /** *******************************************************
       Fetching main categoreis  end 
   */
-  
-  
+
+
   /*
  *********************************************************
  Large Banner   functionaltiy start from here 
  
  */
 
-  const [selectedImagesLargeBanner, setSelectedImagesLargeBanner] = useState([null, null])
 
+
+
+  const [selectedImagesLargeBanner, setSelectedImagesLargeBanner] = useState([null, null])
 
 
   const handleUploadLargeBanner = async (index, e) => {
     const file = e.target.files[0];
-    try {
-      // Define desired aspect ratio and dimensions for large banner
-      const desiredAspectRatio = 1
-      const desiredWidth = 720;
-      const desiredHeight = 720;
 
+    try {
       // Validate the image using the context function
-      const validatedImage = await validateImage(file, desiredAspectRatio, desiredWidth, desiredHeight);
+      const validatedImage = await validateImage(file, 1, 720, 720);
 
       // If validation succeeds, update the state
       const newImages = [...selectedImagesLargeBanner];
@@ -92,6 +149,7 @@ const BannersAdvertisement = () => {
       });
     }
   };
+
 
   const handleDeleteLargeBanner = (index) => {
     const newImages = [...selectedImagesLargeBanner];
@@ -110,7 +168,11 @@ const BannersAdvertisement = () => {
           const storageRef = ref(storage, `banner/${filename}`);
           const upload = await uploadBytesResumable(storageRef, file);
           const imageUrl = await getDownloadURL(storageRef);
-          imagelinks.push(imageUrl);
+          imagelinks.push({
+            categoryId: "",
+            categoryTitle: "",
+            imgUrl: imageUrl,
+          });
         }
         if (imagelinks.length > 0) {
           try {
@@ -118,6 +180,7 @@ const BannersAdvertisement = () => {
               title: 'LargeBanner',
               data: [{ imagelinks }]
             });
+
           } catch (error) {
             console.log(error)
 
@@ -128,12 +191,20 @@ const BannersAdvertisement = () => {
       } else {
         console.log('Select both images before uploading');
       }
+
+
       toast.success('Large Banner Added Successfully !', {
         position: toast.POSITION.TOP_RIGHT,
       });
+      // // After saving, fetch existing images
+      // const existingImages = await fetchExistingImagesByTitle('LargeBanner');
+
+      // // Set the existing and new images in your state
+      // setSelectedImagesLargeBanner([...existingImages]);
     } catch (error) {
       console.error(error);
     }
+    console.log("asdfasdf", selectedImagesLargeBanner)
   }
 
   /*
@@ -187,7 +258,11 @@ const BannersAdvertisement = () => {
           const storageRef = ref(storage, `banner/${filename}`);
           const upload = await uploadBytesResumable(storageRef, file);
           const imageUrl = await getDownloadURL(storageRef);
-          imagelinks.push(imageUrl);
+          imagelinks.push({
+            categoryId: "",
+            categoryTitle: "",
+            imgUrl: imageUrl,
+          });
         }
 
         if (imagelinks.length > 0) {
@@ -233,13 +308,35 @@ const BannersAdvertisement = () => {
  */
 
   const [BannerSaleImg, SetBannerSaleImg] = useState([]);
+  const [SelectedBannerImg, SetSelectedBannerImg] = useState(null)
 
-  function handelSaleBannerImg(e) {
-    const multipleBanners = [...BannerSaleImg, ...e.target.files];
+  const handelSaleBannerImg = async (e) => {
+    const selectedFile = e.target.files[0];
 
-    SetBannerSaleImg(multipleBanners);
+    try {
+      const validatedImage = await validateImage(selectedFile, 16 / 9, 1280, 720);
 
-  }
+      if (ImageisValidOrNot(validatedImage)) {
+        SetBannerSaleImg([...BannerSaleImg, URL.createObjectURL(validatedImage)]);
+        // Reset the selected image state after successful addition
+        SetSelectedBannerImg(null);
+      } else {
+        toast.error("Invalid image format. Please select images with extensions: .png, .jpeg, .jpg, .webp, .svg");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleAddMediaSaleOffer = () => {
+    if (selectedImage) {
+      SetSelectedBannerImg([...BannerSaleImg, SelectedBannerImg]);
+      SetSelectedBannerImg(null);
+      document.getElementById('animal_suppliments').value = '';
+    }
+  };
+
+
 
   function handeldeleteSaleBannerImg(index) {
     const multiplebanner = [...BannerSaleImg];
@@ -256,7 +353,11 @@ const BannersAdvertisement = () => {
           const storageRef = ref(storage, `banner/${name}`);
           const uploadTask = await uploadBytesResumable(storageRef, files);
           const url = await getDownloadURL(storageRef);
-          imagelinks.push(url)
+          imagelinks.push({
+            categoryId: "",
+            categoryTitle: "",
+            imgUrl: url,
+          });
         }
 
         if (imagelinks.length > 0) {
@@ -295,10 +396,26 @@ const BannersAdvertisement = () => {
   */
 
   const [AnimalSuplimentsImages, SetAnimalSuplimentsImages] = useState([]);
-  function handelAnimalSuplimentImg(e) {
-    const animalsimg = [...AnimalSuplimentsImages, ...e.target.files];
-    SetAnimalSuplimentsImages(animalsimg);
+  const [selectedImage, setSelectedImage] = useState(null);
+  async function handelAnimalSuplimentImg(e) {
+    const selectedFile = e.target.files[0];
+
+    try {
+      const validatedImage = await validateImage(selectedFile, 16 / 9, 1280, 720);
+
+      if (ImageisValidOrNot(validatedImage)) {
+        SetAnimalSuplimentsImages([...AnimalSuplimentsImages, URL.createObjectURL(validatedImage)]);
+        // Reset the selected image state after successful addition
+        setSelectedImage(null);
+      } else {
+        toast.error("Invalid image format. Please select images with extensions: .png, .jpeg, .jpg, .webp, .svg");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   }
+
+
   function handeldeleteAnimalSupliment(index) {
     const animalsimgs = [...AnimalSuplimentsImages];
     animalsimgs.splice(index, 1);
@@ -314,7 +431,11 @@ const BannersAdvertisement = () => {
           const storageRef = ref(storage, `banner/${name}`);
           const uploadTask = await uploadBytesResumable(storageRef, files);
           const url = await getDownloadURL(storageRef);
-          imagelinks.push(url)
+          imagelinks.push({
+            categoryId: "",
+            categoryTitle: "",
+            imgUrl: url,
+          });
         }
 
         if (imagelinks.length > 0) {
@@ -335,7 +456,7 @@ const BannersAdvertisement = () => {
           }
         }
         else {
-          console.log("please select at least one image ")
+          alert("please select at least one image ")
         }
       } else {
         console.warn('No image selected for upload');
@@ -347,6 +468,13 @@ const BannersAdvertisement = () => {
       console.error('Error uploading image or adding document:', error);
     }
   }
+  const handleAddMedia = () => {
+    if (selectedImage) {
+      SetAnimalSuplimentsImages([...AnimalSuplimentsImages, selectedImage]);
+      setSelectedImage(null);
+      document.getElementById('animal_suppliments').value = '';
+    }
+  };
 
   /*
  *********************************************************
@@ -431,10 +559,11 @@ const BannersAdvertisement = () => {
   /*
 *********************************************************
  Categoroies  Banner functionaltiy end 
- 
 */
 
   return (
+
+
     <div className="main_panel_wrapper pb-2  bg_light_grey w-100">
       <form>
         <div className="banner_advertisement">
@@ -482,7 +611,7 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagemedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(selectedImagesLargeBanner[0])}
+                            src={selectedImagesLargeBanner[0].startsWith("https") ? selectedImagesLargeBanner[0] : URL.createObjectURL(selectedImagesLargeBanner[0])}
                             alt=""
                           />
                           <img
@@ -515,7 +644,7 @@ const BannersAdvertisement = () => {
                           <div className="position-relative imagemedia_btn">
                             <img
                               className="w-100 h-100 object-fit-cover"
-                              src={URL.createObjectURL(selectedImagesLargeBanner[1])}
+                              src={selectedImagesLargeBanner[1].startsWith("https") ? selectedImagesLargeBanner[1] : URL.createObjectURL(selectedImagesLargeBanner[1])}
                               alt=""
                             />
                             <img
@@ -555,18 +684,35 @@ const BannersAdvertisement = () => {
                   <div className="bg_white pe-1">
                     <input
                       type="file"
-                      id="file4"
+                      id="Sales_Offers"
                       accept="image/*"
                       multiple
                       onChange={handelSaleBannerImg}
                       hidden
                     />
                     <div className="d-flex gap-3 flex-wrap">
+                      {SelectedBannerImg && (
+                        <div className="position-relative imagemedia_btn">
+                          <img
+                            className="w-100 h-100 object-fit-cover"
+                            src={SelectedBannerImg}
+                            alt=""
+                          />
+                          <button
+                            onClick={handleAddMediaSaleOffer}
+                            className="position-absolute bottom-0 start-50 translate-middle cursor_pointer bg-green px-2 py-1 rounded"
+                            type="button"
+                          >
+                            Add Media
+                          </button>
+                        </div>
+                      )}
+
                       {BannerSaleImg.map((offerbanner, index) => (
                         <div key={index} className="position-relative imagemedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(offerbanner)}
+                            src={offerbanner}
                             alt=""
                           />
                           <img
@@ -577,11 +723,14 @@ const BannersAdvertisement = () => {
                           />
                         </div>
                       ))}
-                      <label
-                        htmlFor="file4"
-                        className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center">
-                        + Add Media
-                      </label>
+                      {!SelectedBannerImg && (
+                        <label
+                          htmlFor="animal_suppliments"
+                          className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center"
+                        >
+                          + Add Media
+                        </label>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -625,7 +774,7 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(selectedImagesSmallPatii[0])}
+                            src={selectedImagesSmallPatii[0].startsWith("https") ? selectedImagesSmallPatii[0] : URL.createObjectURL(selectedImagesSmallPatii[0])}
                             alt=""
                           />
                           <img
@@ -657,7 +806,7 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(selectedImagesSmallPatii[1])}
+                            src={selectedImagesSmallPatii[1].startsWith("https") ? selectedImagesSmallPatii[1] : URL.createObjectURL(selectedImagesSmallPatii[1])}
                             alt=""
                           />
                           <img
@@ -689,7 +838,7 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(selectedImagesSmallPatii[2])}
+                            src={selectedImagesSmallPatii[2].startsWith("https") ? selectedImagesSmallPatii[2] : URL.createObjectURL(selectedImagesSmallPatii[2])}
                             alt=""
                           />
                           <img
@@ -727,56 +876,46 @@ const BannersAdvertisement = () => {
                   <div className="bg_white">
                     <input
                       type="file"
-                      multiple
-                      id="animal_suppliments"
                       onChange={handelAnimalSuplimentImg}
+                      id="animal_suppliments"
                       hidden
                     />
                     <div className="d-flex gap-3 flex-wrap">
+                      {selectedImage && (
+                        <div className="position-relative imagemedia_btn">
+                          <img
+                            className="w-100 h-100 object-fit-cover"
+                            src={selectedImage}
+                            alt=""
+                          />
+                          <button
+                            onClick={handleAddMedia}
+                            className="position-absolute bottom-0 start-50 translate-middle cursor_pointer bg-green px-2 py-1 rounded"
+                            type="button"
+                          >
+                            Add Media
+                          </button>
+                        </div>
+                      )}
                       {AnimalSuplimentsImages.map((animalSupbanner, index) => (
                         <div key={index} className="position-relative imagemedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(animalSupbanner)}
+                            src={animalSupbanner}
                             alt=""
                           />
-                          <img
-                            onClick={() => handeldeleteAnimalSupliment(index)}
-                            className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
-                            src={deleteicon}
-                            alt="deleteicon"
-                          />
+                          {/* Add delete functionality as needed */}
                         </div>
                       ))}
-                      <label
-                        htmlFor="animal_suppliments"
-                        className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center">
-                        + Add Media
-                      </label>
+                      {!selectedImage && (
+                        <label
+                          htmlFor="animal_suppliments"
+                          className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center"
+                        >
+                          + Add Media
+                        </label>
+                      )}
                     </div>
-                    {/* {!AnimalSuplimentsImages ? (
-                      <label
-                        htmlFor="animal_suppliments"
-                        className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center">
-                        + Add Media
-                      </label>
-                    ) : (
-                      AnimalSuplimentsImages && (
-                        <div className="position-relative imagemedia_btn">
-                          <img
-                            className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(AnimalSuplimentsImages)}
-                            alt=""
-                          />
-                          <img
-                            onClick={handeldeleteAnimalSupliment}
-                            className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
-                            src={deleteicon}
-                            alt="deleteicon"
-                          />
-                        </div>
-                      )
-                    )} */}
                   </div>
                 </div>
               </Accordion.Body>
@@ -819,7 +958,7 @@ const BannersAdvertisement = () => {
                             <div className="position-relative imagemedia_btn">
                               <img
                                 className="w-100 h-100 object-fit-cover"
-                                src={URL.createObjectURL(CategoryImage[index])}
+                                src={CategoryImage[index].startsWith("https") ? CategoryImage[index] : URL.createObjectURL(CategoryImage[index])}
                                 alt=""
                               />
                               <img
