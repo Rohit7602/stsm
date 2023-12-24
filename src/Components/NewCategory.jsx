@@ -6,9 +6,8 @@ import { Col, Row } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 import SearchIcon from '../Images/svgs/search.svg';
 import { useState } from 'react';
-import { collection, doc, addDoc, getDocs, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { useEffect } from 'react';
 import { useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -108,22 +107,6 @@ const NewCategory = () => {
     setImageupload();
   }
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     let list = [];
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, 'categories'));
-  //       querySnapshot.forEach((doc) => {
-  //         // doc.data() is never undefined for query doc snapshots
-  //         list.push({ id: doc.id, ...doc.data() });
-  //       });
-  //       setMainCategory([...list]);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
 
   if (loaderstatus) {
     return (

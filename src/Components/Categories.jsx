@@ -7,11 +7,10 @@ import pencil_icon from '../Images/svgs/pencil.svg';
 import delete_icon from '../Images/svgs/delte.svg';
 import updown_icon from '../Images/svgs/arross.svg';
 import Modifyproduct from './Modifyproduct';
-import { collection, doc, getDocs, deleteDoc, updateDoc } from 'firebase/firestore';
-import { db, storage } from '../firebase';
+import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CategoryItems } from '../Common/Helper';
 import { ref, getStorage, deleteObject } from 'firebase/storage';
 import { useSubCategories, useMainCategories } from '../context/categoriesGetter';
 
@@ -24,40 +23,6 @@ const Categories = () => {
   const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);
   };
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     let list = [];
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, 'sub_categories'));
-  //       querySnapshot.forEach((doc) => {
-  //         // doc.data() is never undefined for query doc snapshots
-  //         list.push({ id: doc.id, ...doc.data() });
-  //       });
-  //       setData([...list]);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     let list = [];
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, 'categories'));
-  //       querySnapshot.forEach((doc) => {
-  //         // doc.data() is never undefined for query doc snapshots
-  //         list.push({ id: doc.id, ...doc.data() });
-  //       });
-  //       setMainCategory([...list]);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
 
   /*  *******************************
      Delete functionality start 
@@ -84,8 +49,10 @@ const Categories = () => {
       Delete functionality end 
     *********************************************   **/
 
+
+
   /*  *******************************
-     Change status functionality start 
+      Change status functionality start 
    *********************************************   **/
 
   async function handleChangeStatus(id, status) {
@@ -96,12 +63,6 @@ const Categories = () => {
         status: newStatus,
       });
       alert("status Change succesffuly ")
-      // let list = [];
-      // const querySnapshot = await getDocs(collection(db, 'sub_categories'));
-      // querySnapshot.forEach((doc) => {
-      //   list.push({ id: doc.id, ...doc.data() });
-      // });
-      // setData([...list]);
       updateData({ id, status: newStatus })
     } catch (error) {
       console.log(error);
@@ -147,7 +108,7 @@ const Categories = () => {
     // Check if all checkboxes are checked
     const allChecked = updatedData.every((item) => item.checked);
     setSelectAll(allChecked);
-    
+
   };
 
 

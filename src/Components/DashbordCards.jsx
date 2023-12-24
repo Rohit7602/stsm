@@ -2,7 +2,6 @@ import React from 'react';
 import Dots from '../Images/svgs/dots.svg';
 import ApexBarChart from './bar';
 import Donut from './donatchart';
-import { UseBannerData } from '../context/BannerGetters';
 
 
 function DashbordCards() {

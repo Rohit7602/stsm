@@ -1,20 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import saveicon from '../Images/svgs/saveicon.svg';
-
-import { Col, Row } from 'react-bootstrap';
-import SearchIcon from '../Images/svgs/search.svg';
 import deleteicon from '../Images/svgs/deleteicon.svg';
-import uploadIcon from '../Images/svgs/upload.svg';
-import checkBlack from '../Images/svgs/check_black_icon.svg';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL, getStorage, deleteObject } from 'firebase/storage';
+import { where, query } from 'firebase/firestore';
 import { storage, db } from '../firebase';
-import { getDocs, collection, addDoc } from 'firebase/firestore';
+import { getDocs, collection, addDoc, updateDoc, doc, arrayRemove, setDoc } from 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useImageValidation } from '../context/validators';
 import { useImageHandleContext } from '../context/ImageHandler';
-import { useLargeBannerContext } from '../context/BannerGetters';
 import { useMainCategories } from '../context/categoriesGetter';
 import { UseBannerData } from '../context/BannerGetters';
 
@@ -33,14 +28,14 @@ const BannersAdvertisement = () => {
 
   useEffect(() => {
     if (BannerData) {
+      console.log("baner sdata ", BannerData)
       const selectedImages = {};
-
       BannerData.forEach((item) => {
         const title = item.title.toLowerCase();
         const imagelinks = item.data[0]?.imagelinks;
 
         if (imagelinks) {
-          selectedImages[title] = imagelinks.map((itemurl) => itemurl.imgUrl);
+          selectedImages[title] = imagelinks.map((itemurl) => itemurl.imgUrl + "$$$$" + item.id);
         }
       });
 
@@ -90,35 +85,7 @@ const BannersAdvertisement = () => {
     setActiveAccordion(key);
   };
 
-  /** *******************************************************
-      Fetching main categoreis 
-  */
-
-
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     let list = [];
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, 'categories'));
-  //       querySnapshot.forEach((doc) => {
-  //         // doc.data() is never undefined for query doc snapshots
-  //         list.push({ id: doc.id, ...doc.data() });
-  //       });
-  //       SetMainCategories([...list]);
-  //     } catch (error) {
-  //       console.log("hii how are yo")
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
-
-  /** *******************************************************
-      Fetching main categoreis  end 
-  */
-
-
+  
   /*
  *********************************************************
  Large Banner   functionaltiy start from here 
@@ -151,61 +118,127 @@ const BannersAdvertisement = () => {
   };
 
 
-  const handleDeleteLargeBanner = (index) => {
+  const handleDeleteLargeBanner = async (index) => {
+    if (selectedImagesLargeBanner[index] && typeof selectedImagesLargeBanner[index] === 'string' && selectedImagesLargeBanner[index].startsWith("http")) {
+      const id = selectedImagesLargeBanner[index].split("$$$$")[1];
+      const storageRef = getStorage();
+      var reference = ref(storageRef, selectedImagesLargeBanner[index]);
+      deleteObject(reference);
+      await updateDoc(doc(db, 'Banner', id), {
+        data: [{
+          imagelinks: [...selectedImagesLargeBanner.filter((e) => e && e.split("$$$$")[0] != selectedImagesLargeBanner[index].split("$$$$")[0]).map((e) => {
+            return {
+              categoryId: "",
+              categoryTitle: "",
+              imgUrl: e.split("$$$$")[0],
+            };
+          })]
+        }],
+      });
+    }
     const newImages = [...selectedImagesLargeBanner];
     newImages[index] = null;
     setSelectedImagesLargeBanner(newImages);
   };
 
-
+  // const handleDeleteLargeBanner1 = async () => {
+  //   var id = selectedImagesLargeBanner[0].split("$$$$")[0];
+  //   selectedImagesLargeBanner.forEach((e) => console.log(e.split("$$$$")[0]))
+  // }
 
   async function handleSaveLargeBanner() {
     try {
-      if (selectedImagesLargeBanner.length === 2 && selectedImagesLargeBanner.every(Boolean)) {
+      if (selectedImagesLargeBanner.every(Boolean)) {
         const imagelinks = [];
+        const deletedImageUrls = [];
+
+        // Fetch existing data
+        const querySnapshot = await getDocs(query(collection(db, 'Banner'), where('title', '==', 'LargeBanner')));
+        if (querySnapshot.size > 0) {
+          const existingData = querySnapshot.docs[0].data().data || [];
+
+          // Check for deleted images in existing data
+          existingData.forEach(item => {
+            const existingImageUrls = (item.imagelinks || []).map(img => img.imgUrl);
+            deletedImageUrls.push(...selectedImagesLargeBanner.filter(img => !existingImageUrls.includes(img)));
+          });
+        }
+
         for await (const file of selectedImagesLargeBanner) {
           const filename = Math.floor(Date.now() / 1000) + '-' + file.name;
           const storageRef = ref(storage, `banner/${filename}`);
           const upload = await uploadBytesResumable(storageRef, file);
           const imageUrl = await getDownloadURL(storageRef);
-          imagelinks.push({
-            categoryId: "",
-            categoryTitle: "",
-            imgUrl: imageUrl,
-          });
+
+          // Only add new image URLs and exclude deleted images
+          if (!deletedImageUrls.includes(imageUrl)) {
+            imagelinks.push({
+              categoryId: "",
+              categoryTitle: "",
+              imgUrl: imageUrl,
+            });
+          }
         }
+
         if (imagelinks.length > 0) {
           try {
-            const docRef = await addDoc(collection(db, 'Banner'), {
-              title: 'LargeBanner',
-              data: [{ imagelinks }]
-            });
+            // Check if the document already exists
+            const querySnapshot = await getDocs(query(collection(db, 'Banner'), where('title', '==', 'LargeBanner')));
 
+            if (querySnapshot.size > 0) {
+              // Document already exists, get existing data
+              const docRef = querySnapshot.docs[0];
+              const existingData = docRef.data().data || [];
+
+              // Combine existing and new image URLs in the same imagelinks array
+              const combinedImagelinks = existingData.reduce((acc, item) => {
+                return acc.concat(item.imagelinks || []);
+              }, []).concat(imagelinks);
+
+              // Construct updated data with the combined imagelinks
+              const updatedData = [{ imagelinks: combinedImagelinks }];
+
+              // Set the document with the updated data
+              await setDoc(docRef.ref, {
+                data: updatedData,
+              });
+            } else {
+              // Document doesn't exist, create a new one with new images
+              const docRef = await addDoc(collection(db, 'Banner'), {
+                title: 'LargeBanner',
+                data: [{ imagelinks }],
+              });
+            }
           } catch (error) {
-            console.log(error)
-
+            console.log(error);
           }
         } else {
-          console.log('No images uploaded');
+          console.log('No new images uploaded');
         }
       } else {
         console.log('Select both images before uploading');
       }
 
-
-      toast.success('Large Banner Added Successfully !', {
+      toast.success('Large Banner Added Successfully!', {
         position: toast.POSITION.TOP_RIGHT,
       });
-      // // After saving, fetch existing images
-      // const existingImages = await fetchExistingImagesByTitle('LargeBanner');
-
-      // // Set the existing and new images in your state
-      // setSelectedImagesLargeBanner([...existingImages]);
     } catch (error) {
       console.error(error);
     }
-    console.log("asdfasdf", selectedImagesLargeBanner)
+
+    // After saving, fetch existing images
+    // const existingImages = await fetchExistingImagesByTitle('LargeBanner');
+
+    // Set the existing and new images in your state
+    // setSelectedImagesLargeBanner([...existingImages]);
+    console.log("asdfasdf", selectedImagesLargeBanner);
   }
+
+
+
+
+
+
 
   /*
  *********************************************************
@@ -242,7 +275,24 @@ const BannersAdvertisement = () => {
 
   };
 
-  const handleDeleteSmallPatti = (index) => {
+  const handleDeleteSmallPatti = async (index) => {
+    if (selectedImagesSmallPatii[index] && typeof selectedImagesSmallPatii[index] === 'string' && selectedImagesSmallPatii[index].startsWith("http")) {
+      const id = selectedImagesSmallPatii[index].split("$$$$")[1];
+      const storageRef = getStorage();
+      var reference = ref(storageRef, selectedImagesSmallPatii[index]);
+      deleteObject(reference);
+      await updateDoc(doc(db, 'Banner', id), {
+        data: [{
+          imagelinks: [...selectedImagesSmallPatii.filter((e) => e && e.split("$$$$")[0] != selectedImagesSmallPatii[index].split("$$$$")[0]).map((e) => {
+            return {
+              categoryId: "",
+              categoryTitle: "",
+              imgUrl: e.split("$$$$")[0],
+            };
+          })]
+        }],
+      });
+    }
     const newImages = [...selectedImagesSmallPatii];
     newImages[index] = null;
     setselectedImagesSmallPatii(newImages);
@@ -339,6 +389,8 @@ const BannersAdvertisement = () => {
 
 
   function handeldeleteSaleBannerImg(index) {
+
+    
     const multiplebanner = [...BannerSaleImg];
     multiplebanner.splice(index, 1);
     SetBannerSaleImg(multiplebanner);
@@ -611,7 +663,7 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagemedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={selectedImagesLargeBanner[0].startsWith("https") ? selectedImagesLargeBanner[0] : URL.createObjectURL(selectedImagesLargeBanner[0])}
+                            src={selectedImagesLargeBanner[0] && typeof selectedImagesLargeBanner[0] === 'string' && selectedImagesLargeBanner[0].startsWith("http") ? selectedImagesLargeBanner[0].split("$$$$")[0] : URL.createObjectURL(selectedImagesLargeBanner[0])}
                             alt=""
                           />
                           <img
@@ -640,11 +692,11 @@ const BannersAdvertisement = () => {
                           + Add Media
                         </label>
                       ) : (
-                        selectedImagesLargeBanner[1] && (
+                        (
                           <div className="position-relative imagemedia_btn">
                             <img
                               className="w-100 h-100 object-fit-cover"
-                              src={selectedImagesLargeBanner[1].startsWith("https") ? selectedImagesLargeBanner[1] : URL.createObjectURL(selectedImagesLargeBanner[1])}
+                              src={selectedImagesLargeBanner[1] && typeof selectedImagesLargeBanner[1] === 'string' && selectedImagesLargeBanner[1].startsWith("http") ? selectedImagesLargeBanner[1].split("$$$$")[0] : URL.createObjectURL(selectedImagesLargeBanner[1])}
                               alt=""
                             />
                             <img
@@ -655,6 +707,19 @@ const BannersAdvertisement = () => {
                             />
                           </div>
                         )
+                        // ) : <div className="position-relative imagemedia_btn">
+                        //   <img
+                        //     className="w-100 h-100 object-fit-cover"
+                        //     src={URL.createObjectURL(selectedImagesLargeBanner[1])}
+                        //     alt=""
+                        //   />
+                        //   <img
+                        //     onClick={() => handleDeleteLargeBanner(1)}
+                        //     className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
+                        //     src={deleteicon}
+                        //     alt="deleteicon"
+                        //   />
+                        // </div>
                       )}
                     </div>
                   </div>
@@ -774,7 +839,7 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={selectedImagesSmallPatii[0].startsWith("https") ? selectedImagesSmallPatii[0] : URL.createObjectURL(selectedImagesSmallPatii[0])}
+                            src={selectedImagesSmallPatii[0] && typeof selectedImagesSmallPatii[0] === 'string' && selectedImagesSmallPatii[0].startsWith("http") ? selectedImagesSmallPatii[0].split("$$$$")[0] : URL.createObjectURL(selectedImagesSmallPatii[0])}
                             alt=""
                           />
                           <img
@@ -806,7 +871,7 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={selectedImagesSmallPatii[1].startsWith("https") ? selectedImagesSmallPatii[1] : URL.createObjectURL(selectedImagesSmallPatii[1])}
+                            src={selectedImagesSmallPatii[1] && typeof selectedImagesSmallPatii[1] === 'string' && selectedImagesSmallPatii[1].startsWith("http") ? selectedImagesSmallPatii[1].split("$$$$")[0] : URL.createObjectURL(selectedImagesSmallPatii[1])}
                             alt=""
                           />
                           <img
@@ -838,7 +903,7 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={selectedImagesSmallPatii[2].startsWith("https") ? selectedImagesSmallPatii[2] : URL.createObjectURL(selectedImagesSmallPatii[2])}
+                            src={selectedImagesSmallPatii[2] && typeof selectedImagesSmallPatii[2] === 'string' && selectedImagesSmallPatii[2].startsWith("http") ? selectedImagesSmallPatii[2].split("$$$$")[0] : URL.createObjectURL(selectedImagesSmallPatii[2])}
                             alt=""
                           />
                           <img

@@ -8,7 +8,7 @@ import deleteicon from '../Images/svgs/deleteicon.svg';
 import updown_icon from '../Images/svgs/arross.svg';
 import saveicon from '../Images/svgs/saveicon.svg';
 import { useRef } from 'react';
-import { collection, doc, getDocs, deleteDoc, addDoc, updateDoc } from 'firebase/firestore';
+import { collection, doc,  addDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
@@ -119,50 +119,6 @@ const Categories = () => {
   function handleDelete22(index) {
     setImageupload();
   }
-  // useEffect(() => {
-  //   const fetchDataSubCategories = async () => {
-  //     let list = [];
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, 'sub_categories'));
-  //       querySnapshot.forEach((doc) => {
-  //         // doc.data() is never undefined for query doc snapshots
-  //         list.push({ id: doc.id, ...doc.data() });
-  //       });
-  //       setData([...list]);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchDataSubCategories();
-  // }, []);
-
-  // useEffect(() => {
-  //   const fetchDataCategories = async () => {
-  //     let list = [];
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, 'categories'));
-  //       querySnapshot.forEach((doc) => {
-  //         list.push({ id: doc.id, ...doc.data() });
-  //       });
-  //       setMainCategory([...list]);
-  //     } catch (error) {
-  //       console.log('Error fetching data:', error);
-  //     }
-  //   };
-
-  //   // Call fetchDataCategories when refreshData changes
-  //   if (initialRender || refreshData) {
-  //     fetchDataCategories();
-
-  //     // Reset the state variables after running fetchDataCategories
-  //     setInitialRender(false);
-  //     setRefreshData(false);
-  //   }
-  // }, [initialRender, refreshData]);
-
-
-
-
 
   /*  *******************************
     checkbox functionality start 
@@ -234,12 +190,6 @@ const Categories = () => {
         status: newStatus,
       });
       alert("status Change succesffuly ")
-      // let list = [];
-      // const querySnapshot = await getDocs(collection(db, 'categories'));
-      // querySnapshot.forEach((doc) => {
-      //   list.push({ id: doc.id, ...doc.data() });
-      // });
-      // setMainCategory([...list]);
       updateData({ id, status: newStatus })
     } catch (error) {
       console.log(error);
