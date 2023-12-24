@@ -3,12 +3,20 @@ import whitesaveicon from '../Images/svgs/white_saveicon.svg';
 import mobileicon from '../Images/Png/mobile_icon_40.png';
 import profile from '../Images/Png/customer_profile.png';
 import billicon from '../Images/svgs/bill_icon.svg';
+import { useParams } from 'react-router-dom';
 import { Col, Row } from 'react-bootstrap';
+import { useOrdercontext } from '../context/OrderGetter';
 export default function NewOrder() {
+  const { orders } = useOrdercontext()
+
+  const { id } = useParams();
+  let filterData = orders.filter(item => item.id = id)[0]
+  console.log("asdfasdfadsfas", filterData)
+
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
       <div className="d-flex align-items-center py-3 my-1">
-        <h1 className="fs-lg fw-500 black mb-0 me-1">Order #1002</h1>
+        <h1 className="fs-lg fw-500 black mb-0 me-1">amasdnfasfasdfsadfasdfsdf</h1>
         <p className="stock_bg fs-xs fw-400 green mb-0 ms-3">Delivered</p>
       </div>
       <div className="d-flex align-items-center gap-4 py-3 px-2 mt-2 mb-3">

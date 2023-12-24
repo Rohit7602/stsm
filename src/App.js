@@ -36,10 +36,10 @@ function App() {
             <Route path="/productlist" element={<ProductList />} />
             <Route path="/addproduct" element={<AddProduct />} />
             <Route path="/orderslist" element={<OrdersList />} />
-            <Route path="/orderslist/delivered" element={<OrderDelivered />} />
-            <Route path="/orderslist/canceled" element={<OrderCanceled />} />
-            <Route path="/orderslist/processing" element={<OrderProcessing />} />
-            <Route path="/orderslist/neworder" element={<NewOrder />} />
+            <Route path="/orderslist/delivered/:id" element={<OrderDelivered />} />
+            <Route path="/orderslist/canceled/:id" element={<OrderCanceled />} />
+            <Route path="/orderslist/processing/:id" element={<OrderProcessing />} />
+            <Route path="/orderslist/neworder/:id" element={<NewOrder />} />
             <Route path="/customer" element={<Customers />} />
             <Route path="/customer/viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
             <Route path="/bannersadvertisement" element={<BannersAdvertisement />} />

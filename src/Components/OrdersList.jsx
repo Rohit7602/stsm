@@ -12,13 +12,24 @@ import { collection, doc, getDocs, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Link, NavLink } from 'react-router-dom';
 import Modifyproduct from './Modifyproduct';
-
+import { useOrdercontext } from '../context/OrderGetter';
 
 
 const ProductListComponent = () => {
-  const [selectAll, setSelectAll] = useState(false);
+  // context 
+  const { orders } = useOrdercontext();
+  console.log(orders)
+  const [selectAll, setSelectAll] = useState();
 
-  
+  // format date logic start from here 
+
+  function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
+    return formattedDate;
+  }
+
+
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
@@ -84,23 +95,22 @@ const ProductListComponent = () => {
                     <h3 className="fs-sm fw-400 black mb-0">Action</h3>
                   </th>
                 </tr>
-                {OrderTable.map((orderTableData, index) => {
+                {orders.map((orderTableData, index) => {
                   return (
                     <tr>
                       <td className="p-3">
                         <label className="check1 fw-400 fs-sm black mb-0">
                           <Link
                             className="fw-400 fs-sm black"
-                            to={`/orderslist/${
-                              orderTableData.OrderStatus === 'New Order'
-                                ? 'neworder'
-                                : orderTableData.OrderStatus === 'Processing'
-                                ? 'processing'
-                                : orderTableData.OrderStatus === 'Delivered'
-                                ? 'delivered'
-                                : 'canceled'
-                            }`}>
-                            {orderTableData.OrderNumber}
+                            to={`/orderslist/${(orderTableData.status).toString().toLowerCase() === 'new order'
+                              ? `neworder/${orderTableData.id}`
+                              : (orderTableData.status).toString().toLowerCase() === 'Processing'
+                                ? `processing/${orderTableData.id}`
+                                : (orderTableData.status).toString().toLowerCase() === 'delivered'
+                                  ? `delivered/${orderTableData.id}`
+                                  : `canceled/${orderTableData.id}`
+                              }`}>
+                            {orderTableData.id}
                           </Link>
                           <div className="d-flex align-items-center"></div>
                           <input type="checkbox" checked={selectAll} />
@@ -108,46 +118,45 @@ const ProductListComponent = () => {
                         </label>
                       </td>
                       <td className="p-3">
-                        <h3 className="fs-xs fw-400 black mb-0">{orderTableData.Date}</h3>
+                        <h3 className="fs-xs fw-400 black mb-0">{formatDate(orderTableData.created_at)}</h3>
                       </td>
                       <td className="p-3">
                         <Link to="viewcustomerdetails">
-                          <h3 className="fs-sm fw-400 black mb-0">{orderTableData.Customer}</h3>
+                          <h3 className="fs-sm fw-400 black mb-0">{orderTableData.customer.name}</h3>
                         </Link>
                       </td>
                       <td className="p-3">
                         <h3
-                          className={`fs-sm fw-400 mb-0 d-inline-block ${
-                            orderTableData.PaymentStatus === 'Paid'
-                              ? 'black stock_bg'
-                              : orderTableData.PaymentStatus === 'COD'
+                          className={`fs-sm fw-400 mb-0 d-inline-block ${(orderTableData.transaction.status).toString().toLowerCase() === true
+                            ? 'black stock_bg'
+                            : orderTableData.PaymentStatus === 'COD'
                               ? 'black cancel_gray'
                               : orderTableData.PaymentStatus === 'Refund'
-                              ? 'new_order red'
-                              : 'color_brown on_credit_bg'
-                          }`}>
-                          {orderTableData.PaymentStatus}
+                                ? 'new_order red'
+                                : 'color_brown on_credit_bg'
+                            }`}
+                        >
+                          {orderTableData.transaction.status ? 'True' : 'False'}
                         </h3>
                       </td>
                       <td className="p-3">
                         <p
-                          className={`d-inline-block ${
-                            orderTableData.OrderStatus === 'New Order'
-                              ? 'fs-sm fw-400 red mb-0 new_order'
-                              : orderTableData.OrderStatus === 'Processing'
+                          className={`d-inline-block ${(orderTableData.status).toString().toLowerCase() === 'new order'
+                            ? 'fs-sm fw-400 red mb-0 new_order'
+                            : (orderTableData.status).toString().toLowerCase() === 'processing'
                               ? 'fs-sm fw-400 mb-0 processing_skyblue'
-                              : orderTableData.OrderStatus === 'Delivered'
-                              ? 'fs-sm fw-400 mb-0 green stock_bg'
-                              : 'fs-sm fw-400 mb-0 black cancel_gray'
-                          }`}>
-                          {orderTableData.OrderStatus}
+                              : (orderTableData.status).toString().toLowerCase() === 'delivered'
+                                ? 'fs-sm fw-400 mb-0 green stock_bg'
+                                : 'fs-sm fw-400 mb-0 black cancel_gray'
+                            }`}>
+                          {orderTableData.status}
                         </p>
                       </td>
                       <td className="p-3">
-                        <h3 className="fs-sm fw-400 black mb-0">{orderTableData.Items} items</h3>
+                        <h3 className="fs-sm fw-400 black mb-0">{(orderTableData.items).length} items</h3>
                       </td>
                       <td className="p-3">
-                        <h3 className="fs-sm fw-400 black mb-0">{orderTableData.OrderPrice}</h3>
+                        <h3 className="fs-sm fw-400 black mb-0">{orderTableData.order_price}</h3>
                       </td>
                       <td className="text-center">
                         <div class="dropdown">
@@ -173,15 +182,14 @@ const ProductListComponent = () => {
                                 <div className="d-flex align-items-center categorie_dropdown_options">
                                   <img src={eye_icon} alt="" />
                                   <Link
-                                    to={`/orderslist/${
-                                      orderTableData.OrderStatus === 'New Order'
-                                        ? 'neworder'
-                                        : orderTableData.OrderStatus === 'Processing'
+                                    to={`/orderslist/${orderTableData.OrderStatus === 'New Order'
+                                      ? 'neworder'
+                                      : orderTableData.OrderStatus === 'Processing'
                                         ? 'processing'
                                         : orderTableData.OrderStatus === 'Delivered'
-                                        ? 'delivered'
-                                        : 'canceled'
-                                    }`}>
+                                          ? 'delivered'
+                                          : 'canceled'
+                                      }`}>
                                     <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
                                   </Link>
                                 </div>
