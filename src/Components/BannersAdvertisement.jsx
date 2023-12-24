@@ -141,6 +141,7 @@ const BannersAdvertisement = () => {
 
 
   async function handleSaveLargeBanner() {
+    // console.log("asdfasdfdsafs",selectedImage)
     try {
       if (selectedImagesLargeBanner.every(Boolean)) {
         const imagelinks = [];
@@ -159,6 +160,7 @@ const BannersAdvertisement = () => {
         }
 
         for (const file of selectedImagesLargeBanner) {
+          // console.log(typeof(file))
           let imageUrl = null;
 
           if (file instanceof File) {
@@ -167,6 +169,7 @@ const BannersAdvertisement = () => {
             const upload = await uploadBytesResumable(storageRef, file);
             imageUrl = await getDownloadURL(storageRef);
           } else if (typeof file === 'string') {
+            // console.log(file)
             imageUrl = file.split("$$$$")[0];
           }
 
