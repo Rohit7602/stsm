@@ -25,7 +25,7 @@ const BannersAdvertisement = () => {
   const { validateImage } = useImageValidation();
   const { categoreis } = useMainCategories();
 
-
+  // get intially all the uploded banners 
   useEffect(() => {
     if (BannerData) {
       console.log("baner sdata ", BannerData)
@@ -33,15 +33,12 @@ const BannersAdvertisement = () => {
       BannerData.forEach((item) => {
         const title = item.title.toLowerCase();
         const imagelinks = item.data[0]?.imagelinks;
-
         if (imagelinks) {
           selectedImages[title] = imagelinks.map((itemurl) => itemurl.imgUrl + "$$$$" + item.id);
         }
       });
-
       // Now you have an object with selected images for each title
       console.log(selectedImages);
-
       // Example: Accessing images for largebanner
       if (selectedImages['largebanner']) {
         setSelectedImagesLargeBanner(selectedImages['largebanner']);
@@ -85,7 +82,7 @@ const BannersAdvertisement = () => {
     setActiveAccordion(key);
   };
 
-  
+
   /*
  *********************************************************
  Large Banner   functionaltiy start from here 
@@ -141,37 +138,40 @@ const BannersAdvertisement = () => {
     setSelectedImagesLargeBanner(newImages);
   };
 
-  // const handleDeleteLargeBanner1 = async () => {
-  //   var id = selectedImagesLargeBanner[0].split("$$$$")[0];
-  //   selectedImagesLargeBanner.forEach((e) => console.log(e.split("$$$$")[0]))
-  // }
+
 
   async function handleSaveLargeBanner() {
     try {
       if (selectedImagesLargeBanner.every(Boolean)) {
         const imagelinks = [];
-        const deletedImageUrls = [];
+        const existingImageUrls = [];
 
         // Fetch existing data
         const querySnapshot = await getDocs(query(collection(db, 'Banner'), where('title', '==', 'LargeBanner')));
         if (querySnapshot.size > 0) {
           const existingData = querySnapshot.docs[0].data().data || [];
 
-          // Check for deleted images in existing data
+          // Collect existing image URLs
           existingData.forEach(item => {
-            const existingImageUrls = (item.imagelinks || []).map(img => img.imgUrl);
-            deletedImageUrls.push(...selectedImagesLargeBanner.filter(img => !existingImageUrls.includes(img)));
+            const existingUrls = (item.imagelinks || []).map(img => img.imgUrl);
+            existingImageUrls.push(...existingUrls);
           });
         }
 
-        for await (const file of selectedImagesLargeBanner) {
-          const filename = Math.floor(Date.now() / 1000) + '-' + file.name;
-          const storageRef = ref(storage, `banner/${filename}`);
-          const upload = await uploadBytesResumable(storageRef, file);
-          const imageUrl = await getDownloadURL(storageRef);
+        for (const file of selectedImagesLargeBanner) {
+          let imageUrl = null;
 
-          // Only add new image URLs and exclude deleted images
-          if (!deletedImageUrls.includes(imageUrl)) {
+          if (file instanceof File) {
+            const filename = Math.floor(Date.now() / 1000) + '-' + file.name;
+            const storageRef = ref(storage, `banner/${filename}`);
+            const upload = await uploadBytesResumable(storageRef, file);
+            imageUrl = await getDownloadURL(storageRef);
+          } else if (typeof file === 'string') {
+            imageUrl = file.split("$$$$")[0];
+          }
+
+          // Only add new image URL (not in existingImageUrls)
+          if (imageUrl && !existingImageUrls.includes(imageUrl)) {
             imagelinks.push({
               categoryId: "",
               categoryTitle: "",
@@ -200,6 +200,7 @@ const BannersAdvertisement = () => {
 
               // Set the document with the updated data
               await setDoc(docRef.ref, {
+                title: 'LargeBanner',
                 data: updatedData,
               });
             } else {
@@ -225,14 +226,13 @@ const BannersAdvertisement = () => {
     } catch (error) {
       console.error(error);
     }
-
-    // After saving, fetch existing images
-    // const existingImages = await fetchExistingImagesByTitle('LargeBanner');
-
-    // Set the existing and new images in your state
-    // setSelectedImagesLargeBanner([...existingImages]);
-    console.log("asdfasdf", selectedImagesLargeBanner);
+    // console.log("asdfasdf", selectedImagesLargeBanner);
   }
+
+
+
+
+
 
 
 
@@ -390,7 +390,7 @@ const BannersAdvertisement = () => {
 
   function handeldeleteSaleBannerImg(index) {
 
-    
+
     const multiplebanner = [...BannerSaleImg];
     multiplebanner.splice(index, 1);
     SetBannerSaleImg(multiplebanner);
@@ -437,8 +437,7 @@ const BannersAdvertisement = () => {
 
   /*
  *********************************************************
- Sales and offer   Banner functionaltiy end   here 
- 
+    Sales and offer   Banner functionaltiy end   here 
  */
 
   /*  
