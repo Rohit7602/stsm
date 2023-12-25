@@ -13,6 +13,7 @@ import { useImageHandleContext } from '../context/ImageHandler';
 import { useMainCategories } from '../context/categoriesGetter';
 import { UseBannerData } from '../context/BannerGetters';
 import { type } from '@testing-library/user-event/dist/type';
+import { useLinkClickHandler } from 'react-router-dom';
 
 
 
@@ -401,7 +402,7 @@ const BannersAdvertisement = () => {
       const validatedImage = await validateImage(selectedFile, 16 / 9, 1280, 720);
 
       if (ImageisValidOrNot(validatedImage)) {
-        SetBannerSaleImg([...BannerSaleImg, URL.createObjectURL(validatedImage)]);
+        SetBannerSaleImg([...BannerSaleImg, validatedImage]);
         // Reset the selected image state after successful addition
         SetSelectedBannerImg(null);
       } else {
@@ -462,6 +463,7 @@ const BannersAdvertisement = () => {
         let imagelinks = []
         for await (let files of BannerSaleImg) {
           const name = Math.floor(Date.now() / 1000) + '-' + files.name;
+          console.log("name is ", name)
           const storageRef = ref(storage, `banner/${name}`);
           const uploadTask = await uploadBytesResumable(storageRef, files);
           const url = await getDownloadURL(storageRef);
@@ -510,20 +512,35 @@ const BannersAdvertisement = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   async function handelAnimalSuplimentImg(e) {
     const selectedFile = e.target.files[0];
-
+    // console.log(selectedFile)
     try {
-      const validatedImage = await validateImage(selectedFile, 16 / 9, 1280, 720);
+      const desiredAspectRatio = 16 / 9
+      const desiredWidth = 1280;
+      const desiredHeight = 720;
 
-      if (ImageisValidOrNot(validatedImage)) {
-        SetAnimalSuplimentsImages([...AnimalSuplimentsImages, URL.createObjectURL(validatedImage)]);
-        // Reset the selected image state after successful addition
-        setSelectedImage(null);
-      } else {
-        toast.error("Invalid image format. Please select images with extensions: .png, .jpeg, .jpg, .webp, .svg");
-      }
+      const validatedImage = await validateImage(selectedFile, desiredAspectRatio, desiredWidth, desiredHeight)
+      SetAnimalSuplimentsImages([...AnimalSuplimentsImages, validatedImage]);
+      setSelectedImage(null);
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message, {
+        position: toast.POSITION.TOP_RIGHT
+      })
     }
+
+    // try {
+    //   const validatedImage = await validateImage(selectedFile, 16 / 9, 1280, 720);
+
+    //   if (ImageisValidOrNot(validatedImage)) {
+    //     SetAnimalSuplimentsImages([...AnimalSuplimentsImages, URL.createObjectURL(validatedImage)]);
+    //     console.log("asdfasdfasdfdsfasdf", AnimalSuplimentsImages)
+    //     // Reset the selected image state after successful addition
+    //     setSelectedImage(null);
+    //   } else {
+    //     toast.error("Invalid image format. Please select images with extensions: .png, .jpeg, .jpg, .webp, .svg");
+    //   }
+    // } catch (error) {
+    //   toast.error(error.message);
+    // }
   }
 
 
@@ -569,33 +586,77 @@ const BannersAdvertisement = () => {
 
 
   async function HandleSaveAnimalSuppliments() {
+    console.log(AnimalSuplimentsImages)
     try {
       if (AnimalSuplimentsImages.every(Boolean)) {
         let imagelinks = []
-        for await (let files of AnimalSuplimentsImages) {
-          const name = Math.floor(Date.now() / 1000) + '-' + files.name;
-          const storageRef = ref(storage, `banner/${name}`);
-          const uploadTask = await uploadBytesResumable(storageRef, files);
-          const url = await getDownloadURL(storageRef);
-          imagelinks.push({
-            categoryId: "",
-            categoryTitle: "",
-            imgUrl: url,
+        const existingImageUrls = [];
+        const querySnapshot = await getDocs(query(where('title', '==', 'AnimalSupliments')));
+        if (querySnapshot.size > 0) {
+          const existingData = querySnapshot.docs[0].data() || []
+          existingData.forEach(element => {
+            const existingUrls = (element.imagelinks || []).map(img => img.imgUrl);
+            existingUrls.push(...existingUrls);
+
           });
+        }
+        for await (let files of AnimalSuplimentsImages) {
+          let url = null;
+          // const name = Math.floor(Date.now() / 1000) + '-' + files.name;
+          // const storageRef = ref(storage, `banner/${name}`);
+          if (files instanceof File) {
+            const name = Math.floor(Date.now() / 1000) + '-' + files.name;
+            console.log("name is", name)
+            const storageRef = ref(storage, `banner/${name}`);
+            const uploadTask = await uploadBytesResumable(storageRef, files);
+            url = await getDownloadURL(storageRef)
+          } else if (typeof files === "string") {
+            url = files.split('$$$$')[0]
+          }
+          if (url && !existingImageUrls.includes(url)) {
+            imagelinks.push({
+              categoryId: "",
+              categoryTitle: "",
+              imgUrl: url,
+            });
+          }
         }
 
         if (imagelinks.length > 0) {
           try {
-            const docRef = await addDoc(collection(db, 'Banner'), {
-              // AnimalSupliments: [
-              //   {
-              //     title: 'AnimalSupliments ',
-              //     imgUrl: [url],
-              //   }
-              // ]
-              title: "AnimalSupliments",
-              data: [{ imagelinks }]
-            });
+            const querySnapshot = await getDocs(query(collection(db, 'Banner'), where('title', '==', 'AnimalSupliments')));
+            if (querySnapshot.size > 0) {
+              const docRef = querySnapshot.docs[0]
+              const existingData = docRef.data().data || [];
+
+              const existingUrls = existingData.reduce((acc, item) => {
+                return acc.concat((item.imagelinks || []).map(img => imgUrl))
+              }, []);
+
+              const newImagelinks = imagelinks.filter(link => !existingUrls.includes(link.imgUrl));
+              const combinedImagelinks = existingData.reduce((acc, item) => {
+                return acc.concat(item.imagelinks || []);
+              }, []).concat(newImagelinks);
+              const updatedData = [{ imagelinks: combinedImagelinks }];
+
+              // Set the document with the updated data
+              await setDoc(docRef.ref, {
+                title: 'SmallPattBanner',
+                data: updatedData,
+              });
+
+            } else {
+              const docRef = await addDoc(collection(db, 'Banner'), {
+                // AnimalSupliments: [
+                //   {
+                //     title: 'AnimalSupliments ',
+                //     imgUrl: [url],
+                //   }
+                // ]
+                title: "AnimalSupliments",
+                data: [{ imagelinks }]
+              });
+            }
           }
           catch (error) {
             console.log('Error Adding Image To The Database', error);
@@ -704,6 +765,7 @@ const BannersAdvertisement = () => {
     SetCategoryImage(newCategoryImages);
   }
 
+
   async function handleUpdateCategoryBanner(e) {
     e.preventDefault();
     try {
@@ -738,6 +800,7 @@ const BannersAdvertisement = () => {
     } catch (error) {
       console.error('Error uploading images:', error);
     }
+
 
   }
 
@@ -893,7 +956,7 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagemedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={SelectedBannerImg}
+                            src={URL.createObjectURL(SelectedBannerImg)}
                             alt=""
                           />
                           <button
@@ -910,7 +973,7 @@ const BannersAdvertisement = () => {
                         <div key={index} className="position-relative imagemedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={offerbanner}
+                            src={offerbanner && typeof offerbanner == 'string' && offerbanner.startsWith("http") ? offerbanner : URL.createObjectURL(offerbanner)}
                             alt=""
                           />
                           <img
@@ -1083,7 +1146,7 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagemedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={selectedImage}
+                            src={URL.createObjectURL(selectedImage)}
                             alt=""
                           />
                           <button
@@ -1096,12 +1159,11 @@ const BannersAdvertisement = () => {
                         </div>
                       )}
                       {AnimalSuplimentsImages.map((animalSupbanner, index) => (
-
                         <div key={index} className="position-relative imagemedia_btn" >
-                          {console.log(animalSupbanner)}
+                          {/* {console.log(animalSupbanner)} */}
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={animalSupbanner && typeof animalSupbanner === 'string' && animalSupbanner.startsWith("http") ? animalSupbanner : animalSupbanner}
+                            src={animalSupbanner && typeof animalSupbanner === 'string' && animalSupbanner.startsWith("http") ? animalSupbanner : URL.createObjectURL(animalSupbanner)}
                             alt=""
                           />
                           <img

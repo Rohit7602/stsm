@@ -109,7 +109,7 @@ const ProductListComponent = () => {
                                 : (orderTableData.status).toString().toLowerCase() === 'delivered'
                                   ? `delivered/${orderTableData.id}`
                                   : `canceled/${orderTableData.id}`
-                              }`}> 
+                              }`}>
                             {orderTableData.id}
                           </Link>
                           <div className="d-flex align-items-center"></div>
@@ -127,21 +127,21 @@ const ProductListComponent = () => {
                       </td>
                       <td className="p-3">
                         <h3
-                          className={`fs-sm fw-400 mb-0 d-inline-block ${(orderTableData.transaction.status).toString().toLowerCase() === true
+                          className={`fs-sm fw-400 mb-0 d-inline-block ${(orderTableData.transaction.status).toString().toLowerCase() === 'paid'
                             ? 'black stock_bg'
-                            : orderTableData.PaymentStatus === 'COD'
+                            : (orderTableData.transaction.status).toString().toLowerCase() === 'cod'
                               ? 'black cancel_gray'
-                              : orderTableData.PaymentStatus === 'Refund'
+                              : (orderTableData.transaction.status).toString().toLowerCase() === 'refund'
                                 ? 'new_order red'
                                 : 'color_brown on_credit_bg'
                             }`}
                         >
-                          {orderTableData.transaction.status ? 'True' : 'False'}
+                          {orderTableData.transaction.status}
                         </h3>
                       </td>
                       <td className="p-3">
                         <p
-                          className={`d-inline-block ${(orderTableData.status).toString().toLowerCase() === 'new order'
+                          className={`d-inline-block ${(orderTableData.status).toString().toLowerCase() === 'new'
                             ? 'fs-sm fw-400 red mb-0 new_order'
                             : (orderTableData.status).toString().toLowerCase() === 'processing'
                               ? 'fs-sm fw-400 mb-0 processing_skyblue'
