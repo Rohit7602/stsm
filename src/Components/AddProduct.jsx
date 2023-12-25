@@ -290,7 +290,7 @@ const AddProduct = () => {
                       <br />
                       {/* 3rd input */}
                       <label htmlFor="des" className="fs-xs fw-400 mt-3 black">
-                        Description <span className="red ms-1 fs-sm">*</span>
+                        Description
                       </label>{' '}
                       <br />
                       <textarea
@@ -400,12 +400,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                            ...v,
-                                            discountType: selectedDiscountType,
-                                            // Reset discount value when changing the discount type to "Amount"
-                                            discount:
-                                              selectedDiscountType === 'Amount' ? 0 : v.discount,
-                                          }
+                                              ...v,
+                                              discountType: selectedDiscountType,
+                                              // Reset discount value when changing the discount type to "Amount"
+                                              discount:
+                                                selectedDiscountType === 'Amount' ? 0 : v.discount,
+                                            }
                                           : v
                                       )
                                     );
@@ -622,16 +622,22 @@ const AddProduct = () => {
                     SKU
                   </label>
                   <br />
-                  <input
-                    required
-                    type="text"
-                    className="mt-2 product_input fade_grey fw-400"
-                    placeholder="6HK3I5"
-                    value={sku}
-                    id="sku"
-                    onChange={(e) => setSku(e.target.value)}
-                  />{' '}
-                  <br />
+                  <div className="d-flex align-items-center justify-content-between product_input mt-2">
+                    <input
+                      required
+                      type="text"
+                      className="fade_grey fw-400 w-100 border-0 bg-white"
+                      placeholder="6HK3I5"
+                      value={sku}
+                      id="sku"
+                      onChange={(e) => setSku(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className="white_space_nowrap border-0 bg-white color_blue">
+                      Generate SKU
+                    </button>
+                  </div>
                   {/* 2nd input */}
                   <label htmlFor="total" className="fs-xs fw-400 mt-3 black">
                     Total Stock{' '}
@@ -688,6 +694,16 @@ const AddProduct = () => {
                         </button>
                       </div>
                     ) : null}
+                    <label htmlFor="sku" className="fs-xs fw-400 mt-3 black">
+                      Stock Alert Count
+                    </label>
+                    <br />
+                    <input
+                      required
+                      type="text"
+                      className="mt-2 product_input fade_grey fw-400"
+                      placeholder="2"
+                    />{' '}
                   </div>
                   <br />
                 </div>
@@ -726,10 +742,11 @@ const AddProduct = () => {
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                    ? 'selected'
-                                    : ''
-                                    }`}
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (

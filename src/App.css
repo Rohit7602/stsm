@@ -41,7 +41,6 @@ body {
   --fs-2sm: 18px;
   --fs-lg: 30px;
 }
-
 /*--------------------- DEFINE-ALL = ROOT-VALUE ------------------------------ */
 .white {
   color: var(--color-white);
@@ -332,6 +331,7 @@ body {
 .banner_advertisement .accordion-button:not(.collapsed)::after {
   transform: rotate(180deg) !important;
 }
+
 /*export_btn*/
 .export_btn {
   border-radius: 10px;
@@ -1051,10 +1051,31 @@ body {
   width: 40px;
   border-radius: 5px;
 }
-/* .table2 {
-  max-height: 300px !important;
-  overflow-y: scroll !important;
-} */
+.mt-0 {
+  margin-top: 0 !important;
+}
+.raido-black {
+  accent-color: black;
+}
+.active {
+  background-color: #26313a !important;
+  border-radius: 50px 0px 0px 50px !important;
+}
+.active svg path {
+  fill: var(--color-brown);
+}
+.active .dash_links {
+  background-color: #26313a !important;
+  border-radius: 50px 0px 0px 50px !important;
+}
+.active .accordion-header {
+  background-color: #26313a !important;
+  border-radius: 50px 0px 0px 50px !important;
+}
+.dash_links {
+  padding-top: 15px !important;
+  padding-bottom: 15px !important;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
   :root {

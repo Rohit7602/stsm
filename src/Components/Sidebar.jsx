@@ -16,8 +16,8 @@ function Sidebar() {
           </div>
           <div className="drops_wrap">
             <ul className="px-0 drop_list">
-              <li className="dash_links py-2 px-3 d-flex align-item-center">
-                <NavLink to="/" className="d-flex py-1 w-100">
+              <li className=" d-flex align-item-center">
+                <NavLink to="/" className="d-flex px-3 w-100 dash_links">
                   <svg
                     className="list_icons"
                     width="16"
@@ -32,33 +32,36 @@ function Sidebar() {
                       fill="#FFF"
                     />
                   </svg>
-
                   <h3 className="fs-xs fw-400  white mb-0">Dashboard</h3>
                 </NavLink>
               </li>
               <li className="pl-0 w-100   d-flex align-item-center">
                 <Accordion className="border-0   w-100 rounded-none bg_color_white">
                   <Accordion.Item className="py-1" eventKey="0">
-                    <Accordion.Header className="bg_grey px-3 py-2  fw-400 white mb-0 ">
-                      <svg
-                        className="list_icons"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M11.5 13.6L10.2 12.3L9.5 13L11.5 15L15 11.5L14.3 10.8L11.5 13.6ZM6 9H10V10H6V9ZM6 6.5H10V7.5H6V6.5ZM6 4H10V5H6V4Z"
-                          fill="white"
-                        />
-                        <path
-                          d="M8 14H3V12H4V11H3V8.5H4V7.5H3V5H4V4H3V2H12V10H13V2C13 1.45 12.55 1 12 1H3C2.45 1 2 1.45 2 2V4H1V5H2V7.5H1V8.5H2V11H1V12H2V14C2 14.55 2.45 15 3 15H8V14Z"
-                          fill="white"
-                        />
-                      </svg>
-                      <h3 className="fs-xs fw-400  white mb-0">Catalog</h3>
+                    <Accordion.Header className="fw-400 white mb-0 pe-3">
+                      <NavLink
+                        to="/CategoriesView"
+                        className="d-flex align-items-center w-100 dash_links ps-3">
+                        <svg
+                          className="list_icons"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M11.5 13.6L10.2 12.3L9.5 13L11.5 15L15 11.5L14.3 10.8L11.5 13.6ZM6 9H10V10H6V9ZM6 6.5H10V7.5H6V6.5ZM6 4H10V5H6V4Z"
+                            fill="white"
+                          />
+                          <path
+                            d="M8 14H3V12H4V11H3V8.5H4V7.5H3V5H4V4H3V2H12V10H13V2C13 1.45 12.55 1 12 1H3C2.45 1 2 1.45 2 2V4H1V5H2V7.5H1V8.5H2V11H1V12H2V14C2 14.55 2.45 15 3 15H8V14Z"
+                            fill="white"
+                          />
+                        </svg>
+                        <h3 className="fs-xs fw-400  white mb-0">Catalog</h3>
+                      </NavLink>
                     </Accordion.Header>
-                    <Accordion.Body className="py-2  ">
+                    <Accordion.Body className="py-2">
                       <NavLink className="d-flex py-1" to="/CategoriesView">
                         <img src="" alt="" />
                         <h3 className="fs-xs fw-400  white mb-0">Category List</h3>
