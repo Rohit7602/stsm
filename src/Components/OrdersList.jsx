@@ -109,7 +109,7 @@ const ProductListComponent = () => {
                                 : (orderTableData.status).toString().toLowerCase() === 'delivered'
                                   ? `delivered/${orderTableData.id}`
                                   : `canceled/${orderTableData.id}`
-                              }`}>
+                              }`}> 
                             {orderTableData.id}
                           </Link>
                           <div className="d-flex align-items-center"></div>

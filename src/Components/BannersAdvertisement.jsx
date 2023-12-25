@@ -1096,8 +1096,9 @@ const BannersAdvertisement = () => {
                         </div>
                       )}
                       {AnimalSuplimentsImages.map((animalSupbanner, index) => (
-                        // { console.log(animalSupbanner) }
+
                         <div key={index} className="position-relative imagemedia_btn" >
+                          {console.log(animalSupbanner)}
                           <img
                             className="w-100 h-100 object-fit-cover"
                             src={animalSupbanner && typeof animalSupbanner === 'string' && animalSupbanner.startsWith("http") ? animalSupbanner : animalSupbanner}
