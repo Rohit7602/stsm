@@ -20,8 +20,8 @@ export const OrderContextProvider = ({ children }) => {
                 snapshot.forEach((doc) => {
                     list.push({ id: doc.id, ...doc.data() });
                     setorders([...list])
-                    console.log("order is fetchData")
                     setIsDataFetched(true)
+                    
                 })
             } catch (error) {
                 console.error(error)

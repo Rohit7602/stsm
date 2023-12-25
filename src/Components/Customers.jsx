@@ -7,41 +7,11 @@ import eye_icon from '../Images/svgs/eye.svg';
 import pencil_icon from '../Images/svgs/pencil.svg';
 import delete_icon from '../Images/svgs/delte.svg';
 import updown_icon from '../Images/svgs/arross.svg';
-import { collection, doc, getDocs, deleteDoc, query, where } from 'firebase/firestore';
-import { db } from '../firebase';
-import { useEffect } from 'react';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useCustomerContext } from '../context/Customergetters';
 
 const Customers = () => {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      let list = [];
-      try {
-        const q = query(collection(db, 'customers'), where('is_customer', '==', true));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          list.push({ id: doc.id, ...doc.data() });
-        });
-        console.log(list);
-        setData([...list]);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, []);
-  async function handleDelete(id) {
-    try {
-      await deleteDoc(doc(db, 'products', id)).then(() => {
-        setData(data.filter((item) => item.id !== id));
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  const { customer } = useCustomerContext()
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
@@ -97,7 +67,7 @@ const Customers = () => {
                       <h3 className="fs-sm fw-400 black mb-0">Action</h3>
                     </th>
                   </tr>
-                  {data.map((item, index) => {
+                  {customer.map((item, index) => {
                     const {
                       id,
                       city,
@@ -209,7 +179,7 @@ const Customers = () => {
                                 <li>
                                   <div class="dropdown-item" href="#">
                                     <div
-                                      onClick={() => handleDelete(item.id)}
+                                      // onClick={() => handleDelete(item.id)}
                                       className="d-flex align-items-center categorie_dropdown_options">
                                       <img src={delete_icon} alt="" />
                                       <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>

@@ -33,23 +33,22 @@ const NewCategory = () => {
   const [searchvalue, setSearchvalue] = useState('');
   const { ImageisValidOrNot } = useImageHandleContext();
 
-  const [addCatPopup, setAddCatPopup] = useState(false);
-  const [perName, setPerName] = useState();
-  const [perStatus, setPerStatus] = useState();
-  const [imageupload2, setImageupload2] = useState('');
 
-  function handelUpload2(e) {
-    const selectedFile = e.target.files[0];
-    setImageupload2(selectedFile);
-  }
 
-  function handleDelete2(index) {
-    setImageupload2();
-  }
+
+  const [selectedLayout, setSelectedLayout] = useState('');
+
+  // ...
+
+  const handleLayoutChange = (layout) => {
+    setSelectedLayout(layout);
+  };
+
+
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const { addData } = useSubCategories();
-  const { categoreis } = useMainCategories();
+  const { categoreis, addDataParent } = useMainCategories();
 
   const handleSelectCategory = (category) => {
     setSearchvalue('');
@@ -86,6 +85,7 @@ const NewCategory = () => {
           status: status,
           image: imageUrl,
           cat_ID: category.id,
+          homepagelayout: selectedLayout,
         });
         setLoaderstatus(false);
         toast.success('Category  added Successfully !', {
@@ -122,6 +122,91 @@ const NewCategory = () => {
   function handleDelete22(index) {
     setImageupload();
   }
+
+  /***********************************************
+   * Handle Parent Category code start from here 
+   * ******************************************************
+   * 
+   */
+  const [refreshData, setRefreshData] = useState(false);
+  const [addCatPopup, setAddCatPopup] = useState(false);
+  const [perName, setPerName] = useState('');
+  const [imageupload2, setImageupload2] = useState('');
+  const [perStatus, setPerStatus] = useState();
+
+  function handelUpload2(e) {
+    const selectedFile = e.target.files[0];
+    if (!ImageisValidOrNot(selectedFile)) {
+      toast.error('please select an image file ');
+      setImageupload2(null);
+    } else {
+      setImageupload2(selectedFile);
+    }
+
+  }
+
+  function handleDelete2(index) {
+    setImageupload2();
+  }
+  function handleDelete22(index) {
+    setImageupload();
+  }
+
+  function HandleResetFormParentCategory() {
+    setPerName("");
+    setImageupload2();
+    setAddCatPopup(false);
+
+
+  }
+
+
+
+
+  async function handleSaveParentCategory(e) {
+    e.preventDefault()
+    try {
+      if (perName === undefined || null) {
+        alert('please enter the name of the category ');
+      } else if (imageupload2.length === 0) {
+        alert('please upload image of the category ');
+      } else if (perStatus === undefined || null) {
+        alert('please Set the status ');
+      } else {
+        setLoaderstatus(true);
+        const filename = Math.floor(Date.now() / 1000) + '-' + imageupload2.name;
+        const storageRef = ref(storage, `/Parent-category/${filename}`);
+        const upload = await uploadBytes(storageRef, imageupload);
+        const imageUrl = await getDownloadURL(storageRef);
+        const docRef = await addDoc(collection(db, 'categories'), {
+          title: perName,
+          status: perStatus,
+          image: imageUrl,
+        });
+        setLoaderstatus(false);
+        toast.success('Category added Successfully !', {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        HandleResetFormParentCategory();
+        setAddCatPopup(false);
+        setRefreshData((prevState) => !prevState);
+        // context
+        addDataParent(docRef);
+      }
+    } catch (e) {
+      toast.error(e, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      console.log(e);
+    }
+  }
+
+
+  /*  *******************************
+      Add Parent Category end  here 
+   *********************************************   **/
+
+
 
   if (loaderstatus) {
     return (
@@ -236,6 +321,7 @@ const NewCategory = () => {
                                 className="raido-black"
                                 type="radio"
                                 name="minilayout"
+                                onChange={() => handleLayoutChange('1X3')}
                               />
                               <label htmlFor="one" className="fs-xs fw-400 black mb-0 ms-2">
                                 1 x 3
@@ -250,6 +336,7 @@ const NewCategory = () => {
                                 className="raido-black"
                                 type="radio"
                                 name="minilayout"
+                                onChange={() => handleLayoutChange('2X2')}
                               />
                               <label htmlFor="two" className="fs-xs fw-400 black mb-0 ms-2">
                                 2 x 2
@@ -264,6 +351,7 @@ const NewCategory = () => {
                                 className="raido-black"
                                 type="radio"
                                 name="minilayout"
+                                onChange={() => handleLayoutChange('2X3')}
                               />
                               <label htmlFor="three" className="fs-xs fw-400 black mb-0 ms-2">
                                 2 x 3
@@ -278,6 +366,7 @@ const NewCategory = () => {
                                 className="raido-black"
                                 type="radio"
                                 name="minilayout"
+                                onChange={() => handleLayoutChange('3X3')}
                               />
                               <label htmlFor="four" className="fs-xs fw-400 black mb-0 ms-2">
                                 3 x 3
@@ -292,6 +381,7 @@ const NewCategory = () => {
                                 className="raido-black"
                                 type="radio"
                                 name="minilayout"
+                                onChange={() => handleLayoutChange('2X2 Inline3')}
                               />
                               <label htmlFor="five" className="fs-xs fw-400 black mb-0 ms-2">
                                 2 x 2 Inline3
@@ -382,11 +472,10 @@ const NewCategory = () => {
                             .map((category) => (
                               <Dropdown.Item key={category.id}>
                                 <div
-                                  className={`d-flex justify-content-between ${
-                                    selectedCategory && selectedCategory.id === category.id
-                                      ? 'selected'
-                                      : ''
-                                  }`}
+                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
+                                    ? 'selected'
+                                    : ''
+                                    }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (
@@ -401,7 +490,11 @@ const NewCategory = () => {
                             ) && (
                               <button
                                 type="button"
-                                onClick={() => setAddCatPopup(true)}
+                                onClick={() => {
+                                  setPerName(searchvalue)
+                                  setAddCatPopup(true)
+                                }
+                                }
                                 className="addnew_category_btn fs-xs green">
                                 +Add <span className="black">"{searchvalue}"</span> in Parent
                                 Category
@@ -413,7 +506,7 @@ const NewCategory = () => {
                   </Dropdown>
                   {addCatPopup === true ? (
                     <div className="parent_category_popup">
-                      <form action="">
+                      <form action="" >
                         <div className="d-flex align-items-center justify-content-between">
                           <p className="fs-4 fw-400 black mb-0">New Parent Category</p>
                           <div className="d-flex align-items-center gap-3">
@@ -422,7 +515,7 @@ const NewCategory = () => {
                                 Cancel
                               </button>
                             </button>
-                            <button
+                            <button onClick={(e) => handleSaveParentCategory(e)}
                               type="submit"
                               className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn">
                               <img src={saveicon} alt="saveicon" />
@@ -442,7 +535,7 @@ const NewCategory = () => {
                             className="mt-2 product_input fade_grey fw-400"
                             placeholder="Enter Category name"
                             id="Name"
-                            value={searchvalue}
+                            value={perName}
                             onChange={(e) => setPerName(e.target.value)}
                           />{' '}
                           <br />

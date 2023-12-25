@@ -158,7 +158,7 @@ export const MainCategoriesProvider = ({ children }) => {
         }
     };
 
-    const addData = async (categoreis) => {
+    const addDataParent = async (categoreis) => {
         try {
             updateData(categoreis)
         } catch (error) {
@@ -167,7 +167,7 @@ export const MainCategoriesProvider = ({ children }) => {
     }
 
     return (
-        <MainCategoriesContext.Provider value={{ categoreis: memodata , updateData,addData}}>
+        <MainCategoriesContext.Provider value={{ categoreis: memodata, updateData, addDataParent }}>
             {children}
         </MainCategoriesContext.Provider>
     )

@@ -181,12 +181,12 @@ const ProductListComponent = (orderStatus) => {
                       <td className="p-3">
                         <h3
                           className={`fs-sm fw-400 mb-0 d-inline-block ${orderTableData.transaction.status.toString().toLowerCase() === 'paid'
-                              ? 'black stock_bg'
-                              : (orderTableData.transaction.status).toString().toLowerCase() === 'cod'
-                                ? 'black cancel_gray'
-                                : (orderTableData.transaction.status).toString().toLowerCase() === 'refund'
-                                  ? 'new_order red'
-                                  : 'color_brown on_credit_bg'
+                            ? 'black stock_bg'
+                            : (orderTableData.transaction.status).toString().toLowerCase() === 'cod'
+                              ? 'black cancel_gray'
+                              : (orderTableData.transaction.status).toString().toLowerCase() === 'refund'
+                                ? 'new_order red'
+                                : 'color_brown on_credit_bg'
                             }`}>
                           {orderTableData.transaction.status}
                         </h3>
@@ -194,12 +194,12 @@ const ProductListComponent = (orderStatus) => {
                       <td className="p-3">
                         <p
                           className={`d-inline-block ${orderTableData.status.toString().toLowerCase() === 'new'
-                              ? 'fs-sm fw-400 red mb-0 new_order'
-                              : orderTableData.status.toString().toLowerCase() === 'processing'
-                                ? 'fs-sm fw-400 mb-0 processing_skyblue'
-                                : orderTableData.status.toString().toLowerCase() === 'delivered'
-                                  ? 'fs-sm fw-400 mb-0 green stock_bg'
-                                  : 'fs-sm fw-400 mb-0 black cancel_gray'
+                            ? 'fs-sm fw-400 red mb-0 new_order'
+                            : orderTableData.status.toString().toLowerCase() === 'processing'
+                              ? 'fs-sm fw-400 mb-0 processing_skyblue'
+                              : orderTableData.status.toString().toLowerCase() === 'delivered'
+                                ? 'fs-sm fw-400 mb-0 green stock_bg'
+                                : 'fs-sm fw-400 mb-0 black cancel_gray'
                             }`}>
                           {orderTableData.status}
                         </p>
@@ -237,12 +237,12 @@ const ProductListComponent = (orderStatus) => {
                                   <img src={eye_icon} alt="" />
                                   <Link
                                     to={`/orderslist/${orderTableData.OrderStatus === 'New Order'
-                                        ? 'neworder'
-                                        : orderTableData.OrderStatus === 'Processing'
-                                          ? 'processing'
-                                          : orderTableData.OrderStatus === 'Delivered'
-                                            ? 'delivered'
-                                            : 'canceled'
+                                      ? 'neworder'
+                                      : orderTableData.OrderStatus === 'Processing'
+                                        ? 'processing'
+                                        : orderTableData.OrderStatus === 'Delivered'
+                                          ? 'delivered'
+                                          : 'canceled'
                                       }`}>
                                     <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
                                   </Link>

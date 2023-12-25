@@ -31,7 +31,7 @@ const Categories = () => {
 
   // context
   const { ImageisValidOrNot } = useImageHandleContext();
-  const { categoreis, updateData, addData } = useMainCategories();
+  const { categoreis, updateData, addDataParent } = useMainCategories();
   const { data } = useSubCategories();
 
   const pubref = useRef();
@@ -86,7 +86,7 @@ const Categories = () => {
         setAddCatPopup(false);
         setRefreshData((prevState) => !prevState);
         // context
-        addData(docRef);
+        addDataParent(docRef);
       }
     } catch (e) {
       toast.error(e, {
