@@ -11,14 +11,16 @@ import OrdersList from './Components/OrdersList';
 import ViewCustomerDetails from './Components/ViewCustomerDetails';
 import BannersAdvertisement from './Components/BannersAdvertisement';
 import Topbar from './Components/Topbar';
-import NewOrder from './Components/NewOrder';
+import Orderdetails from './Components/Orderdetails';
 import OrderProcessing from './Components/OrderProcessing';
 import OrderCanceled from './Components/OrderCanceled';
 import OrderDelivered from './Components/OrderDelivered';
 import ParentCategories from './Components/ParentCategories';
 import Login from './Components/Login';
+import { useState } from 'react';
 
 function App() {
+  const [orderStatus, setOrderStatus] = useState();
   return (
     // <Routes>
     //   <Route path="/" element={<Login />}></Route>
@@ -36,10 +38,10 @@ function App() {
             <Route path="/productlist" element={<ProductList />} />
             <Route path="/addproduct" element={<AddProduct />} />
             <Route path="/orderslist" element={<OrdersList />} />
-            <Route path="/orderslist/delivered" element={<OrderDelivered />} />
-            <Route path="/orderslist/canceled" element={<OrderCanceled />} />
-            <Route path="/orderslist/processing" element={<OrderProcessing />} />
-            <Route path="/orderslist/neworder" element={<NewOrder />} />
+            <Route path="/orderslist/delivered/:id" element={<OrderDelivered />} />
+            <Route path="/orderslist/canceled/:id" element={<OrderCanceled />} />
+            <Route path="/orderslist/processing/:id" element={<OrderProcessing />} />
+            <Route path="/orderslist/orderdetails/:id" element={<Orderdetails />} />
             <Route path="/customer" element={<Customers />} />
             <Route path="/customer/viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
             <Route path="/bannersadvertisement" element={<BannersAdvertisement />} />

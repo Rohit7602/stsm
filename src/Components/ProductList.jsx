@@ -6,11 +6,10 @@ import eye_icon from '../Images/svgs/eye.svg';
 import pencil_icon from '../Images/svgs/pencil.svg';
 import delete_icon from '../Images/svgs/delte.svg';
 import updown_icon from '../Images/svgs/arross.svg';
-import { collection, doc, getDocs, deleteDoc, updateDoc } from 'firebase/firestore';
+import {  doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { deleteObject, getStorage, ref } from 'firebase/storage';
 import { db } from '../firebase';
 import { Link, NavLink } from 'react-router-dom';
-import Modifyproduct from './Modifyproduct';
 import { useProductsContext } from '../context/productgetter';
 
 const ProductListComponent = () => {
@@ -59,37 +58,6 @@ const ProductListComponent = () => {
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
-
-  /**
-   ******************************************************
-      Fetching Product list  Data functionality start from here 
-  *************************************************
-     */
-
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     let list = [];
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, 'products'));
-  //       querySnapshot.forEach((doc) => {
-  //         // doc.data() is never undefined for query doc snapshots
-  //         list.push({ id: doc.id, ...doc.data() });
-  //       });
-  //       setData([...list]);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
-
-
-  /**
-   ******************************************************
-      Fetching Product list  Data functionality start from here 
-  *************************************************
-     */
 
 
   /**
@@ -150,13 +118,13 @@ const ProductListComponent = () => {
     }
   }
 
-
-
   /**
    ******************************************************
-      Handle Delete functionality end from here 
+      Handle Delete functionality end  here 
   *************************************************
      */
+  
+
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">

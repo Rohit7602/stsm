@@ -1,46 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import saveicon from '../Images/svgs/saveicon.svg';
-
-import { Col, Row } from 'react-bootstrap';
-import SearchIcon from '../Images/svgs/search.svg';
 import deleteicon from '../Images/svgs/deleteicon.svg';
-import uploadIcon from '../Images/svgs/upload.svg';
-import checkBlack from '../Images/svgs/check_black_icon.svg';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  getStorage,
+  deleteObject,
+  getStream,
+} from 'firebase/storage';
+import { where, query, getDoc } from 'firebase/firestore';
 import { storage, db } from '../firebase';
-import { getDocs, collection, addDoc } from 'firebase/firestore';
+import {
+  getDocs,
+  collection,
+  addDoc,
+  updateDoc,
+  doc,
+  arrayRemove,
+  setDoc,
+} from 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useImageValidation } from '../context/validators';
 import { useImageHandleContext } from '../context/ImageHandler';
-import { useLargeBannerContext } from '../context/BannerGetters';
 import { useMainCategories } from '../context/categoriesGetter';
 import { UseBannerData } from '../context/BannerGetters';
-
-
+import { type } from '@testing-library/user-event/dist/type';
 
 //  banner advertisement up start from here
 // check accordian and save button
 
 const BannersAdvertisement = () => {
-  // context 
-  const { BannerData } = UseBannerData()
+  // context
+  const { BannerData } = UseBannerData();
   const { ImageisValidOrNot } = useImageHandleContext();
   const { validateImage } = useImageValidation();
   const { categoreis } = useMainCategories();
 
-
-  useEffect(() => {
-    if (BannerData) {
+  // get intially all the uploded banners
+  const updateSelectedImages = (data) => {
+    if (data) {
       const selectedImages = {};
-
-      BannerData.forEach((item) => {
+      data.forEach((item) => {
         const title = item.title.toLowerCase();
         const imagelinks = item.data[0]?.imagelinks;
-
         if (imagelinks) {
-          selectedImages[title] = imagelinks.map((itemurl) => itemurl.imgUrl);
+          selectedImages[title] = imagelinks.map((itemurl) => itemurl.imgUrl + '$$$$' + item.id);
         }
       });
 
@@ -54,33 +61,29 @@ const BannersAdvertisement = () => {
 
       // Example: Accessing images for smallpatti
       if (selectedImages['smallpattbanner']) {
-        // console.log("selectd image working if ")
-        // Handle smallpatti case
         setselectedImagesSmallPatii(selectedImages['smallpattbanner']);
       }
 
       // Example: Accessing images for categories
       if (selectedImages['categorybanners']) {
-        // Handle categories case
-        // console.log("selectedImages categories working ")
         SetCategoryImage(selectedImages['categorybanners']);
       }
       if (selectedImages['salesoffers']) {
-        // Handle categories case
-        // console.log("selectedImages categories working ")
         SetBannerSaleImg(selectedImages['salesoffers']);
       }
       if (selectedImages['animalsupliments']) {
-        // Handle categories case
-        // console.log("selectedImages categories working ")
         SetAnimalSuplimentsImages(selectedImages['animalsupliments']);
+        console.log('Selected Animalsupliments:', selectedImages['animalsupliments']);
       }
 
       // Add more cases as needed
     }
+  };
+
+  // Use the function in useEffect
+  useEffect(() => {
+    updateSelectedImages(BannerData);
   }, [BannerData]);
-
-
 
   const [activeAccordion, setActiveAccordion] = useState(null);
 
@@ -90,46 +93,13 @@ const BannersAdvertisement = () => {
     setActiveAccordion(key);
   };
 
-  /** *******************************************************
-      Fetching main categoreis 
-  */
-
-
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     let list = [];
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, 'categories'));
-  //       querySnapshot.forEach((doc) => {
-  //         // doc.data() is never undefined for query doc snapshots
-  //         list.push({ id: doc.id, ...doc.data() });
-  //       });
-  //       SetMainCategories([...list]);
-  //     } catch (error) {
-  //       console.log("hii how are yo")
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
-
-  /** *******************************************************
-      Fetching main categoreis  end 
-  */
-
-
   /*
  *********************************************************
  Large Banner   functionaltiy start from here 
  
  */
 
-
-
-
-  const [selectedImagesLargeBanner, setSelectedImagesLargeBanner] = useState([null, null])
-
+  const [selectedImagesLargeBanner, setSelectedImagesLargeBanner] = useState([null, null]);
 
   const handleUploadLargeBanner = async (index, e) => {
     const file = e.target.files[0];
@@ -150,63 +120,139 @@ const BannersAdvertisement = () => {
     }
   };
 
-
-  const handleDeleteLargeBanner = (index) => {
+  const handleDeleteLargeBanner = async (index) => {
+    if (
+      selectedImagesLargeBanner[index] &&
+      typeof selectedImagesLargeBanner[index] === 'string' &&
+      selectedImagesLargeBanner[index].startsWith('http')
+    ) {
+      const id = selectedImagesLargeBanner[index].split('$$$$')[1];
+      const storageRef = getStorage();
+      var reference = ref(storageRef, selectedImagesLargeBanner[index]);
+      deleteObject(reference);
+      await updateDoc(doc(db, 'Banner', id), {
+        data: [
+          {
+            imagelinks: [
+              ...selectedImagesLargeBanner
+                .filter(
+                  (e) =>
+                    e && e.split('$$$$')[0] != selectedImagesLargeBanner[index].split('$$$$')[0]
+                )
+                .map((e) => {
+                  return {
+                    categoryId: '',
+                    categoryTitle: '',
+                    imgUrl: e.split('$$$$')[0],
+                  };
+                }),
+            ],
+          },
+        ],
+      });
+    }
     const newImages = [...selectedImagesLargeBanner];
     newImages[index] = null;
     setSelectedImagesLargeBanner(newImages);
   };
 
-
-
   async function handleSaveLargeBanner() {
+    // console.log("asdfasdfdsafs",selectedImage)
     try {
-      if (selectedImagesLargeBanner.length === 2 && selectedImagesLargeBanner.every(Boolean)) {
+      if (selectedImagesLargeBanner.every(Boolean)) {
         const imagelinks = [];
-        for await (const file of selectedImagesLargeBanner) {
-          const filename = Math.floor(Date.now() / 1000) + '-' + file.name;
-          const storageRef = ref(storage, `banner/${filename}`);
-          const upload = await uploadBytesResumable(storageRef, file);
-          const imageUrl = await getDownloadURL(storageRef);
-          imagelinks.push({
-            categoryId: "",
-            categoryTitle: "",
-            imgUrl: imageUrl,
+        const existingImageUrls = [];
+
+        // Fetch existing data
+        const querySnapshot = await getDocs(
+          query(collection(db, 'Banner'), where('title', '==', 'LargeBanner'))
+        );
+        if (querySnapshot.size > 0) {
+          const existingData = querySnapshot.docs[0].data().data || [];
+
+          // Collect existing image URLs
+          existingData.forEach((item) => {
+            const existingUrls = (item.imagelinks || []).map((img) => img.imgUrl);
+            existingImageUrls.push(...existingUrls);
           });
         }
+
+        for (const file of selectedImagesLargeBanner) {
+          // console.log(typeof(file))
+          let imageUrl = null;
+
+          if (file instanceof File) {
+            const filename = Math.floor(Date.now() / 1000) + '-' + file.name;
+            const storageRef = ref(storage, `banner/${filename}`);
+            const upload = await uploadBytesResumable(storageRef, file);
+            imageUrl = await getDownloadURL(storageRef);
+          } else if (typeof file === 'string') {
+            // console.log(file)
+            imageUrl = file.split('$$$$')[0];
+          }
+
+          // Only add new image URL (not in existingImageUrls)
+          if (imageUrl && !existingImageUrls.includes(imageUrl)) {
+            imagelinks.push({
+              categoryId: '',
+              categoryTitle: '',
+              imgUrl: imageUrl,
+            });
+          }
+        }
+
         if (imagelinks.length > 0) {
           try {
-            const docRef = await addDoc(collection(db, 'Banner'), {
-              title: 'LargeBanner',
-              data: [{ imagelinks }]
-            });
+            // Check if the document already exists
+            const querySnapshot = await getDocs(
+              query(collection(db, 'Banner'), where('title', '==', 'LargeBanner'))
+            );
 
+            if (querySnapshot.size > 0) {
+              // Document already exists, get existing data
+              const docRef = querySnapshot.docs[0];
+              const existingData = docRef.data().data || [];
+
+              // Combine existing and new image URLs in the same imagelinks array
+              const combinedImagelinks = existingData
+                .reduce((acc, item) => {
+                  return acc.concat(item.imagelinks || []);
+                }, [])
+                .concat(imagelinks);
+
+              // Construct updated data with the combined imagelinks
+              const updatedData = [{ imagelinks: combinedImagelinks }];
+
+              // Set the document with the updated data
+              await setDoc(docRef.ref, {
+                title: 'LargeBanner',
+                data: updatedData,
+              });
+            } else {
+              // Document doesn't exist, create a new one with new images
+              const docRef = await addDoc(collection(db, 'Banner'), {
+                title: 'LargeBanner',
+                data: [{ imagelinks }],
+              });
+            }
           } catch (error) {
-            console.log(error)
-
+            console.log(error);
           }
         } else {
-          console.log('No images uploaded');
+          console.log('No new images uploaded');
         }
       } else {
         console.log('Select both images before uploading');
       }
 
-
-      toast.success('Large Banner Added Successfully !', {
+      toast.success('Large Banner Added Successfully!', {
         position: toast.POSITION.TOP_RIGHT,
       });
-      // // After saving, fetch existing images
-      // const existingImages = await fetchExistingImagesByTitle('LargeBanner');
-
-      // // Set the existing and new images in your state
-      // setSelectedImagesLargeBanner([...existingImages]);
     } catch (error) {
       console.error(error);
     }
-    console.log("asdfasdf", selectedImagesLargeBanner)
+    // console.log("asdfasdf", selectedImagesLargeBanner);
   }
-
   /*
  *********************************************************
  Large  Banner functionaltiy end  
@@ -218,20 +264,25 @@ const BannersAdvertisement = () => {
   Small Patti Banner Added functionlaity  start from here 
   ************************************
   */
-  const [selectedImagesSmallPatii, setselectedImagesSmallPatii] = useState([null, null, null])
+  const [selectedImagesSmallPatii, setselectedImagesSmallPatii] = useState([null, null, null]);
 
   const handleUploadSmallPatti = async (index, e) => {
-    let file = e.target.files[0]
+    let file = e.target.files[0];
     try {
       // Define desired aspect ratio and dimensions for large banner
-      const desiredAspectRatio = 16 / 2.5
+      const desiredAspectRatio = 16 / 2.5;
       const desiredWidth = 1280;
       const desiredHeight = 200;
 
       // Validate the image using the context function
-      const validatedImage = await validateImage(file, desiredAspectRatio, desiredWidth, desiredHeight);
+      const validatedImage = await validateImage(
+        file,
+        desiredAspectRatio,
+        desiredWidth,
+        desiredHeight
+      );
       const newImages = [...selectedImagesSmallPatii];
-      newImages[index] = validatedImage
+      newImages[index] = validatedImage;
       setselectedImagesSmallPatii(newImages);
     } catch (error) {
       // Handle the validation error (e.g., show an error message)
@@ -239,55 +290,132 @@ const BannersAdvertisement = () => {
         position: toast.POSITION.TOP_RIGHT,
       });
     }
-
   };
 
-  const handleDeleteSmallPatti = (index) => {
+  const handleDeleteSmallPatti = async (index) => {
+    if (
+      selectedImagesSmallPatii[index] &&
+      typeof selectedImagesSmallPatii[index] === 'string' &&
+      selectedImagesSmallPatii[index].startsWith('http')
+    ) {
+      const id = selectedImagesSmallPatii[index].split('$$$$')[1];
+      const storageRef = getStorage();
+      var reference = ref(storageRef, selectedImagesSmallPatii[index]);
+      deleteObject(reference);
+      await updateDoc(doc(db, 'Banner', id), {
+        data: [
+          {
+            imagelinks: [
+              ...selectedImagesSmallPatii
+                .filter(
+                  (e) => e && e.split('$$$$')[0] != selectedImagesSmallPatii[index].split('$$$$')[0]
+                )
+                .map((e) => {
+                  return {
+                    categoryId: '',
+                    categoryTitle: '',
+                    imgUrl: e.split('$$$$')[0],
+                  };
+                }),
+            ],
+          },
+        ],
+      });
+    }
     const newImages = [...selectedImagesSmallPatii];
     newImages[index] = null;
     setselectedImagesSmallPatii(newImages);
   };
 
   async function handleSaveSmallPattiBanner() {
+    console.log(selectedImagesSmallPatii);
     try {
-      if (selectedImagesSmallPatii.length === 3 && selectedImagesSmallPatii.every(Boolean)) {
+      if (selectedImagesSmallPatii.every(Boolean)) {
         const imagelinks = [];
+        const existingImageUrls = [];
 
-        for await (const file of selectedImagesSmallPatii) {
-          const filename = Math.floor(Date.now() / 1000) + '-' + file.name;
-          const storageRef = ref(storage, `banner/${filename}`);
-          const upload = await uploadBytesResumable(storageRef, file);
-          const imageUrl = await getDownloadURL(storageRef);
-          imagelinks.push({
-            categoryId: "",
-            categoryTitle: "",
-            imgUrl: imageUrl,
+        // Fetch existing data
+        const querySnapshot = await getDocs(
+          query(collection(db, 'Banner'), where('title', '==', 'SmallPattBanner'))
+        );
+        if (querySnapshot.size > 0) {
+          const existingData = querySnapshot.docs[0].data().data || [];
+          existingData.forEach((item) => {
+            const existingUrls = (item.imagelinks || []).map((img) => img.imgUrl);
+            existingImageUrls.push(...existingUrls);
           });
+        }
+
+        for (const file of selectedImagesSmallPatii) {
+          let imageUrl = null;
+          if (file instanceof File) {
+            const filename = Math.floor(Date.now() / 1000) + '-' + file.name;
+            const storageRef = ref(storage, `banner/${filename}`);
+            const upload = await uploadBytesResumable(storageRef, file);
+            imageUrl = await getDownloadURL(storageRef);
+          } else if (typeof file === 'string') {
+            imageUrl = file.split('$$$$')[0];
+          }
+
+          if (imageUrl && !existingImageUrls.includes(imageUrl)) {
+            imagelinks.push({
+              categoryId: '',
+              categoryTitle: '',
+              imgUrl: imageUrl,
+            });
+          }
         }
 
         if (imagelinks.length > 0) {
           try {
-            const docRef = await addDoc(collection(db, 'Banner'), {
-              // SmallPattBanner: [{
-              //   title: 'Small_Patti banner',
-              //   imgUrl: imagelinks,
-              // }]
-              title: "SmallPattBanner",
-              data: [{ imagelinks }]
-            });
+            const querySnapshot = await getDocs(
+              query(collection(db, 'Banner'), where('title', '==', 'SmallPattBanner'))
+            );
+            if (querySnapshot.size > 0) {
+              const docRef = querySnapshot.docs[0];
+              const existingData = docRef.data().data || [];
 
-            // Update the state with the fetched data
-            // setselectedImagesSmallPatii(updatedData);
+              // Extract existing image URLs
+              const existingUrls = existingData.reduce((acc, item) => {
+                return acc.concat((item.imagelinks || []).map((img) => img.imgUrl));
+              }, []);
+
+              // Filter out existing URLs from new imagelinks
+              const newImagelinks = imagelinks.filter(
+                (link) => !existingUrls.includes(link.imgUrl)
+              );
+
+              // Combine existing and new imagelinks
+              const combinedImagelinks = existingData
+                .reduce((acc, item) => {
+                  return acc.concat(item.imagelinks || []);
+                }, [])
+                .concat(newImagelinks);
+
+              // Construct updated data with the combined imagelinks
+              const updatedData = [{ imagelinks: combinedImagelinks }];
+
+              // Set the document with the updated data
+              await setDoc(docRef.ref, {
+                title: 'SmallPattBanner',
+                data: updatedData,
+              });
+            } else {
+              const docRef = await addDoc(collection(db, 'Banner'), {
+                title: 'SmallPattBanner',
+                data: [{ imagelinks }],
+              });
+            }
           } catch (error) {
             console.log(error);
           }
         } else {
-          console.log('No images uploaded');
+          console.log('No new images uploaded');
         }
       } else {
-        console.log('Select all  images before uploading');
+        console.log('Select all images before uploading');
       }
-      toast.success('SmallPatti Banner  Added Successfully !', {
+      toast.success('SmallPatti Banner Added Successfully!', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
@@ -308,7 +436,7 @@ const BannersAdvertisement = () => {
  */
 
   const [BannerSaleImg, SetBannerSaleImg] = useState([]);
-  const [SelectedBannerImg, SetSelectedBannerImg] = useState(null)
+  const [SelectedBannerImg, SetSelectedBannerImg] = useState(null);
 
   const handelSaleBannerImg = async (e) => {
     const selectedFile = e.target.files[0];
@@ -321,7 +449,9 @@ const BannersAdvertisement = () => {
         // Reset the selected image state after successful addition
         SetSelectedBannerImg(null);
       } else {
-        toast.error("Invalid image format. Please select images with extensions: .png, .jpeg, .jpg, .webp, .svg");
+        toast.error(
+          'Invalid image format. Please select images with extensions: .png, .jpeg, .jpg, .webp, .svg'
+        );
       }
     } catch (error) {
       toast.error(error.message);
@@ -336,26 +466,53 @@ const BannersAdvertisement = () => {
     }
   };
 
+  async function handeldeleteSaleBannerImg(index) {
+    const imageUrlToDelete = BannerSaleImg[index];
+    if (
+      imageUrlToDelete &&
+      typeof imageUrlToDelete === 'string' &&
+      imageUrlToDelete.startsWith('http')
+    ) {
+      const id = imageUrlToDelete.split('$$$$')[1];
+      const storageRef = getStorage();
+      const reference = ref(storageRef, imageUrlToDelete);
+      // Delete the image from storage
+      await deleteObject(reference);
 
+      const updatedImagelinks = BannerSaleImg.filter((item, i) => i !== index)
+        .map((e) => {
+          if (e && typeof e === 'string' && e.startsWith('http')) {
+            return {
+              categoryId: '', // Replace with your logic to get categoryId
+              categoryImg: '', // Replace with your logic to get categoryImg
+              imgUrl: e.split('$$$$')[0],
+            };
+          }
+          return null;
+        })
+        .filter((item) => item !== null);
 
-  function handeldeleteSaleBannerImg(index) {
+      await updateDoc(doc(db, 'Banner', id), {
+        data: [{ imagelinks: updatedImagelinks }],
+      });
+    }
     const multiplebanner = [...BannerSaleImg];
-    multiplebanner.splice(index, 1);
+    multiplebanner[index] = '';
     SetBannerSaleImg(multiplebanner);
   }
 
   async function handleSaveBannerSliderSale() {
     try {
       if (BannerSaleImg.every(Boolean)) {
-        let imagelinks = []
+        let imagelinks = [];
         for await (let files of BannerSaleImg) {
           const name = Math.floor(Date.now() / 1000) + '-' + files.name;
           const storageRef = ref(storage, `banner/${name}`);
           const uploadTask = await uploadBytesResumable(storageRef, files);
           const url = await getDownloadURL(storageRef);
           imagelinks.push({
-            categoryId: "",
-            categoryTitle: "",
+            categoryId: '',
+            categoryTitle: '',
             imgUrl: url,
           });
         }
@@ -366,11 +523,11 @@ const BannersAdvertisement = () => {
             //   title: 'Sales/Offers',
             //   imgUrl: [url],
             // }]
-            title: "SalesOffers",
-            data: [{ imagelinks }]
+            title: 'SalesOffers',
+            data: [{ imagelinks }],
           });
         } else {
-          alert('Please select at least one Image')
+          alert('Please select at least one Image');
         }
         toast.success('Sale/Offer Banner Added   Successfully !', {
           position: toast.POSITION.TOP_RIGHT,
@@ -385,8 +542,7 @@ const BannersAdvertisement = () => {
 
   /*
  *********************************************************
- Sales and offer   Banner functionaltiy end   here 
- 
+    Sales and offer   Banner functionaltiy end   here 
  */
 
   /*  
@@ -408,32 +564,68 @@ const BannersAdvertisement = () => {
         // Reset the selected image state after successful addition
         setSelectedImage(null);
       } else {
-        toast.error("Invalid image format. Please select images with extensions: .png, .jpeg, .jpg, .webp, .svg");
+        toast.error(
+          'Invalid image format. Please select images with extensions: .png, .jpeg, .jpg, .webp, .svg'
+        );
       }
     } catch (error) {
       toast.error(error.message);
     }
   }
 
+  async function handeldeleteAnimalSupliment(index) {
+    const imageUrlToDelete = AnimalSuplimentsImages[index];
+    if (
+      imageUrlToDelete &&
+      typeof imageUrlToDelete === 'string' &&
+      imageUrlToDelete.startsWith('http')
+    ) {
+      const id = imageUrlToDelete.split('$$$$')[1];
+      const storageRef = getStorage();
+      const reference = ref(storageRef, imageUrlToDelete);
+      // Delete the image from storage
+      await deleteObject(reference);
 
-  function handeldeleteAnimalSupliment(index) {
-    const animalsimgs = [...AnimalSuplimentsImages];
-    animalsimgs.splice(index, 1);
-    SetAnimalSuplimentsImages(animalsimgs);
+      // Construct the updated imagelinks array
+      const updatedImagelinks = AnimalSuplimentsImages.filter((item, i) => i !== index)
+        .map((e) => {
+          if (e && typeof e === 'string' && e.startsWith('http')) {
+            return {
+              categoryId: '', // Replace with your logic to get categoryId
+              categoryImg: '', // Replace with your logic to get categoryImg
+              imgUrl: e.split('$$$$')[0],
+            };
+          }
+          return null;
+        })
+        .filter((item) => item !== null);
+
+      // Update the Firestore document
+      await updateDoc(doc(db, 'Banner', id), {
+        data: [{ imagelinks: updatedImagelinks }],
+      });
+    }
+
+    // Update the component state
+    const newAnimalSuplimentsImages = [...AnimalSuplimentsImages];
+    newAnimalSuplimentsImages[index] = ''; // Set the image for the specified index to an empty string
+    SetAnimalSuplimentsImages(newAnimalSuplimentsImages);
+    // Trigger a re-render by updating the key
+    // updateSelectedImages(BannerData);
   }
 
   async function HandleSaveAnimalSuppliments() {
     try {
       if (AnimalSuplimentsImages.every(Boolean)) {
-        let imagelinks = []
+        let imagelinks = [];
         for await (let files of AnimalSuplimentsImages) {
           const name = Math.floor(Date.now() / 1000) + '-' + files.name;
           const storageRef = ref(storage, `banner/${name}`);
           const uploadTask = await uploadBytesResumable(storageRef, files);
           const url = await getDownloadURL(storageRef);
           imagelinks.push({
-            categoryId: "",
-            categoryTitle: "",
+            categoryId: '',
+            categoryTitle: '',
             imgUrl: url,
           });
         }
@@ -447,16 +639,14 @@ const BannersAdvertisement = () => {
               //     imgUrl: [url],
               //   }
               // ]
-              title: "AnimalSupliments",
-              data: [{ imagelinks }]
+              title: 'AnimalSupliments',
+              data: [{ imagelinks }],
             });
-          }
-          catch (error) {
+          } catch (error) {
             console.log('Error Adding Image To The Database', error);
           }
-        }
-        else {
-          alert("please select at least one image ")
+        } else {
+          alert('please select at least one image ');
         }
       } else {
         console.warn('No image selected for upload');
@@ -468,6 +658,7 @@ const BannersAdvertisement = () => {
       console.error('Error uploading image or adding document:', error);
     }
   }
+
   const handleAddMedia = () => {
     if (selectedImage) {
       SetAnimalSuplimentsImages([...AnimalSuplimentsImages, selectedImage]);
@@ -482,8 +673,6 @@ const BannersAdvertisement = () => {
  
  */
 
-
-
   /*
 *********************************************************
  Categoroies  Banner functionaltiy start 
@@ -495,16 +684,21 @@ const BannersAdvertisement = () => {
     let file = e.target.files[0];
     try {
       // Define desired aspect ratio and dimensions for large banner
-      const desiredAspectRatio = 16 / 9
+      const desiredAspectRatio = 16 / 9;
       const desiredWidth = 1280;
       const desiredHeight = 720;
 
       // Validate the image using the context function
-      const validatedImage = await validateImage(file, desiredAspectRatio, desiredWidth, desiredHeight);
+      const validatedImage = await validateImage(
+        file,
+        desiredAspectRatio,
+        desiredWidth,
+        desiredHeight
+      );
 
       // If validation succeeds, update the state
       const newCategoryImages = [...CategoryImage];
-      newCategoryImages[index] = validatedImage
+      newCategoryImages[index] = validatedImage;
       SetCategoryImage(newCategoryImages);
     } catch (error) {
       // Handle the validation error (e.g., show an error message)
@@ -513,7 +707,53 @@ const BannersAdvertisement = () => {
       });
     }
   }
-  function handleCategoryImagesDelete(index) {
+  async function handleCategoryImagesDelete(index) {
+    /*
+    if (selectedImagesLargeBanner[index] && typeof selectedImagesLargeBanner[index] === 'string' && selectedImagesLargeBanner[index].startsWith("http")) {
+      const id = selectedImagesLargeBanner[index].split("$$$$")[1];
+      const storageRef = getStorage();
+      var reference = ref(storageRef, selectedImagesLargeBanner[index]);
+      deleteObject(reference);
+      await updateDoc(doc(db, 'Banner', id), {
+        data: [{
+          imagelinks: [...selectedImagesLargeBanner.filter((e) => e && e.split("$$$$")[0] != selectedImagesLargeBanner[index].split("$$$$")[0]).map((e) => {
+            return {
+              categoryId: "",
+              categoryTitle: "",
+              imgUrl: e.split("$$$$")[0],
+            };
+          })]
+        }],
+      });
+    }
+    */
+    if (
+      CategoryImage[index] &&
+      typeof CategoryImage[index] === 'string' &&
+      CategoryImage[index].startsWith('http')
+    ) {
+      const id = CategoryImage[index].split('$$$$')[1];
+      const storageRef = getStorage();
+      let reference = ref(storageRef, CategoryImage[index]);
+      deleteObject(reference);
+      await updateDoc(doc(db, 'Banner', id), {
+        data: [
+          {
+            imagelinks: [
+              ...CategoryImage.filter(
+                (item) => item && item.split('$$$$')[0] != CategoryImage[index].split('$$$$')[0]
+              ).map((e) => {
+                return {
+                  categoryId: '',
+                  categoryImg: '',
+                  imgUrl: e.split('$$$$')[0],
+                };
+              }),
+            ],
+          },
+        ],
+      });
+    }
     const newCategoryImages = [...CategoryImage];
     newCategoryImages[index] = ''; // Set the image for the specified index to an empty string
     SetCategoryImage(newCategoryImages);
@@ -544,8 +784,8 @@ const BannersAdvertisement = () => {
       // Add the array of banners as a single document in the 'Banner' collection
       await addDoc(collection(db, 'Banner'), {
         // CategoryBanners: bannerArray,
-        title: "CategoryBanners",
-        data: [{ imagelinks }]
+        title: 'CategoryBanners',
+        data: [{ imagelinks }],
       });
       toast.success(`Banner for Categories added successfully!`, {
         position: toast.POSITION.TOP_RIGHT,
@@ -553,7 +793,6 @@ const BannersAdvertisement = () => {
     } catch (error) {
       console.error('Error uploading images:', error);
     }
-
   }
 
   /*
@@ -562,8 +801,6 @@ const BannersAdvertisement = () => {
 */
 
   return (
-
-
     <div className="main_panel_wrapper pb-2  bg_light_grey w-100">
       <form>
         <div className="banner_advertisement">
@@ -590,6 +827,9 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
+                <p className="fs-sm fw-400 black">
+                  The image must be sized to at least 720 x 720 pixels carring image ratio of 1:1.
+                </p>
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white">
                   {/*Single Medium Banner */}
                   <div className="bg_white pe-1">
@@ -611,7 +851,13 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagemedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={selectedImagesLargeBanner[0].startsWith("https") ? selectedImagesLargeBanner[0] : URL.createObjectURL(selectedImagesLargeBanner[0])}
+                            src={
+                              selectedImagesLargeBanner[0] &&
+                              typeof selectedImagesLargeBanner[0] === 'string' &&
+                              selectedImagesLargeBanner[0].startsWith('http')
+                                ? selectedImagesLargeBanner[0].split('$$$$')[0]
+                                : URL.createObjectURL(selectedImagesLargeBanner[0])
+                            }
                             alt=""
                           />
                           <img
@@ -640,21 +886,38 @@ const BannersAdvertisement = () => {
                           + Add Media
                         </label>
                       ) : (
-                        selectedImagesLargeBanner[1] && (
-                          <div className="position-relative imagemedia_btn">
-                            <img
-                              className="w-100 h-100 object-fit-cover"
-                              src={selectedImagesLargeBanner[1].startsWith("https") ? selectedImagesLargeBanner[1] : URL.createObjectURL(selectedImagesLargeBanner[1])}
-                              alt=""
-                            />
-                            <img
-                              onClick={() => handleDeleteLargeBanner(1)}
-                              className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
-                              src={deleteicon}
-                              alt="deleteicon"
-                            />
-                          </div>
-                        )
+                        <div className="position-relative imagemedia_btn">
+                          <img
+                            className="w-100 h-100 object-fit-cover"
+                            src={
+                              selectedImagesLargeBanner[1] &&
+                              typeof selectedImagesLargeBanner[1] === 'string' &&
+                              selectedImagesLargeBanner[1].startsWith('http')
+                                ? selectedImagesLargeBanner[1].split('$$$$')[0]
+                                : URL.createObjectURL(selectedImagesLargeBanner[1])
+                            }
+                            alt=""
+                          />
+                          <img
+                            onClick={() => handleDeleteLargeBanner(1)}
+                            className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
+                            src={deleteicon}
+                            alt="deleteicon"
+                          />
+                        </div>
+                        // ) : <div className="position-relative imagemedia_btn">
+                        //   <img
+                        //     className="w-100 h-100 object-fit-cover"
+                        //     src={URL.createObjectURL(selectedImagesLargeBanner[1])}
+                        //     alt=""
+                        //   />
+                        //   <img
+                        //     onClick={() => handleDeleteLargeBanner(1)}
+                        //     className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
+                        //     src={deleteicon}
+                        //     alt="deleteicon"
+                        //   />
+                        // </div>
                       )}
                     </div>
                   </div>
@@ -679,6 +942,9 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
+                <p className="fs-sm fw-400 black">
+                  The image must be sized to at least 720 x 720 pixels carring image ratio of 1:1.
+                </p>
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white">
                   {/*Single Medium Banner */}
                   <div className="bg_white pe-1">
@@ -701,8 +967,7 @@ const BannersAdvertisement = () => {
                           <button
                             onClick={handleAddMediaSaleOffer}
                             className="position-absolute bottom-0 start-50 translate-middle cursor_pointer bg-green px-2 py-1 rounded"
-                            type="button"
-                          >
+                            type="button">
                             Add Media
                           </button>
                         </div>
@@ -710,11 +975,7 @@ const BannersAdvertisement = () => {
 
                       {BannerSaleImg.map((offerbanner, index) => (
                         <div key={index} className="position-relative imagemedia_btn">
-                          <img
-                            className="w-100 h-100 object-fit-cover"
-                            src={offerbanner}
-                            alt=""
-                          />
+                          <img className="w-100 h-100 object-fit-cover" src={offerbanner} alt="" />
                           <img
                             onClick={() => handeldeleteSaleBannerImg(index)}
                             className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
@@ -726,8 +987,7 @@ const BannersAdvertisement = () => {
                       {!SelectedBannerImg && (
                         <label
                           htmlFor="animal_suppliments"
-                          className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center"
-                        >
+                          className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center">
                           + Add Media
                         </label>
                       )}
@@ -754,6 +1014,9 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
+                <p className="fs-sm fw-400 black">
+                  The image must be sized to at least 720 x 720 pixels carring image ratio of 1:1.
+                </p>
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2 justify-content-between">
                   <div className="bg_white w-100">
                     <input
@@ -774,7 +1037,13 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={selectedImagesSmallPatii[0].startsWith("https") ? selectedImagesSmallPatii[0] : URL.createObjectURL(selectedImagesSmallPatii[0])}
+                            src={
+                              selectedImagesSmallPatii[0] &&
+                              typeof selectedImagesSmallPatii[0] === 'string' &&
+                              selectedImagesSmallPatii[0].startsWith('http')
+                                ? selectedImagesSmallPatii[0].split('$$$$')[0]
+                                : URL.createObjectURL(selectedImagesSmallPatii[0])
+                            }
                             alt=""
                           />
                           <img
@@ -806,7 +1075,13 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={selectedImagesSmallPatii[1].startsWith("https") ? selectedImagesSmallPatii[1] : URL.createObjectURL(selectedImagesSmallPatii[1])}
+                            src={
+                              selectedImagesSmallPatii[1] &&
+                              typeof selectedImagesSmallPatii[1] === 'string' &&
+                              selectedImagesSmallPatii[1].startsWith('http')
+                                ? selectedImagesSmallPatii[1].split('$$$$')[0]
+                                : URL.createObjectURL(selectedImagesSmallPatii[1])
+                            }
                             alt=""
                           />
                           <img
@@ -838,7 +1113,13 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagesmallmedia_btn w-100">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={selectedImagesSmallPatii[2].startsWith("https") ? selectedImagesSmallPatii[2] : URL.createObjectURL(selectedImagesSmallPatii[2])}
+                            src={
+                              selectedImagesSmallPatii[2] &&
+                              typeof selectedImagesSmallPatii[2] === 'string' &&
+                              selectedImagesSmallPatii[2].startsWith('http')
+                                ? selectedImagesSmallPatii[2].split('$$$$')[0]
+                                : URL.createObjectURL(selectedImagesSmallPatii[2])
+                            }
                             alt=""
                           />
                           <img
@@ -872,6 +1153,9 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Header>
               <Accordion.Body className="py-2 px-3">
+                <p className="fs-sm fw-400 black">
+                  The image must be sized to at least 720 x 720 pixels carring image ratio of 1:1.
+                </p>
                 <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2">
                   <div className="bg_white">
                     <input
@@ -891,27 +1175,37 @@ const BannersAdvertisement = () => {
                           <button
                             onClick={handleAddMedia}
                             className="position-absolute bottom-0 start-50 translate-middle cursor_pointer bg-green px-2 py-1 rounded"
-                            type="button"
-                          >
+                            type="button">
                             Add Media
                           </button>
                         </div>
                       )}
                       {AnimalSuplimentsImages.map((animalSupbanner, index) => (
                         <div key={index} className="position-relative imagemedia_btn">
+                          {console.log(animalSupbanner)}
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={animalSupbanner}
+                            src={
+                              animalSupbanner &&
+                              typeof animalSupbanner === 'string' &&
+                              animalSupbanner.startsWith('http')
+                                ? animalSupbanner
+                                : animalSupbanner
+                            }
                             alt=""
                           />
-                          {/* Add delete functionality as needed */}
+                          <img
+                            onClick={() => handeldeleteAnimalSupliment(index)}
+                            className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
+                            src={deleteicon}
+                            alt="deleteicon"
+                          />
                         </div>
                       ))}
                       {!selectedImage && (
                         <label
                           htmlFor="animal_suppliments"
-                          className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center"
-                        >
+                          className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center">
                           + Add Media
                         </label>
                       )}
@@ -938,6 +1232,10 @@ const BannersAdvertisement = () => {
                     </div>
                   </Accordion.Header>
                   <Accordion.Body className="py-2 px-3">
+                    <p className="fs-sm fw-400 black">
+                      The image must be sized to at least 720 x 720 pixels carring image ratio of
+                      1:1.
+                    </p>
                     <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2">
                       <div className="bg_white">
                         <input
@@ -958,7 +1256,15 @@ const BannersAdvertisement = () => {
                             <div className="position-relative imagemedia_btn">
                               <img
                                 className="w-100 h-100 object-fit-cover"
-                                src={CategoryImage[index].startsWith("https") ? CategoryImage[index] : URL.createObjectURL(CategoryImage[index])}
+                                src={
+                                  CategoryImage[index] &&
+                                  typeof CategoryImage[index] === 'string' &&
+                                  CategoryImage[index].startsWith('http')
+                                    ? CategoryImage[index].split('$$$$')[0]
+                                    : URL.createObjectURL(CategoryImage[index])
+                                }
+                                //src={ CategoryImage[index].startsWith("https") ? CategoryImage[index] : URL.createObjectURL(CategoryImage[index])}
+                                // {selectedImagesSmallPatii[2] && typeof selectedImagesSmallPatii[2] === 'string' && selectedImagesSmallPatii[2].startsWith("http") ? selectedImagesSmallPatii[2].split("$$$$")[0] : URL.createObjectURL(selectedImagesSmallPatii[2])}
                                 alt=""
                               />
                               <img

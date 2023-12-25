@@ -7,7 +7,7 @@ import deleteicon from '../Images/svgs/deleteicon.svg';
 import closeicon from '../Images/svgs/closeicon.svg';
 import addIcon from '../Images/svgs/addicon.svg';
 import { Col, Row } from 'react-bootstrap';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
+import { collection,  addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -15,7 +15,6 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { storage } from '../firebase';
 import { useRef } from 'react';
-import { NavLink } from 'react-router-dom';
 import { useProductsContext } from '../context/productgetter';
 import { useSubCategories } from '../context/categoriesGetter';
 
@@ -220,47 +219,6 @@ const AddProduct = () => {
     setImageUpload22(updatedImages);
   }
 
-
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     let list = [];
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, 'sub_categories'));
-  //       querySnapshot.forEach((doc) => {
-  //         // doc.data() is never undefined for query doc snapshots
-  //         list.push({ id: doc.id, ...doc.data() });
-  //       });
-  //       setSubcategoriesData([...list]);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
-
-  // const  SubCategories  = useSubCategories()
-
-
-
-
-  // function handleSearch(e) {
-  //   const mylist = [];
-  //   function search(nameKey, myArray) {
-  //     if (e.target.value.length === 0) {
-  //       setSearchdata(null);
-  //     } else {
-  //       for (let i = 0; i < myArray.length; i++) {
-  //         if (String(myArray[i].title).includes(nameKey)) {
-  //           mylist.push(myArray[i]);
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   search(e.target.value, data);
-  //   setSearchdata(mylist);
-  // }
   if (loaderstatus) {
     return (
       <>

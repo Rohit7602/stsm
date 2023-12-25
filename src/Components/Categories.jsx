@@ -4,14 +4,18 @@ import search from '../Images/svgs/search.svg';
 import dropdownDots from '../Images/svgs/dots2.svg';
 import eye_icon from '../Images/svgs/eye.svg';
 import pencil_icon from '../Images/svgs/pencil.svg';
+import deleteicon from '../Images/svgs/deleteicon.svg';
 import delete_icon from '../Images/svgs/delte.svg';
 import updown_icon from '../Images/svgs/arross.svg';
+import saveicon from '../Images/svgs/saveicon.svg';
+
 import Modifyproduct from './Modifyproduct';
-import { collection, doc, getDocs, deleteDoc, updateDoc } from 'firebase/firestore';
-import { db, storage } from '../firebase';
+import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CategoryItems } from '../Common/Helper';
+import { useRef } from 'react';
+ 
 import { ref, getStorage, deleteObject } from 'firebase/storage';
 import { useSubCategories, useMainCategories } from '../context/categoriesGetter';
 
@@ -20,44 +24,13 @@ const Categories = () => {
   const { data, updateData, deleteData } = useSubCategories();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchvalue, setSearchvalue] = useState('');
+  
+
+
 
   const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);
   };
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     let list = [];
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, 'sub_categories'));
-  //       querySnapshot.forEach((doc) => {
-  //         // doc.data() is never undefined for query doc snapshots
-  //         list.push({ id: doc.id, ...doc.data() });
-  //       });
-  //       setData([...list]);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     let list = [];
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, 'categories'));
-  //       querySnapshot.forEach((doc) => {
-  //         // doc.data() is never undefined for query doc snapshots
-  //         list.push({ id: doc.id, ...doc.data() });
-  //       });
-  //       setMainCategory([...list]);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
 
   /*  *******************************
      Delete functionality start 
@@ -83,7 +56,7 @@ const Categories = () => {
     *********************************************   **/
 
   /*  *******************************
-     Change status functionality start 
+      Change status functionality start 
    *********************************************   **/
 
   async function handleChangeStatus(id, status) {
@@ -94,12 +67,6 @@ const Categories = () => {
         status: newStatus,
       });
       alert('status Change succesffuly ');
-      // let list = [];
-      // const querySnapshot = await getDocs(collection(db, 'sub_categories'));
-      // querySnapshot.forEach((doc) => {
-      //   list.push({ id: doc.id, ...doc.data() });
-      // });
-      // setData([...list]);
       updateData({ id, status: newStatus });
     } catch (error) {
       console.log(error);
@@ -214,7 +181,7 @@ const Categories = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className='tab le2'>
+                <tbody className="tab le2">
                   {data
                     .filter((item) => {
                       const mainCategory = categoreis.find(
@@ -233,7 +200,7 @@ const Categories = () => {
                               <label class="check1 fw-400 fs-sm black mb-0">
                                 <div className="d-flex align-items-center">
                                   <div className="w_40">
-                                    <img src={value.image} alt="categoryImg" />
+                                    <img c src={value.image} alt="categoryImg" />
                                   </div>
                                   <div className="ps-3 ms-1">
                                     <p className="fw-400 fs-sm black mb-0">{value.title}</p>

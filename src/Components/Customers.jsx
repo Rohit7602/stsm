@@ -7,12 +7,11 @@ import eye_icon from '../Images/svgs/eye.svg';
 import pencil_icon from '../Images/svgs/pencil.svg';
 import delete_icon from '../Images/svgs/delte.svg';
 import updown_icon from '../Images/svgs/arross.svg';
-import SearchIcon from '../Images/svgs/search.svg';
 import { collection, doc, getDocs, deleteDoc, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Customers = () => {
   const [data, setData] = useState([]);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import filtericon from '../Images/svgs/filtericon.svg';
 import SearchIcon from '../Images/svgs/search.svg';
 import addicon from '../Images/svgs/addicon.svg';
@@ -12,13 +12,21 @@ import { collection, doc, getDocs, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Link, NavLink } from 'react-router-dom';
 import Modifyproduct from './Modifyproduct';
+import { useOrdercontext } from '../context/OrderGetter';
 
+const ProductListComponent = (orderStatus) => {
+  // context
+  const { orders } = useOrdercontext();
+  const [selectAll, setSelectAll] = useState([]);
 
+  // format date logic start from here
+  // console.log(orderStatus);
+  function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
+    return formattedDate;
+  }
 
-const ProductListComponent = () => {
-  const [selectAll, setSelectAll] = useState(false);
-
-  
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
@@ -84,23 +92,15 @@ const ProductListComponent = () => {
                     <h3 className="fs-sm fw-400 black mb-0">Action</h3>
                   </th>
                 </tr>
-                {OrderTable.map((orderTableData, index) => {
+                {orders.map((orderTableData, index) => {
                   return (
                     <tr>
                       <td className="p-3">
                         <label className="check1 fw-400 fs-sm black mb-0">
                           <Link
                             className="fw-400 fs-sm black"
-                            to={`/orderslist/${
-                              orderTableData.OrderStatus === 'New Order'
-                                ? 'neworder'
-                                : orderTableData.OrderStatus === 'Processing'
-                                ? 'processing'
-                                : orderTableData.OrderStatus === 'Delivered'
-                                ? 'delivered'
-                                : 'canceled'
-                            }`}>
-                            {orderTableData.OrderNumber}
+                            to={`/orderslist/orderdetails/${orderTableData.id}`}>
+                            {orderTableData.id}
                           </Link>
                           <div className="d-flex align-items-center"></div>
                           <input type="checkbox" checked={selectAll} />
@@ -108,17 +108,21 @@ const ProductListComponent = () => {
                         </label>
                       </td>
                       <td className="p-3">
-                        <h3 className="fs-xs fw-400 black mb-0">{orderTableData.Date}</h3>
+                        <h3 className="fs-xs fw-400 black mb-0">
+                          {formatDate(orderTableData.created_at)}
+                        </h3>
                       </td>
                       <td className="p-3">
                         <Link to="viewcustomerdetails">
-                          <h3 className="fs-sm fw-400 black mb-0">{orderTableData.Customer}</h3>
+                          <h3 className="fs-sm fw-400 black mb-0">
+                            {orderTableData.customer.name}
+                          </h3>
                         </Link>
                       </td>
                       <td className="p-3">
                         <h3
                           className={`fs-sm fw-400 mb-0 d-inline-block ${
-                            orderTableData.PaymentStatus === 'Paid'
+                            orderTableData.transaction.status.toString().toLowerCase() === true
                               ? 'black stock_bg'
                               : orderTableData.PaymentStatus === 'COD'
                               ? 'black cancel_gray'
@@ -126,28 +130,30 @@ const ProductListComponent = () => {
                               ? 'new_order red'
                               : 'color_brown on_credit_bg'
                           }`}>
-                          {orderTableData.PaymentStatus}
+                          {orderTableData.transaction.status ? 'True' : 'False'}
                         </h3>
                       </td>
                       <td className="p-3">
                         <p
                           className={`d-inline-block ${
-                            orderTableData.OrderStatus === 'New Order'
+                            orderTableData.status.toString().toLowerCase() === 'new order'
                               ? 'fs-sm fw-400 red mb-0 new_order'
-                              : orderTableData.OrderStatus === 'Processing'
+                              : orderTableData.status.toString().toLowerCase() === 'processing'
                               ? 'fs-sm fw-400 mb-0 processing_skyblue'
-                              : orderTableData.OrderStatus === 'Delivered'
+                              : orderTableData.status.toString().toLowerCase() === 'delivered'
                               ? 'fs-sm fw-400 mb-0 green stock_bg'
                               : 'fs-sm fw-400 mb-0 black cancel_gray'
                           }`}>
-                          {orderTableData.OrderStatus}
+                          {orderTableData.status}
                         </p>
                       </td>
                       <td className="p-3">
-                        <h3 className="fs-sm fw-400 black mb-0">{orderTableData.Items} items</h3>
+                        <h3 className="fs-sm fw-400 black mb-0">
+                          {orderTableData.items.length} items
+                        </h3>
                       </td>
                       <td className="p-3">
-                        <h3 className="fs-sm fw-400 black mb-0">{orderTableData.OrderPrice}</h3>
+                        <h3 className="fs-sm fw-400 black mb-0">{orderTableData.order_price}</h3>
                       </td>
                       <td className="text-center">
                         <div class="dropdown">

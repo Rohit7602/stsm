@@ -123,12 +123,7 @@ export default function NewOrder() {
             <p className="fs-xs fw-400 black mb-0 pt-1">#01, Talaki Gate, Near Bus stand</p>
             <p className="fs-xs fw-400 black mb-0 pt-1">Hisar - 125001 (Haryana)</p>
           </div>
-          <div className="d-flex justify-content-end">
-            <button type="button" className="d-flex align-items-center bill_generate">
-              <img src={billicon} alt="billicon" />
-              <p className="fs-sm fw-400 black mb-0 ms-2">Generate Bill</p>
-            </button>
-          </div>
+          
         </Col>
       </Row>
     </div>

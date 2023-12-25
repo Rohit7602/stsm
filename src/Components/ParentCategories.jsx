@@ -8,7 +8,7 @@ import deleteicon from '../Images/svgs/deleteicon.svg';
 import updown_icon from '../Images/svgs/arross.svg';
 import saveicon from '../Images/svgs/saveicon.svg';
 import { useRef } from 'react';
-import { collection, doc, getDocs, deleteDoc, addDoc, updateDoc } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
@@ -25,19 +25,14 @@ const Categories = () => {
   const [imageupload, setImageupload] = useState('');
   const [addCatPopup, setAddCatPopup] = useState(false);
   const [status, setStatus] = useState();
-  const [searchvalue, setSearchvalue] = useState('')
+  const [searchvalue, setSearchvalue] = useState('');
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
 
-
-
-
-  // context 
-  const { ImageisValidOrNot } = useImageHandleContext()
-  const { categoreis, updateData, addData } = useMainCategories()
-  const { data } = useSubCategories()
-
-
+  // context
+  const { ImageisValidOrNot } = useImageHandleContext();
+  const { categoreis, updateData, addData } = useMainCategories();
+  const { data } = useSubCategories();
 
   const pubref = useRef();
   const hidref = useRef();
@@ -45,16 +40,15 @@ const Categories = () => {
     setSelectedCategory(index === selectedCategory ? null : index);
   };
 
-  // handle image upload functionality start from here 
+  // handle image upload functionality start from here
   function handelUpload(e) {
     const selectedFile = e.target.files[0];
     if (!ImageisValidOrNot(selectedFile)) {
-      toast.error("Invalid file type. Please select a valid image file.");
+      toast.error('Invalid file type. Please select a valid image file.');
       setImageupload(null);
     } else {
       setImageupload(selectedFile);
     }
-
   }
 
   //   handle image upload functionality end  here
@@ -64,16 +58,14 @@ const Categories = () => {
      *********************************************   **/
 
   async function handleSaveParentCategory(e) {
-
-    e.preventDefault()
+    e.preventDefault();
     try {
       if (name === undefined || null) {
-        alert('please enter the name of the category ')
+        alert('please enter the name of the category ');
       } else if (imageupload.length === 0) {
-        alert('please upload image of the category ')
-      }
-      else if (status === undefined || null) {
-        alert('please Set the status ')
+        alert('please upload image of the category ');
+      } else if (status === undefined || null) {
+        alert('please Set the status ');
       } else {
         setLoaderstatus(true);
         const filename = Math.floor(Date.now() / 1000) + '-' + imageupload.name;
@@ -90,85 +82,38 @@ const Categories = () => {
         toast.success('Category added Successfully !', {
           position: toast.POSITION.TOP_RIGHT,
         });
-        HandleResetForm()
-        setAddCatPopup(false)
-        setRefreshData(prevState => !prevState)
-        // context 
-        addData(docRef)
+        HandleResetForm();
+        setAddCatPopup(false);
+        setRefreshData((prevState) => !prevState);
+        // context
+        addData(docRef);
       }
     } catch (e) {
       toast.error(e, {
         position: toast.POSITION.TOP_RIGHT,
       });
-      console.log(e)
+      console.log(e);
     }
-
   }
 
   function HandleResetForm() {
-    setName("");
-    setImageupload('')
-    setStatus("")
+    setName('');
+    setImageupload('');
+    setStatus('');
   }
 
   /*  *******************************
       Add Parent Category end  here 
    *********************************************   **/
 
-
   function handleDelete22(index) {
     setImageupload();
   }
-  // useEffect(() => {
-  //   const fetchDataSubCategories = async () => {
-  //     let list = [];
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, 'sub_categories'));
-  //       querySnapshot.forEach((doc) => {
-  //         // doc.data() is never undefined for query doc snapshots
-  //         list.push({ id: doc.id, ...doc.data() });
-  //       });
-  //       setData([...list]);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchDataSubCategories();
-  // }, []);
-
-  // useEffect(() => {
-  //   const fetchDataCategories = async () => {
-  //     let list = [];
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, 'categories'));
-  //       querySnapshot.forEach((doc) => {
-  //         list.push({ id: doc.id, ...doc.data() });
-  //       });
-  //       setMainCategory([...list]);
-  //     } catch (error) {
-  //       console.log('Error fetching data:', error);
-  //     }
-  //   };
-
-  //   // Call fetchDataCategories when refreshData changes
-  //   if (initialRender || refreshData) {
-  //     fetchDataCategories();
-
-  //     // Reset the state variables after running fetchDataCategories
-  //     setInitialRender(false);
-  //     setRefreshData(false);
-  //   }
-  // }, [initialRender, refreshData]);
-
-
-
-
 
   /*  *******************************
     checkbox functionality start 
   *********************************************   **/
   const [selectAll, setSelectAll] = useState(false);
-
 
   useEffect(() => {
     // Check if all checkboxes are checked
@@ -176,7 +121,7 @@ const Categories = () => {
     setSelectAll(allChecked);
   }, [categoreis]);
 
-  // Main checkbox functionality start from here 
+  // Main checkbox functionality start from here
 
   const handleMainCheckboxChange = () => {
     const updatedData = categoreis.map((item) => ({
@@ -185,10 +130,9 @@ const Categories = () => {
     }));
     updateData(updatedData);
     setSelectAll(!selectAll);
-
   };
 
-  // Datacheckboxes functionality strat from here 
+  // Datacheckboxes functionality strat from here
   const handleCheckboxChange = (index) => {
     const updatedData = [...categoreis];
     updatedData[index].checked = !categoreis[index].checked;
@@ -199,13 +143,9 @@ const Categories = () => {
     setSelectAll(allChecked);
   };
 
-
-
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
-
-
 
   /*  *******************************
       get count of items in maincategory   functionality start 
@@ -213,10 +153,8 @@ const Categories = () => {
 
   const getSubcategoriesCount = (ID) => {
     const subCategory = data.filter((category) => category.cat_ID === ID);
-    return subCategory.length
-
-  }
-
+    return subCategory.length;
+  };
 
   /*  *******************************
       get count of items in maincategory    functionality end 
@@ -233,14 +171,8 @@ const Categories = () => {
       await updateDoc(doc(db, 'categories', id), {
         status: newStatus,
       });
-      alert("status Change succesffuly ")
-      // let list = [];
-      // const querySnapshot = await getDocs(collection(db, 'categories'));
-      // querySnapshot.forEach((doc) => {
-      //   list.push({ id: doc.id, ...doc.data() });
-      // });
-      // setMainCategory([...list]);
-      updateData({ id, status: newStatus })
+      alert('status Change succesffuly ');
+      updateData({ id, status: newStatus });
     } catch (error) {
       console.log(error);
     }
@@ -249,7 +181,6 @@ const Categories = () => {
   /*  *******************************
       Change status functionality end 
     *********************************************   **/
-
 
   if (loaderstatus) {
     return (
@@ -260,7 +191,6 @@ const Categories = () => {
       </>
     );
   } else {
-
     return (
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
         {addCatPopup === true ? <div className="bg_black_overlay"></div> : ''}
@@ -288,7 +218,7 @@ const Categories = () => {
                 </button>
                 {addCatPopup === true ? (
                   <div className="parent_category_popup">
-                    <form action="" onSubmit={(e) => handleSaveParentCategory(e)} >
+                    <form action="" onSubmit={(e) => handleSaveParentCategory(e)}>
                       <div className="d-flex align-items-center justify-content-between">
                         <p className="fs-4 fw-400 black mb-0">New Parent Category</p>
                         <div className="d-flex align-items-center gap-3">
@@ -437,86 +367,102 @@ const Categories = () => {
                       <h3 className="fs-sm fw-400 black mb-0">Action</h3>
                     </th>
                   </tr>
-                  {categoreis.filter((data) => {
-                    return search.toLowerCase() === '' ? data : (data.title.toLowerCase().includes(searchvalue))
-                  }).map((value, index) => {
-                    return (
-                      <tr key={index} className="product_borderbottom">
-                        <td className="py-3 ps-3">
-                          <div className="d-flex align-items-center gap-3">
-                            <label className="check1 fw-400 fs-sm black mb-0">
-                              <div className="d-flex align-items-center">
-                                <div className="w_40">
-                                  <img src={value.image} alt="categoryImg" />
-                                </div>
-                                <div className="ps-3 ms-1">
-                                  <p className="fw-400 fs-sm black mb-0">{value.title}</p>
-                                </div>
-                              </div>
-                              <input type="checkbox" checked={value.checked || false}
-                                onChange={() => handleCheckboxChange(index)} />
-                              <span className="checkmark me-5"></span>
-                            </label>
-                          </div>
-                        </td>
-                        <td className="ps-4">
-                          <h3 className="fs-sm fw-400 black mb-0 width_10">{getSubcategoriesCount(value.id)}</h3>
-                        </td>
-                        <td>
-                          <h3 className="fs-sm fw-400 black mb-0 width_10 color_green">
-                            {value.status}
-                          </h3>
-                        </td>
-                        <td className="text-center">
-                          <div class="dropdown">
-                            <button
-                              class="btn dropdown-toggle"
-                              type="button"
-                              id="dropdownMenuButton1"
-                              data-bs-toggle="dropdown"
-                              aria-expanded="false">
-                              <img
-                                // onClick={() => {
-                                //   handleDelete(value.id);
-                                // }}
-                                src={dropdownDots}
-                                alt="dropdownDots"
-                              />
-                            </button>
-                            <ul
-                              class="dropdown-menu categories_dropdown"
-                              aria-labelledby="dropdownMenuButton1">
-                              <li>
-                                <div class="dropdown-item" href="#">
-                                  <div className="d-flex align-items-center categorie_dropdown_options">
-                                    <img src={eye_icon} alt="" />
-                                    <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
+                  {categoreis
+                    .filter((data) => {
+                      return search.toLowerCase() === ''
+                        ? data
+                        : data.title.toLowerCase().includes(searchvalue);
+                    })
+                    .map((value, index) => {
+                      return (
+                        <tr key={index} className="product_borderbottom">
+                          <td className="py-3 ps-3">
+                            <div className="d-flex align-items-center gap-3">
+                              <label className="check1 fw-400 fs-sm black mb-0">
+                                <div className="d-flex align-items-center">
+                                  <div className="w_40">
+                                    <img src={value.image} alt="categoryImg" />
+                                  </div>
+                                  <div className="ps-3 ms-1">
+                                    <p className="fw-400 fs-sm black mb-0">{value.title}</p>
                                   </div>
                                 </div>
-                              </li>
-                              <li>
-                                <div class="dropdown-item" href="#">
-                                  <div className="d-flex align-items-center categorie_dropdown_options">
-                                    <img src={pencil_icon} alt="" />
-                                    <p className="fs-sm fw-400 black mb-0 ms-2">Edit Category</p>
+                                <input
+                                  type="checkbox"
+                                  checked={value.checked || false}
+                                  onChange={() => handleCheckboxChange(index)}
+                                />
+                                <span className="checkmark me-5"></span>
+                              </label>
+                            </div>
+                          </td>
+                          <td className="ps-4">
+                            <h3 className="fs-sm fw-400 black mb-0 width_10">
+                              {getSubcategoriesCount(value.id)}
+                            </h3>
+                          </td>
+                          <td>
+                            <h3 className="fs-sm fw-400 black mb-0 width_10 color_green">
+                              {value.status}
+                            </h3>
+                          </td>
+                          <td className="text-center">
+                            <div class="dropdown">
+                              <button
+                                class="btn dropdown-toggle"
+                                type="button"
+                                id="dropdownMenuButton1"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <img
+                                  // onClick={() => {
+                                  //   handleDelete(value.id);
+                                  // }}
+                                  src={dropdownDots}
+                                  alt="dropdownDots"
+                                />
+                              </button>
+                              <ul
+                                class="dropdown-menu categories_dropdown"
+                                aria-labelledby="dropdownMenuButton1">
+                                <li>
+                                  <div class="dropdown-item" href="#">
+                                    <div className="d-flex align-items-center categorie_dropdown_options">
+                                      <img src={eye_icon} alt="" />
+                                      <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
+                                    </div>
                                   </div>
-                                </div>
-                              </li>
-                              <li>
-                                <div class="dropdown-item" href="#">
-                                  <div className="d-flex align-items-center categorie_dropdown_options" onClick={() => { handleChangeStatus(value.id, value.status) }}>
-                                    <img src={updown_icon} alt="" />
-                                    <p className="fs-sm fw-400 green  mb-0 ms-2">{value.status === 'hidden' ? 'change to  publish' : 'Change to hidden'}</p>
+                                </li>
+                                <li>
+                                  <div class="dropdown-item" href="#">
+                                    <div className="d-flex align-items-center categorie_dropdown_options">
+                                      <img src={pencil_icon} alt="" />
+                                      <p className="fs-sm fw-400 black mb-0 ms-2">Edit Category</p>
+                                    </div>
                                   </div>
-                                </div>
-                              </li>
-
-                            </ul>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                                </li>
+                                <li>
+                                  <div class="dropdown-item" href="#">
+                                    <div
+                                      className="d-flex align-items-center categorie_dropdown_options"
+                                      onClick={() => {
+                                        handleChangeStatus(value.id, value.status);
+                                      }}>
+                                      <img src={updown_icon} alt="" />
+                                      <p className="fs-sm fw-400 green  mb-0 ms-2">
+                                        {value.status === 'hidden'
+                                          ? 'change to  publish'
+                                          : 'Change to hidden'}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                 </table>
               </div>
             </div>
@@ -525,7 +471,7 @@ const Categories = () => {
         <ToastContainer></ToastContainer>
       </div>
     );
-  };
-}
+  }
+};
 
 export default Categories;
