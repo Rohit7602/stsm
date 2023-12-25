@@ -33,8 +33,29 @@ export const OrderContextProvider = ({ children }) => {
     }, [isdatafetched])
 
     const memodata = useMemo(() => orders, [orders])
+
+
+    const updateData = (updatedProduct) => {
+        if (typeof updatedProduct === 'object' && updatedProduct.id) {
+            setorders(prevData => {
+                const existingProductIndex = prevData.findIndex(product => product.id === updatedProduct.id);
+
+                if (existingProductIndex !== -1) {
+                    const newData = [...prevData];
+                    newData[existingProductIndex] = { ...newData[existingProductIndex], ...updatedProduct };
+                    return newData;
+                } else {
+
+                    return [...prevData, updatedProduct];
+                }
+            });
+        } else if (Array.isArray(updatedProduct)) {
+            // Update the entire array
+            setorders(updatedProduct);
+        }
+    };
     return (
-        <OrderContext.Provider value={{ orders: memodata }}>
+        <OrderContext.Provider value={{ orders: memodata ,updateData}}>
             {children}
         </OrderContext.Provider>
     )

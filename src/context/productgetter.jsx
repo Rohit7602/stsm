@@ -41,8 +41,7 @@ export const ProductsProvider = ({ children }) => {
     }, [isDataFetched]);
 
     const memoizedData = useMemo(() => data, [data]);
-
-   
+    
     const updateData = (updatedProduct) => {
         if (typeof updatedProduct === 'object' && updatedProduct.id) {
             setData(prevData => {

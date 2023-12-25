@@ -234,7 +234,7 @@ const BannersAdvertisement = () => {
               // Document doesn't exist, create a new one with new images
               const docRef = await addDoc(collection(db, 'Banner'), {
                 title: 'LargeBanner',
-                data: [{ imagelinks }],
+                data: [...imagelinks],
               });
             }
           } catch (error) {
@@ -434,7 +434,6 @@ const BannersAdvertisement = () => {
   /*
  *********************************************************
  Sales and offer   Banner functionaltiy start from here 
- 
  */
 
   const [BannerSaleImg, SetBannerSaleImg] = useState([]);
@@ -442,29 +441,25 @@ const BannersAdvertisement = () => {
 
   const handelSaleBannerImg = async (e) => {
     const selectedFile = e.target.files[0];
-
+    console.log(selectedFile)
     try {
-      const validatedImage = await validateImage(selectedFile, 16 / 9, 1280, 720);
-
-      if (ImageisValidOrNot(validatedImage)) {
-        SetBannerSaleImg([...BannerSaleImg, validatedImage]);
-        // Reset the selected image state after successful addition
-        SetSelectedBannerImg(null);
-      } else {
-        toast.error(
-          'Invalid image format. Please select images with extensions: .png, .jpeg, .jpg, .webp, .svg'
-        );
-      }
+      const desiredAspectRatio = 16 / 9;
+      const desiredWidth = 1280;
+      const desiredHeight = 720;
+      const validatedImage = await validateImage(selectedFile, desiredAspectRatio, desiredWidth, desiredHeight);
+      SetBannerSaleImg([...BannerSaleImg, validatedImage]);
+      // Reset the selected image state after successful addition
+      SetBannerSaleImg(null);
     } catch (error) {
       toast.error(error.message);
     }
   };
 
   const handleAddMediaSaleOffer = () => {
-    if (selectedImage) {
+    if (SelectedBannerImg) {
       SetSelectedBannerImg([...BannerSaleImg, SelectedBannerImg]);
       SetSelectedBannerImg(null);
-      document.getElementById('animal_suppliments').value = '';
+      document.getElementById('Sales_Offers').value = '';
     }
   };
 
@@ -507,40 +502,87 @@ const BannersAdvertisement = () => {
     try {
       if (BannerSaleImg.every(Boolean)) {
         let imagelinks = [];
+        const existingImageUrls = [];
+        const querySnapshot = await getDocs(query(collection(db, 'Banner'), where('title', '==', 'SalesOffers')));
+        if (querySnapshot.size > 0) {
+          const existingData = querySnapshot.docs[0].data() || []
+
+            (existingData.data).forEach(element => {
+              const existingUrls = (element.imagelinks || []).map(img => img.imgUrl);
+              existingUrls.push(...existingUrls);
+            });
+        }
         for await (let files of BannerSaleImg) {
-          const name = Math.floor(Date.now() / 1000) + '-' + files.name;
-          console.log("name is ", name)
-          const storageRef = ref(storage, `banner/${name}`);
-          const uploadTask = await uploadBytesResumable(storageRef, files);
-          const url = await getDownloadURL(storageRef);
-          imagelinks.push({
-            categoryId: '',
-            categoryTitle: '',
-            imgUrl: url,
-          });
+          let url = null;
+          // const name = Math.floor(Date.now() / 1000) + '-' + files.name;
+          // const storageRef = ref(storage, `banner/${name}`);
+          if (files instanceof File) {
+            const name = Math.floor(Date.now() / 1000) + '-' + files.name;
+            console.log("name is", name)
+            const storageRef = ref(storage, `banner/${name}`);
+            const uploadTask = await uploadBytesResumable(storageRef, files);
+            url = await getDownloadURL(storageRef)
+          } else if (typeof files === "string") {
+            url = files.split('$$$$')[0]
+          }
+          if (url && !existingImageUrls.includes(url)) {
+            imagelinks.push({
+              categoryId: "",
+              categoryTitle: "",
+              imgUrl: url,
+            });
+          }
         }
 
         if (imagelinks.length > 0) {
-          const docRef = await addDoc(collection(db, 'Banner'), {
-            // Sales_Offers: [{
-            //   title: 'Sales/Offers',
-            //   imgUrl: [url],
-            // }]
-            title: 'SalesOffers',
-            data: [{ imagelinks }],
+          try {
+            const querySnapshot = await getDocs(query(collection(db, 'Banner'), where('title', '==', 'SalesOffers')));
+            if (querySnapshot.size > 0) {
+              const docRef = querySnapshot.docs[0]
+              const existingData = docRef.data().data || [];
+
+              const existingUrls = existingData.reduce((acc, item) => {
+                return acc.concat((item.imagelinks || []).map(img => img.imgUrl))
+              }, []);
+
+              const newImagelinks = imagelinks.filter(link => !existingUrls.includes(link.imgUrl));
+
+
+              const combinedImagelinks = existingData.reduce((acc, item) => {
+                return acc.concat(item.imagelinks || []);
+              }, []).concat(newImagelinks);
+              const updatedData = [{ imagelinks: combinedImagelinks }];
+
+              // Set the document with the updated data
+              await setDoc(docRef.ref, {
+                title: 'AnimalSupliments',
+                data: updatedData,
+              });
+            } else {
+              const docRef = await addDoc(collection(db, 'Banner'), {
+                // Sales_Offers: [{
+                //   title: 'Sales/Offers',
+                //   imgUrl: [url],
+                // }]
+                title: 'SalesOffers',
+                data: [{ imagelinks }],
+              });
+            }
+          }
+          catch (error) {
+            console.log("Error adding image to Banner");
+          }
+          toast.success('Sale/Offer Banner Added   Successfully !', {
+            position: toast.POSITION.TOP_RIGHT,
           });
         } else {
-          alert('Please select at least one Image');
+          console.warn('No image selected for upload');
         }
-        toast.success('Sale/Offer Banner Added   Successfully !', {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      } else {
-        console.warn('No image selected for upload');
       }
     } catch (error) {
       console.error('Error uploading image or adding document:', error);
     }
+
   }
 
   /*
@@ -610,7 +652,7 @@ const BannersAdvertisement = () => {
     newAnimalSuplimentsImages[index] = ''; // Set the image for the specified index to an empty string
     SetAnimalSuplimentsImages(newAnimalSuplimentsImages);
     // Trigger a re-render by updating the key
-    // updateSelectedImages(BannerData);
+    updateSelectedImages(BannerData);
   }
 
   async function HandleSaveAnimalSuppliments() {
@@ -619,14 +661,14 @@ const BannersAdvertisement = () => {
       if (AnimalSuplimentsImages.every(Boolean)) {
         let imagelinks = []
         const existingImageUrls = [];
-        const querySnapshot = await getDocs(query(where('title', '==', 'AnimalSupliments')));
+        const querySnapshot = await getDocs(query(collection(db, 'Banner'), where('title', '==', 'AnimalSupliments')));
         if (querySnapshot.size > 0) {
           const existingData = querySnapshot.docs[0].data() || []
-          existingData.forEach(element => {
-            const existingUrls = (element.imagelinks || []).map(img => img.imgUrl);
-            existingUrls.push(...existingUrls);
 
-          });
+            (existingData.data).forEach(element => {
+              const existingUrls = (element.imagelinks || []).map(img => img.imgUrl);
+              existingUrls.push(...existingUrls);
+            });
         }
         for await (let files of AnimalSuplimentsImages) {
           let url = null;
@@ -658,10 +700,12 @@ const BannersAdvertisement = () => {
               const existingData = docRef.data().data || [];
 
               const existingUrls = existingData.reduce((acc, item) => {
-                return acc.concat((item.imagelinks || []).map(img => imgUrl))
+                return acc.concat((item.imagelinks || []).map(img => img.imgUrl))
               }, []);
 
               const newImagelinks = imagelinks.filter(link => !existingUrls.includes(link.imgUrl));
+
+
               const combinedImagelinks = existingData.reduce((acc, item) => {
                 return acc.concat(item.imagelinks || []);
               }, []).concat(newImagelinks);
@@ -669,7 +713,7 @@ const BannersAdvertisement = () => {
 
               // Set the document with the updated data
               await setDoc(docRef.ref, {
-                title: 'SmallPattBanner',
+                title: 'AnimalSupliments',
                 data: updatedData,
               });
 
@@ -698,9 +742,11 @@ const BannersAdvertisement = () => {
       toast.success('Animal Supliments  Banner Added   Successfully !', {
         position: toast.POSITION.TOP_RIGHT,
       });
+
     } catch (error) {
       console.error('Error uploading image or adding document:', error);
     }
+    updateSelectedImages(BannerData);
   }
 
   const handleAddMedia = () => {
@@ -752,25 +798,6 @@ const BannersAdvertisement = () => {
     }
   }
   async function handleCategoryImagesDelete(index) {
-    /*
-    if (selectedImagesLargeBanner[index] && typeof selectedImagesLargeBanner[index] === 'string' && selectedImagesLargeBanner[index].startsWith("http")) {
-      const id = selectedImagesLargeBanner[index].split("$$$$")[1];
-      const storageRef = getStorage();
-      var reference = ref(storageRef, selectedImagesLargeBanner[index]);
-      deleteObject(reference);
-      await updateDoc(doc(db, 'Banner', id), {
-        data: [{
-          imagelinks: [...selectedImagesLargeBanner.filter((e) => e && e.split("$$$$")[0] != selectedImagesLargeBanner[index].split("$$$$")[0]).map((e) => {
-            return {
-              categoryId: "",
-              categoryTitle: "",
-              imgUrl: e.split("$$$$")[0],
-            };
-          })]
-        }],
-      });
-    }
-    */
     if (
       CategoryImage[index] &&
       typeof CategoryImage[index] === 'string' &&
@@ -900,8 +927,8 @@ const BannersAdvertisement = () => {
                             className="w-100 h-100 object-fit-cover"
                             src={
                               selectedImagesLargeBanner[0] &&
-                              typeof selectedImagesLargeBanner[0] === 'string' &&
-                              selectedImagesLargeBanner[0].startsWith('http')
+                                typeof selectedImagesLargeBanner[0] === 'string' &&
+                                selectedImagesLargeBanner[0].startsWith('http')
                                 ? selectedImagesLargeBanner[0].split('$$$$')[0]
                                 : URL.createObjectURL(selectedImagesLargeBanner[0])
                             }
@@ -938,8 +965,8 @@ const BannersAdvertisement = () => {
                             className="w-100 h-100 object-fit-cover"
                             src={
                               selectedImagesLargeBanner[1] &&
-                              typeof selectedImagesLargeBanner[1] === 'string' &&
-                              selectedImagesLargeBanner[1].startsWith('http')
+                                typeof selectedImagesLargeBanner[1] === 'string' &&
+                                selectedImagesLargeBanner[1].startsWith('http')
                                 ? selectedImagesLargeBanner[1].split('$$$$')[0]
                                 : URL.createObjectURL(selectedImagesLargeBanner[1])
                             }
@@ -952,19 +979,7 @@ const BannersAdvertisement = () => {
                             alt="deleteicon"
                           />
                         </div>
-                        // ) : <div className="position-relative imagemedia_btn">
-                        //   <img
-                        //     className="w-100 h-100 object-fit-cover"
-                        //     src={URL.createObjectURL(selectedImagesLargeBanner[1])}
-                        //     alt=""
-                        //   />
-                        //   <img
-                        //     onClick={() => handleDeleteLargeBanner(1)}
-                        //     className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
-                        //     src={deleteicon}
-                        //     alt="deleteicon"
-                        //   />
-                        // </div>
+
                       )}
                     </div>
                   </div>
@@ -1090,8 +1105,8 @@ const BannersAdvertisement = () => {
                             className="w-100 h-100 object-fit-cover"
                             src={
                               selectedImagesSmallPatii[0] &&
-                              typeof selectedImagesSmallPatii[0] === 'string' &&
-                              selectedImagesSmallPatii[0].startsWith('http')
+                                typeof selectedImagesSmallPatii[0] === 'string' &&
+                                selectedImagesSmallPatii[0].startsWith('http')
                                 ? selectedImagesSmallPatii[0].split('$$$$')[0]
                                 : URL.createObjectURL(selectedImagesSmallPatii[0])
                             }
@@ -1128,8 +1143,8 @@ const BannersAdvertisement = () => {
                             className="w-100 h-100 object-fit-cover"
                             src={
                               selectedImagesSmallPatii[1] &&
-                              typeof selectedImagesSmallPatii[1] === 'string' &&
-                              selectedImagesSmallPatii[1].startsWith('http')
+                                typeof selectedImagesSmallPatii[1] === 'string' &&
+                                selectedImagesSmallPatii[1].startsWith('http')
                                 ? selectedImagesSmallPatii[1].split('$$$$')[0]
                                 : URL.createObjectURL(selectedImagesSmallPatii[1])
                             }
@@ -1166,8 +1181,8 @@ const BannersAdvertisement = () => {
                             className="w-100 h-100 object-fit-cover"
                             src={
                               selectedImagesSmallPatii[2] &&
-                              typeof selectedImagesSmallPatii[2] === 'string' &&
-                              selectedImagesSmallPatii[2].startsWith('http')
+                                typeof selectedImagesSmallPatii[2] === 'string' &&
+                                selectedImagesSmallPatii[2].startsWith('http')
                                 ? selectedImagesSmallPatii[2].split('$$$$')[0]
                                 : URL.createObjectURL(selectedImagesSmallPatii[2])
                             }
@@ -1233,15 +1248,15 @@ const BannersAdvertisement = () => {
                       )}
                       {AnimalSuplimentsImages.map((animalSupbanner, index) => (
                         <div key={index} className="position-relative imagemedia_btn">
-                          {console.log(animalSupbanner)}
+                          {/* {console.log(animalSupbanner)} */}
                           <img
                             className="w-100 h-100 object-fit-cover"
                             src={
                               animalSupbanner &&
-                              typeof animalSupbanner === 'string' &&
-                              animalSupbanner.startsWith('http')
+                                typeof animalSupbanner === 'string' &&
+                                animalSupbanner.startsWith('http')
                                 ? animalSupbanner
-                                : animalSupbanner
+                                : URL.createObjectURL(animalSupbanner)
                             }
                             alt=""
                           />
@@ -1309,8 +1324,8 @@ const BannersAdvertisement = () => {
                                 className="w-100 h-100 object-fit-cover"
                                 src={
                                   CategoryImage[index] &&
-                                  typeof CategoryImage[index] === 'string' &&
-                                  CategoryImage[index].startsWith('http')
+                                    typeof CategoryImage[index] === 'string' &&
+                                    CategoryImage[index].startsWith('http')
                                     ? CategoryImage[index].split('$$$$')[0]
                                     : URL.createObjectURL(CategoryImage[index])
                                 }
