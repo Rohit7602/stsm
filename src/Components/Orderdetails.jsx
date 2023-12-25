@@ -1,37 +1,84 @@
 import React from 'react';
 import saveicon from '../Images/svgs/saveicon.svg';
 import mobileicon from '../Images/Png/mobile_icon_40.png';
+import billicon from '../Images/svgs/bill_icon.svg';
+import whitesaveicon from '../Images/svgs/white_saveicon.svg';
 import profile from '../Images/Png/customer_profile.png';
 import { Col, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useOrdercontext } from '../context/OrderGetter';
 export default function NewOrder() {
-  const { id } = useParams()
-  const { orders } = useOrdercontext()
-  let filterData = orders.filter(item => item.id = id)
-  console.log("asdfasdfadsfas", filterData)
+  const { id } = useParams();
+  const { orders } = useOrdercontext();
+  let filterData = orders.filter((item) => item.id == id);
+  console.log('asdfasdfadsfas', filterData);
+  const status = 'CANCELLED';
+  console.log(filterData);
   return (
     <>
       {filterData.map((item, index) => (
-        <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
+        <div key={index} className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
           <div className="d-flex align-items-center justify-content-between py-3 my-1">
             <div className="d-flex align-items-center">
               <h1 className="fs-lg fw-500 black mb-0 me-1">{item.id}</h1>
-              <p className="neworder_red fs-xs fw-400 red mb-0 ms-3">New Order</p>
+              <p className="neworder_red fs-xs fw-400 red mb-0 ms-3">
+                {status == 'NEW'
+                  ? 'New Order'
+                  : status == 'CANCELLED'
+                  ? 'CANCELLED'
+                  : status == 'RETURNED'
+                  ? 'RETURNED'
+                  : status == 'DISPATCHED'
+                  ? 'DISPATCHED'
+                  : status == 'PROCESSING'
+                  ? 'PROCESSING'
+                  : 'DELIVERED'}
+              </p>
             </div>
-            <div className="d-flex align-items-center">
-              <div className="d-flex align-itmes-center gap-3">
-                <button className="reset_border">
-                  <button className="fs-sm reset_btn  border-0 fw-400">Reject Order</button>
-                </button>
+            {status == 'NEW' ? (
+              <div className="d-flex align-items-center">
+                <div className="d-flex align-itmes-center gap-3">
+                  <button className="reset_border">
+                    <button className="fs-sm reset_btn  border-0 fw-400">Reject Order</button>
+                  </button>
+                  <button
+                    className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
+                    type="submit">
+                    <img src={saveicon} alt="saveicon" />
+                    ACCEPT ORDER
+                  </button>
+                </div>
+              </div>
+            ) : status == 'CANCELLED' ? (
+              <div className="d-flex align-items-center">
                 <button
-                  className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
+                  className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black"
                   type="submit">
                   <img src={saveicon} alt="saveicon" />
-                  ACCEPT ORDER
+                  Mark as Refunded
                 </button>
               </div>
-            </div>
+            ) : status == 'RETURNED' ? (
+              <div></div>
+            ) : status == 'DISPATCHED' ? (
+              <div></div>
+            ) : status == 'PROCESSING' ? (
+              <div className="d-flex align-items-center">
+                <div className="d-flex align-itmes-center gap-3">
+                  <button className="reset_border">
+                    <button className="fs-sm reset_btn  border-0 fw-400">Reject Order</button>
+                  </button>
+                  <button
+                    className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 green_btn fw-400 white"
+                    type="submit">
+                    <img src={whitesaveicon} alt="whitesaveicon" />
+                    Mark as Refunded
+                  </button>
+                </div>
+              </div>
+            ) : (
+              ''
+            )}
           </div>
           <div className="d-flex align-items-center gap-4 py-3 px-2 mt-2 mb-3">
             <p className="fs-xs fw-400 black mb-0">{item.created_at}</p>
@@ -130,6 +177,34 @@ export default function NewOrder() {
                 <p className="fs-xs fw-400 black mb-0 pt-1">#01, Talaki Gate, Near Bus stand</p>
                 <p className="fs-xs fw-400 black mb-0 pt-1">Hisar - 125001 (Haryana)</p>
               </div>
+              {status == 'NEW' ? (
+                ''
+              ) : status == 'CANCELLED' ? (
+                <div className="d-flex justify-content-end">
+                  <button type="button" className="d-flex align-items-center bill_generate">
+                    <img src={billicon} alt="billicon" />
+                    <p className="fs-sm fw-400 black mb-0 ms-2">Generate Bill</p>
+                  </button>
+                </div>
+              ) : status == 'RETURNED' ? (
+                'RETURNED'
+              ) : status == 'DISPATCHED' ? (
+                'DISPATCHED'
+              ) : status == 'PROCESSING' ? (
+                <div className="d-flex justify-content-end">
+                  <button type="button" className="d-flex align-items-center bill_generate">
+                    <img src={billicon} alt="billicon" />
+                    <p className="fs-sm fw-400 black mb-0 ms-2">Generate Bill</p>
+                  </button>
+                </div>
+              ) : (
+                <div className="d-flex justify-content-end">
+                  <button type="button" className="d-flex align-items-center bill_generate">
+                    <img src={billicon} alt="billicon" />
+                    <p className="fs-sm fw-400 black mb-0 ms-2">Generate Bill</p>
+                  </button>
+                </div>
+              )}
             </Col>
           </Row>
         </div>

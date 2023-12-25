@@ -479,9 +479,22 @@ body {
 .cursor_pointer {
   cursor: pointer;
 }
+.line_scroll_2 {
+  max-height: 700px;
+  overflow-y: scroll;
+}
+.line_scroll {
+  max-height: 650px;
+  overflow: hidden;
+}
+
 /* webkit scrool */
+.line_scroll_2::-webkit-scrollbar {
+  width: 2px !important;
+  height: 2px !important;
+}
 .line_scroll::-webkit-scrollbar {
-  width: 1px !important;
+  width: 2px !important;
   height: 2px !important;
 }
 
@@ -950,9 +963,13 @@ body {
 }
 .w_40 {
   width: 40px;
+  height: 40px;
+  border-radius: 5px;
 }
 .w_40 img {
   width: 100%;
+  height: 100%;
+  border-radius: 5px;
 }
 .on_credit_bg {
   background-color: #ffae0033;
@@ -962,14 +979,14 @@ body {
 .parent_category_popup {
   width: 600px;
   padding: 20px;
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: var(--color-white);
   border-radius: 10px;
   border: 1px solid #dfdfdfcd;
-  z-index: 2;
+  z-index: 3;
 }
 .bg_black_overlay {
   background-color: #0000008e;
@@ -978,7 +995,7 @@ body {
   position: absolute;
   left: 0;
   top: 0;
-  z-index: 1;
+  z-index: 2;
 }
 .mx_140 {
   max-width: 140px;
@@ -1025,6 +1042,19 @@ body {
 .login-form input:focus {
   outline: 0;
 }
+.mx_500 {
+  max-width: 600px;
+  width: 600px;
+}
+.manicon {
+  height: 40px;
+  width: 40px;
+  border-radius: 5px;
+}
+/* .table2 {
+  max-height: 300px !important;
+  overflow-y: scroll !important;
+} */
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
   :root {

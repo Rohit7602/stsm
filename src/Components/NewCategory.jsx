@@ -24,24 +24,35 @@ const NewCategory = () => {
   const [name, setName] = useState();
   const [category, setCategory] = useState();
   const [loaderstatus, setLoaderstatus] = useState(false);
-  const [searchvalue, setSearchvalue] = useState('')
-  const { ImageisValidOrNot } = useImageHandleContext()
+  const [searchvalue, setSearchvalue] = useState('');
+  const { ImageisValidOrNot } = useImageHandleContext();
+
+  const [addCatPopup, setAddCatPopup] = useState(false);
+  const [perName, setPerName] = useState();
+  const [perStatus, setPerStatus] = useState();
+  const [imageupload2, setImageupload2] = useState('');
+
+  function handelUpload2(e) {
+    const selectedFile = e.target.files[0];
+    setImageupload2(selectedFile);
+  }
+
+  function handleDelete2(index) {
+    setImageupload2();
+  }
 
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const { addData } = useSubCategories()
-  const { categoreis } = useMainCategories()
+  const { addData } = useSubCategories();
+  const { categoreis } = useMainCategories();
 
   const handleSelectCategory = (category) => {
     setSearchvalue('');
     setSelectedCategory(category);
-    setCategory(category)
+    setCategory(category);
   };
 
   const pubref = useRef();
   const hidref = useRef();
-
-
-
 
   // const [mainCategory, setMainCategory] = useState([]);
 
@@ -75,7 +86,7 @@ const NewCategory = () => {
           position: toast.POSITION.TOP_RIGHT,
         });
         handleReset();
-        addData(docRef)
+        addData(docRef);
       }
     } catch (e) {
       toast.error(e, {
@@ -89,10 +100,10 @@ const NewCategory = () => {
     const selectedFile = e.target.files[0];
 
     if (!ImageisValidOrNot(selectedFile)) {
-      toast.error("please select an image file ")
+      toast.error('please select an image file ');
       setImageupload(null);
     } else {
-      setImageupload(selectedFile)
+      setImageupload(selectedFile);
     }
   };
   function handleReset() {
@@ -100,13 +111,11 @@ const NewCategory = () => {
     setName('');
     pubref.current.checked = false;
     hidref.current.checked = false;
-
   }
 
   function handleDelete22(index) {
     setImageupload();
   }
-
 
   if (loaderstatus) {
     return (
@@ -119,6 +128,7 @@ const NewCategory = () => {
   } else {
     return (
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
+        {addCatPopup === true ? <div className="bg_black_overlay"></div> : ''}
         <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
           {/* NEW PRODUCT DETAILSS  */}
           <form>
@@ -252,7 +262,7 @@ const NewCategory = () => {
                       View All
                     </Link>
                   </div>
-                  <Dropdown className="category_dropdown">
+                  <Dropdown className="category_dropdown z-1">
                     <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
                       <div className="product_input">
                         <p className="fade_grey fw-400 w-100 mb-0 text-start">
@@ -283,12 +293,12 @@ const NewCategory = () => {
                             .map((category) => (
                               <Dropdown.Item key={category.id}>
                                 <div
-                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                    ? 'selected'
-                                    : ''
-                                    }`}
-                                  onClick={() => handleSelectCategory(category)}
-                                >
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
+                                  onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (
                                     <img src={savegreenicon} alt="savegreenicon" />
@@ -296,17 +306,141 @@ const NewCategory = () => {
                                 </div>
                               </Dropdown.Item>
                             ))}
-                          {searchvalue && !categoreis.some((category) => category.title.toLowerCase().includes(searchvalue.toLowerCase())) && (
-                            <NavLink to="/newcategory/parentcategories">
-                              <button className="addnew_category_btn fs-xs green">
-                                +Add <span className="black">"{searchvalue}"</span> in Parent Category
+                          {searchvalue &&
+                            !categoreis.some((category) =>
+                              category.title.toLowerCase().includes(searchvalue.toLowerCase())
+                            ) && (
+                              <button
+                                type="button"
+                                onClick={() => setAddCatPopup(true)}
+                                className="addnew_category_btn fs-xs green">
+                                +Add <span className="black">"{searchvalue}"</span> in Parent
+                                Category
                               </button>
-                            </NavLink>
-                          )}
+                            )}
                         </div>
                       </div>
                     </Dropdown.Menu>
                   </Dropdown>
+                  {addCatPopup === true ? (
+                    <div className="parent_category_popup">
+                      <form action="">
+                        <div className="d-flex align-items-center justify-content-between">
+                          <p className="fs-4 fw-400 black mb-0">New Parent Category</p>
+                          <div className="d-flex align-items-center gap-3">
+                            <button onClick={() => setAddCatPopup(false)} className="reset_border">
+                              <button className="fs-sm fw-400 reset_btn border-0 px-sm-3 px-2 py-2 ">
+                                Cancel
+                              </button>
+                            </button>
+                            <button
+                              type="submit"
+                              className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn">
+                              <img src={saveicon} alt="saveicon" />
+                              <p className="fs-sm fw-400 black mb-0 ps-1">Save</p>
+                            </button>
+                          </div>
+                        </div>
+                        <div className="mt-4">
+                          <h2 className="fw-400 fs-2sm black mb-0">Basic Information</h2>
+                          {/* ist input */}
+                          <label htmlFor="Name" className="fs-xs fw-400 mt-3 black">
+                            Name
+                          </label>
+                          <br />
+                          <input
+                            type="text"
+                            className="mt-2 product_input fade_grey fw-400"
+                            placeholder="Enter Category name"
+                            id="Name"
+                            value={searchvalue}
+                            onChange={(e) => setPerName(e.target.value)}
+                          />{' '}
+                          <br />
+                          {/* 2nd input */}
+                          <label htmlFor="des" className="fs-xs fw-400 mt-3 black">
+                            Category Image
+                          </label>{' '}
+                          <br />
+                          <div className="d-flex flex-wrap  gap-4 mt-3 align-items-center">
+                            {!imageupload2 ? (
+                              <input
+                                type="file"
+                                id="file2"
+                                hidden
+                                accept="/*"
+                                multiple
+                                onChange={handelUpload2}
+                              />
+                            ) : (
+                              <div className=" d-flex flex-wrap">
+                                <div className="position-relative ">
+                                  <img
+                                    className="mobile_image object-fit-cover"
+                                    src={URL.createObjectURL(imageupload2)}
+                                    alt=""
+                                  />
+                                  <img
+                                    className="position-absolute top-0 end-0 cursor_pointer"
+                                    src={deleteicon}
+                                    alt="deleteicon"
+                                    onClick={handleDelete2}
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {!imageupload2 ? (
+                              <label
+                                htmlFor="file2"
+                                className="color_green cursor_pointer fs-sm addmedia_btn d-flex justify-content-center align-items-center">
+                                + Add Media
+                              </label>
+                            ) : null}
+                          </div>
+                        </div>
+                        <div className="mt-4">
+                          <h2 className="fw-400 fs-2sm black mb-0">Status</h2>
+                          <div className="d-flex align-items-center gap-5">
+                            <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
+                              <label class="check fw-400 fs-sm black mb-0">
+                                Published
+                                <input
+                                  ref={pubref}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setPerStatus('published');
+                                      hidref.current.checked = false;
+                                    }
+                                  }}
+                                  type="checkbox"
+                                />
+                                <span class="checkmark"></span>
+                              </label>
+                            </div>
+                            <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
+                              <label class="check fw-400 fs-sm black mb-0">
+                                Hidden
+                                <input
+                                  ref={hidref}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setPerStatus('hidden');
+                                      pubref.current.checked = false;
+                                    }
+                                  }}
+                                  type="checkbox"
+                                />
+                                <span class="checkmark"></span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  ) : (
+                    ''
+                  )}
                   <p className="black fw-400 fs-xxs mb-0 mt-3">
                     Select a category that will be the parent of the current one.
                   </p>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import filtericon from '../Images/svgs/filtericon.svg';
 import SearchIcon from '../Images/svgs/search.svg';
 import addicon from '../Images/svgs/addicon.svg';
@@ -14,21 +14,18 @@ import { Link, NavLink } from 'react-router-dom';
 import Modifyproduct from './Modifyproduct';
 import { useOrdercontext } from '../context/OrderGetter';
 
-
-const ProductListComponent = () => {
-  // context 
+const ProductListComponent = (orderStatus) => {
+  // context
   const { orders } = useOrdercontext();
-  console.log(orders)
-  const [selectAll, setSelectAll] = useState();
+  const [selectAll, setSelectAll] = useState([]);
 
-  // format date logic start from here 
-
+  // format date logic start from here
+  // console.log(orderStatus);
   function formatDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
     return formattedDate;
   }
-
 
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
@@ -102,14 +99,7 @@ const ProductListComponent = () => {
                         <label className="check1 fw-400 fs-sm black mb-0">
                           <Link
                             className="fw-400 fs-sm black"
-                            to={`/orderslist/${(orderTableData.status).toString().toLowerCase() === 'new order'
-                              ? `neworder/${orderTableData.id}`
-                              : (orderTableData.status).toString().toLowerCase() === 'Processing'
-                                ? `processing/${orderTableData.id}`
-                                : (orderTableData.status).toString().toLowerCase() === 'delivered'
-                                  ? `delivered/${orderTableData.id}`
-                                  : `canceled/${orderTableData.id}`
-                              }`}>
+                            to={`/orderslist/orderdetails/${orderTableData.id}`}>
                             {orderTableData.id}
                           </Link>
                           <div className="d-flex align-items-center"></div>
@@ -118,42 +108,49 @@ const ProductListComponent = () => {
                         </label>
                       </td>
                       <td className="p-3">
-                        <h3 className="fs-xs fw-400 black mb-0">{formatDate(orderTableData.created_at)}</h3>
+                        <h3 className="fs-xs fw-400 black mb-0">
+                          {formatDate(orderTableData.created_at)}
+                        </h3>
                       </td>
                       <td className="p-3">
                         <Link to="viewcustomerdetails">
-                          <h3 className="fs-sm fw-400 black mb-0">{orderTableData.customer.name}</h3>
+                          <h3 className="fs-sm fw-400 black mb-0">
+                            {orderTableData.customer.name}
+                          </h3>
                         </Link>
                       </td>
                       <td className="p-3">
                         <h3
-                          className={`fs-sm fw-400 mb-0 d-inline-block ${(orderTableData.transaction.status).toString().toLowerCase() === 'paid'
-                            ? 'black stock_bg'
-                            : (orderTableData.transaction.status).toString().toLowerCase() === 'cod'
+                          className={`fs-sm fw-400 mb-0 d-inline-block ${
+                            orderTableData.transaction.status.toString().toLowerCase() === 'paid'
+                              ? 'black stock_bg'
+                              : (orderTableData.transaction.status).toString().toLowerCase() === 'cod'
                               ? 'black cancel_gray'
                               : (orderTableData.transaction.status).toString().toLowerCase() === 'refund'
-                                ? 'new_order red'
-                                : 'color_brown on_credit_bg'
-                            }`}
-                        >
+                              ? 'new_order red'
+                              : 'color_brown on_credit_bg'
+                          }`}>
                           {orderTableData.transaction.status}
                         </h3>
                       </td>
                       <td className="p-3">
                         <p
-                          className={`d-inline-block ${(orderTableData.status).toString().toLowerCase() === 'new'
-                            ? 'fs-sm fw-400 red mb-0 new_order'
-                            : (orderTableData.status).toString().toLowerCase() === 'processing'
+                          className={`d-inline-block ${
+                            orderTableData.status.toString().toLowerCase() === 'new'
+                              ? 'fs-sm fw-400 red mb-0 new_order'
+                              : orderTableData.status.toString().toLowerCase() === 'processing'
                               ? 'fs-sm fw-400 mb-0 processing_skyblue'
-                              : (orderTableData.status).toString().toLowerCase() === 'delivered'
-                                ? 'fs-sm fw-400 mb-0 green stock_bg'
-                                : 'fs-sm fw-400 mb-0 black cancel_gray'
-                            }`}>
+                              : orderTableData.status.toString().toLowerCase() === 'delivered'
+                              ? 'fs-sm fw-400 mb-0 green stock_bg'
+                              : 'fs-sm fw-400 mb-0 black cancel_gray'
+                          }`}>
                           {orderTableData.status}
                         </p>
                       </td>
                       <td className="p-3">
-                        <h3 className="fs-sm fw-400 black mb-0">{(orderTableData.items).length} items</h3>
+                        <h3 className="fs-sm fw-400 black mb-0">
+                          {orderTableData.items.length} items
+                        </h3>
                       </td>
                       <td className="p-3">
                         <h3 className="fs-sm fw-400 black mb-0">{orderTableData.order_price}</h3>
@@ -182,14 +179,15 @@ const ProductListComponent = () => {
                                 <div className="d-flex align-items-center categorie_dropdown_options">
                                   <img src={eye_icon} alt="" />
                                   <Link
-                                    to={`/orderslist/${orderTableData.OrderStatus === 'New Order'
-                                      ? 'neworder'
-                                      : orderTableData.OrderStatus === 'Processing'
+                                    to={`/orderslist/${
+                                      orderTableData.OrderStatus === 'New Order'
+                                        ? 'neworder'
+                                        : orderTableData.OrderStatus === 'Processing'
                                         ? 'processing'
                                         : orderTableData.OrderStatus === 'Delivered'
-                                          ? 'delivered'
-                                          : 'canceled'
-                                      }`}>
+                                        ? 'delivered'
+                                        : 'canceled'
+                                    }`}>
                                     <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
                                   </Link>
                                 </div>
