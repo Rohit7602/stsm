@@ -6,21 +6,19 @@ import eye_icon from '../Images/svgs/eye.svg';
 import pencil_icon from '../Images/svgs/pencil.svg';
 import delete_icon from '../Images/svgs/delte.svg';
 import updown_icon from '../Images/svgs/arross.svg';
-import {  doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { deleteObject, getStorage, ref } from 'firebase/storage';
 import { db } from '../firebase';
 import { Link, NavLink } from 'react-router-dom';
 import { useProductsContext } from '../context/productgetter';
 
 const ProductListComponent = () => {
-  const { data, updateData, deleteData } = useProductsContext()
-
+  const { data, updateData, deleteData } = useProductsContext();
 
   /*  *******************************
    checkbox functionality start 
  *********************************************   **/
   const [selectAll, setSelectAll] = useState(false);
-
 
   useEffect(() => {
     // Check if all checkboxes are checked
@@ -28,7 +26,7 @@ const ProductListComponent = () => {
     setSelectAll(allChecked);
   }, [data]);
 
-  // Main checkbox functionality start from here 
+  // Main checkbox functionality start from here
 
   const handleMainCheckboxChange = () => {
     const updatedData = data.map((item) => ({
@@ -39,8 +37,7 @@ const ProductListComponent = () => {
     setSelectAll(!selectAll);
   };
 
-
-  // Datacheckboxes functionality strat from here 
+  // Datacheckboxes functionality strat from here
   const handleCheckboxChange = (index) => {
     const updatedData = [...data];
     updatedData[index].checked = !data[index].checked;
@@ -51,14 +48,9 @@ const ProductListComponent = () => {
     setSelectAll(allChecked);
   };
 
-  
-
-
-
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
-
 
   /**
    ******************************************************
@@ -73,27 +65,18 @@ const ProductListComponent = () => {
       await updateDoc(doc(db, 'products', id), {
         status: newStatus,
       });
-      alert("status Change succesffuly ")
-      updateData({ id, status: newStatus })
-
+      alert('status Change succesffuly ');
+      updateData({ id, status: newStatus });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-
   }
-
-
 
   /**
    ******************************************************
       Change Status  functionality end  here 
   *************************************************
      */
-
-
-
-
-
 
   /**
    ******************************************************
@@ -107,11 +90,11 @@ const ProductListComponent = () => {
       await deleteDoc(doc(db, 'products', id)).then(() => {
         for (const images of image) {
           if (image.length !== 0) {
-            var reference = ref(st, images)
-            deleteObject(reference)
+            var reference = ref(st, images);
+            deleteObject(reference);
           }
         }
-        deleteData(id)
+        deleteData(id);
       });
     } catch (error) {
       console.log(error);
@@ -123,7 +106,6 @@ const ProductListComponent = () => {
       Handle Delete functionality end  here 
   *************************************************
      */
-  
 
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
@@ -147,7 +129,7 @@ const ProductListComponent = () => {
         </div>
         {/* product details  */}
         <div className="p-3 mt-3 bg-white product_shadow">
-          <div className="overflow-x-scroll line_scroll">
+          <div className="overflow-scroll line_scroll">
             <div className="min_width_1350">
               <table className="w-100">
                 <tr className="product_borderbottom">
@@ -225,7 +207,9 @@ const ProductListComponent = () => {
                         <h3 className="fs-sm fw-400 black mb-0">{value.status}</h3>
                       </td>
                       <td className="p-3">
-                        <h3 className="fs-sm fw-400 black mb-0">{value.varients[0].originalPrice}</h3>
+                        <h3 className="fs-sm fw-400 black mb-0">
+                          {value.varients[0].originalPrice}
+                        </h3>
                       </td>
                       <td className="text-center">
                         <div class="dropdown">
@@ -263,10 +247,17 @@ const ProductListComponent = () => {
                               </div>
                             </li>
                             <li>
-                              <div class="dropdown-item" href="#" onClick={() => handleStatus(value.id, value.status)}>
+                              <div
+                                class="dropdown-item"
+                                href="#"
+                                onClick={() => handleStatus(value.id, value.status)}>
                                 <div className="d-flex align-items-center categorie_dropdown_options">
                                   <img src={updown_icon} alt="" />
-                                  <p className="fs-sm fw-400 green mb-0 ms-2">{value.status === 'hidden' ? 'change to  publish' : 'Change to hidden'}</p>
+                                  <p className="fs-sm fw-400 green mb-0 ms-2">
+                                    {value.status === 'hidden'
+                                      ? 'change to  publish'
+                                      : 'Change to hidden'}
+                                  </p>
                                 </div>
                               </div>
                             </li>
