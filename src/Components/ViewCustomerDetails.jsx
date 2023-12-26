@@ -1,7 +1,7 @@
 import React from 'react';
 import saveicon from '../Images/svgs/saveicon.svg';
 import threedot from '../Images/svgs/threedot.svg';
-import manimage from '../Images/Png/manimage.png';
+import manimage from '../Images/Png/manimage.jpg';
 import { Col, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';

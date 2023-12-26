@@ -4,6 +4,7 @@ import mobileicon from '../Images/Png/mobile_icon_40.png';
 import billicon from '../Images/svgs/bill_icon.svg';
 import whitesaveicon from '../Images/svgs/white_saveicon.svg';
 import profile from '../Images/Png/customer_profile.png';
+import manimage from '../Images/Png/manimage.jpg'
 import { Col, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useOrdercontext } from '../context/OrderGetter';
@@ -174,7 +175,7 @@ export default function NewOrder() {
               <div className="p-3 bg-white product_shadow">
                 <p className="fs-2sm fw-400 black mb-0">Customer</p>
                 <div className="d-flex align-items-center p-2 mt-3">
-                  <img src={profile} alt="profile" />
+                  <img src={manimage} alt="profile" className="manicon " />
                   <div className="ps-3">
                     <p className="fs-sm fw-400 black mb-0">{item.customer.name}</p>
                     <p className="fs-xxs fw-400 fade_grey mb-0">{item.customer.email == "" ? "N/A" : item.customer.email}</p>

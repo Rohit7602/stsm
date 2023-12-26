@@ -44,6 +44,7 @@ const BannersAdvertisement = () => {
       data.forEach((item) => {
         const title = item.title.toLowerCase();
         const imagelinks = item.data;
+        console.log("dfgdfgdfgfgfdgfdgfdgfd", imagelinks)
         if (imagelinks) {
           selectedImages[title] = imagelinks.map((itemurl) => itemurl.imgUrl + '$$$$' + item.id);
         }
@@ -868,8 +869,6 @@ const BannersAdvertisement = () => {
     } catch (error) {
       console.error('Error uploading images:', error);
     }
-
-
   }
 
   /*
@@ -1283,6 +1282,7 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Body>
             </Accordion.Item>
+            {/**  
             <div className="d-flex align-items-center justify-content-between mt-3">
               <p className="fs-sm fw-700 black pt-1 mt-3">Categorized Banners</p>
               <button
@@ -1321,6 +1321,7 @@ const BannersAdvertisement = () => {
                             + Add Media
                           </label>
                         ) : (
+                          data.title && (
                             <div className="position-relative imagemedia_btn">
                               <img
                                 className="w-100 h-100 object-fit-cover"
@@ -1341,21 +1342,24 @@ const BannersAdvertisement = () => {
                               />
                             </div>
                           )
-                        }
-                      
+                        )}
                       </div>
                     </div>
                   </Accordion.Body>
                 </Accordion.Item>
               );
             })}
+            */}
           </Accordion>
         </div>
       </form>
       <ToastContainer />
+
     </div>
   )
 }
   ;
 
 export default BannersAdvertisement;
+
+

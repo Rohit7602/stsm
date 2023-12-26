@@ -7,6 +7,7 @@ import eye_icon from '../Images/svgs/eye.svg';
 import pencil_icon from '../Images/svgs/pencil.svg';
 import delete_icon from '../Images/svgs/delte.svg';
 import updown_icon from '../Images/svgs/arross.svg';
+import manimage from '../Images/Png/manimage.jpg'
 import { Link } from 'react-router-dom';
 import { useCustomerContext } from '../context/Customergetters';
 
@@ -101,7 +102,7 @@ const Customers = () => {
                               <label class="check1 fw-400 fs-sm black mb-0  align-items-center d-flex">
                                 <img
                                   className="manicon mx-2"
-                                  src={!image ? manicon : image}
+                                  src={!image ? manimage : image}
                                   alt="manicon"
                                 />
                                 <div>
