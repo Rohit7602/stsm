@@ -32,6 +32,7 @@ const ViewCustomerDetails = () => {
     // Order with the specified ID was not found
     console.log('Order not found');
   }
+  
   const mostRecentOrder = targetOrder.reduce((maxOrder, currentOrder) => {
     // Compare the created_at timestamps
     const maxTimestamp = maxOrder ? new Date(maxOrder.created_at).getTime() : 0;
@@ -39,6 +40,13 @@ const ViewCustomerDetails = () => {
 
     return currentTimestamp > maxTimestamp ? currentOrder : maxOrder;
   }, null);
+  
+
+  const totalSpent = targetOrder.reduce((sum, order) => sum + order.order_price, 0)
+  console.log(totalSpent)
+
+  const AvergaeOrderValue = totalSpent / (targetOrder.length)
+  console.log(AvergaeOrderValue)
 
 
 
@@ -46,16 +54,26 @@ const ViewCustomerDetails = () => {
 
 
 
-  // const [data, setData] = useState([]);
+
+
+
+
+
+
+  // format date function start 
   function formatDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
     return formattedDate;
   }
+  // format date function end
 
+
+  // calculate time start 
   const calculateTimeAgo = (timestamp) => {
     return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
   };
+  // calculate  time end 
 
 
   // useEffect(() => {
@@ -124,7 +142,7 @@ const ViewCustomerDetails = () => {
                     <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1 ">No orders yet</h2>
                   )}
                   <h2 className="fw-400 fs-2sm black mb-0 mt-3  ">Average Order Value</h2>
-                  <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1  ">345.00</h2>
+                  <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1  ">{AvergaeOrderValue.toFixed(2)  }</h2>
                   <h2 className="fw-400 fs-2sm black mb-0 mt-3 ">Registration</h2>
                   <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1 ">{calculateTimeAgo(Customerdata.created_at)}</h2>
                 </div>
@@ -135,7 +153,7 @@ const ViewCustomerDetails = () => {
                     <div className="customer_lg_overflow_X">
                       <div className="d-flex justify-content-between align-items-center">
                         <h2 className="fw-400 fs-2sm black mb-0  "> Order</h2>{' '}
-                        <h2 className="fw-400 fs-2sm black mb-0  ">Total Spent : ₹ 12,590.00</h2>
+                        <h2 className="fw-400 fs-2sm black mb-0  ">Total Spent :₹{totalSpent}</h2>
                       </div>
                       <div className="d-flex justify-content-between align-items-center mt-3"></div>
                       <table className="w-100">
@@ -176,7 +194,7 @@ const ViewCustomerDetails = () => {
                                     <h2 className="fw-400 fs-sm black mb-0"> {data.items.length} Items </h2>
                                   </td>
                                   <td className="mx_140 ps-3">
-                                    <h2 className="fw-400 fs-sm black mb-0">Billed Amount</h2>
+                                    <h2 className="fw-400 fs-sm black mb-0">₹{data.order_price }</h2>
                                   </td>
                                 </tr>
                               </>
@@ -187,11 +205,6 @@ const ViewCustomerDetails = () => {
 
                       </table>
                     </div>
-                  </div>
-                  <div className="mt-3 d-flex align-items-center justify-content-center">
-                    <button className="border-0 bg-transparent fs-sm fw-400 color_blue">
-                      View all 6 orders
-                    </button>
                   </div>
                 </div>
                 <div className="product_shadow p-3 bg_white mt-3">

@@ -117,7 +117,7 @@ export default function NewOrder() {
 
                           <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">(-) ₹ {products.discount}</p>
                         </div>
-                        <p className="fs-sm fw-400 black mb-0 p-3">₹ {(products.price * products.qnty) - products.discount}</p>
+                        <p className="fs-sm fw-400 black mb-0 p-3">₹ {(products.price * products.qnty)-products.discount}</p>
                       </div>
                     </>
                   )
