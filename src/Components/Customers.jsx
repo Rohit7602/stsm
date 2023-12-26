@@ -87,6 +87,7 @@ const Customers = () => {
                       let day = formatNumbers(date.getDate());
                       let month = formatNumbers(date.getMonth() + 1);
                       let year = date.getFullYear();
+                      
 
                       return day + '-' + month + '-' + year;
                     };
