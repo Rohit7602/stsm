@@ -7,7 +7,7 @@ import deleteicon from '../Images/svgs/deleteicon.svg';
 import closeicon from '../Images/svgs/closeicon.svg';
 import addIcon from '../Images/svgs/addicon.svg';
 import { Col, Row } from 'react-bootstrap';
-import { collection,  addDoc } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -132,8 +132,8 @@ const AddProduct = () => {
     } else if (imageUpload22.length === 0) {
       alert('set image ');
 
-    } else if (!name || !longDes || !shortDes || !totalStock) {
-      alert('Please enter name or LongDescription or ShortDescription or TotalStock ');
+    } else if (!name || !shortDes || !totalStock) {
+      alert('Please enter name  or ShortDescription or TotalStock ');
     } else if (!selectedCategory) {
       alert('please select category ')
     }
@@ -295,7 +295,6 @@ const AddProduct = () => {
                       <br />
                       <textarea
                         id="des"
-                        required
                         className="mt-2 product_input resize_none fade_grey fw-400"
                         cols="30"
                         rows="5"
@@ -400,12 +399,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                              ...v,
-                                              discountType: selectedDiscountType,
-                                              // Reset discount value when changing the discount type to "Amount"
-                                              discount:
-                                                selectedDiscountType === 'Amount' ? 0 : v.discount,
-                                            }
+                                            ...v,
+                                            discountType: selectedDiscountType,
+                                            // Reset discount value when changing the discount type to "Amount"
+                                            discount:
+                                              selectedDiscountType === 'Amount' ? 0 : v.discount,
+                                          }
                                           : v
                                       )
                                     );
@@ -742,11 +741,10 @@ const AddProduct = () => {
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${
-                                    selectedCategory && selectedCategory.id === category.id
-                                      ? 'selected'
-                                      : ''
-                                  }`}
+                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
+                                    ? 'selected'
+                                    : ''
+                                    }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (

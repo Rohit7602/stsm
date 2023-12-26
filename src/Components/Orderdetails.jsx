@@ -11,9 +11,24 @@ export default function NewOrder() {
   const { id } = useParams();
   const { orders } = useOrdercontext();
   let filterData = orders.filter((item) => item.id == id);
-  console.log('asdfasdfadsfas', filterData);
-  const status = 'CANCELLED';
-  console.log(filterData);
+  function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
+    return formattedDate;
+  }
+
+  const calculateSubtotal = () => {
+    return filterData[0].items.reduce((acc, item) => acc + item.price * item.qnty - item.discount, 0);
+  };
+
+  // Calculate Total
+  const calculateTotal = () => {
+    const subtotal = calculateSubtotal();
+    const shippingCost = filterData[0].shipping_charge
+    const promoDiscount = filterData[0].promo_discount
+    return subtotal + shippingCost - promoDiscount;
+  };
+
   return (
     <>
       {filterData.map((item, index) => (
@@ -22,20 +37,10 @@ export default function NewOrder() {
             <div className="d-flex align-items-center">
               <h1 className="fs-lg fw-500 black mb-0 me-1">{item.id}</h1>
               <p className="neworder_red fs-xs fw-400 red mb-0 ms-3">
-                {status == 'NEW'
-                  ? 'New Order'
-                  : status == 'CANCELLED'
-                  ? 'CANCELLED'
-                  : status == 'RETURNED'
-                  ? 'RETURNED'
-                  : status == 'DISPATCHED'
-                  ? 'DISPATCHED'
-                  : status == 'PROCESSING'
-                  ? 'PROCESSING'
-                  : 'DELIVERED'}
+                {item.status}
               </p>
             </div>
-            {status == 'NEW' ? (
+            {item.status == 'NEW' ? (
               <div className="d-flex align-items-center">
                 <div className="d-flex align-itmes-center gap-3">
                   <button className="reset_border">
@@ -49,7 +54,7 @@ export default function NewOrder() {
                   </button>
                 </div>
               </div>
-            ) : status == 'CANCELLED' ? (
+            ) : item.status == 'CANCELLED' ? (
               <div className="d-flex align-items-center">
                 <button
                   className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black"
@@ -58,11 +63,11 @@ export default function NewOrder() {
                   Mark as Refunded
                 </button>
               </div>
-            ) : status == 'RETURNED' ? (
+            ) : item.status == 'RETURNED' ? (
               <div></div>
-            ) : status == 'DISPATCHED' ? (
+            ) : item.status == 'DISPATCHED' ? (
               <div></div>
-            ) : status == 'PROCESSING' ? (
+            ) : item.status == 'PROCESSING' ? (
               <div className="d-flex align-items-center">
                 <div className="d-flex align-itmes-center gap-3">
                   <button className="reset_border">
@@ -81,33 +86,44 @@ export default function NewOrder() {
             )}
           </div>
           <div className="d-flex align-items-center gap-4 py-3 px-2 mt-2 mb-3">
-            <p className="fs-xs fw-400 black mb-0">{item.created_at}</p>
+            <p className="fs-xs fw-400 black mb-0">{formatDate(item.created_at)}</p>
             <span>|</span>
-            <p className="fs-xs fw-400 black mb-0">2 items</p>
+            <p className="fs-xs fw-400 black mb-0">{item.items.length}</p>
             <span>|</span>
-            <p className="fs-xs fw-400 black mb-0">₹ 1,260.00</p>
+            <p className="fs-xs fw-400 black mb-0">₹ {calculateTotal().toFixed(2)}</p>
             <span>|</span>
-            <p className="fs-xs fw-400 black mb-0 paid stock_bg">Paid</p>
+            <p className="fs-xs fw-400 black mb-0 paid stock_bg">{item.transaction.status}</p>
           </div>
           <Row className="">
             <Col xxl={8}>
               <div className="p-3 bg-white product_shadow">
                 <p className="fs-2sm fw-400 black mb-0">Items</p>
-                <div className="d-flex align-items-center justify-content-between mt-3">
-                  <div className="d-flex align-items-center mw-300 p-2">
-                    <img src={mobileicon} alt="mobileicon" />
-                    <div className="ps-3">
-                      <p className="fs-sm fw-400 black mb-0">Vivo V3 Pro</p>
-                      <p className="fs-xxs fw-400 fade_grey mb-0">ID : 1022</p>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center p-3">
-                    <p className="fs-sm fw-400 black mb-0">₹ 300.00</p>
-                    <p className="fs-sm fw-400 black mb-0 ps-4 ms-2">2</p>
-                  </div>
-                  <p className="fs-sm fw-400 black mb-0 p-3">₹ 300.00</p>
-                </div>
-                <div className="d-flex align-items-center justify-content-between mt-3">
+                {item.items.map((products, index) => {
+                  return (
+                    <>
+                      <div className="d-flex align-items-center justify-content-between mt-3">
+                        <div className="d-flex align-items-center mw-300 p-2">
+                          <div style={{}}>
+                            <img src={products.image} alt="mobileicon" className='items_images' />
+                          </div>
+                          <div className="ps-3">
+                            <p className="fs-sm fw-400 black mb-0">{products.title}</p>
+                            <p className="fs-xxs fw-400 fade_grey mb-0">ID :{products.item_id}</p>
+                          </div>
+                        </div>
+                        <div className="d-flex align-items-center p-3">
+                          <p className="fs-sm fw-400 black mb-0">₹ {products.price}</p>
+                          <p className="fs-sm fw-400 black mb-0 ps-4 ms-2 me-5">{products.qnty}</p>
+
+                          <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">(-) ₹ {products.discount}</p>
+                        </div>
+                        <p className="fs-sm fw-400 black mb-0 p-3">₹ {(products.price * products.qnty) - products.discount}</p>
+                      </div>
+                    </>
+                  )
+                }
+                )}
+                {/* <div className="d-flex align-items-center justify-content-between mt-3">
                   <div className="d-flex align-items-center mw-300 p-2">
                     <img src={mobileicon} alt="mobileicon" />
                     <div className="ps-3">
@@ -120,25 +136,25 @@ export default function NewOrder() {
                     <p className="fs-sm fw-400 black mb-0 ps-4 ms-2">1</p>
                   </div>
                   <p className="fs-sm fw-400 black mb-0 p-3">₹ 300.00</p>
-                </div>
+                </div> */}
                 <div className="product_borderbottom mt-3"></div>
                 <div className="d-flex align-items-center justify-content-between mt-4">
                   <p className="fs-sm fw-400 black mb-0">Subtotal</p>
-                  <p className="fs-sm fw-400 black mb-0">₹ 1,260.00</p>
+                  <p className="fs-sm fw-400 black mb-0">₹{calculateSubtotal().toFixed(2)}</p>
                 </div>
                 <div className="d-flex align-items-center justify-content-between mt-2">
                   <p className="fs-sm fw-400 black mb-0">Shipping Cost</p>
-                  <p className="fs-sm fw-400 black mb-0">₹ 0.00</p>
+                  <p className="fs-sm fw-400 black mb-0">₹ {item.shipping_charge}</p>
                 </div>
                 <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <p className="fs-sm fw-400 black mb-0">Promo Discount</p>
-                  <p className="fs-sm fw-400 black mb-0">(-) ₹ 50.00</p>
+                  <p className="fs-sm fw-400 black mb-0">(-) ₹ {item.promo_discount}</p>
                 </div>
                 <div className="product_borderbottom mt-3"></div>
                 <div>
                   <div className="d-flex align-items-center justify-content-between mt-4 mb-3">
                     <p className="fs-sm fw-400 black mb-0">Total</p>
-                    <p className="fs-sm fw-700 black mb-0">₹ 1,260.00</p>
+                    <p className="fs-sm fw-700 black mb-0">₹ {calculateTotal().toFixed(2)}</p>
                   </div>
                 </div>
               </div>
@@ -147,10 +163,10 @@ export default function NewOrder() {
                 <div className="d-flex align-items-center justify-content-between mt-3">
                   <div className="p-2">
                     <p className="fs-sm fw-400 black mb-0">Mode of Payment</p>
-                    <p className="fs-xxs fw-400 fade_grey mb-0">via UPI | tx : HO67G58TH9</p>
+                    <p className="fs-xxs fw-400 fade_grey mb-0">{item.transaction.mode} | tx : {item.transaction.tx_id == "" ? "N/A" : item.transaction.tx_id}</p>
                   </div>
-                  <p className="fs-sm fw-400 black mb-0 p-3">01-01-2023</p>
-                  <p className="fs-sm fw-400 black mb-0 p-3">₹ 1,260.00</p>
+                  <p className="fs-sm fw-400 black mb-0 p-3">{formatDate(item.transaction.date)}</p>
+                  <p className="fs-sm fw-400 black mb-0 p-3">₹  {calculateTotal().toFixed(2)}</p>
                 </div>
               </div>
             </Col>
@@ -160,51 +176,32 @@ export default function NewOrder() {
                 <div className="d-flex align-items-center p-2 mt-3">
                   <img src={profile} alt="profile" />
                   <div className="ps-3">
-                    <p className="fs-sm fw-400 black mb-0">John Doe</p>
-                    <p className="fs-xxs fw-400 fade_grey mb-0">john@example.com</p>
+                    <p className="fs-sm fw-400 black mb-0">{item.customer.name}</p>
+                    <p className="fs-xxs fw-400 fade_grey mb-0">{item.customer.email == "" ? "N/A" : item.customer.email}</p>
                   </div>
                 </div>
                 <div className="mt-3">
                   <p className="fs-2sm fw-400 black mb-0">Contact</p>
-                  <p className="fs-xs fw-400 black mb-0 pt-1 mt-3">John Doe</p>
-                  <p className="fs-xs fw-400 black mb-0 pt-1">#01, Talaki Gate, Near Bus stand</p>
-                  <p className="fs-xs fw-400 black mb-0 pt-1">Hisar - 125001 (Haryana)</p>
+                  <p className="fs-xs fw-400 black mb-0 pt-1 mt-3">{item.customer.name}</p>
+                  <p className="fs-xs fw-400 black mb-0 pt-1">{item.customer.phone}</p>
+                  <p className="fs-xs fw-400 black mb-0 pt-1">{item.customer.email}</p>
                 </div>
               </div>
               <div className="p-3 bg-white product_shadow mt-4">
                 <p className="fs-2sm fw-400 black mb-0">Shipping Info</p>
-                <p className="fs-xs fw-400 black mb-0 pt-1 mt-3">John Doe</p>
-                <p className="fs-xs fw-400 black mb-0 pt-1">#01, Talaki Gate, Near Bus stand</p>
-                <p className="fs-xs fw-400 black mb-0 pt-1">Hisar - 125001 (Haryana)</p>
+                <p className="fs-xs fw-400 black mb-0 pt-1 mt-3">{item.shipping.contact_person}</p>
+                <p className="fs-xs fw-400 black mb-0 pt-1">{item.shipping.address}</p>
+                <p className="fs-xs fw-400 black mb-0 pt-1">{item.shipping.contact_no}</p>
               </div>
-              {status == 'NEW' ? (
-                ''
-              ) : status == 'CANCELLED' ? (
+              {item.status != 'NEW' ? (
                 <div className="d-flex justify-content-end">
                   <button type="button" className="d-flex align-items-center bill_generate">
                     <img src={billicon} alt="billicon" />
                     <p className="fs-sm fw-400 black mb-0 ms-2">Generate Bill</p>
                   </button>
                 </div>
-              ) : status == 'RETURNED' ? (
-                'RETURNED'
-              ) : status == 'DISPATCHED' ? (
-                'DISPATCHED'
-              ) : status == 'PROCESSING' ? (
-                <div className="d-flex justify-content-end">
-                  <button type="button" className="d-flex align-items-center bill_generate">
-                    <img src={billicon} alt="billicon" />
-                    <p className="fs-sm fw-400 black mb-0 ms-2">Generate Bill</p>
-                  </button>
-                </div>
-              ) : (
-                <div className="d-flex justify-content-end">
-                  <button type="button" className="d-flex align-items-center bill_generate">
-                    <img src={billicon} alt="billicon" />
-                    <p className="fs-sm fw-400 black mb-0 ms-2">Generate Bill</p>
-                  </button>
-                </div>
-              )}
+              ) : null
+              }
             </Col>
           </Row>
         </div>

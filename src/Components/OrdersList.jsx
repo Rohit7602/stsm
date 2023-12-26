@@ -16,8 +16,8 @@ import { useOrdercontext } from '../context/OrderGetter';
 
 const ProductListComponent = (orderStatus) => {
   // context
-  const { orders } = useOrdercontext();
-  const [selectAll, setSelectAll] = useState([]);
+  const { orders, updateData } = useOrdercontext();
+  const [searchvalue, setSearchvalue] = useState('')
 
   // format date logic start from here
   // console.log(orderStatus);
@@ -26,6 +26,57 @@ const ProductListComponent = (orderStatus) => {
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
     return formattedDate;
   }
+
+  /*  *******************************
+  checkbox functionality start 
+*********************************************   **/
+  const [selectAll, setSelectAll] = useState(false);
+
+
+  useEffect(() => {
+    // Check if all checkboxes are checked
+    const allChecked = orders.every((item) => item.checked);
+    setSelectAll(allChecked);
+  }, [orders]);
+
+  // Main checkbox functionality start from here 
+
+  const handleMainCheckboxChange = () => {
+    const updatedData = orders.map((item) => ({
+      ...item,
+      checked: !selectAll,
+    }));
+    updateData(updatedData);
+    setSelectAll(!selectAll);
+  };
+
+
+  // Datacheckboxes functionality strat from here 
+  const handleCheckboxChange = (index) => {
+    const updatedData = [...orders];
+    updatedData[index].checked = !orders[index].checked;
+    updateData(updatedData);
+
+    // Check if all checkboxes are checked
+    const allChecked = updatedData.every((item) => item.checked);
+    setSelectAll(allChecked);
+  };
+
+
+
+
+
+  /*  *******************************
+      Checbox  functionality end 
+    *********************************************   **/
+
+
+
+
+
+
+
+
 
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
@@ -43,6 +94,7 @@ const ProductListComponent = (orderStatus) => {
                 type="text"
                 className="bg-transparent  border-0 px-2 fw-400  outline-none"
                 placeholder="Search for Orders"
+                onChange={(e) => setSearchvalue(e.target.value)}
               />
             </form>
             <button className="filter_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
@@ -64,7 +116,7 @@ const ProductListComponent = (orderStatus) => {
                         <input
                           type="checkbox"
                           checked={selectAll}
-                          onChange={() => setSelectAll(!selectAll)}
+                          onChange={handleMainCheckboxChange}
                         />
                         <span className="checkmark"></span>
                       </label>
@@ -92,7 +144,13 @@ const ProductListComponent = (orderStatus) => {
                     <h3 className="fs-sm fw-400 black mb-0">Action</h3>
                   </th>
                 </tr>
-                {orders.map((orderTableData, index) => {
+
+                {orders.filter((items) => {
+                  return (
+                    searchvalue.toLowerCase() === '' ||
+                    items.id.toLowerCase().includes(searchvalue)
+                  );
+                }).map((orderTableData, index) => {
                   return (
                     <tr>
                       <td className="p-3">
@@ -103,7 +161,8 @@ const ProductListComponent = (orderStatus) => {
                             {orderTableData.id}
                           </Link>
                           <div className="d-flex align-items-center"></div>
-                          <input type="checkbox" checked={selectAll} />
+                          <input type="checkbox" checked={orderTableData.checked || false}
+                            onChange={() => handleCheckboxChange(index)} />
                           <span className="checkmark"></span>
                         </label>
                       </td>
@@ -121,29 +180,27 @@ const ProductListComponent = (orderStatus) => {
                       </td>
                       <td className="p-3">
                         <h3
-                          className={`fs-sm fw-400 mb-0 d-inline-block ${
-                            orderTableData.transaction.status.toString().toLowerCase() === true
-                              ? 'black stock_bg'
-                              : orderTableData.PaymentStatus === 'COD'
+                          className={`fs-sm fw-400 mb-0 d-inline-block ${orderTableData.transaction.status.toString().toLowerCase() === 'paid'
+                            ? 'black stock_bg'
+                            : (orderTableData.transaction.status).toString().toLowerCase() === 'cod'
                               ? 'black cancel_gray'
-                              : orderTableData.PaymentStatus === 'Refund'
-                              ? 'new_order red'
-                              : 'color_brown on_credit_bg'
-                          }`}>
-                          {orderTableData.transaction.status ? 'True' : 'False'}
+                              : (orderTableData.transaction.status).toString().toLowerCase() === 'refund'
+                                ? 'new_order red'
+                                : 'color_brown on_credit_bg'
+                            }`}>
+                          {orderTableData.transaction.status}
                         </h3>
                       </td>
                       <td className="p-3">
                         <p
-                          className={`d-inline-block ${
-                            orderTableData.status.toString().toLowerCase() === 'new order'
-                              ? 'fs-sm fw-400 red mb-0 new_order'
-                              : orderTableData.status.toString().toLowerCase() === 'processing'
+                          className={`d-inline-block ${orderTableData.status.toString().toLowerCase() === 'new'
+                            ? 'fs-sm fw-400 red mb-0 new_order'
+                            : orderTableData.status.toString().toLowerCase() === 'processing'
                               ? 'fs-sm fw-400 mb-0 processing_skyblue'
                               : orderTableData.status.toString().toLowerCase() === 'delivered'
-                              ? 'fs-sm fw-400 mb-0 green stock_bg'
-                              : 'fs-sm fw-400 mb-0 black cancel_gray'
-                          }`}>
+                                ? 'fs-sm fw-400 mb-0 green stock_bg'
+                                : 'fs-sm fw-400 mb-0 black cancel_gray'
+                            }`}>
                           {orderTableData.status}
                         </p>
                       </td>
@@ -179,15 +236,14 @@ const ProductListComponent = (orderStatus) => {
                                 <div className="d-flex align-items-center categorie_dropdown_options">
                                   <img src={eye_icon} alt="" />
                                   <Link
-                                    to={`/orderslist/${
-                                      orderTableData.OrderStatus === 'New Order'
-                                        ? 'neworder'
-                                        : orderTableData.OrderStatus === 'Processing'
+                                    to={`/orderslist/${orderTableData.OrderStatus === 'New Order'
+                                      ? 'neworder'
+                                      : orderTableData.OrderStatus === 'Processing'
                                         ? 'processing'
                                         : orderTableData.OrderStatus === 'Delivered'
-                                        ? 'delivered'
-                                        : 'canceled'
-                                    }`}>
+                                          ? 'delivered'
+                                          : 'canceled'
+                                      }`}>
                                     <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
                                   </Link>
                                 </div>

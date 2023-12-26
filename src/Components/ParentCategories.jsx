@@ -4,6 +4,12 @@ import search from '../Images/svgs/search.svg';
 import dropdownDots from '../Images/svgs/dots2.svg';
 import eye_icon from '../Images/svgs/eye.svg';
 import pencil_icon from '../Images/svgs/pencil.svg';
+import Accordion from 'react-bootstrap/Accordion';
+import minilayoutImgGroup3 from '../Images/Png/minilayoutImgGroup3.png';
+import minilayoutImgGroup4 from '../Images/Png/minilayoutImgGroup4.png';
+import minilayoutImgGroup6 from '../Images/Png/minilayoutImgGroup6.png';
+import minilayoutImgGroup9 from '../Images/Png/minilayoutImgGroup9.png';
+import minilayoutImgGroup8 from '../Images/Png/minilayoutImgGroup8.png';
 import deleteicon from '../Images/svgs/deleteicon.svg';
 import updown_icon from '../Images/svgs/arross.svg';
 import saveicon from '../Images/svgs/saveicon.svg';
@@ -37,7 +43,7 @@ const Categories = () => {
 
   // context
   const { ImageisValidOrNot } = useImageHandleContext();
-  const { categoreis, updateData, addData } = useMainCategories();
+  const { categoreis, updateData, addDataParent } = useMainCategories();
   const { data } = useSubCategories();
 
   const pubref = useRef();
@@ -56,6 +62,15 @@ const Categories = () => {
       setImageupload(selectedFile);
     }
   }
+
+  const [selectedLayout, setSelectedLayout] = useState('');
+
+  // ...
+
+  const handleLayoutChange = (layout) => {
+    setSelectedLayout(layout);
+  };
+
 
   //   handle image upload functionality end  here
 
@@ -83,6 +98,7 @@ const Categories = () => {
           title: name,
           status: status,
           image: imageUrl,
+          homepagelayout: selectedLayout,
         });
         setLoaderstatus(false);
         toast.success('Category added Successfully !', {
@@ -92,7 +108,7 @@ const Categories = () => {
         setAddCatPopup(false);
         setRefreshData((prevState) => !prevState);
         // context
-        addData(docRef);
+        addDataParent(docRef);
       }
     } catch (e) {
       toast.error(e, {
@@ -315,6 +331,7 @@ const Categories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
+                                    onChange={() => handleLayoutChange('1X3')}
                                   />
                                   <label htmlFor="one" className="fs-xs fw-400 black mb-0 ms-2">
                                     1 x 3
@@ -329,6 +346,7 @@ const Categories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
+                                    onChange={() => handleLayoutChange('2X2')}
                                   />
                                   <label htmlFor="two" className="fs-xs fw-400 black mb-0 ms-2">
                                     2 x 2
@@ -343,6 +361,7 @@ const Categories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
+                                    onChange={() => handleLayoutChange('2X3')}
                                   />
                                   <label htmlFor="three" className="fs-xs fw-400 black mb-0 ms-2">
                                     2 x 3
@@ -357,6 +376,7 @@ const Categories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
+                                    onChange={() => handleLayoutChange('3X3')}
                                   />
                                   <label htmlFor="four" className="fs-xs fw-400 black mb-0 ms-2">
                                     3 x 3
@@ -371,6 +391,7 @@ const Categories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
+                                    onChange={() => handleLayoutChange('2X2 Inline3')}
                                   />
                                   <label htmlFor="five" className="fs-xs fw-400 black mb-0 ms-2">
                                     2 x 2 Inline3
