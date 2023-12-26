@@ -220,89 +220,6 @@ const NewCategory = () => {
                     ) : null}
                   </div>
                   <br />
-                  <div className="banner_advertisement">
-                    <Accordion className="w-100 rounded-none bg-white product_input py-0">
-                      <Accordion.Header className="bg_grey fs-xs fw-400 white mb-0 bg-white d-flex justify-content-between">
-                        <div className="d-flex justify-content-between w-100 py-3">
-                          <h3 className="fs-sm fw-400 black mb-0">Select Homepage Layout</h3>
-                        </div>
-                      </Accordion.Header>
-                      <Accordion.Body className="py-2 px-0">
-                        <div className="d-flex align-items-start gap-4">
-                          <div>
-                            <div className="d-flex align-items-center mb-2 pb-1">
-                              <input
-                                id="one"
-                                className="raido-black"
-                                type="radio"
-                                name="minilayout"
-                              />
-                              <label htmlFor="one" className="fs-xs fw-400 black mb-0 ms-2">
-                                1 x 3
-                              </label>
-                            </div>
-                            <img src={minilayoutImgGroup3} alt="" />
-                          </div>
-                          <div>
-                            <div className="d-flex align-items-center mb-2 pb-1">
-                              <input
-                                id="two"
-                                className="raido-black"
-                                type="radio"
-                                name="minilayout"
-                              />
-                              <label htmlFor="two" className="fs-xs fw-400 black mb-0 ms-2">
-                                2 x 2
-                              </label>
-                            </div>
-                            <img src={minilayoutImgGroup4} alt="" />
-                          </div>
-                          <div>
-                            <div className="d-flex align-items-center mb-2 pb-1">
-                              <input
-                                id="three"
-                                className="raido-black"
-                                type="radio"
-                                name="minilayout"
-                              />
-                              <label htmlFor="three" className="fs-xs fw-400 black mb-0 ms-2">
-                                2 x 3
-                              </label>
-                            </div>
-                            <img src={minilayoutImgGroup6} alt="" />
-                          </div>
-                          <div>
-                            <div className="d-flex align-items-center mb-2 pb-1">
-                              <input
-                                id="four"
-                                className="raido-black"
-                                type="radio"
-                                name="minilayout"
-                              />
-                              <label htmlFor="four" className="fs-xs fw-400 black mb-0 ms-2">
-                                3 x 3
-                              </label>
-                            </div>
-                            <img src={minilayoutImgGroup9} alt="" />
-                          </div>
-                          <div>
-                            <div className="d-flex align-items-center mb-2 pb-1">
-                              <input
-                                id="five"
-                                className="raido-black"
-                                type="radio"
-                                name="minilayout"
-                              />
-                              <label htmlFor="five" className="fs-xs fw-400 black mb-0 ms-2">
-                                2 x 2 Inline3
-                              </label>
-                            </div>
-                            <img src={minilayoutImgGroup8} alt="" />
-                          </div>
-                        </div>
-                      </Accordion.Body>
-                    </Accordion>
-                  </div>
                 </div>
               </Col>
               <Col xxl={4}>
@@ -347,7 +264,7 @@ const NewCategory = () => {
                 <div className="mt-4 product_shadow bg_white p-3">
                   <div className="d-flex align-items-center justify-content-between">
                     <h2 className="fw-400 fs-2sm black mb-0">Parent Category</h2>
-                    <Link to="/newcategory/parentcategories" className="fs-2sm fw-400 red">
+                    <Link to="parentcategories" className="fs-2sm fw-400 red">
                       View All
                     </Link>
                   </div>
@@ -487,6 +404,89 @@ const NewCategory = () => {
                               </label>
                             ) : null}
                           </div>
+                        </div>
+                        <div className="banner_advertisement mt-4">
+                          <Accordion className="w-100 rounded-none bg-white product_input py-0">
+                            <Accordion.Header className="bg_grey fs-xs fw-400 white mb-0 bg-white d-flex justify-content-between">
+                              <div className="d-flex justify-content-between w-100 py-3">
+                                <h3 className="fs-sm fw-400 black mb-0">Select Homepage Layout</h3>
+                              </div>
+                            </Accordion.Header>
+                            <Accordion.Body className="py-2 px-0">
+                              <div className="d-flex align-items-start gap-4">
+                                <div>
+                                  <div className="d-flex align-items-center mb-2 pb-1">
+                                    <input
+                                      id="one"
+                                      className="raido-black"
+                                      type="radio"
+                                      name="minilayout"
+                                    />
+                                    <label htmlFor="one" className="fs-xs fw-400 black mb-0 ms-2">
+                                      1 x 3
+                                    </label>
+                                  </div>
+                                  <img src={minilayoutImgGroup3} alt="" />
+                                </div>
+                                <div>
+                                  <div className="d-flex align-items-center mb-2 pb-1">
+                                    <input
+                                      id="two"
+                                      className="raido-black"
+                                      type="radio"
+                                      name="minilayout"
+                                    />
+                                    <label htmlFor="two" className="fs-xs fw-400 black mb-0 ms-2">
+                                      2 x 2
+                                    </label>
+                                  </div>
+                                  <img src={minilayoutImgGroup4} alt="" />
+                                </div>
+                                <div>
+                                  <div className="d-flex align-items-center mb-2 pb-1">
+                                    <input
+                                      id="three"
+                                      className="raido-black"
+                                      type="radio"
+                                      name="minilayout"
+                                    />
+                                    <label htmlFor="three" className="fs-xs fw-400 black mb-0 ms-2">
+                                      2 x 3
+                                    </label>
+                                  </div>
+                                  <img src={minilayoutImgGroup6} alt="" />
+                                </div>
+                                <div>
+                                  <div className="d-flex align-items-center mb-2 pb-1">
+                                    <input
+                                      id="four"
+                                      className="raido-black"
+                                      type="radio"
+                                      name="minilayout"
+                                    />
+                                    <label htmlFor="four" className="fs-xs fw-400 black mb-0 ms-2">
+                                      3 x 3
+                                    </label>
+                                  </div>
+                                  <img src={minilayoutImgGroup9} alt="" />
+                                </div>
+                                <div>
+                                  <div className="d-flex align-items-center mb-2 pb-1">
+                                    <input
+                                      id="five"
+                                      className="raido-black"
+                                      type="radio"
+                                      name="minilayout"
+                                    />
+                                    <label htmlFor="five" className="fs-xs fw-400 black mb-0 ms-2">
+                                      2 x 2 Inline3
+                                    </label>
+                                  </div>
+                                  <img src={minilayoutImgGroup8} alt="" />
+                                </div>
+                              </div>
+                            </Accordion.Body>
+                          </Accordion>
                         </div>
                         <div className="mt-4">
                           <h2 className="fw-400 fs-2sm black mb-0">Status</h2>

@@ -136,7 +136,7 @@ const Customers = () => {
                                 <div>
                                   <Link
                                     className="d-flex py-1 color_black_02"
-                                    to={`/customer/viewcustomerdetails/${id}`}>
+                                    to={`viewcustomerdetails/${id}`}>
                                     {name}
                                   </Link>
 

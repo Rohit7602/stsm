@@ -207,10 +207,6 @@ body {
   margin-right: 10px;
 }
 
-.drop_list li a:hover .list_icons path {
-  fill: var(--color-brown);
-}
-
 .red {
   color: red;
 }
@@ -470,22 +466,8 @@ body {
   margin-left: auto;
 }
 /* my csss  */
-.active.list_icons path {
-  fill: var(--color-brown);
-}
-.active h3 {
-  color: var(--color-brown) !important;
-}
 .cursor_pointer {
   cursor: pointer;
-}
-.line_scroll_2 {
-  max-height: 700px;
-  overflow-y: scroll;
-}
-.line_scroll {
-  max-height: 650px;
-  overflow: hidden;
 }
 
 /* webkit scrool */
@@ -987,6 +969,7 @@ body {
   border-radius: 10px;
   border: 1px solid #dfdfdfcd;
   z-index: 3;
+  transition: transform 0.3s;
 }
 .bg_black_overlay {
   background-color: #0000008e;
@@ -1057,25 +1040,68 @@ body {
 .raido-black {
   accent-color: black;
 }
-.active {
-  background-color: #26313a !important;
-  border-radius: 50px 0px 0px 50px !important;
-}
-.active svg path {
-  fill: var(--color-brown);
-}
-.active .dash_links {
-  background-color: #26313a !important;
-  border-radius: 50px 0px 0px 50px !important;
-}
-.active .accordion-header {
-  background-color: #26313a !important;
-  border-radius: 50px 0px 0px 50px !important;
+.active h3 {
+  color: var(--color-brown);
 }
 .dash_links {
-  padding-top: 15px !important;
-  padding-bottom: 15px !important;
+  padding: 12px 20px;
+  border-radius: 50px 0px 0px 50px !important;
 }
+.dash_links_inner {
+  border-radius: 50px 0px 0px 50px !important;
+  padding: 12px 40px;
+  display: inline-block;
+  width: 100%;
+}
+.dash_links_inner:hover {
+  background-color: #26313a;
+}
+.dash_links_inner:hover h3 {
+  color: var(--color-brown);
+}
+.active .dash_links svg path {
+  fill: var(--color-brown);
+}
+.active .stroke {
+  stroke: var(--color-brown);
+}
+.active .dash_links {
+  background-color: #26313a;
+}
+.active .dash_links2 svg path {
+  stroke: var(--color-brown);
+  fill: transparent !important;
+}
+
+.dash_links:hover svg path {
+  fill: var(--color-brown);
+}
+.dash_links2:hover svg path {
+  stroke: var(--color-brown);
+  fill: transparent !important;
+}
+.categories_xl_overflow_X {
+  min-width: 1000px;
+}
+.min_width_300 {
+  min-width: 300px !important;
+  width: 300px !important;
+}
+tbody::-webkit-scrollbar {
+  width: 2px;
+}
+.table_body {
+  display: block !important;
+  height: calc(100vh - 290px) !important;
+  overflow: auto !important;
+}
+.table_head,
+.table_body tr {
+  display: table !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
   :root {

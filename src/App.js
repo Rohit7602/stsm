@@ -12,9 +12,6 @@ import ViewCustomerDetails from './Components/ViewCustomerDetails';
 import BannersAdvertisement from './Components/BannersAdvertisement';
 import Topbar from './Components/Topbar';
 import Orderdetails from './Components/Orderdetails';
-import OrderProcessing from './Components/OrderProcessing';
-import OrderCanceled from './Components/OrderCanceled';
-import OrderDelivered from './Components/OrderDelivered';
 import ParentCategories from './Components/ParentCategories';
 import Login from './Components/Login';
 import { useState } from 'react';
@@ -32,19 +29,23 @@ function App() {
         <div className="h-100 px-3 bg_light_grey">
           <Routes>
             <Route path="/" element={<DashbordCards />} />
-            <Route path="/CategoriesView" element={<CategoriesView />} />
-            <Route path="/newcategory" element={<NewCategory />} />
-            <Route path="/newcategory/parentcategories" element={<ParentCategories />} />
-            <Route path="/productlist" element={<ProductList />} />
-            <Route path="/addproduct" element={<AddProduct />} />
-            <Route path="/orderslist" element={<OrdersList />} />
-            <Route path="/orderslist/delivered/:id" element={<OrderDelivered />} />
-            <Route path="/orderslist/canceled/:id" element={<OrderCanceled />} />
-            <Route path="/orderslist/processing/:id" element={<OrderProcessing />} />
-            <Route path="/orderslist/orderdetails/:id" element={<Orderdetails />} />
-            <Route path="/customer" element={<Customers />} />
-            <Route path="/customer/viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
-            <Route path="/bannersadvertisement" element={<BannersAdvertisement />} />
+            <Route path="catalog">
+              <Route index path="categorylist" element={<CategoriesView />} />
+              <Route path="newcategory" element={<NewCategory />}>
+                <Route path="parentcategories" element={<ParentCategories />} />
+              </Route>
+              <Route path="productlist" element={<ProductList />} />
+              <Route path="addproduct" element={<AddProduct />} />
+            </Route>
+            <Route path="customer" element={<Customers />}>
+              <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
+            </Route>
+            <Route path="orderslist" element={<OrdersList />}>
+              <Route path="orderdetails/:id" element={<Orderdetails />} />
+            </Route>
+            <Route path="marketing">
+              <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
+            </Route>
           </Routes>
         </div>
       </div>
