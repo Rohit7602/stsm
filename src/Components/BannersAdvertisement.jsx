@@ -3,12 +3,7 @@ import Accordion from 'react-bootstrap/Accordion';
 import saveicon from '../Images/svgs/saveicon.svg';
 import deleteicon from '../Images/svgs/deleteicon.svg';
 import {
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-  getStorage,
-  deleteObject,
-  getStream,
+  ref, uploadBytesResumable, getDownloadURL, getStorage, deleteObject, getStream,
 } from 'firebase/storage';
 import { where, query, getDoc } from 'firebase/firestore';
 import { storage, db } from '../firebase';
@@ -440,7 +435,7 @@ const BannersAdvertisement = () => {
 
   const handelSaleBannerImg = async (e) => {
     const selectedFile = e.target.files[0];
-    console.log(selectedFile)
+    // console.log(selectedFile)
     try {
       const desiredAspectRatio = 16 / 9;
       const desiredWidth = 1280;
@@ -448,7 +443,7 @@ const BannersAdvertisement = () => {
       const validatedImage = await validateImage(selectedFile, desiredAspectRatio, desiredWidth, desiredHeight);
       SetBannerSaleImg([...BannerSaleImg, validatedImage]);
       // Reset the selected image state after successful addition
-      SetBannerSaleImg(null);
+      SetSelectedBannerImg(null);
     } catch (error) {
       toast.error(error.message);
     }
@@ -456,14 +451,15 @@ const BannersAdvertisement = () => {
 
   const handleAddMediaSaleOffer = () => {
     if (SelectedBannerImg) {
-      SetSelectedBannerImg([...BannerSaleImg, SelectedBannerImg]);
+      SetBannerSaleImg([...BannerSaleImg, SelectedBannerImg]);
       SetSelectedBannerImg(null);
-      document.getElementById('Sales_Offers').value = '';
+      // document.getElementById('Sales_Offers').value = '';
     }
   };
 
   async function handeldeleteSaleBannerImg(index) {
     const imageUrlToDelete = BannerSaleImg[index];
+
     if (
       imageUrlToDelete &&
       typeof imageUrlToDelete === 'string' &&
@@ -472,44 +468,48 @@ const BannersAdvertisement = () => {
       const id = imageUrlToDelete.split('$$$$')[1];
       const storageRef = getStorage();
       const reference = ref(storageRef, imageUrlToDelete);
+
       // Delete the image from storage
       await deleteObject(reference);
 
-      const updatedImagelinks = BannerSaleImg.filter((item, i) => i !== index)
-        .map((e) => {
-          if (e && typeof e === 'string' && e.startsWith('http')) {
-            return {
-              categoryId: '', // Replace with your logic to get categoryId
-              categoryImg: '', // Replace with your logic to get categoryImg
-              imgUrl: e.split('$$$$')[0],
-            };
-          }
-          return null;
-        })
-        .filter((item) => item !== null);
+      // Get the document reference
+      const docRef = doc(db, 'Banner', id);
 
-      await updateDoc(doc(db, 'Banner', id), {
-        data: { imagelinks: updatedImagelinks },
-      });
+      // Get the document snapshot
+      const docSnapshot = await getDoc(docRef);
+
+      if (docSnapshot.exists()) {
+        const existingData = docSnapshot.data();
+
+        // Check if 'imagelinks' is an array with at least one item
+        if (Array.isArray(existingData.data) && existingData.data.length > 0) {
+          // Filter out the item at the specified index
+          const filteredData = existingData.data.filter((item, i) => i !== index);
+
+          // Update the document in Firestore with the modified 'imagelinks' array
+          await updateDoc(docRef, { data: filteredData });
+        }
+      }
     }
-    const multiplebanner = [...BannerSaleImg];
-    multiplebanner[index] = '';
-    SetBannerSaleImg(multiplebanner);
+
+    // Update the state to remove the deleted image
+    const newImages = BannerSaleImg.filter((_, i) => i !== index)  // [...BannerSaleImg];
+    SetBannerSaleImg(newImages);
   }
 
   async function handleSaveBannerSliderSale() {
     try {
       if (BannerSaleImg.every(Boolean)) {
-        let imagelinks = [];
+        let newImageData = [];
         const existingImageUrls = [];
         const querySnapshot = await getDocs(query(collection(db, 'Banner'), where('title', '==', 'SalesOffers')));
         if (querySnapshot.size > 0) {
-          const existingData = querySnapshot.docs[0].data() || []
+          const existingData = querySnapshot.docs[0].data().data || []
 
-            (existingData.data).forEach(element => {
-              const existingUrls = (element.imagelinks || []).map(img => img.imgUrl);
-              existingUrls.push(...existingUrls);
-            });
+          existingData.forEach(element => {
+            const existingUrls = element.imgUrls || [];
+            existingImageUrls.push(...existingUrls);
+          });
         }
         for await (let files of BannerSaleImg) {
           let url = null;
@@ -519,13 +519,13 @@ const BannersAdvertisement = () => {
             const name = Math.floor(Date.now() / 1000) + '-' + files.name;
             console.log("name is", name)
             const storageRef = ref(storage, `banner/${name}`);
-            const uploadTask = await uploadBytesResumable(storageRef, files);
+            await uploadBytes(storageRef, files);
             url = await getDownloadURL(storageRef)
           } else if (typeof files === "string") {
             url = files.split('$$$$')[0]
           }
-          if (url && !existingImageUrls.includes(url)) {
-            imagelinks.push({
+          if (url && !existingImageUrls.includes(url) && !newImageData.includes(url)) {
+            newImageData.push({
               categoryId: "",
               categoryTitle: "",
               imgUrl: url,
@@ -533,28 +533,25 @@ const BannersAdvertisement = () => {
           }
         }
 
-        if (imagelinks.length > 0) {
+        if (newImageData.length > 0) {
           try {
             const querySnapshot = await getDocs(query(collection(db, 'Banner'), where('title', '==', 'SalesOffers')));
             if (querySnapshot.size > 0) {
               const docRef = querySnapshot.docs[0]
               const existingData = docRef.data().data || [];
 
-              const existingUrls = existingData.reduce((acc, item) => {
-                return acc.concat((item.imagelinks || []).map(img => img.imgUrl))
-              }, []);
+              const filteredNewImageData = newImageData.filter(newObj =>
+                !existingData.some(existingObj => existingObj.imgUrl === newObj.imgUrl)
+              );
 
-              const newImagelinks = imagelinks.filter(link => !existingUrls.includes(link.imgUrl));
+              const updatedData = existingData.concat(filteredNewImageData);
 
 
-              const combinedImagelinks = existingData.reduce((acc, item) => {
-                return acc.concat(item.imagelinks || []);
-              }, []).concat(newImagelinks);
-              const updatedData = [{ imagelinks: combinedImagelinks }];
+              //const updatedData = [{ imagelinks: combinedImagelinks }];
 
               // Set the document with the updated data
               await setDoc(docRef.ref, {
-                title: 'AnimalSupliments',
+                title: 'SalesOffers',
                 data: updatedData,
               });
             } else {
@@ -564,7 +561,7 @@ const BannersAdvertisement = () => {
                 //   imgUrl: [url],
                 // }]
                 title: 'SalesOffers',
-                data: [...imagelinks],
+                data: [...newImageData],
               });
             }
           }
@@ -615,6 +612,7 @@ const BannersAdvertisement = () => {
 
   async function handeldeleteAnimalSupliment(index) {
     const imageUrlToDelete = AnimalSuplimentsImages[index];
+
     if (
       imageUrlToDelete &&
       typeof imageUrlToDelete === 'string' &&
@@ -623,149 +621,149 @@ const BannersAdvertisement = () => {
       const id = imageUrlToDelete.split('$$$$')[1];
       const storageRef = getStorage();
       const reference = ref(storageRef, imageUrlToDelete);
+
       // Delete the image from storage
       await deleteObject(reference);
 
-      // Construct the updated imagelinks array
-      const updatedImagelinks = AnimalSuplimentsImages.filter((item, i) => i !== index)
-        .map((e) => {
-          if (e && typeof e === 'string' && e.startsWith('http')) {
-            return {
-              categoryId: '', // Replace with your logic to get categoryId
-              categoryImg: '', // Replace with your logic to get categoryImg
-              imgUrl: e.split('$$$$')[0],
-            };
-          }
-          return null;
-        })
-        .filter((item) => item !== null);
+      // Get the document reference
+      const docRef = doc(db, 'Banner', id);
 
-      // Update the Firestore document
-      await updateDoc(doc(db, 'Banner', id), {
-        data: [{ imagelinks: updatedImagelinks }],
-      });
+      // Get the document snapshot
+      const docSnapshot = await getDoc(docRef);
+
+      if (docSnapshot.exists()) {
+        const existingData = docSnapshot.data();
+
+        // Check if 'data' is an array with at least one item
+        if (Array.isArray(existingData.data) && existingData.data.length > 0) {
+          // Filter out the item at the specified index
+          const filteredData = existingData.data.filter((item, i) => i !== index);
+
+          // Update the document in Firestore with the modified 'data' array
+          await updateDoc(docRef, { data: filteredData });
+        }
+      }
     }
 
-    // Update the component state
-    const newAnimalSuplimentsImages = [...AnimalSuplimentsImages];
-    newAnimalSuplimentsImages[index] = ''; // Set the image for the specified index to an empty string
-    SetAnimalSuplimentsImages(newAnimalSuplimentsImages);
-    // Trigger a re-render by updating the key
-    updateSelectedImages(BannerData);
+    // Update the state to remove the deleted image
+    const newImages = AnimalSuplimentsImages.filter((_, i) => i !== index);
+    SetAnimalSuplimentsImages(newImages);
+
   }
 
-  async function HandleSaveAnimalSuppliments() {
-    console.log(AnimalSuplimentsImages)
+
+  async function handleSaveAnimalSuppliments() {
     try {
       if (AnimalSuplimentsImages.every(Boolean)) {
-        let imagelinks = []
-        const existingImageUrls = [];
+        const newImageData = [];
+
+        // Fetch existing data
         const querySnapshot = await getDocs(query(collection(db, 'Banner'), where('title', '==', 'AnimalSupliments')));
+
+        // Collect existing image URLs
+        const existingImageUrls = [];
         if (querySnapshot.size > 0) {
-          const existingData = querySnapshot.docs[0].data() || []
-
-            (existingData.data).forEach(element => {
-              const existingUrls = (element.imagelinks || []).map(img => img.imgUrl);
-              existingUrls.push(...existingUrls);
-            });
-        }
-        for await (let files of AnimalSuplimentsImages) {
-          let url = null;
-          // const name = Math.floor(Date.now() / 1000) + '-' + files.name;
-          // const storageRef = ref(storage, `banner/${name}`);
-          if (files instanceof File) {
-            const name = Math.floor(Date.now() / 1000) + '-' + files.name;
-            console.log("name is", name)
-            const storageRef = ref(storage, `banner/${name}`);
-            const uploadTask = await uploadBytesResumable(storageRef, files);
-            url = await getDownloadURL(storageRef)
-          } else if (typeof files === "string") {
-            url = files.split('$$$$')[0]
-          }
-          if (url && !existingImageUrls.includes(url)) {
-            imagelinks.push({
-              categoryId: "",
-              categoryTitle: "",
-              imgUrl: url,
-            });
-          }
+          const existingData = querySnapshot.docs[0].data().data || [];
+          existingData.forEach(item => {
+            const existingUrls = item.imgUrls || [];
+            existingImageUrls.push(...existingUrls);
+          });
         }
 
-        if (imagelinks.length > 0) {
+        for await (const file of AnimalSuplimentsImages) {
+          let imageUrl = null;
+
+          if (file instanceof File) {
+            // Handle file upload
+            const filename = Math.floor(Date.now() / 1000) + '-' + file.name;
+            const storageRef = ref(storage, `banner/${filename}`);
+            await uploadBytes(storageRef, file);
+            imageUrl = await getDownloadURL(storageRef);
+          } else if (typeof file === 'string') {
+            // Handle image URL
+            imageUrl = file.split('$$$$')[0];
+          }
+
+          // Only add new image URL (not in existingImageUrls and not in newImageData)
+          if (imageUrl && !existingImageUrls.includes(imageUrl) && !newImageData.includes(imageUrl)) {
+            newImageData.push({
+              categoryId: '',
+              categoryTitle: '',
+              imgUrl: imageUrl,
+            });
+          }
+        }
+
+        if (newImageData.length > 0) {
           try {
+            // Check if the document already exists
             const querySnapshot = await getDocs(query(collection(db, 'Banner'), where('title', '==', 'AnimalSupliments')));
+
             if (querySnapshot.size > 0) {
-              const docRef = querySnapshot.docs[0]
+              // Document already exists, get existing data
+              const docRef = querySnapshot.docs[0];
               const existingData = docRef.data().data || [];
 
-              const existingUrls = existingData.reduce((acc, item) => {
-                return acc.concat((item.imagelinks || []).map(img => img.imgUrl))
-              }, []);
+              // Combine existing and new image URLs in the same data array
+              const filteredNewImageData = newImageData.filter(newObj =>
+                !existingData.some(existingObj => existingObj.imgUrl === newObj.imgUrl)
+              );
 
-              const newImagelinks = imagelinks.filter(link => !existingUrls.includes(link.imgUrl));
+              const updatedData = existingData.concat(filteredNewImageData);
 
-
-              const combinedImagelinks = existingData.reduce((acc, item) => {
-                return acc.concat(item.imagelinks || []);
-              }, []).concat(newImagelinks);
-              const updatedData = { imagelinks: combinedImagelinks };
 
               // Set the document with the updated data
               await setDoc(docRef.ref, {
                 title: 'AnimalSupliments',
                 data: updatedData,
               });
-
             } else {
+              // Document doesn't exist, create a new one with new images
               const docRef = await addDoc(collection(db, 'Banner'), {
-                // AnimalSupliments: [
-                //   {
-                //     title: 'AnimalSupliments ',
-                //     imgUrl: [url],
-                //   }
-                // ]
-                title: "AnimalSupliments",
-                data: [...imagelinks]
+                title: 'AnimalSupliments',
+                data: [...newImageData],
               });
             }
-          }
-          catch (error) {
-            console.log('Error Adding Image To The Database', error);
+          } catch (error) {
+            console.log(error);
           }
         } else {
-          alert('please select at least one image ');
+          console.log('No new images uploaded');
         }
       } else {
-        console.warn('No image selected for upload');
+        console.log('Select both images before uploading');
       }
-      toast.success('Animal Supliments  Banner Added   Successfully !', {
+
+      toast.success('Animal Supliments Banner Added Successfully!', {
         position: toast.POSITION.TOP_RIGHT,
       });
-
     } catch (error) {
-      console.error('Error uploading image or adding document:', error);
+      console.error(error);
     }
-    updateSelectedImages(BannerData);
   }
+
+
+
+
 
   const handleAddMedia = () => {
     if (selectedImage) {
       SetAnimalSuplimentsImages([...AnimalSuplimentsImages, selectedImage]);
       setSelectedImage(null);
-      document.getElementById('animal_suppliments').value = '';
+      // document.getElementById('animal_suppliments').value = '';
     }
   };
 
   /*
- *********************************************************
+  *********************************************************
   Animal And it's suplliments Banner functionaltiy end from here 
- 
- */
+   
+  */
 
   /*
-*********************************************************
- Categoroies  Banner functionaltiy start 
-*/
+  *********************************************************
+  Categoroies  Banner functionaltiy start 
+  */
 
   const [CategoryImage, SetCategoryImage] = useState(Array(categoreis.length).fill(''));
 
@@ -797,81 +795,140 @@ const BannersAdvertisement = () => {
     }
   }
   async function handleCategoryImagesDelete(index) {
+    const imageUrlToDelete = CategoryImage[index];
+
     if (
-      CategoryImage[index] &&
-      typeof CategoryImage[index] === 'string' &&
-      CategoryImage[index].startsWith('http')
+      imageUrlToDelete &&
+      typeof imageUrlToDelete === 'string' &&
+      imageUrlToDelete.startsWith('http')
     ) {
-      const id = CategoryImage[index].split('$$$$')[1];
+      const id = imageUrlToDelete.split('$$$$')[1];
       const storageRef = getStorage();
-      let reference = ref(storageRef, CategoryImage[index]);
-      deleteObject(reference);
-      await updateDoc(doc(db, 'Banner', id), {
-        data: [
-          {
-            imagelinks: [
-              ...CategoryImage.filter(
-                (item) => item && item.split('$$$$')[0] != CategoryImage[index].split('$$$$')[0]
-              ).map((e) => {
-                return {
-                  categoryId: '',
-                  categoryImg: '',
-                  imgUrl: e.split('$$$$')[0],
-                };
-              }),
-            ],
-          },
-        ],
-      });
+      const reference = ref(storageRef, imageUrlToDelete);
+
+      // Delete the image from storage
+      await deleteObject(reference);
+
+      const docRef = doc(db, 'Banner', id);
+      const docSnapshot = await getDoc(docRef);
+
+      if (docSnapshot.exists()) {
+        const existingData = docSnapshot.data();
+
+        // Check if 'data' is an array with at least one item
+        if (Array.isArray(existingData.data) && existingData.data.length > 0) {
+          // Filter out the item at the specified index
+          const filteredData = existingData.data.filter((item, i) => i !== index);
+
+          // Update the document in Firestore with the modified 'data' array
+          await updateDoc(docRef, { data: filteredData });
+        }
+      }
     }
+
+    // Update the state to remove the deleted image
     const newCategoryImages = [...CategoryImage];
     newCategoryImages[index] = ''; // Set the image for the specified index to an empty string
     SetCategoryImage(newCategoryImages);
   }
 
 
-  async function handleUpdateCategoryBanner(e) {
-    e.preventDefault();
+
+  async function handleUpdateCategoryBanner() {
     try {
-      const imagelinks = []; // Initialize an array to store banner objects
+      // Your categories and CategoryImage array should be defined before this point
+
+      const newImageData = [];
+
+      // Fetch existing data
+      const querySnapshot = await getDocs(query(collection(db, 'Banner'), where('title', '==', 'CategoryBanners')));
+
+      // Collect existing image URLs
+      const existingImageUrls = [];
+      if (querySnapshot.size > 0) {
+        const existingData = querySnapshot.docs[0].data().data || [];
+        existingData.forEach(item => {
+          const existingUrls = item.imgUrls || [];
+          existingImageUrls.push(...existingUrls);
+        });
+      }
 
       for (let index = 0; index < categoreis.length; index++) {
         const category = categoreis[index];
-        if (CategoryImage[index]) {
-          const name = Math.floor(Date.now() / 1000) + '-' + CategoryImage[index].name;
-          const storageRef = ref(storage, `banner/${name}`);
-          const uploadTask = await uploadBytesResumable(storageRef, CategoryImage[index]);
-          const url = await getDownloadURL(storageRef);
+        const file = CategoryImage[index];
 
-          // Push the banner object into the array
-          imagelinks.push({
+        let imageUrl = null;
+
+        if (file instanceof File) {
+          // Handle file upload
+          const filename = Math.floor(Date.now() / 1000) + '-' + file.name;
+          const storageRef = ref(storage, `banner/${filename}`);
+          await uploadBytes(storageRef, file);
+          imageUrl = await getDownloadURL(storageRef);
+        } else if (typeof file === 'string') {
+          // Handle image URL
+          imageUrl = file.split('$$$$')[0];
+        }
+
+        // Only add new image URL (not in existingImageUrls and not in newImageData)
+        if (imageUrl && !existingImageUrls.includes(imageUrl) && !newImageData.includes(imageUrl)) {
+          newImageData.push({
             categoryId: category.id,
             categoryTitle: category.title,
-            imgUrl: url,
+            imgUrl: imageUrl,
           });
         }
       }
 
-      // Add the array of banners as a single document in the 'Banner' collection
-      await addDoc(collection(db, 'Banner'), {
-        // CategoryBanners: bannerArray,
-        title: 'CategoryBanners',
-        data: [...imagelinks],
-      });
-      toast.success(`Banner for Categories added successfully!`, {
+      if (newImageData.length > 0) {
+        try {
+          // Check if the document already exists
+          const querySnapshot = await getDocs(query(collection(db, 'Banner'), where('title', '==', 'CategoryBanners')));
+
+          if (querySnapshot.size > 0) {
+            // Document already exists, get existing data
+            const docRef = querySnapshot.docs[0];
+            const existingData = docRef.data().data || [];
+
+            // Combine existing and new image URLs in the same data array
+            const filteredNewImageData = newImageData.filter(newObj =>
+              !existingData.some(existingObj => existingObj.imgUrl === newObj.imgUrl)
+            );
+
+            const updatedData = existingData.concat(filteredNewImageData);
+
+            // Set the document with the updated data
+            await setDoc(docRef.ref, {
+              title: 'CategoryBanners',
+              data: updatedData,
+            });
+          } else {
+            // Document doesn't exist, create a new one with new images
+            const docRef = await addDoc(collection(db, 'Banner'), {
+              title: 'CategoryBanners',
+              data: [...newImageData],
+            });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        console.log('No new images uploaded');
+      }
+
+      toast.success('Category Banners Added Successfully!', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
-      console.error('Error uploading images:', error);
+      console.error(error);
     }
-
-
   }
 
+
   /*
-*********************************************************
- Categoroies  Banner functionaltiy end 
-*/
+  *********************************************************
+  Categoroies  Banner functionaltiy end 
+  */
 
   return (
     <div className="main_panel_wrapper pb-2  bg_light_grey w-100">
@@ -1012,7 +1069,7 @@ const BannersAdvertisement = () => {
                     <input
                       type="file"
                       id="Sales_Offers"
-                      accept="image/*"
+                      // accept="image/*" 
                       multiple
                       onChange={handelSaleBannerImg}
                       hidden
@@ -1022,7 +1079,7 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagemedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(SelectedBannerImg)}
+                            src={SelectedBannerImg}
                             alt=""
                           />
                           <button
@@ -1051,7 +1108,7 @@ const BannersAdvertisement = () => {
                       ))}
                       {!SelectedBannerImg && (
                         <label
-                          htmlFor="animal_suppliments"
+                          htmlFor="Sales_Offers"
                           className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center">
                           + Add Media
                         </label>
@@ -1128,7 +1185,6 @@ const BannersAdvertisement = () => {
                       onChange={(e) => handleUploadSmallPatti(1, e)}
                       hidden
                     />
-
                     {!selectedImagesSmallPatii[1] ? (
                       <label
                         htmlFor="smallPatti2"
@@ -1208,7 +1264,7 @@ const BannersAdvertisement = () => {
                   <h3 className="fs-sm fw-400  black mb-0">Banner Slider for Animal Suppliments</h3>
                   {activeAccordion === '3' ? (
                     <button
-                      onClick={HandleSaveAnimalSuppliments}
+                      onClick={handleSaveAnimalSuppliments}
                       className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 py-1 save_btn fw-400 black me-3"
                       type="submit">
                       <img src={saveicon} alt="saveicon" />
@@ -1234,7 +1290,7 @@ const BannersAdvertisement = () => {
                         <div className="position-relative imagemedia_btn">
                           <img
                             className="w-100 h-100 object-fit-cover"
-                            src={URL.createObjectURL(selectedImage)}
+                            src={selectedImage}
                             alt=""
                           />
                           <button
@@ -1317,7 +1373,7 @@ const BannersAdvertisement = () => {
                             + Add Media
                           </label>
                         ) : (
-                          CategoryImage[index] && (
+                          data.title && (
                             <div className="position-relative imagemedia_btn">
                               <img
                                 className="w-100 h-100 object-fit-cover"
@@ -1328,8 +1384,6 @@ const BannersAdvertisement = () => {
                                     ? CategoryImage[index].split('$$$$')[0]
                                     : URL.createObjectURL(CategoryImage[index])
                                 }
-                                //src={ CategoryImage[index].startsWith("https") ? CategoryImage[index] : URL.createObjectURL(CategoryImage[index])}
-                                // {selectedImagesSmallPatii[2] && typeof selectedImagesSmallPatii[2] === 'string' && selectedImagesSmallPatii[2].startsWith("http") ? selectedImagesSmallPatii[2].split("$$$$")[0] : URL.createObjectURL(selectedImagesSmallPatii[2])}
                                 alt=""
                               />
                               <img
@@ -1352,7 +1406,8 @@ const BannersAdvertisement = () => {
       </form>
       <ToastContainer />
     </div>
-  );
-};
+  )
+}
+  ;
 
 export default BannersAdvertisement;
