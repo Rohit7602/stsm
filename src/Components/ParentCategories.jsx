@@ -4,6 +4,12 @@ import search from '../Images/svgs/search.svg';
 import dropdownDots from '../Images/svgs/dots2.svg';
 import eye_icon from '../Images/svgs/eye.svg';
 import pencil_icon from '../Images/svgs/pencil.svg';
+import Accordion from 'react-bootstrap/Accordion';
+import minilayoutImgGroup3 from '../Images/Png/minilayoutImgGroup3.png';
+import minilayoutImgGroup4 from '../Images/Png/minilayoutImgGroup4.png';
+import minilayoutImgGroup6 from '../Images/Png/minilayoutImgGroup6.png';
+import minilayoutImgGroup9 from '../Images/Png/minilayoutImgGroup9.png';
+import minilayoutImgGroup8 from '../Images/Png/minilayoutImgGroup8.png';
 import deleteicon from '../Images/svgs/deleteicon.svg';
 import updown_icon from '../Images/svgs/arross.svg';
 import saveicon from '../Images/svgs/saveicon.svg';
@@ -51,6 +57,15 @@ const Categories = () => {
     }
   }
 
+  const [selectedLayout, setSelectedLayout] = useState('');
+
+  // ...
+
+  const handleLayoutChange = (layout) => {
+    setSelectedLayout(layout);
+  };
+
+
   //   handle image upload functionality end  here
 
   /*  *******************************
@@ -77,6 +92,7 @@ const Categories = () => {
           title: name,
           status: status,
           image: imageUrl,
+          homepagelayout: selectedLayout,
         });
         setLoaderstatus(false);
         toast.success('Category added Successfully !', {
@@ -292,6 +308,94 @@ const Categories = () => {
                             </label>
                           ) : null}
                         </div>
+                      </div>
+                      <div className="banner_advertisement mt-4">
+                        <Accordion className="w-100 rounded-none bg-white product_input py-0">
+                          <Accordion.Header className="bg_grey fs-xs fw-400 white mb-0 bg-white d-flex justify-content-between">
+                            <div className="d-flex justify-content-between w-100 py-3">
+                              <h3 className="fs-sm fw-400 black mb-0">Select Homepage Layout</h3>
+                            </div>
+                          </Accordion.Header>
+                          <Accordion.Body className="py-2 px-0">
+                            <div className="d-flex align-items-start gap-4">
+                              <div>
+                                <div className="d-flex align-items-center mb-2 pb-1">
+                                  <input
+                                    id="one"
+                                    className="raido-black"
+                                    type="radio"
+                                    name="minilayout"
+                                    onChange={() => handleLayoutChange('1X3')}
+                                  />
+                                  <label htmlFor="one" className="fs-xs fw-400 black mb-0 ms-2">
+                                    1 x 3
+                                  </label>
+                                </div>
+                                <img src={minilayoutImgGroup3} alt="" />
+                              </div>
+                              <div>
+                                <div className="d-flex align-items-center mb-2 pb-1">
+                                  <input
+                                    id="two"
+                                    className="raido-black"
+                                    type="radio"
+                                    name="minilayout"
+                                    onChange={() => handleLayoutChange('2X2')}
+                                  />
+                                  <label htmlFor="two" className="fs-xs fw-400 black mb-0 ms-2">
+                                    2 x 2
+                                  </label>
+                                </div>
+                                <img src={minilayoutImgGroup4} alt="" />
+                              </div>
+                              <div>
+                                <div className="d-flex align-items-center mb-2 pb-1">
+                                  <input
+                                    id="three"
+                                    className="raido-black"
+                                    type="radio"
+                                    name="minilayout"
+                                    onChange={() => handleLayoutChange('2X3')}
+                                  />
+                                  <label htmlFor="three" className="fs-xs fw-400 black mb-0 ms-2">
+                                    2 x 3
+                                  </label>
+                                </div>
+                                <img src={minilayoutImgGroup6} alt="" />
+                              </div>
+                              <div>
+                                <div className="d-flex align-items-center mb-2 pb-1">
+                                  <input
+                                    id="four"
+                                    className="raido-black"
+                                    type="radio"
+                                    name="minilayout"
+                                    onChange={() => handleLayoutChange('3X3')}
+                                  />
+                                  <label htmlFor="four" className="fs-xs fw-400 black mb-0 ms-2">
+                                    3 x 3
+                                  </label>
+                                </div>
+                                <img src={minilayoutImgGroup9} alt="" />
+                              </div>
+                              <div>
+                                <div className="d-flex align-items-center mb-2 pb-1">
+                                  <input
+                                    id="five"
+                                    className="raido-black"
+                                    type="radio"
+                                    name="minilayout"
+                                    onChange={() => handleLayoutChange('2X2 Inline3')}
+                                  />
+                                  <label htmlFor="five" className="fs-xs fw-400 black mb-0 ms-2">
+                                    2 x 2 Inline3
+                                  </label>
+                                </div>
+                                <img src={minilayoutImgGroup8} alt="" />
+                              </div>
+                            </div>
+                          </Accordion.Body>
+                        </Accordion>
                       </div>
                       <div className="mt-4">
                         <h2 className="fw-400 fs-2sm black mb-0">Status</h2>

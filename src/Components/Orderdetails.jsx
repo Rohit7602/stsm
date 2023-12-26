@@ -18,7 +18,7 @@ export default function NewOrder() {
   }
 
   const calculateSubtotal = () => {
-    return filterData[0].items.reduce((acc, item) => acc + item.price * item.qnty, 0);
+    return filterData[0].items.reduce((acc, item) => acc + item.price * item.qnty - item.discount, 0);
   };
 
   // Calculate Total
@@ -103,9 +103,9 @@ export default function NewOrder() {
                     <>
                       <div className="d-flex align-items-center justify-content-between mt-3">
                         <div className="d-flex align-items-center mw-300 p-2">
-                          {/* <div style={{height="60px"}}> */}
-                          <img src={products.image} alt="mobileicon" height="60px" />
-                          {/* </div> */}
+                          <div style={{}}>
+                            <img src={products.image} alt="mobileicon" className='items_images' />
+                          </div>
                           <div className="ps-3">
                             <p className="fs-sm fw-400 black mb-0">{products.title}</p>
                             <p className="fs-xxs fw-400 fade_grey mb-0">ID :{products.item_id}</p>
@@ -113,9 +113,11 @@ export default function NewOrder() {
                         </div>
                         <div className="d-flex align-items-center p-3">
                           <p className="fs-sm fw-400 black mb-0">₹ {products.price}</p>
-                          <p className="fs-sm fw-400 black mb-0 ps-4 ms-2">{products.qnty}</p>
+                          <p className="fs-sm fw-400 black mb-0 ps-4 ms-2 me-5">{products.qnty}</p>
+
+                          <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">(-) ₹ {products.discount}</p>
                         </div>
-                        <p className="fs-sm fw-400 black mb-0 p-3">₹ {products.price * products.qnty}</p>
+                        <p className="fs-sm fw-400 black mb-0 p-3">₹ {(products.price * products.qnty) - products.discount}</p>
                       </div>
                     </>
                   )

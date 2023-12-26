@@ -1198,3 +1198,10 @@ body {
     min-width: 40%;
   }
 }
+
+
+.items_images{
+  height: 60px;
+  object-fit: cover;
+  width: 60px;
+}
