@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 import { useCustomerContext } from '../context/Customergetters';
 
 const Customers = () => {
-  const { customer } = useCustomerContext()
+  const { customer } = useCustomerContext();
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
@@ -87,7 +87,6 @@ const Customers = () => {
                       let day = formatNumbers(date.getDate());
                       let month = formatNumbers(date.getMonth() + 1);
                       let year = date.getFullYear();
-                      
 
                       return day + '-' + month + '-' + year;
                     };

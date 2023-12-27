@@ -347,7 +347,7 @@ const NewCategory = () => {
                 <div className="mt-4 product_shadow bg_white p-3">
                   <div className="d-flex align-items-center justify-content-between">
                     <h2 className="fw-400 fs-2sm black mb-0">Parent Category</h2>
-                    <Link to="parentcategories" className="fs-2sm fw-400 red">
+                    <Link to="/catalog/parentcategories" className="fs-2sm fw-400 red">
                       View All
                     </Link>
                   </div>
@@ -382,10 +382,11 @@ const NewCategory = () => {
                             .map((category) => (
                               <Dropdown.Item key={category.id}>
                                 <div
-                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                    ? 'selected'
-                                    : ''
-                                    }`}
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (
@@ -401,10 +402,9 @@ const NewCategory = () => {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  setPerName(searchvalue)
-                                  setAddCatPopup(true)
-                                }
-                                }
+                                  setPerName(searchvalue);
+                                  setAddCatPopup(true);
+                                }}
                                 className="addnew_category_btn fs-xs green">
                                 +Add <span className="black">"{searchvalue}"</span> in Parent
                                 Category
@@ -416,7 +416,7 @@ const NewCategory = () => {
                   </Dropdown>
                   {addCatPopup === true ? (
                     <div className="parent_category_popup">
-                      <form action="" >
+                      <form action="">
                         <div className="d-flex align-items-center justify-content-between">
                           <p className="fs-4 fw-400 black mb-0">New Parent Category</p>
                           <div className="d-flex align-items-center gap-3">
@@ -425,7 +425,8 @@ const NewCategory = () => {
                                 Cancel
                               </button>
                             </button>
-                            <button onClick={(e) => handleSaveParentCategory(e)}
+                            <button
+                              onClick={(e) => handleSaveParentCategory(e)}
                               type="submit"
                               className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn">
                               <img src={saveicon} alt="saveicon" />

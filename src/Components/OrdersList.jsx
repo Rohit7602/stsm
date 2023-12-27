@@ -157,7 +157,7 @@ const ProductListComponent = (orderStatus) => {
                         <label className="check1 fw-400 fs-sm black mb-0">
                           <Link
                             className="fw-400 fs-sm black"
-                            to={`/orderslist/orderdetails/${orderTableData.id}`}>
+                            to={`orderdetails/${orderTableData.id}`}>
                             {orderTableData.id}
                           </Link>
                           <div className="d-flex align-items-center"></div>

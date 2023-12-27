@@ -71,7 +71,7 @@ function Sidebar() {
                 {openDropdown === 'catalog' && (
                   <ul className="ps-0">
                     <li>
-                      <NavLink to="catalog/categorylist" end className="dash_links_inner">
+                      <NavLink to="catalog" end className="dash_links_inner">
                         <h3 className="fs-xs fw-400  white mb-0">Category List</h3>
                       </NavLink>
                     </li>
@@ -224,7 +224,7 @@ function Sidebar() {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/OrdersList" className="w-100">
+                <NavLink to="orders" className="w-100">
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg

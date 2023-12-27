@@ -30,17 +30,18 @@ function App() {
           <Routes>
             <Route path="/" element={<DashbordCards />} />
             <Route path="catalog">
-              <Route index path="categorylist" element={<CategoriesView />} />
-              <Route path="newcategory" element={<NewCategory />}>
-                <Route path="parentcategories" element={<ParentCategories />} />
-              </Route>
+              <Route index element={<CategoriesView />} />
+              <Route path="newcategory" element={<NewCategory />} />
+              <Route path="parentcategories" element={<ParentCategories />} />
               <Route path="productlist" element={<ProductList />} />
               <Route path="addproduct" element={<AddProduct />} />
             </Route>
-            <Route path="customer" element={<Customers />}>
+            <Route path="customer">
+              <Route index element={<Customers />} />
               <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
             </Route>
-            <Route path="orderslist" element={<OrdersList />}>
+            <Route path="orders">
+              <Route index element={<OrdersList />} />
               <Route path="orderdetails/:id" element={<Orderdetails />} />
             </Route>
             <Route path="marketing">
