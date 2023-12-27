@@ -50,16 +50,6 @@ const ViewCustomerDetails = () => {
 
 
 
-
-
-
-
-
-
-
-
-
-
   // format date function start 
   function formatDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };

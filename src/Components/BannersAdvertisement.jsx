@@ -21,6 +21,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useImageValidation } from '../context/validators';
 import { useImageHandleContext } from '../context/ImageHandler';
 import { useMainCategories } from '../context/categoriesGetter';
+// import { UseBannerData } from '../context/BannerGetters';
+// import { UseBannerData } from '../context/BannerGetters';
 import { UseBannerData } from '../context/BannerGetters';
 import { type } from '@testing-library/user-event/dist/type';
 import { uploadBytes } from 'firebase/storage';
@@ -37,6 +39,13 @@ const BannersAdvertisement = () => {
   const { validateImage } = useImageValidation();
   const { categoreis } = useMainCategories();
 
+  let categoreisTitle = []
+  categoreis.map((data, index) => {
+    categoreisTitle.push(data.title)
+  })
+
+  console.log(categoreisTitle)
+
   // get intially all the uploded banners
   const updateSelectedImages = (data) => {
     if (data) {
@@ -44,7 +53,7 @@ const BannersAdvertisement = () => {
       data.forEach((item) => {
         const title = item.title.toLowerCase();
         const imagelinks = item.data;
-        console.log("dfgdfgdfgfgfdgfdgfdgfd", imagelinks)
+        console.log(imagelinks)
         if (imagelinks) {
           selectedImages[title] = imagelinks.map((itemurl) => itemurl.imgUrl + '$$$$' + item.id);
         }

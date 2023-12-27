@@ -11,6 +11,7 @@ export const UseBannerData = () => {
     return useContext(BannerGetterContext)
 }
 
+
 export const BannerDataProvider = ({ children }) => {
     const [BannerData, SetBannerData] = useState()
     const [isdatafetched, setIsDataFetched] = useState(false)
@@ -45,6 +46,9 @@ export const BannerDataProvider = ({ children }) => {
         </BannerGetterContext.Provider>
     )
 }
+
+
+
 
 
 
