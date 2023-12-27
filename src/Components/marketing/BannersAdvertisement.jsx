@@ -58,9 +58,9 @@ const BannersAdvertisement = () => {
     if (data) {
       const selectedImages = {};
       data.forEach((item) => {
+        console.log(item)
         const title = item.title.toLowerCase();
         const imagelinks = item.data;
-        console.log(imagelinks)
         if (imagelinks) {
           selectedImages[title] = imagelinks.map((itemurl) => itemurl.imgUrl + '$$$$' + item.id);
         }
@@ -80,15 +80,16 @@ const BannersAdvertisement = () => {
       }
 
       // Example: Accessing images for categories
-      if (selectedImages['categorybanners']) {
-        SetCategoryImage(selectedImages['categorybanners']);
-      }
+
+      // if (selectedImages['categorybanners']) {
+      //   SetCategoryImage(selectedImages['categorybanners']);
+      // }
+
       if (selectedImages['salesoffers']) {
         SetBannerSaleImg(selectedImages['salesoffers']);
       }
       if (selectedImages['animalsupliments']) {
         SetAnimalSuplimentsImages(selectedImages['animalsupliments']);
-        console.log('Selected Animalsupliments:', selectedImages['animalsupliments']);
       }
 
       // Add more cases as needed
@@ -99,6 +100,70 @@ const BannersAdvertisement = () => {
   useEffect(() => {
     updateSelectedImages(BannerData);
   }, [BannerData]);
+
+  const updateCategoryBanner = (data, categoreisTitle) => {
+    if (data) {
+      const selectedImages = {};
+      data.forEach((item) => {
+        const title = item.title.toLowerCase();
+        if (title === 'categorybanners') {
+          const categoryImages = item.data.reduce((acc, category) => {
+            acc[category.categoryTitle] = category.imgUrl;
+            return acc;
+          }, {});
+
+          let ram = selectedImages[title] = categoryImages;
+          console.log(ram)
+        }
+      });
+
+      // Now you have an object with selected images for each title
+      console.log('Selected Images:', selectedImages);
+
+      // Use the function to update your state or perform other actions
+      // updateAccordionImages(selectedImages);
+    }
+  };
+
+  // Use the function in useEffect
+  useEffect(() => {
+    updateCategoryBanner(BannerData, categoreisTitle);
+  }, [BannerData]);
+
+  // Function to update images for the accordion
+  // const updateAccordionImages = (categoryImages) => {
+  //   // Assuming you have a state for the category images
+  //   // Set your state here or perform any other action
+  //   SetCategoryImage(categoryImages);
+  // };
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const [activeAccordion, setActiveAccordion] = useState(null);
 
@@ -1309,7 +1374,6 @@ const BannersAdvertisement = () => {
                 </div>
               </Accordion.Body>
             </Accordion.Item>
-            {/**  
             <div className="d-flex align-items-center justify-content-between mt-3">
               <p className="fs-sm fw-700 black pt-1 mt-3">Categorized Banners</p>
               <button
@@ -1319,18 +1383,19 @@ const BannersAdvertisement = () => {
                 <p className="fs-sm fw-600 black mb-0 ms-2">Update Banner</p>
               </button>
             </div>
-            {categoreis.map((data, index) => {
+            {categoreisTitle.map((dataTitle, index) => {
+              const categoryImages = CategoryImage[dataTitle];
+
               return (
-                <Accordion.Item className="py-1 bg-white rounded" eventKey={index}>
+                <Accordion.Item className="py-1 bg-white rounded" eventKey={index} key={index}>
                   <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
                     <div className="d-flex justify-content-between w-100">
-                      <h3 className="fs-sm fw-400  black mb-0">{data.title}</h3>
+                      <h3 className="fs-sm fw-400  black mb-0">{dataTitle}</h3>
                     </div>
                   </Accordion.Header>
                   <Accordion.Body className="py-2 px-3">
                     <p className="fs-sm fw-400 black">
-                      The image must be sized to at least 1280 x 720 pixels carring image ratio of
-                      16:9.
+                      The image must be sized to at least 1280 x 720 pixels carrying an image ratio of 16:9.
                     </p>
                     <div className="d-flex align-items-center mt-2 pt-1 bg-white gap-2">
                       <div className="bg_white">
@@ -1341,34 +1406,27 @@ const BannersAdvertisement = () => {
                           hidden
                         />
 
-                        {!CategoryImage[index] ? (
+                        {!categoryImages ? (
                           <label
                             htmlFor={`categoreis_${index}`}
-                            className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center">
+                            className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center"
+                          >
                             + Add Media
                           </label>
                         ) : (
-                          data.title && (
-                            <div className="position-relative imagemedia_btn">
-                              <img
-                                className="w-100 h-100 object-fit-cover"
-                                src={
-                                  CategoryImage[index] &&
-                                    typeof CategoryImage[index] === 'string' &&
-                                    CategoryImage[index].startsWith('http')
-                                    ? CategoryImage[index].split('$$$$')[0]
-                                    : URL.createObjectURL(CategoryImage[index])
-                                }
-                                alt=""
-                              />
-                              <img
-                                onClick={() => handleCategoryImagesDelete(index)}
-                                className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
-                                src={deleteicon}
-                                alt="deleteicon"
-                              />
-                            </div>
-                          )
+                          <div className="position-relative imagemedia_btn">
+                            <img
+                              className="w-100 h-100 object-fit-cover"
+                              src={categoryImages}
+                              alt=""
+                            />
+                            <img
+                              onClick={() => handleCategoryImagesDelete(index)}
+                              className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
+                              src={deleteicon}
+                              alt="deleteicon"
+                            />
+                          </div>
                         )}
                       </div>
                     </div>
@@ -1376,7 +1434,6 @@ const BannersAdvertisement = () => {
                 </Accordion.Item>
               );
             })}
-            */}
           </Accordion>
         </div>
       </form>
