@@ -90,6 +90,11 @@ function Sidebar() {
                         <h3 className="fs-xs fw-400  white mb-0">Add Product</h3>
                       </NavLink>
                     </li>
+                    <li>
+                      <NavLink className="dash_links_inner" to="catalog/serviceareas">
+                        <h3 className="fs-xs fw-400  white mb-0">Service Areas</h3>
+                      </NavLink>
+                    </li>
                   </ul>
                 )}
               </li>
