@@ -1,30 +1,25 @@
 import React from 'react';
-import saveicon from '../Images/svgs/saveicon.svg';
-import threedot from '../Images/svgs/threedot.svg';
-import manimage from '../Images/Png/manimage.png';
+import saveicon from '../../Images/svgs/saveicon.svg';
+import threedot from '../../Images/svgs/threedot.svg';
+import manimage from '../../Images/Png/manimage.jpg';
 import { Col, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase';
-import { useCustomerContext } from '../context/Customergetters';
+import { db } from '../../firebase';
+import { useCustomerContext } from '../../context/Customergetters';
 import { formatDistanceToNow } from 'date-fns';
-import { useOrdercontext } from '../context/OrderGetter';
-
-
-
+import { useOrdercontext } from '../../context/OrderGetter';
 
 const ViewCustomerDetails = () => {
-  const { orders } = useOrdercontext()
-  const { customer } = useCustomerContext()
-
-
+  const { orders } = useOrdercontext();
+  const { customer } = useCustomerContext();
 
   const { id } = useParams();
   let filterData = customer.filter((item) => item.id == id);
-  console.log(":ASDFASDF", filterData)
-  const targetOrder = orders.filter(order => order.uid === id);
+  console.log(':ASDFASDF', filterData);
+  const targetOrder = orders.filter((order) => order.uid === id);
   if (targetOrder) {
     // The order with the specified ID was found
     console.log('Found Order:', targetOrder);
@@ -32,6 +27,7 @@ const ViewCustomerDetails = () => {
     // Order with the specified ID was not found
     console.log('Order not found');
   }
+
   const mostRecentOrder = targetOrder.reduce((maxOrder, currentOrder) => {
     // Compare the created_at timestamps
     const maxTimestamp = maxOrder ? new Date(maxOrder.created_at).getTime() : 0;
@@ -40,23 +36,25 @@ const ViewCustomerDetails = () => {
     return currentTimestamp > maxTimestamp ? currentOrder : maxOrder;
   }, null);
 
+  const totalSpent = targetOrder.reduce((sum, order) => sum + order.order_price, 0);
+  console.log(totalSpent);
 
+  const AvergaeOrderValue = totalSpent / targetOrder.length;
+  console.log(AvergaeOrderValue);
 
-
-
-
-
-  // const [data, setData] = useState([]);
+  // format date function start
   function formatDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
     return formattedDate;
   }
+  // format date function end
 
+  // calculate time start
   const calculateTimeAgo = (timestamp) => {
     return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
   };
-
+  // calculate  time end
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -102,7 +100,11 @@ const ViewCustomerDetails = () => {
               <Col xxl={4}>
                 {/* Basic Information */}
                 <div className="product_shadow bg_white d-flex flex-column justify-content-center align-items-center p-3">
-                  <img className="manimage" src={!Customerdata.image ? manimage : Customerdata.image} alt="manimage" />
+                  <img
+                    className="manimage"
+                    src={!Customerdata.image ? manimage : Customerdata.image}
+                    alt="manimage"
+                  />
                   <h2 className="fw-700 fs-2sm black mb-0 mt-3">{Customerdata.name}</h2>
                   <h2 className="fw-400 fs-2sm black mb-0 mt-2">{Customerdata.email}</h2>
                   <h2 className="fw-400 fs-2sm black mb-0 ">{Customerdata.phone}</h2>
@@ -112,21 +114,26 @@ const ViewCustomerDetails = () => {
                   <h2 className="fw-400 fs-2sm black mb-0  ">Last Order</h2>
                   {mostRecentOrder ? (
                     <>
-                      <div className='d-flex gap-1 justify-content-between align-items-center mt-1'>
+                      <div className="d-flex gap-1 justify-content-between align-items-center mt-1">
                         <h2 className="fw-400 fs-2sm black mb-0 mt-1">
-                          {formatDistanceToNow(new Date(mostRecentOrder.created_at), { addSuffix: true })}
+                          {formatDistanceToNow(new Date(mostRecentOrder.created_at), {
+                            addSuffix: true,
+                          })}
                         </h2>
-                        <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1 "> {mostRecentOrder.id}
-                        </h2>
+                        <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1 "> {mostRecentOrder.id}</h2>
                       </div>
                     </>
                   ) : (
                     <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1 ">No orders yet</h2>
                   )}
                   <h2 className="fw-400 fs-2sm black mb-0 mt-3  ">Average Order Value</h2>
-                  <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1  ">345.00</h2>
+                  <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1  ">
+                    {AvergaeOrderValue.toFixed(2)}
+                  </h2>
                   <h2 className="fw-400 fs-2sm black mb-0 mt-3 ">Registration</h2>
-                  <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1 ">{calculateTimeAgo(Customerdata.created_at)}</h2>
+                  <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1 ">
+                    {calculateTimeAgo(Customerdata.created_at)}
+                  </h2>
                 </div>
               </Col>
               <Col xxl={8}>
@@ -135,7 +142,7 @@ const ViewCustomerDetails = () => {
                     <div className="customer_lg_overflow_X">
                       <div className="d-flex justify-content-between align-items-center">
                         <h2 className="fw-400 fs-2sm black mb-0  "> Order</h2>{' '}
-                        <h2 className="fw-400 fs-2sm black mb-0  ">Total Spent : ₹ 12,590.00</h2>
+                        <h2 className="fw-400 fs-2sm black mb-0  ">Total Spent :₹{totalSpent}</h2>
                       </div>
                       <div className="d-flex justify-content-between align-items-center mt-3"></div>
                       <table className="w-100">
@@ -147,10 +154,10 @@ const ViewCustomerDetails = () => {
                             <th className="py-3">
                               <h2 className="fw-400 fs-sm black mb-0"> Order Date </h2>
                             </th>
-                            <th className='p-3'>
+                            <th className="p-3">
                               <h2 className="fw-400 fs-sm black mb-0"> Status </h2>
                             </th>
-                            <th className='py-3'>
+                            <th className="py-3">
                               <h2 className="fw-400 fs-sm black mb-0"> Items </h2>
                             </th>
                             <th className="mx_140 ps-3">
@@ -167,56 +174,53 @@ const ViewCustomerDetails = () => {
                                     <h2 className="fw-400 fs-sm black mb-0"> {data.id}. </h2>
                                   </td>
                                   <td className="py-3">
-                                    <h2 className="fw-400 fs-sm black mb-0"> {formatDate(data.created_at)} </h2>
+                                    <h2 className="fw-400 fs-sm black mb-0">
+                                      {' '}
+                                      {formatDate(data.created_at)}{' '}
+                                    </h2>
                                   </td>
-                                  <td className='p-3'>
+                                  <td className="p-3">
                                     <h2 className="fw-400 fs-sm black mb-0"> {data.status} </h2>
                                   </td>
-                                  <td className='py-3'>
-                                    <h2 className="fw-400 fs-sm black mb-0"> {data.items.length} Items </h2>
+                                  <td className="py-3">
+                                    <h2 className="fw-400 fs-sm black mb-0">
+                                      {' '}
+                                      {data.items.length} Items{' '}
+                                    </h2>
                                   </td>
                                   <td className="mx_140 ps-3">
-                                    <h2 className="fw-400 fs-sm black mb-0">Billed Amount</h2>
+                                    <h2 className="fw-400 fs-sm black mb-0">₹{data.order_price}</h2>
                                   </td>
                                 </tr>
                               </>
-                            )
-                          }
-                          )}
+                            );
+                          })}
                         </tbody>
-
                       </table>
                     </div>
-                  </div>
-                  <div className="mt-3 d-flex align-items-center justify-content-center">
-                    <button className="border-0 bg-transparent fs-sm fw-400 color_blue">
-                      View all 6 orders
-                    </button>
                   </div>
                 </div>
                 <div className="product_shadow p-3 bg_white mt-3">
                   <h2 className="fw-400 fs-2sm black mb-0  "> Addresses</h2>{' '}
                   <div className="product_borderbottom mt-3"></div>
                   {/* 1st */}
-                  {
-                    Customerdata.addresses.map((address, index) => {
-                      return (
-                        <>
-                          <div className="d-flex justify-content-between align-items-center mt-3 py-2">
-                            <div>
-                              <h2 className="fw-700 fs-sm black mb-0   ">{address.name}</h2>
-                              <h2 className="fw-400 fs-xs black mb-0   ">
-                                {address.house_no}, {address.colony}  {address.landmark}, {address.city}, {address.state}
-                              </h2>
-                            </div>
-                            <img className="threedot" src={threedot} alt="threedot" />
+                  {Customerdata.addresses.map((address, index) => {
+                    return (
+                      <>
+                        <div className="d-flex justify-content-between align-items-center mt-3 py-2">
+                          <div>
+                            <h2 className="fw-700 fs-sm black mb-0   ">{address.name}</h2>
+                            <h2 className="fw-400 fs-xs black mb-0   ">
+                              {address.house_no}, {address.colony} {address.landmark},{' '}
+                              {address.city}, {address.state}
+                            </h2>
                           </div>
-                          <div className="product_borderbottom mt-3"></div>
-                        </>
-                      )
-                    })
-                  }
-
+                          <img className="threedot" src={threedot} alt="threedot" />
+                        </div>
+                        <div className="product_borderbottom mt-3"></div>
+                      </>
+                    );
+                  })}
                   {/* 2nd */}
                   {/* <div className="d-flex justify-content-between align-items-center mt-3 py-2">
                     <div>
@@ -234,7 +238,7 @@ const ViewCustomerDetails = () => {
         </div>
       ))}
     </>
-  )
+  );
 };
 
 export default ViewCustomerDetails;

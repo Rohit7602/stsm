@@ -1,23 +1,21 @@
 import React, { useState } from 'react';
-import addicon from '../Images/svgs/addicon.svg';
-import search from '../Images/svgs/search.svg';
-import dropdownDots from '../Images/svgs/dots2.svg';
-import eye_icon from '../Images/svgs/eye.svg';
-import pencil_icon from '../Images/svgs/pencil.svg';
-import deleteicon from '../Images/svgs/deleteicon.svg';
-import delete_icon from '../Images/svgs/delte.svg';
-import updown_icon from '../Images/svgs/arross.svg';
-import saveicon from '../Images/svgs/saveicon.svg';
-
-import Modifyproduct from './Modifyproduct';
+import addicon from '../../Images/svgs/addicon.svg';
+import search from '../../Images/svgs/search.svg';
+import dropdownDots from '../../Images/svgs/dots2.svg';
+import eye_icon from '../../Images/svgs/eye.svg';
+import pencil_icon from '../../Images/svgs/pencil.svg';
+import deleteicon from '../../Images/svgs/deleteicon.svg';
+import delete_icon from '../../Images/svgs/delte.svg';
+import updown_icon from '../../Images/svgs/arross.svg';
+import saveicon from '../../Images/svgs/saveicon.svg';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../../firebase';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useRef } from 'react';
 
 import { ref, getStorage, deleteObject } from 'firebase/storage';
-import { useSubCategories, useMainCategories } from '../context/categoriesGetter';
+import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
 
 const Categories = () => {
   const { categoreis } = useMainCategories();

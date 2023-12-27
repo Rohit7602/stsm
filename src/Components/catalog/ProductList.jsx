@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import filtericon from '../Images/svgs/filtericon.svg';
-import addicon from '../Images/svgs/addicon.svg';
-import dropdownDots from '../Images/svgs/dots2.svg';
-import eye_icon from '../Images/svgs/eye.svg';
-import pencil_icon from '../Images/svgs/pencil.svg';
-import delete_icon from '../Images/svgs/delte.svg';
-import updown_icon from '../Images/svgs/arross.svg';
+import filtericon from '../../Images/svgs/filtericon.svg';
+import addicon from '../../Images/svgs/addicon.svg';
+import dropdownDots from '../../Images/svgs/dots2.svg';
+import eye_icon from '../../Images/svgs/eye.svg';
+import pencil_icon from '../../Images/svgs/pencil.svg';
+import delete_icon from '../../Images/svgs/delte.svg';
+import updown_icon from '../../Images/svgs/arross.svg';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { deleteObject, getStorage, ref } from 'firebase/storage';
-import { db } from '../firebase';
+import { db } from '../../firebase';
 import { Link, NavLink } from 'react-router-dom';
-import { useProductsContext } from '../context/productgetter';
+import { useProductsContext } from '../../context/productgetter';
 
 const ProductListComponent = () => {
   const { data, updateData, deleteData } = useProductsContext();

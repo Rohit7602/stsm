@@ -1,5 +1,5 @@
 import React from 'react';
-import SearchIcon from '../Images/svgs/search.svg';
+import SearchIcon from '../../Images/svgs/search.svg';
 
 export default function Topbar({ setOpen, open }) {
   return (

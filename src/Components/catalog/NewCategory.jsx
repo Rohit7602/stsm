@@ -1,27 +1,27 @@
 import React from 'react';
-import saveicon from '../Images/svgs/saveicon.svg';
-import savegreenicon from '../Images/svgs/save_green_icon.svg';
-import deleteicon from '../Images/svgs/deleteicon.svg';
+import saveicon from '../../Images/svgs/saveicon.svg';
+import savegreenicon from '../../Images/svgs/save_green_icon.svg';
+import deleteicon from '../../Images/svgs/deleteicon.svg';
 import { Col, Row } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
-import SearchIcon from '../Images/svgs/search.svg';
+import SearchIcon from '../../Images/svgs/search.svg';
 import Accordion from 'react-bootstrap/Accordion';
 import { useState } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
-import minilayoutImgGroup3 from '../Images/Png/minilayoutImgGroup3.png';
-import minilayoutImgGroup4 from '../Images/Png/minilayoutImgGroup4.png';
-import minilayoutImgGroup6 from '../Images/Png/minilayoutImgGroup6.png';
-import minilayoutImgGroup9 from '../Images/Png/minilayoutImgGroup9.png';
-import minilayoutImgGroup8 from '../Images/Png/minilayoutImgGroup8.png';
-import { db } from '../firebase';
+import minilayoutImgGroup3 from '../../Images/Png/minilayoutImgGroup3.png';
+import minilayoutImgGroup4 from '../../Images/Png/minilayoutImgGroup4.png';
+import minilayoutImgGroup6 from '../../Images/Png/minilayoutImgGroup6.png';
+import minilayoutImgGroup9 from '../../Images/Png/minilayoutImgGroup9.png';
+import minilayoutImgGroup8 from '../../Images/Png/minilayoutImgGroup8.png';
+import { db } from '../../firebase';
 import { useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../firebase';
+import { storage } from '../../firebase';
 import { NavLink, Link } from 'react-router-dom';
-import { useImageHandleContext } from '../context/ImageHandler';
-import { useSubCategories, useMainCategories } from '../context/categoriesGetter';
+import { useImageHandleContext } from '../../context/ImageHandler';
+import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
 // import { Toast } from 'react-toastify/dist/components';
 
 const NewCategory = () => {
@@ -33,9 +33,6 @@ const NewCategory = () => {
   const [searchvalue, setSearchvalue] = useState('');
   const { ImageisValidOrNot } = useImageHandleContext();
 
-
-
-
   const [selectedLayout, setSelectedLayout] = useState('');
 
   // ...
@@ -43,8 +40,6 @@ const NewCategory = () => {
   const handleLayoutChange = (layout) => {
     setSelectedLayout(layout);
   };
-
-
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const { addData } = useSubCategories();
@@ -123,9 +118,9 @@ const NewCategory = () => {
   }
 
   /***********************************************
-   * Handle Parent Category code start from here 
+   * Handle Parent Category code start from here
    * ******************************************************
-   * 
+   *
    */
   const [refreshData, setRefreshData] = useState(false);
   const [addCatPopup, setAddCatPopup] = useState(false);
@@ -141,7 +136,6 @@ const NewCategory = () => {
     } else {
       setImageupload2(selectedFile);
     }
-
   }
 
   function handleDelete2(index) {
@@ -152,16 +146,13 @@ const NewCategory = () => {
   }
 
   function HandleResetFormParentCategory() {
-    setPerName("");
+    setPerName('');
     setImageupload2();
     setAddCatPopup(false);
   }
 
-
-
-
   async function handleSaveParentCategory(e) {
-    e.preventDefault()
+    e.preventDefault();
     try {
       if (perName === undefined || null) {
         alert('please enter the name of the category ');
@@ -179,7 +170,7 @@ const NewCategory = () => {
           title: perName,
           status: perStatus,
           image: imageUrl,
-          homepagelayout: selectedLayout
+          homepagelayout: selectedLayout,
         });
         setLoaderstatus(false);
         toast.success('Category added Successfully !', {
@@ -199,12 +190,9 @@ const NewCategory = () => {
     }
   }
 
-
   /*  *******************************
       Add Parent Category end  here 
    *********************************************   **/
-
-
 
   if (loaderstatus) {
     return (

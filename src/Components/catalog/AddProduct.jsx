@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import saveicon from '../Images/svgs/saveicon.svg';
-import savegreenicon from '../Images/svgs/save_green_icon.svg';
-import SearchIcon from '../Images/svgs/search.svg';
-import whiteSaveicon from '../Images/svgs/white_saveicon.svg';
-import deleteicon from '../Images/svgs/deleteicon.svg';
-import closeicon from '../Images/svgs/closeicon.svg';
-import addIcon from '../Images/svgs/addicon.svg';
+import saveicon from '../../Images/svgs/saveicon.svg';
+import savegreenicon from '../../Images/svgs/save_green_icon.svg';
+import SearchIcon from '../../Images/svgs/search.svg';
+import whiteSaveicon from '../../Images/svgs/white_saveicon.svg';
+import deleteicon from '../../Images/svgs/deleteicon.svg';
+import closeicon from '../../Images/svgs/closeicon.svg';
+import addIcon from '../../Images/svgs/addicon.svg';
 import { Col, Row } from 'react-bootstrap';
 import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../../firebase';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { storage } from '../firebase';
+import { storage } from '../../firebase';
 import { useRef } from 'react';
-import { useProductsContext } from '../context/productgetter';
-import { useSubCategories } from '../context/categoriesGetter';
+import { useProductsContext } from '../../context/productgetter';
+import { useSubCategories } from '../../context/categoriesGetter';
 
 const AddProduct = () => {
   // const { data } = useProductsContext()

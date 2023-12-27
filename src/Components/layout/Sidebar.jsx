@@ -1,6 +1,6 @@
 import Accordion from 'react-bootstrap/Accordion';
-import Logo from '../Images/svgs/logo.svg';
-import dropDown from '../Images/svgs/dropdown-white-icon.svg';
+import Logo from '../../Images/svgs/logo.svg';
+import dropDown from '../../Images/svgs/dropdown-white-icon.svg';
 import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
 
