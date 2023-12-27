@@ -121,19 +121,17 @@ const BannersAdvertisement = () => {
 
 
       // Use the function to update your state or perform other actions
-      // updateAccordionImages(selectedImages);
+      updateAccordionImages(selectedImages);
     }
   };
 
   // Use the function in useEffect
   useEffect(() => {
     updateCategoryBanner(BannerData, categoreisTitle);
-  }, [BannerData]);
+  }, []);
 
   // Function to update images for the accordion
   const updateAccordionImages = (categoryImages) => {
-    // Assuming you have a state for the category images
-    // Set your state here or perform any other action
     SetCategoryImage(categoryImages);
   };
 
