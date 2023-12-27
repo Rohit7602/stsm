@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import addicon from '../../Images/svgs/addicon.svg';
 import search from '../../Images/svgs/search.svg';
 import dropdown from '../../Images/svgs/dropdown_icon.svg';
@@ -10,39 +10,113 @@ import delete_icon from '../../Images/svgs/delte.svg';
 import updown_icon from '../../Images/svgs/arross.svg';
 import closeicon from '../../Images/svgs/closeicon.svg';
 import saveicon from '../../Images/svgs/saveicon.svg';
-import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { doc, deleteDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useRef } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { UseServiceContext } from '../../context/ServiceAreasGetter';
 
-import { ref, getStorage, deleteObject } from 'firebase/storage';
-import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
 
 const Categories = () => {
-  const { categoreis } = useMainCategories();
-  const { data, updateData, deleteData } = useSubCategories();
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [searchvalue, setSearchvalue] = useState('');
+  const { ServiceData, addServiceData, deleteServiceData, updateServiceData } = UseServiceContext()
   const [addsServicePopup, setAddsServicePopup] = useState(false);
 
-  const handleModifyClicked = (index) => {
-    setSelectedCategory(index === selectedCategory ? null : index);
+  const [AreaName, SetAreaName] = useState('')
+  const [postalCode, SetPostalCode] = useState()
+  const [status, setStatus] = useState();
+  const pubref = useRef();
+  const hideref = useRef();
+
+  const [selectedValue, setSelectedValue] = useState('1 Day');
+  const [searchvalue, setSearchvalue] = useState('')
+
+  // Function to handle the selection of an item
+  const handleSelectItem = (value) => {
+    // Update the selected value in the state
+    setSelectedValue(value);
   };
 
+  // handle reset function start from here
+
+  function handleResetServiceArea() {
+    setSelectedValue('1 Day')
+    SetPostalCode('')
+    SetAreaName('')
+    pubref.current.checked = false
+    hideref.current.checked = false
+
+  }
+
+
+
+
+
   /*  *******************************
-     Delete functionality start 
+    Add New Service  functionality start 
+  *********************************************   **/
+
+
+  async function HandleSaveServiceAreas(e) {
+    e.preventDefault()
+    if (!AreaName && !postalCode && !status) {
+      alert("Please Fill All Field")
+    }
+    else {
+      try {
+        const docRef = await addDoc(collection(db, 'ServiceAreas'), {
+          AreaName: AreaName,
+          PostalCode: postalCode,
+          ServiceStatus: status,
+          ExpectedDelivery: selectedValue,
+        });
+
+        addServiceData(docRef)
+        toast.success('Category  added Successfully !', {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        handleResetServiceArea();
+        setAddsServicePopup(false)
+      } catch (error) {
+        toast.error('Error in Adding Service Areas', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+        console.error("error is adding service areas ", error)
+      }
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /*  *******************************
+    Add New Service functionality end here  
+  *********************************************   **/
+
+
+  /*  *******************************
+      Delete functionality start 
    *********************************************   **/
 
-  async function handleDelete(id, image) {
+  async function handleDelete(id) {
     try {
-      await deleteDoc(doc(db, 'sub_categories', id)).then(() => {
-        if (image.length !== 0) {
-          var st = getStorage();
-          var reference = ref(st, image);
-          deleteObject(reference);
-        }
-        deleteData(id);
+      await deleteDoc(doc(db, 'ServiceAreas', id)).then(() => {
+        deleteServiceData(id);
       });
     } catch (error) {
       console.log(error);
@@ -54,25 +128,30 @@ const Categories = () => {
     *********************************************   **/
 
   /*  *******************************
-      Change status functionality start 
+      Change service  status functionality start 
    *********************************************   **/
 
   async function handleChangeStatus(id, status) {
     try {
       // Toggle the status between 'publish' and 'hidden'
-      const newStatus = status === 'hidden' ? 'published' : 'hidden';
-      await updateDoc(doc(db, 'sub_categories', id), {
-        status: newStatus,
+      const newStatus = status === 'live' ? 'draft' : 'live';
+      await updateDoc(doc(db, 'ServiceAreas', id), {
+        ServiceStatus: newStatus,
       });
-      alert('status Change succesffuly ');
-      updateData({ id, status: newStatus });
+      updateServiceData({ id, ServiceStatus: newStatus });
+      toast.success("Status Changed Successfully", {
+        position: toast.POSITION.TOP_RIGHT,
+      })
     } catch (error) {
+      toast.error((error), {
+        position: toast.POSITION.TOP_RIGHT,
+      })
       console.log(error);
     }
   }
 
   /*  *******************************
-      Change status functionality end 
+      Change service  status functionality end 
     *********************************************   **/
 
   /*  *******************************
@@ -82,25 +161,25 @@ const Categories = () => {
 
   useEffect(() => {
     // Check if all checkboxes are checked
-    const allChecked = data.every((item) => item.checked);
+    const allChecked = ServiceData.every((item) => item.checked);
     setSelectAll(allChecked);
-  }, [data]);
+  }, [ServiceData]);
 
   // Main checkbox functionality start from here
 
   const handleMainCheckboxChange = () => {
-    const updatedData = data.map((item) => ({
+    const updatedData = ServiceData.map((item) => ({
       ...item,
       checked: !selectAll,
     }));
-    updateData(updatedData);
+    updateServiceData(updatedData);
     setSelectAll(!selectAll);
   };
   // Datacheckboxes functionality strat from here
   const handleCheckboxChange = (index) => {
-    const updatedData = [...data];
-    updatedData[index].checked = !data[index].checked;
-    updateData(updatedData);
+    const updatedData = [...ServiceData];
+    updatedData[index].checked = !ServiceData[index].checked;
+    updateServiceData(updatedData);
 
     // Check if all checkboxes are checked
     const allChecked = updatedData.every((item) => item.checked);
@@ -111,14 +190,7 @@ const Categories = () => {
       Checbox  functionality end 
     *********************************************   **/
 
-  //  get parent category  function  start from here
 
-  const getParentCategoryName = (catID) => {
-    const mainCategory = categoreis.find((category) => category.id === catID);
-    return mainCategory ? mainCategory.title : '';
-  };
-
-  //  get parent category  function  end  from here
 
   return (
     <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
@@ -134,7 +206,7 @@ const Categories = () => {
               <input
                 type="text"
                 className="fw-400 categorie_input  "
-                placeholder="Search for categories..."
+                placeholder="Search for ServiceAreas..."
                 onChange={(e) => setSearchvalue(e.target.value)}
               />
             </div>
@@ -159,6 +231,8 @@ const Categories = () => {
                   <input
                     className="popup_input w-100 fs-xs fw-400 black"
                     type="text"
+                    value={AreaName}
+                    onChange={(e) => SetAreaName(e.target.value)}
                     placeholder="Enter Area Name"
                   />
                 </div>
@@ -166,8 +240,15 @@ const Categories = () => {
                   <label htmlFor="">Pin Code</label>
                   <input
                     className="popup_input w-100 fs-xs fw-400 black"
-                    type="text"
-                    placeholder="Enter Pin Code"
+                    type="number"
+                    minLength='6'
+                    maxLength='6'
+                    value={postalCode}
+                    onInput={(e) => {
+                      const value = e.target.value.replace(/\D/g, '');
+                      SetPostalCode(value.slice(0, 6));
+                    }}
+                    placeholder="Enter Pin Code "
                   />
                 </div>
                 <div className="d-flex align-items-start flex-column pt-3 mt-1">
@@ -175,20 +256,20 @@ const Categories = () => {
                   <div class="dropdown w-100 mt-2">
                     <button
                       class="btn btn-secondary fs_xs fw-400 dropdown-toggle w-100 text-start popup_input py-2 dropdown_btn_text rounded-0
-                     mt-0 bg-white"
+                      mt-0 bg-white"
                       type="button"
                       data-bs-toggle="dropdown"
                       aria-expanded="false">
-                      1 Day
+                      {selectedValue}
                       <img className="float-end" src={dropdown} alt="" />
                     </button>
                     <ul class="dropdown-menu w-100">
-                      <li class="dropdown-item fs-xs fw-400 dropdown_btn_text">1 Day</li>
-                      <li class="dropdown-item fs-xs fw-400 dropdown_btn_text">2 Day</li>
-                      <li class="dropdown-item fs-xs fw-400 dropdown_btn_text">3 Day</li>
-                      <li class="dropdown-item fs-xs fw-400 dropdown_btn_text">4 Day</li>
-                      <li class="dropdown-item fs-xs fw-400 dropdown_btn_text">5 Day</li>
-                      <li class="dropdown-item fs-xs fw-400 dropdown_btn_text">6 Day</li>
+                      <li class="dropdown-item fs-xs fw-400 dropdown_btn_text" onClick={() => handleSelectItem('1 Day')} >1 Day</li>
+                      <li class="dropdown-item fs-xs fw-400 dropdown_btn_text" onClick={() => handleSelectItem('2 Day')} >2 Day</li>
+                      <li class="dropdown-item fs-xs fw-400 dropdown_btn_text" onClick={() => handleSelectItem('3 Day')} >3 Day</li>
+                      <li class="dropdown-item fs-xs fw-400 dropdown_btn_text" onClick={() => handleSelectItem('4 Day')} >4 Day</li>
+                      <li class="dropdown-item fs-xs fw-400 dropdown_btn_text" onClick={() => handleSelectItem('5 Day')} >5 Day</li>
+                      <li class="dropdown-item fs-xs fw-400 dropdown_btn_text" onClick={() => handleSelectItem('6 Day')} >6 Day</li>
                     </ul>
                   </div>
                 </div>
@@ -197,27 +278,42 @@ const Categories = () => {
                   <div className="d-flex align-items-center gap-5">
                     <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
                       <label class="check fw-400 fs-sm black mb-0">
-                        Published
-                        <input type="checkbox" />
+                        Live
+                        <input type="checkbox"
+                          ref={pubref}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setStatus('live');
+                              hideref.current.checked = false;
+                            }
+                          }} />
                         <span class="checkmark"></span>
                       </label>
                     </div>
                     <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
                       <label class="check fw-400 fs-sm black mb-0">
-                        Hidden
-                        <input type="checkbox" />
+                        Draft
+                        <input type="checkbox"
+                          ref={hideref}
+                          onChange={(e) => {
+
+                            if (e.target.checked) {
+                              setStatus('draft');
+                              pubref.current.checked = false;
+                            }
+                          }} />
                         <span class="checkmark"></span>
                       </label>
                     </div>
                   </div>
                 </div>
                 <div className="d-flex align-items-center gap-3 justify-content-end pt-3 mt-3 border_top_gray">
-                  <button className="reset_border">
+                  <button className="reset_border" onClick={handleResetServiceArea}>
                     <button className="fs-sm fw-400 reset_btn border-0 px-sm-3 px-2 py-2 ">
                       Reset
                     </button>
                   </button>
-                  <button className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black">
+                  <button onClick={HandleSaveServiceAreas} className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black">
                     <img src={saveicon} alt="saveicon" />
                     Save
                   </button>
@@ -263,88 +359,98 @@ const Categories = () => {
                   </tr>
                 </thead>
                 <tbody className="table_body">
-                  <tr className="product_borderbottom">
-                    <td className="py-3 ps-3 w-100">
-                      <div className="d-flex align-items-center gap-3 min_width_300">
-                        <label class="check1 fw-400 fs-sm black mb-0">
-                          <div className="d-flex align-items-center">
-                            <p className="fw-400 fs-sm black mb-0">Barwala S.O.</p>
-                          </div>
-                          <input type="checkbox" />
-                          <span class="checkmark"></span>
-                        </label>
-                      </div>
-                    </td>
-                    <td className="px-2 mx_160">
-                      <h3 className="fs-sm fw-400 black mb-0">125121</h3>
-                    </td>
-                    <td className="ps-4 mw-200">
-                      <h3 className="fs-sm fw-400 black mb-0">1 Day</h3>
-                    </td>
-                    <td className="mx_140">
-                      <h3 className="fs-sm fw-400 black mb-0 color_green">Live</h3>
-                    </td>
-                    <td className="text-center mw-90">
-                      <div class="dropdown">
-                        <button
-                          class="btn dropdown-toggle"
-                          type="button"
-                          id="dropdownMenuButton1"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false">
-                          <img src={dropdownDots} alt="dropdownDots" />
-                        </button>
-                        <ul
-                          class="dropdown-menu categories_dropdown"
-                          aria-labelledby="dropdownMenuButton1">
-                          <li>
-                            <div class="dropdown-item" href="#">
-                              <div className="d-flex align-items-center categorie_dropdown_options">
-                                <img src={eye_icon} alt="" />
-                                <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
-                              </div>
+                  {ServiceData
+                    .filter((data) => {
+                      return searchvalue.toLowerCase() === ''
+                        ? data
+                        : data.AreaName.toLowerCase().includes(searchvalue);
+                    }).map((data, index) => {
+                      return (
+                        <tr className="product_borderbottom">
+                          <td className="py-3 ps-3 w-100">
+                            <div className="d-flex align-items-center gap-3 min_width_300">
+                              <label class="check1 fw-400 fs-sm black mb-0">
+                                <div className="d-flex align-items-center">
+                                  <p className="fw-400 fs-sm black mb-0">{data.AreaName}</p>
+                                </div>
+                                <input type="checkbox" checked={data.checked || false}
+                                  onChange={() => handleCheckboxChange(index)} />
+                                <span class="checkmark"></span>
+                              </label>
                             </div>
-                          </li>
-                          <li>
-                            <div class="dropdown-item" href="#">
-                              <div className="d-flex align-items-center categorie_dropdown_options">
-                                <img src={pencil_icon} alt="" />
-                                <p className="fs-sm fw-400 black mb-0 ms-2">Edit Category</p>
-                              </div>
+                          </td>
+                          <td className="px-2 mx_160">
+                            <h3 className="fs-sm fw-400 black mb-0">{data.PostalCode}</h3>
+                          </td>
+                          <td className="ps-4 mw-200">
+                            <h3 className="fs-sm fw-400 black mb-0">{data.ExpectedDelivery}</h3>
+                          </td>
+                          <td className="mx_140">
+                            <h3 className="fs-sm fw-400 black mb-0 color_green">{data.ServiceStatus}</h3>
+                          </td>
+                          <td className="text-center mw-90">
+                            <div class="dropdown">
+                              <button
+                                class="btn dropdown-toggle"
+                                type="button"
+                                id="dropdownMenuButton1"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <img src={dropdownDots} alt="dropdownDots" />
+                              </button>
+                              <ul
+                                class="dropdown-menu categories_dropdown"
+                                aria-labelledby="dropdownMenuButton1">
+                                <li>
+                                  <div class="dropdown-item" href="#">
+                                    <div className="d-flex align-items-center categorie_dropdown_options">
+                                      <img src={eye_icon} alt="" />
+                                      <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
+                                    </div>
+                                  </div>
+                                </li>
+                                <li>
+                                  <div class="dropdown-item" href="#">
+                                    <div className="d-flex align-items-center categorie_dropdown_options">
+                                      <img src={pencil_icon} alt="" />
+                                      <p className="fs-sm fw-400 black mb-0 ms-2">Edit ServiceArea </p>
+                                    </div>
+                                  </div>
+                                </li>
+                                <li>
+                                  <div class="dropdown-item" href="#">
+                                    <div onClick={() => handleChangeStatus(data.id, data.ServiceStatus)} className="d-flex align-items-center categorie_dropdown_options">
+                                      <img src={updown_icon} alt="" />
+                                      {<p className="fs-sm fw-400 green mb-0 ms-2">
+                                        {data.ServiceStatus === 'live' ? 'change to  draft' : 'Change to live'}
+                                      </p>}
+                                    </div>
+                                  </div>
+                                </li>
+                                <li>
+                                  <div class="dropdown-item" href="#">
+                                    <div onClick={() => handleDelete(data.id)} className="d-flex align-items-center categorie_dropdown_options">
+                                      <img src={delete_icon} alt="" />
+                                      <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
+                                    </div>
+                                  </div>
+                                </li>
+                              </ul>
                             </div>
-                          </li>
-                          <li>
-                            <div class="dropdown-item" href="#">
-                              <div className="d-flex align-items-center categorie_dropdown_options">
-                                <img src={updown_icon} alt="" />
-                                {/* <p className="fs-sm fw-400 green mb-0 ms-2">
-                                  {value.status === 'hidden'
-                                    ? 'change to  publish'
-                                    : 'Change to hidden'}
-                                </p> */}
-                              </div>
-                            </div>
-                          </li>
-                          <li>
-                            <div class="dropdown-item" href="#">
-                              <div className="d-flex align-items-center categorie_dropdown_options">
-                                <img src={delete_icon} alt="" />
-                                <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
-                              </div>
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
+                          </td>
+                        </tr>
+                      )
+                    })}
                 </tbody>
               </table>
+              <ToastContainer />
               {/* <div className=""></div> */}
             </div>
           </div>
         </div>
       </div>
     </div>
+
   );
 };
 

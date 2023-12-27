@@ -41,7 +41,7 @@ import { uploadBytes } from 'firebase/storage';
 
 const BannersAdvertisement = () => {
   // context
-  const { BannerData } = UseBannerData();
+  const { BannerData, deleteObjectByImageUrl } = UseBannerData();
   const { ImageisValidOrNot } = useImageHandleContext();
   const { validateImage } = useImageValidation();
   const { categoreis } = useMainCategories();
@@ -52,13 +52,14 @@ const BannersAdvertisement = () => {
   })
 
   console.log(categoreisTitle)
+  console.log("Banner data is ", BannerData)
 
   // get intially all the uploded banners
   const updateSelectedImages = (data) => {
     if (data) {
       const selectedImages = {};
       data.forEach((item) => {
-        console.log(item)
+        // console.log(item)
         const title = item.title.toLowerCase();
         const imagelinks = item.data;
         if (imagelinks) {
@@ -68,7 +69,6 @@ const BannersAdvertisement = () => {
 
       // Now you have an object with selected images for each title
       console.log('asdfasfasdfsasdfasdf', selectedImages);
-
       // Example: Accessing images for largebanner
       if (selectedImages['largebanner']) {
         setSelectedImagesLargeBanner(selectedImages['largebanner']);
@@ -112,13 +112,13 @@ const BannersAdvertisement = () => {
             return acc;
           }, {});
 
-          let ram = selectedImages[title] = categoryImages;
-          console.log(ram)
+          selectedImages[title] = categoryImages;
         }
       });
 
       // Now you have an object with selected images for each title
       console.log('Selected Images:', selectedImages);
+
 
       // Use the function to update your state or perform other actions
       // updateAccordionImages(selectedImages);
@@ -131,12 +131,12 @@ const BannersAdvertisement = () => {
   }, [BannerData]);
 
   // Function to update images for the accordion
-  // const updateAccordionImages = (categoryImages) => {
-  //   // Assuming you have a state for the category images
-  //   // Set your state here or perform any other action
-  //   SetCategoryImage(categoryImages);
-  // };
-  
+  const updateAccordionImages = (categoryImages) => {
+    // Assuming you have a state for the category images
+    // Set your state here or perform any other action
+    SetCategoryImage(categoryImages);
+  };
+
 
 
 
@@ -201,11 +201,13 @@ const BannersAdvertisement = () => {
   };
 
   const handleDeleteLargeBanner = async (index) => {
+    const imageURL = selectedImagesLargeBanner[index].split('$$$$')[0]
     if (
       selectedImagesLargeBanner[index] &&
       typeof selectedImagesLargeBanner[index] === 'string' &&
       selectedImagesLargeBanner[index].startsWith('http')
     ) {
+
       const id = selectedImagesLargeBanner[index].split('$$$$')[1];
       const storageRef = getStorage();
       const reference = ref(storageRef, selectedImagesLargeBanner[index]);
@@ -227,9 +229,11 @@ const BannersAdvertisement = () => {
         }
       }
     }
+
     const newImages = [...selectedImagesLargeBanner];
     newImages[index] = null;
     setSelectedImagesLargeBanner(newImages);
+    deleteObjectByImageUrl(imageURL)
   };
 
   async function handleSaveLargeBanner() {
@@ -367,6 +371,7 @@ const BannersAdvertisement = () => {
   };
 
   const handleDeleteSmallPatti = async (index) => {
+    const imageURL = selectedImagesSmallPatii[index].split('$$$$')[0];
     if (
       selectedImagesSmallPatii[index] &&
       typeof selectedImagesSmallPatii[index] === 'string' &&
@@ -397,6 +402,7 @@ const BannersAdvertisement = () => {
     const newImages = [...selectedImagesSmallPatii];
     newImages[index] = null;
     setselectedImagesSmallPatii(newImages);
+    deleteObjectByImageUrl(imageURL)
   };
 
   async function handleSaveSmallPattiBanner() {
@@ -539,7 +545,7 @@ const BannersAdvertisement = () => {
 
   async function handeldeleteSaleBannerImg(index) {
     const imageUrlToDelete = BannerSaleImg[index];
-
+    const imageURL = imageUrlToDelete.split("$$$$")[0]
     if (
       imageUrlToDelete &&
       typeof imageUrlToDelete === 'string' &&
@@ -575,6 +581,7 @@ const BannersAdvertisement = () => {
     // Update the state to remove the deleted image
     const newImages = BannerSaleImg.filter((_, i) => i !== index); // [...BannerSaleImg];
     SetBannerSaleImg(newImages);
+    deleteObjectByImageUrl(imageURL)
   }
 
   async function handleSaveBannerSliderSale() {
@@ -699,6 +706,7 @@ const BannersAdvertisement = () => {
 
   async function handeldeleteAnimalSupliment(index) {
     const imageUrlToDelete = AnimalSuplimentsImages[index];
+    const imageURL = imageUrlToDelete.split("$$$$")[0]
 
     if (
       imageUrlToDelete &&
@@ -735,6 +743,7 @@ const BannersAdvertisement = () => {
     // Update the state to remove the deleted image
     const newImages = AnimalSuplimentsImages.filter((_, i) => i !== index);
     SetAnimalSuplimentsImages(newImages);
+    deleteObjectByImageUrl(imageURL)
   }
 
   async function handleSaveAnimalSuppliments() {
@@ -885,6 +894,7 @@ const BannersAdvertisement = () => {
   }
   async function handleCategoryImagesDelete(index) {
     const imageUrlToDelete = CategoryImage[index];
+    const imageURL = imageUrlToDelete.split("$$$$")[0]
 
     if (
       imageUrlToDelete &&
@@ -919,6 +929,7 @@ const BannersAdvertisement = () => {
     const newCategoryImages = [...CategoryImage];
     newCategoryImages[index] = ''; // Set the image for the specified index to an empty string
     SetCategoryImage(newCategoryImages);
+    deleteObjectByImageUrl(imageURL)
   }
 
   async function handleUpdateCategoryBanner(e) {
@@ -1015,8 +1026,8 @@ const BannersAdvertisement = () => {
                             className="w-100 h-100 object-fit-cover"
                             src={
                               selectedImagesLargeBanner[0] &&
-                              typeof selectedImagesLargeBanner[0] === 'string' &&
-                              selectedImagesLargeBanner[0].startsWith('http')
+                                typeof selectedImagesLargeBanner[0] === 'string' &&
+                                selectedImagesLargeBanner[0].startsWith('http')
                                 ? selectedImagesLargeBanner[0].split('$$$$')[0]
                                 : URL.createObjectURL(selectedImagesLargeBanner[0])
                             }
@@ -1053,8 +1064,8 @@ const BannersAdvertisement = () => {
                             className="w-100 h-100 object-fit-cover"
                             src={
                               selectedImagesLargeBanner[1] &&
-                              typeof selectedImagesLargeBanner[1] === 'string' &&
-                              selectedImagesLargeBanner[1].startsWith('http')
+                                typeof selectedImagesLargeBanner[1] === 'string' &&
+                                selectedImagesLargeBanner[1].startsWith('http')
                                 ? selectedImagesLargeBanner[1].split('$$$$')[0]
                                 : URL.createObjectURL(selectedImagesLargeBanner[1])
                             }
@@ -1128,8 +1139,8 @@ const BannersAdvertisement = () => {
                             className="w-100 h-100 object-fit-cover"
                             src={
                               offerbanner &&
-                              typeof offerbanner == 'string' &&
-                              offerbanner.startsWith('http')
+                                typeof offerbanner == 'string' &&
+                                offerbanner.startsWith('http')
                                 ? offerbanner
                                 : URL.createObjectURL(offerbanner)
                             }
@@ -1199,8 +1210,8 @@ const BannersAdvertisement = () => {
                             className="w-100 h-100 object-fit-cover"
                             src={
                               selectedImagesSmallPatii[0] &&
-                              typeof selectedImagesSmallPatii[0] === 'string' &&
-                              selectedImagesSmallPatii[0].startsWith('http')
+                                typeof selectedImagesSmallPatii[0] === 'string' &&
+                                selectedImagesSmallPatii[0].startsWith('http')
                                 ? selectedImagesSmallPatii[0].split('$$$$')[0]
                                 : URL.createObjectURL(selectedImagesSmallPatii[0])
                             }
@@ -1237,8 +1248,8 @@ const BannersAdvertisement = () => {
                             className="w-100 h-100 object-fit-cover"
                             src={
                               selectedImagesSmallPatii[1] &&
-                              typeof selectedImagesSmallPatii[1] === 'string' &&
-                              selectedImagesSmallPatii[1].startsWith('http')
+                                typeof selectedImagesSmallPatii[1] === 'string' &&
+                                selectedImagesSmallPatii[1].startsWith('http')
                                 ? selectedImagesSmallPatii[1].split('$$$$')[0]
                                 : URL.createObjectURL(selectedImagesSmallPatii[1])
                             }
@@ -1275,8 +1286,8 @@ const BannersAdvertisement = () => {
                             className="w-100 h-100 object-fit-cover"
                             src={
                               selectedImagesSmallPatii[2] &&
-                              typeof selectedImagesSmallPatii[2] === 'string' &&
-                              selectedImagesSmallPatii[2].startsWith('http')
+                                typeof selectedImagesSmallPatii[2] === 'string' &&
+                                selectedImagesSmallPatii[2].startsWith('http')
                                 ? selectedImagesSmallPatii[2].split('$$$$')[0]
                                 : URL.createObjectURL(selectedImagesSmallPatii[2])
                             }
@@ -1347,8 +1358,8 @@ const BannersAdvertisement = () => {
                             className="w-100 h-100 object-fit-cover"
                             src={
                               animalSupbanner &&
-                              typeof animalSupbanner === 'string' &&
-                              animalSupbanner.startsWith('http')
+                                typeof animalSupbanner === 'string' &&
+                                animalSupbanner.startsWith('http')
                                 ? animalSupbanner
                                 : URL.createObjectURL(animalSupbanner)
                             }
@@ -1384,8 +1395,9 @@ const BannersAdvertisement = () => {
               </button>
             </div>
             {categoreisTitle.map((dataTitle, index) => {
+              console.log("titles is ", dataTitle)
               const categoryImages = CategoryImage[dataTitle];
-
+              console.log("in map works ", categoryImages)
               return (
                 <Accordion.Item className="py-1 bg-white rounded" eventKey={index} key={index}>
                   <Accordion.Header className="bg_grey px-3 py-2 fs-xs fw-400 white mb-0 bg-white">
