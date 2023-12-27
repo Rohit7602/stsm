@@ -23,19 +23,16 @@ import {
 } from 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-<<<<<<< HEAD:src/Components/BannersAdvertisement.jsx
-import { useImageValidation } from '../context/validators';
-import { useImageHandleContext } from '../context/ImageHandler';
-import { useMainCategories } from '../context/categoriesGetter';
+// import { useImageValidation } from '../context/validators';
+// import { useImageHandleContext } from '../context/ImageHandler';
+// import { useMainCategories } from '../context/categoriesGetter';
 // import { UseBannerData } from '../context/BannerGetters';
 // import { UseBannerData } from '../context/BannerGetters';
-import { UseBannerData } from '../context/BannerGetters';
-=======
+// import { UseBannerData } from '../context/BannerGetters';
 import { useImageValidation } from '../../context/validators';
 import { useImageHandleContext } from '../../context/ImageHandler';
 import { useMainCategories } from '../../context/categoriesGetter';
 import { UseBannerData } from '../../context/BannerGetters';
->>>>>>> 31bf0d5c7b156f6eccb7dd803e4aaca88d753b51:src/Components/marketing/BannersAdvertisement.jsx
 import { type } from '@testing-library/user-event/dist/type';
 import { uploadBytes } from 'firebase/storage';
 
@@ -63,11 +60,7 @@ const BannersAdvertisement = () => {
       data.forEach((item) => {
         const title = item.title.toLowerCase();
         const imagelinks = item.data;
-<<<<<<< HEAD:src/Components/BannersAdvertisement.jsx
         console.log(imagelinks)
-=======
-        console.log('dfgdfgdfgfgfdgfdgfdgfd', imagelinks);
->>>>>>> 31bf0d5c7b156f6eccb7dd803e4aaca88d753b51:src/Components/marketing/BannersAdvertisement.jsx
         if (imagelinks) {
           selectedImages[title] = imagelinks.map((itemurl) => itemurl.imgUrl + '$$$$' + item.id);
         }
