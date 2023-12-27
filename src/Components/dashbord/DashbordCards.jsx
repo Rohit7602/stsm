@@ -1,9 +1,9 @@
 import React from 'react';
-import Dots from '../Images/svgs/dots.svg';
-import ApexBarChart from './bar';
-import Donut from './donatchart';
-import eyeIcon from "../Images/svgs/eye-icon.svg"
-import printIcon from "../Images/svgs/print-icon.svg"
+import Dots from '../../Images/svgs/dots.svg';
+import ApexBarChart from '../charts/bar';
+import Donut from '../charts/donatchart';
+import eyeIcon from '../../Images/svgs/eye-icon.svg';
+import printIcon from '../../Images/svgs/print-icon.svg';
 
 function DashbordCards() {
   return (
@@ -166,9 +166,7 @@ function DashbordCards() {
                     <th className="py-2 px-3 mx_100">
                       <h4 className="fw-400 fade_grey mb-0 fs-xs"> Total</h4>
                     </th>
-                    <th className="mx_70">
-
-                    </th>
+                    <th className="mx_70"></th>
                   </tr>
                   <tr className="product_borderbottom">
                     <td className="py-2 px-3">

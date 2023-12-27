@@ -1,13 +1,13 @@
 import React from 'react';
-import saveicon from '../Images/svgs/saveicon.svg';
-import mobileicon from '../Images/Png/mobile_icon_40.png';
-import billicon from '../Images/svgs/bill_icon.svg';
-import whitesaveicon from '../Images/svgs/white_saveicon.svg';
-import profile from '../Images/Png/customer_profile.png';
-import manimage from '../Images/Png/manimage.jpg'
+import saveicon from '../../Images/svgs/saveicon.svg';
+import mobileicon from '../../Images/Png/mobile_icon_40.png';
+import billicon from '../../Images/svgs/bill_icon.svg';
+import whitesaveicon from '../../Images/svgs/white_saveicon.svg';
+import profile from '../../Images/Png/customer_profile.png';
+import manimage from '../../Images/Png/manimage.jpg';
 import { Col, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import { useOrdercontext } from '../context/OrderGetter';
+import { useOrdercontext } from '../../context/OrderGetter';
 export default function NewOrder() {
   const { id } = useParams();
   const { orders } = useOrdercontext();
@@ -19,14 +19,17 @@ export default function NewOrder() {
   }
 
   const calculateSubtotal = () => {
-    return filterData[0].items.reduce((acc, item) => acc + item.price * item.qnty - item.discount, 0);
+    return filterData[0].items.reduce(
+      (acc, item) => acc + item.price * item.qnty - item.discount,
+      0
+    );
   };
 
   // Calculate Total
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    const shippingCost = filterData[0].shipping_charge
-    const promoDiscount = filterData[0].promo_discount
+    const shippingCost = filterData[0].shipping_charge;
+    const promoDiscount = filterData[0].promo_discount;
     return subtotal + shippingCost - promoDiscount;
   };
 
@@ -37,9 +40,7 @@ export default function NewOrder() {
           <div className="d-flex align-items-center justify-content-between py-3 my-1">
             <div className="d-flex align-items-center">
               <h1 className="fs-lg fw-500 black mb-0 me-1">{item.id}</h1>
-              <p className="neworder_red fs-xs fw-400 red mb-0 ms-3">
-                {item.status}
-              </p>
+              <p className="neworder_red fs-xs fw-400 red mb-0 ms-3">{item.status}</p>
             </div>
             {item.status == 'NEW' ? (
               <div className="d-flex align-items-center">
@@ -105,7 +106,7 @@ export default function NewOrder() {
                       <div className="d-flex align-items-center justify-content-between mt-3">
                         <div className="d-flex align-items-center mw-300 p-2">
                           <div style={{}}>
-                            <img src={products.image} alt="mobileicon" className='items_images' />
+                            <img src={products.image} alt="mobileicon" className="items_images" />
                           </div>
                           <div className="ps-3">
                             <p className="fs-sm fw-400 black mb-0">{products.title}</p>
@@ -116,14 +117,17 @@ export default function NewOrder() {
                           <p className="fs-sm fw-400 black mb-0">₹ {products.price}</p>
                           <p className="fs-sm fw-400 black mb-0 ps-4 ms-2 me-5">{products.qnty}</p>
 
-                          <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">(-) ₹ {products.discount}</p>
+                          <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">
+                            (-) ₹ {products.discount}
+                          </p>
                         </div>
-                        <p className="fs-sm fw-400 black mb-0 p-3">₹ {(products.price * products.qnty)-products.discount}</p>
+                        <p className="fs-sm fw-400 black mb-0 p-3">
+                          ₹ {products.price * products.qnty - products.discount}
+                        </p>
                       </div>
                     </>
-                  )
-                }
-                )}
+                  );
+                })}
                 {/* <div className="d-flex align-items-center justify-content-between mt-3">
                   <div className="d-flex align-items-center mw-300 p-2">
                     <img src={mobileicon} alt="mobileicon" />
@@ -164,10 +168,13 @@ export default function NewOrder() {
                 <div className="d-flex align-items-center justify-content-between mt-3">
                   <div className="p-2">
                     <p className="fs-sm fw-400 black mb-0">Mode of Payment</p>
-                    <p className="fs-xxs fw-400 fade_grey mb-0">{item.transaction.mode} | tx : {item.transaction.tx_id == "" ? "N/A" : item.transaction.tx_id}</p>
+                    <p className="fs-xxs fw-400 fade_grey mb-0">
+                      {item.transaction.mode} | tx :{' '}
+                      {item.transaction.tx_id == '' ? 'N/A' : item.transaction.tx_id}
+                    </p>
                   </div>
                   <p className="fs-sm fw-400 black mb-0 p-3">{formatDate(item.transaction.date)}</p>
-                  <p className="fs-sm fw-400 black mb-0 p-3">₹  {calculateTotal().toFixed(2)}</p>
+                  <p className="fs-sm fw-400 black mb-0 p-3">₹ {calculateTotal().toFixed(2)}</p>
                 </div>
               </div>
             </Col>
@@ -178,7 +185,9 @@ export default function NewOrder() {
                   <img src={manimage} alt="profile" className="manicon " />
                   <div className="ps-3">
                     <p className="fs-sm fw-400 black mb-0">{item.customer.name}</p>
-                    <p className="fs-xxs fw-400 fade_grey mb-0">{item.customer.email == "" ? "N/A" : item.customer.email}</p>
+                    <p className="fs-xxs fw-400 fade_grey mb-0">
+                      {item.customer.email == '' ? 'N/A' : item.customer.email}
+                    </p>
                   </div>
                 </div>
                 <div className="mt-3">
@@ -201,8 +210,7 @@ export default function NewOrder() {
                     <p className="fs-sm fw-400 black mb-0 ms-2">Generate Bill</p>
                   </button>
                 </div>
-              ) : null
-              }
+              ) : null}
             </Col>
           </Row>
         </div>

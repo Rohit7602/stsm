@@ -1,27 +1,27 @@
 import React from 'react';
-import saveicon from '../Images/svgs/saveicon.svg';
-import savegreenicon from '../Images/svgs/save_green_icon.svg';
-import deleteicon from '../Images/svgs/deleteicon.svg';
+import saveicon from '../../Images/svgs/saveicon.svg';
+import savegreenicon from '../../Images/svgs/save_green_icon.svg';
+import deleteicon from '../../Images/svgs/deleteicon.svg';
 import { Col, Row } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
-import SearchIcon from '../Images/svgs/search.svg';
+import SearchIcon from '../../Images/svgs/search.svg';
 import Accordion from 'react-bootstrap/Accordion';
 import { useState } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
-import minilayoutImgGroup3 from '../Images/Png/minilayoutImgGroup3.png';
-import minilayoutImgGroup4 from '../Images/Png/minilayoutImgGroup4.png';
-import minilayoutImgGroup6 from '../Images/Png/minilayoutImgGroup6.png';
-import minilayoutImgGroup9 from '../Images/Png/minilayoutImgGroup9.png';
-import minilayoutImgGroup8 from '../Images/Png/minilayoutImgGroup8.png';
-import { db } from '../firebase';
+import minilayoutImgGroup3 from '../../Images/Png/minilayoutImgGroup3.png';
+import minilayoutImgGroup4 from '../../Images/Png/minilayoutImgGroup4.png';
+import minilayoutImgGroup6 from '../../Images/Png/minilayoutImgGroup6.png';
+import minilayoutImgGroup9 from '../../Images/Png/minilayoutImgGroup9.png';
+import minilayoutImgGroup8 from '../../Images/Png/minilayoutImgGroup8.png';
+import { db } from '../../firebase';
 import { useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../firebase';
+import { storage } from '../../firebase';
 import { NavLink, Link } from 'react-router-dom';
-import { useImageHandleContext } from '../context/ImageHandler';
-import { useSubCategories, useMainCategories } from '../context/categoriesGetter';
+import { useImageHandleContext } from '../../context/ImageHandler';
+import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
 // import { Toast } from 'react-toastify/dist/components';
 
 const NewCategory = () => {
@@ -33,9 +33,6 @@ const NewCategory = () => {
   const [searchvalue, setSearchvalue] = useState('');
   const { ImageisValidOrNot } = useImageHandleContext();
 
-
-
-
   const [selectedLayout, setSelectedLayout] = useState('');
 
   // ...
@@ -43,8 +40,6 @@ const NewCategory = () => {
   const handleLayoutChange = (layout) => {
     setSelectedLayout(layout);
   };
-
-
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const { addData } = useSubCategories();
@@ -123,9 +118,9 @@ const NewCategory = () => {
   }
 
   /***********************************************
-   * Handle Parent Category code start from here 
+   * Handle Parent Category code start from here
    * ******************************************************
-   * 
+   *
    */
   const [refreshData, setRefreshData] = useState(false);
   const [addCatPopup, setAddCatPopup] = useState(false);
@@ -141,7 +136,6 @@ const NewCategory = () => {
     } else {
       setImageupload2(selectedFile);
     }
-
   }
 
   function handleDelete2(index) {
@@ -152,16 +146,13 @@ const NewCategory = () => {
   }
 
   function HandleResetFormParentCategory() {
-    setPerName("");
+    setPerName('');
     setImageupload2();
     setAddCatPopup(false);
   }
 
-
-
-
   async function handleSaveParentCategory(e) {
-    e.preventDefault()
+    e.preventDefault();
     try {
       if (perName === undefined || null) {
         alert('please enter the name of the category ');
@@ -179,7 +170,7 @@ const NewCategory = () => {
           title: perName,
           status: perStatus,
           image: imageUrl,
-          homepagelayout: selectedLayout
+          homepagelayout: selectedLayout,
         });
         setLoaderstatus(false);
         toast.success('Category added Successfully !', {
@@ -199,12 +190,9 @@ const NewCategory = () => {
     }
   }
 
-
   /*  *******************************
       Add Parent Category end  here 
    *********************************************   **/
-
-
 
   if (loaderstatus) {
     return (
@@ -303,7 +291,6 @@ const NewCategory = () => {
                     ) : null}
                   </div>
                   <br />
-
                 </div>
               </Col>
               <Col xxl={4}>
@@ -348,7 +335,7 @@ const NewCategory = () => {
                 <div className="mt-4 product_shadow bg_white p-3">
                   <div className="d-flex align-items-center justify-content-between">
                     <h2 className="fw-400 fs-2sm black mb-0">Parent Category</h2>
-                    <Link to="/newcategory/parentcategories" className="fs-2sm fw-400 red">
+                    <Link to="/catalog/parentcategories" className="fs-2sm fw-400 red">
                       View All
                     </Link>
                   </div>
@@ -383,10 +370,11 @@ const NewCategory = () => {
                             .map((category) => (
                               <Dropdown.Item key={category.id}>
                                 <div
-                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                    ? 'selected'
-                                    : ''
-                                    }`}
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (
@@ -402,10 +390,9 @@ const NewCategory = () => {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  setPerName(searchvalue)
-                                  setAddCatPopup(true)
-                                }
-                                }
+                                  setPerName(searchvalue);
+                                  setAddCatPopup(true);
+                                }}
                                 className="addnew_category_btn fs-xs green">
                                 +Add <span className="black">"{searchvalue}"</span> in Parent
                                 Category
@@ -417,7 +404,7 @@ const NewCategory = () => {
                   </Dropdown>
                   {addCatPopup === true ? (
                     <div className="parent_category_popup">
-                      <form action="" >
+                      <form action="">
                         <div className="d-flex align-items-center justify-content-between">
                           <p className="fs-4 fw-400 black mb-0">New Parent Category</p>
                           <div className="d-flex align-items-center gap-3">
@@ -426,7 +413,8 @@ const NewCategory = () => {
                                 Cancel
                               </button>
                             </button>
-                            <button onClick={(e) => handleSaveParentCategory(e)}
+                            <button
+                              onClick={(e) => handleSaveParentCategory(e)}
                               type="submit"
                               className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn">
                               <img src={saveicon} alt="saveicon" />

@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import saveicon from '../Images/svgs/saveicon.svg';
-import savegreenicon from '../Images/svgs/save_green_icon.svg';
-import SearchIcon from '../Images/svgs/search.svg';
-import whiteSaveicon from '../Images/svgs/white_saveicon.svg';
-import deleteicon from '../Images/svgs/deleteicon.svg';
-import closeicon from '../Images/svgs/closeicon.svg';
-import addIcon from '../Images/svgs/addicon.svg';
+import saveicon from '../../Images/svgs/saveicon.svg';
+import savegreenicon from '../../Images/svgs/save_green_icon.svg';
+import SearchIcon from '../../Images/svgs/search.svg';
+import whiteSaveicon from '../../Images/svgs/white_saveicon.svg';
+import deleteicon from '../../Images/svgs/deleteicon.svg';
+import closeicon from '../../Images/svgs/closeicon.svg';
+import addIcon from '../../Images/svgs/addicon.svg';
 import { Col, Row } from 'react-bootstrap';
 import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../../firebase';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { storage } from '../firebase';
+import { storage } from '../../firebase';
 import { useRef } from 'react';
-import { useProductsContext } from '../context/productgetter';
-import { useSubCategories } from '../context/categoriesGetter';
-
+import { useProductsContext } from '../../context/productgetter';
+import { useSubCategories } from '../../context/categoriesGetter';
 
 const AddProduct = () => {
   // const { data } = useProductsContext()
@@ -26,18 +25,15 @@ const AddProduct = () => {
   const [longDes, setLongDes] = useState('');
   const [varient, setVarient] = useState(false);
 
-  // context 
+  // context
   const { addData } = useProductsContext();
-  const { data } = useSubCategories()
-
-
-
+  const { data } = useSubCategories();
 
   const [status, setStatus] = useState('published');
   const [Freedelivery, setFreeDelivery] = useState(true);
   const [sku, setSku] = useState('');
   const [totalStock, setTotalStock] = useState('');
-  const [stockPrice, setStockPrice] = useState('')
+  const [stockPrice, setStockPrice] = useState('');
   const [categories, setCategories] = useState('');
   const [imageUpload22, setImageUpload22] = useState([]);
   // const [categoriesdata, setSubcategoriesData] = useState([]);
@@ -45,10 +41,8 @@ const AddProduct = () => {
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [stockpopup, setStockpopup] = useState(false);
 
-
-
-  //  search functionaltiy in categories and selected categories 
-  const [searchvalue, setSearchvalue] = useState('')
+  //  search functionaltiy in categories and selected categories
+  const [searchvalue, setSearchvalue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const handleSelectCategory = (category) => {
@@ -59,12 +53,11 @@ const AddProduct = () => {
   const [variants, setVariants] = useState([]);
   const [discount, setDiscount] = useState('');
   const [originalPrice, setOriginalPrice] = useState('');
-  const [VarintName, setVariantsNAME] = useState('')
+  const [VarintName, setVariantsNAME] = useState('');
   const [discountType, setDiscountType] = useState('Amount');
   const [deliveryCharges, setDeliveryCharges] = useState(0);
   function HandleAddVarients() {
-
-    setVariants(prevVariants => [
+    setVariants((prevVariants) => [
       ...prevVariants,
       {
         VarientName: VarintName,
@@ -77,28 +70,25 @@ const AddProduct = () => {
     setOriginalPrice(0);
     setDiscountType('Amount');
     setDiscount(0);
-    setVariantsNAME('')
+    setVariantsNAME('');
   }
 
   // stock popup save functionality
 
-  // get total amount functionality 
+  // get total amount functionality
   function handleTotalQunatity(e) {
     let value = e.target.value;
-    return setTotalStock(value)
+    return setTotalStock(value);
   }
 
   function handleSetTotalPrice(e) {
-    let value = e.target.value
-    return setStockPrice(value)
-
+    let value = e.target.value;
+    return setStockPrice(value);
   }
-
 
   function HandleStockPopUpSave() {
-    setStockpopup(false)
+    setStockpopup(false);
   }
-
 
   const pubref = useRef();
   const hidref = useRef();
@@ -110,15 +100,15 @@ const AddProduct = () => {
     setOriginalPrice(0);
     setDiscountType('Amount');
     setDiscount(0);
-    setVariants([])
+    setVariants([]);
     setCategories();
     setStatus('published');
-    setFreeDelivery(true)
+    setFreeDelivery(true);
     setSku();
     setTotalStock();
     setImageUpload22([]);
-    setSelectedCategory(null)
-    setStockPrice('')
+    setSelectedCategory(null);
+    setStockPrice('');
 
     pubref.current.checked = false;
     hidref.current.checked = false;
@@ -131,13 +121,11 @@ const AddProduct = () => {
       alert('set status');
     } else if (imageUpload22.length === 0) {
       alert('set image ');
-
     } else if (!name || !shortDes || !totalStock) {
       alert('Please enter name  or ShortDescription or TotalStock ');
     } else if (!selectedCategory) {
-      alert('please select category ')
-    }
-    else {
+      alert('please select category ');
+    } else {
       try {
         setLoaderstatus(true);
         const imagelinks = [];
@@ -147,7 +135,6 @@ const AddProduct = () => {
           const upload = await uploadBytes(storageRef, file);
           const imageUrl = await getDownloadURL(storageRef);
           imagelinks.push(imageUrl);
-
         }
 
         const docRef = await addDoc(collection(db, 'products'), {
@@ -161,23 +148,23 @@ const AddProduct = () => {
           categories: {
             parent_id: selectedCategory.cat_ID,
             id: selectedCategory.id,
-            name: selectedCategory.title
+            name: selectedCategory.title,
           },
           productImages: imagelinks,
           isMultipleVariant: varient === true,
           ...(varient === false
             ? {
-              varients: [
-                {
-                  originalPrice: originalPrice,
-                  discountType: discountType,
-                  discount: deliveryCharges,
-                }
-              ]
-            }
+                varients: [
+                  {
+                    originalPrice: originalPrice,
+                    discountType: discountType,
+                    discount: deliveryCharges,
+                  },
+                ],
+              }
             : {
-              varients: variants
-            }), // Include the actual list of variants if varient is true
+                varients: variants,
+              }), // Include the actual list of variants if varient is true
         });
         setSearchdata([]);
         setLoaderstatus(false);
@@ -211,7 +198,6 @@ const AddProduct = () => {
       }
     });
   }
-
 
   function handleDeleteImages(index) {
     const updatedImages = [...imageUpload22];
@@ -399,12 +385,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                            ...v,
-                                            discountType: selectedDiscountType,
-                                            // Reset discount value when changing the discount type to "Amount"
-                                            discount:
-                                              selectedDiscountType === 'Amount' ? 0 : v.discount,
-                                          }
+                                              ...v,
+                                              discountType: selectedDiscountType,
+                                              // Reset discount value when changing the discount type to "Amount"
+                                              discount:
+                                                selectedDiscountType === 'Amount' ? 0 : v.discount,
+                                            }
                                           : v
                                       )
                                     );
@@ -741,10 +727,11 @@ const AddProduct = () => {
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                    ? 'selected'
-                                    : ''
-                                    }`}
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (

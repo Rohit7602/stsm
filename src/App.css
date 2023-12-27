@@ -232,10 +232,6 @@ body {
   margin-right: 10px;
 }
 
-.drop_list li a:hover .list_icons path {
-  fill: var(--color-brown);
-}
-
 .red {
   color: red;
 }
@@ -378,13 +374,17 @@ body {
 /*export_btn*/
 .export_btn {
   border-radius: 10px;
-  background: var(--red_gradient,
-      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
 }
 
 .export_btn:hover {
-  background: var(--red_gradient,
-      linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
 }
 
 /* my btn */
@@ -393,8 +393,10 @@ body {
   padding: 12px 15px;
   transition: 0.5s ease-in-out;
   background-color: transparent;
-  background: var(--red_gradient,
-      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -530,30 +532,16 @@ body {
 .active.list_icons path {
   fill: var(--color-brown);
 }
-
 .active h3 {
   color: var(--color-brown) !important;
 }
-
 .cursor_pointer {
   cursor: pointer;
 }
-
-.line_scroll_2 {
-  max-height: 700px;
-  overflow-y: scroll;
-}
-
 .line_scroll {
-  max-height: 650px;
-  overflow: hidden;
+  overflow: auto;
 }
-
 /* webkit scrool */
-.line_scroll_2::-webkit-scrollbar {
-  width: 2px !important;
-  height: 2px !important;
-}
 
 .line_scroll::-webkit-scrollbar {
   width: 2px !important;
@@ -642,11 +630,11 @@ body {
 } */
 
 /* When the checkbox is checked, add a blue background */
-.check input:checked~.checkmark {
+.check input:checked ~ .checkmark {
   background-color: #000000;
 }
 
-.check1 input:checked~.checkmark {
+.check1 input:checked ~ .checkmark {
   background-color: transparent;
 }
 
@@ -658,11 +646,11 @@ body {
 }
 
 /* Show the checkmark when checked */
-.check input:checked~.checkmark:after {
+.check input:checked ~ .checkmark:after {
   display: block;
 }
 
-.check1 input:checked~.checkmark:after {
+.check1 input:checked ~ .checkmark:after {
   display: block;
 }
 
@@ -745,7 +733,7 @@ body {
 
 /* Customers overflow  on x axis */
 .Customers_overflow_X {
-  width: 1520px;
+  min-width: 1370px;
 }
 
 /* categories input */
@@ -938,8 +926,8 @@ body {
   cursor: pointer;
 }
 
-.btn-check:checked+.btn,
-:not(.btn-check)+.btn:active,
+.btn-check:checked + .btn,
+:not(.btn-check) + .btn:active,
 .btn:first-child:active,
 .btn.active,
 .btn.show {
@@ -984,7 +972,7 @@ body {
 }
 
 .min_width_1350 {
-  min-width: 1350px;
+  min-width: 1450px;
 }
 
 .stock_bg {
@@ -1119,6 +1107,7 @@ body {
   border-radius: 10px;
   border: 1px solid #dfdfdfcd;
   z-index: 3;
+  transition: transform 0.3s;
 }
 
 .bg_black_overlay {
@@ -1185,48 +1174,81 @@ body {
 .login-form input:focus {
   outline: 0;
 }
-
 .mx_500 {
   max-width: 600px;
   width: 600px;
 }
-
 .manicon {
   height: 40px;
   width: 40px;
   border-radius: 5px;
 }
-
 .mt-0 {
   margin-top: 0 !important;
 }
-
 .raido-black {
   accent-color: black;
 }
-
-.active {
-  background-color: #26313a !important;
+.active h3 {
+  color: var(--color-brown);
+}
+.dash_links {
+  padding: 12px 20px;
   border-radius: 50px 0px 0px 50px !important;
 }
-
-.active svg path {
+.dash_links_inner {
+  border-radius: 50px 0px 0px 50px !important;
+  padding: 12px 40px;
+  display: inline-block;
+  width: 100%;
+}
+.dash_links_inner:hover {
+  background-color: #26313a;
+}
+.dash_links_inner:hover h3 {
+  color: var(--color-brown);
+}
+.active .dash_links svg path {
   fill: var(--color-brown);
 }
-
+.active .stroke {
+  stroke: var(--color-brown);
+}
 .active .dash_links {
-  background-color: #26313a !important;
-  border-radius: 50px 0px 0px 50px !important;
+  background-color: #26313a;
+}
+.active .dash_links2 svg path {
+  stroke: var(--color-brown);
+  fill: transparent !important;
 }
 
-.active .accordion-header {
-  background-color: #26313a !important;
-  border-radius: 50px 0px 0px 50px !important;
+.dash_links:hover svg path {
+  fill: var(--color-brown);
 }
-
-.dash_links {
-  padding-top: 15px !important;
-  padding-bottom: 15px !important;
+.dash_links2:hover svg path {
+  stroke: var(--color-brown);
+  fill: transparent !important;
+}
+.categories_xl_overflow_X {
+  min-width: 1000px;
+}
+.min_width_300 {
+  min-width: 300px !important;
+  width: 300px !important;
+}
+tbody::-webkit-scrollbar {
+  width: 2px;
+}
+.table_body {
+  display: block !important;
+  max-height: calc(100vh - 290px) !important;
+  overflow: auto !important;
+}
+.table_head,
+.table_body tr {
+  display: table !important;
+  width: 100% !important;
+  table-layout: fixed !important;
 }
 
 /* ===========Medgitia-query========== */
@@ -1374,7 +1396,6 @@ body {
     min-width: 40%;
   }
 }
-
 
 .items_images {
   height: 60px;

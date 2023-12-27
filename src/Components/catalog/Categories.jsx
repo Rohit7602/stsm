@@ -1,32 +1,27 @@
 import React, { useState } from 'react';
-import addicon from '../Images/svgs/addicon.svg';
-import search from '../Images/svgs/search.svg';
-import dropdownDots from '../Images/svgs/dots2.svg';
-import eye_icon from '../Images/svgs/eye.svg';
-import pencil_icon from '../Images/svgs/pencil.svg';
-import deleteicon from '../Images/svgs/deleteicon.svg';
-import delete_icon from '../Images/svgs/delte.svg';
-import updown_icon from '../Images/svgs/arross.svg';
-import saveicon from '../Images/svgs/saveicon.svg';
-
-import Modifyproduct from './Modifyproduct';
+import addicon from '../../Images/svgs/addicon.svg';
+import search from '../../Images/svgs/search.svg';
+import dropdownDots from '../../Images/svgs/dots2.svg';
+import eye_icon from '../../Images/svgs/eye.svg';
+import pencil_icon from '../../Images/svgs/pencil.svg';
+import deleteicon from '../../Images/svgs/deleteicon.svg';
+import delete_icon from '../../Images/svgs/delte.svg';
+import updown_icon from '../../Images/svgs/arross.svg';
+import saveicon from '../../Images/svgs/saveicon.svg';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../../firebase';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useRef } from 'react';
- 
+
 import { ref, getStorage, deleteObject } from 'firebase/storage';
-import { useSubCategories, useMainCategories } from '../context/categoriesGetter';
+import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
 
 const Categories = () => {
   const { categoreis } = useMainCategories();
   const { data, updateData, deleteData } = useSubCategories();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchvalue, setSearchvalue] = useState('');
-  
-
-
 
   const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);
@@ -148,14 +143,14 @@ const Categories = () => {
           </div>
         </div>
         {/* categories details  */}
-        <div className="p-3 mt-3 bg-white product_shadow">
-          <div className="overflow_xl _scroll line_ scroll">
+        <div className="p-3 mt-3 bg-white product_shadow mt-4">
+          <div className="overflow_xl_scroll line_scroll">
             <div className="categories_xl_overflow_X ">
               <table className="w-100">
-                <thead>
+                <thead className="w-100 table_head">
                   <tr className="product_borderbottom">
-                    <th className="py-3 ps-3">
-                      <div className="d-flex align-items-center gap-3">
+                    <th className="py-3 ps-3 w-100">
+                      <div className="d-flex align-items-center gap-3 min_width_300">
                         <label class="check1 fw-400 fs-sm black mb-0">
                           Name
                           <input
@@ -176,12 +171,12 @@ const Categories = () => {
                     <th className="mx_160">
                       <h3 className="fs-sm fw-400 black mb-0">Visibility</h3>
                     </th>
-                    <th className="mw-90 p-3 me-1">
+                    <th className="mw-90 p-3 me-1 text-center">
                       <h3 className="fs-sm fw-400 black mb-0">Action</h3>
                     </th>
                   </tr>
                 </thead>
-                <tbody className="tab le2">
+                <tbody className="table_body">
                   {data
                     .filter((item) => {
                       const mainCategory = categoreis.find(
@@ -195,8 +190,8 @@ const Categories = () => {
                     .map((value, index) => {
                       return (
                         <tr key={index} className="product_borderbottom">
-                          <td className="py-3 ps-3">
-                            <div className="d-flex align-items-center gap-3">
+                          <td className="py-3 ps-3 w-100">
+                            <div className="d-flex align-items-center gap-3 min_width_300">
                               <label class="check1 fw-400 fs-sm black mb-0">
                                 <div className="d-flex align-items-center">
                                   <div className="w_40">
@@ -215,20 +210,20 @@ const Categories = () => {
                               </label>
                             </div>
                           </td>
-                          <td className="px-2">
+                          <td className="px-2 mw-250">
                             <h3 className="fs-sm fw-400 black mb-0">
                               {getParentCategoryName(value.cat_ID)}
                             </h3>
                           </td>
-                          <td className="ps-4">
+                          <td className="ps-4 mw_160">
                             <h3 className="fs-sm fw-400 black mb-0 width_10">10</h3>
                           </td>
-                          <td>
+                          <td className="mx_160">
                             <h3 className="fs-sm fw-400 black mb-0 width_10 color_green">
                               {value.status}
                             </h3>
                           </td>
-                          <td className="text-center">
+                          <td className="text-center mw-90">
                             <div class="dropdown">
                               <button
                                 class="btn dropdown-toggle"
