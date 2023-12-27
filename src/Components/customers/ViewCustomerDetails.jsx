@@ -42,13 +42,7 @@ const ViewCustomerDetails = () => {
   const AvergaeOrderValue = totalSpent / targetOrder.length;
   console.log(AvergaeOrderValue);
 
-<<<<<<< HEAD:src/Components/ViewCustomerDetails.jsx
-
-
-  // format date function start 
-=======
   // format date function start
->>>>>>> 31bf0d5c7b156f6eccb7dd803e4aaca88d753b51:src/Components/customers/ViewCustomerDetails.jsx
   function formatDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
