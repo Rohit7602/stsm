@@ -1251,6 +1251,30 @@ tbody::-webkit-scrollbar {
   table-layout: fixed !important;
 }
 
+.add_service_area_popup {
+  position: fixed;
+  width: 400px;
+  background-color: #ffffff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-height: 500px;
+  border-radius: 30px;
+  padding: 20px;
+  z-index: 10;
+}
+.popup_input {
+  border: 0.5px solid #0000004d !important;
+  padding: 10px 15px;
+  outline: 0;
+  margin-top: 10px;
+}
+.border_top_gray {
+  border-top: 0.5px solid #0000004d;
+}
+.dropdown_btn_text {
+  color: #00000080 !important;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
   :root {

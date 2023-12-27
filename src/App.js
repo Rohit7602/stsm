@@ -13,6 +13,7 @@ import BannersAdvertisement from './Components/marketing/BannersAdvertisement';
 import Topbar from './Components/layout/Topbar';
 import Orderdetails from './Components/orders/Orderdetails';
 import ParentCategories from './Components/catalog/ParentCategories';
+import ServiceAreas from './Components/catalog/SearviceAreas';
 import Login from './Components/login/Login';
 import { useState } from 'react';
 
@@ -35,6 +36,7 @@ function App() {
               <Route path="parentcategories" element={<ParentCategories />} />
               <Route path="productlist" element={<ProductList />} />
               <Route path="addproduct" element={<AddProduct />} />
+              <Route path="serviceareas" element={<ServiceAreas />} />
             </Route>
             <Route path="customer">
               <Route index element={<Customers />} />
