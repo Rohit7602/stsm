@@ -22,14 +22,15 @@ import { storage } from '../../firebase';
 import { NavLink, Link } from 'react-router-dom';
 import { useImageHandleContext } from '../../context/ImageHandler';
 import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
+
 // import { Toast } from 'react-toastify/dist/components';
 
 const NewCategory = () => {
   const [imageupload, setImageupload] = useState('');
+  const [loaderstatus, setLoaderstatus] = useState(false);
   const [status, setStatus] = useState();
   const [name, setName] = useState();
   const [category, setCategory] = useState();
-  const [loaderstatus, setLoaderstatus] = useState(false);
   const [searchvalue, setSearchvalue] = useState('');
   const { ImageisValidOrNot } = useImageHandleContext();
 
@@ -154,6 +155,7 @@ const NewCategory = () => {
   async function handleSaveParentCategory(e) {
     e.preventDefault();
     try {
+      
       if (perName === undefined || null) {
         alert('please enter the name of the category ');
       } else if (imageupload2.length === 0) {
