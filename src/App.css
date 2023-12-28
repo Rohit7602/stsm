@@ -1275,6 +1275,30 @@ tbody::-webkit-scrollbar {
 .dropdown_btn_text {
   color: #00000080 !important;
 }
+.delete_popup {
+  position: fixed;
+  width: 500px;
+  background-color: #ffffff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  border-radius: 8px;
+  z-index: 10;
+}
+.cancel_btn {
+  padding: 8px 25px;
+  background-color: white;
+  border: 1px solid #000000;
+  border-radius: 8px;
+}
+.delete_btn {
+  padding: 9px 25px;
+  background-color: red;
+  border: 0;
+  border-radius: 8px;
+  color: white;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
   :root {
