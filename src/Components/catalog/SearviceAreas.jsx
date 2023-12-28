@@ -17,6 +17,7 @@ import { useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { UseServiceContext } from '../../context/ServiceAreasGetter';
+import Deletepopup from '../popups/Deletepopup';
 
 
 const Categories = () => {
@@ -31,6 +32,9 @@ const Categories = () => {
 
   const [selectedValue, setSelectedValue] = useState('1 Day');
   const [searchvalue, setSearchvalue] = useState('')
+
+  const [deletepopup, setDeletePopup] = useState(false);
+  const [ServiceAreaId, setServiceAreaId] = useState(null);
 
   // Function to handle the selection of an item
   const handleSelectItem = (value) => {
@@ -115,7 +119,7 @@ const Categories = () => {
       Delete functionality start 
    *********************************************   **/
 
-  async function handleDelete(id) {
+  async function handleDeleteServiceArea(id) {
     try {
       await deleteDoc(doc(db, 'ServiceAreas', id)).then(() => {
         deleteServiceData(id);
@@ -437,7 +441,10 @@ const Categories = () => {
                                   </li>
                                   <li>
                                     <div class="dropdown-item" href="#">
-                                      <div onClick={() => handleDelete(data.id)} className="d-flex align-items-center categorie_dropdown_options">
+                                      <div onClick={() => {
+                                        setServiceAreaId(data.id);
+                                        setDeletePopup(true);
+                                      }} className="d-flex align-items-center categorie_dropdown_options">
                                         <img src={delete_icon} alt="" />
                                         <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
                                       </div>
@@ -454,6 +461,15 @@ const Categories = () => {
                 <ToastContainer />
                 {/* <div className=""></div> */}
               </div>
+              {
+                deletepopup ? (
+                  <Deletepopup
+                    showPopup={setDeletePopup}
+                    handleDelete={() => handleDeleteServiceArea(ServiceAreaId)}
+                    itemName="ServiceArea"
+                  />
+                ) : null
+              }
             </div>
           </div>
         </div>

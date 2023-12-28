@@ -11,14 +11,25 @@ import { deleteObject, getStorage, ref } from 'firebase/storage';
 import { db } from '../../firebase';
 import { Link, NavLink } from 'react-router-dom';
 import { useProductsContext } from '../../context/productgetter';
+import Deletepopup from '../popups/Deletepopup';
+
 
 const ProductListComponent = () => {
   const { data, updateData, deleteData } = useProductsContext();
+
+  // states
+
+  const [ProductId, setProductId] = useState(null);
+  const [ProductImage, setProductImage] = useState(null);
+  const [deletepopup, setDeletePopup] = useState(false);
+
+
 
   /*  *******************************
    checkbox functionality start 
  *********************************************   **/
   const [selectAll, setSelectAll] = useState(false);
+
 
   useEffect(() => {
     // Check if all checkboxes are checked
@@ -84,7 +95,7 @@ const ProductListComponent = () => {
   *************************************************
      */
 
-  async function handleDelete(id, image) {
+  async function handleDeleteProduct(id, image) {
     try {
       var st = getStorage();
       await deleteDoc(doc(db, 'products', id)).then(() => {
@@ -267,7 +278,11 @@ const ProductListComponent = () => {
                               <li>
                                 <div class="dropdown-item" href="#">
                                   <div
-                                    onClick={() => handleDelete(value.id, value.productImages)}
+                                    onClick={() => {
+                                      setProductId(value.id);
+                                      setProductImage(value.image);
+                                      setDeletePopup(true);
+                                    }}
                                     className="d-flex align-items-center categorie_dropdown_options">
                                     <img src={delete_icon} alt="" />
                                     <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
@@ -283,6 +298,15 @@ const ProductListComponent = () => {
                 </tbody>
               </table>
             </div>
+            {
+              deletepopup ? (
+                <Deletepopup
+                  showPopup={setDeletePopup}
+                  handleDelete={() => handleDeleteProduct(ProductId, ProductImage)}
+                  itemName="Product"
+                />
+              ) : null
+            }
           </div>
         </div>
       </div>

@@ -23,6 +23,8 @@ const Categories = () => {
   const { data, updateData, deleteData } = useSubCategories();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchvalue, setSearchvalue] = useState('');
+  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(null);
+  const [selectedSubcategoryImage, setSelectedSubcategoryImage] = useState(null);
 
   const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);
@@ -33,7 +35,7 @@ const Categories = () => {
      Delete functionality start 
    *********************************************   **/
 
-  async function handleDelete(id, image) {
+  async function handleDeleteCategory(id, image) {
     try {
       await deleteDoc(doc(db, 'sub_categories', id)).then(() => {
         if (image.length !== 0) {
@@ -188,9 +190,11 @@ const Categories = () => {
                       return search.toLowerCase() === ''
                         ? item
                         : item.title.toLowerCase().includes(searchvalue) ||
-                            mainCategory.title.toLowerCase().includes(searchvalue);
+                        mainCategory.title.toLowerCase().includes(searchvalue);
                     })
                     .map((value, index) => {
+                      const subcategoryId = value.id;
+                      const subcategoryImage = value.image;
                       return (
                         <tr key={index} className="product_borderbottom">
                           <td className="py-3 ps-3 w-100">
@@ -278,7 +282,11 @@ const Categories = () => {
                                       // onClick={() => {
                                       //   handleDelete(value.id, value.image);
                                       // }}
-                                      onClick={() => setDeletePopup(true)}>
+                                      onClick={() => {
+                                        setSelectedSubcategoryId(value.id);
+                                        setSelectedSubcategoryImage(value.image);
+                                        setDeletePopup(true);
+                                      }}>
                                       <img src={delete_icon} alt="" />
                                       <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
                                     </div>
@@ -289,6 +297,7 @@ const Categories = () => {
                           </td>
                         </tr>
                       );
+
                     })}
                 </tbody>
               </table>
@@ -296,7 +305,15 @@ const Categories = () => {
             </div>
           </div>
         </div>
-        {deletepopup ? <Deletepopup showPopup={setDeletePopup} /> : null}
+        {
+          deletepopup ? (
+            <Deletepopup
+              showPopup={setDeletePopup}
+              handleDelete={() => handleDeleteCategory(selectedSubcategoryId, selectedSubcategoryImage)}
+              itemName="SubCategory"
+            />
+          ) : null
+        }
       </div>
     </div>
   );
