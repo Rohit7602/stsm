@@ -18,41 +18,47 @@ import Login from './Components/login/Login';
 import { useState } from 'react';
 
 function App() {
-  const [orderStatus, setOrderStatus] = useState();
+  const [user, setUser] = useState(true);
+  function handelLogout() {
+    setUser(true);
+  }
+  function handelLogin() {
+    setUser(false);
+  }
   return (
-    // <Routes>
-    //   <Route path="/" element={<Login />}></Route>
-    // </Routes>
-    <div className="d-flex">
-      <Sidebar />
-      <div className="content d-flex flex-column  position-relative">
-        <Topbar />
-        <div className="h-100 px-3 bg_light_grey">
-          <Routes>
-            <Route path="/" element={<DashbordCards />} />
-            <Route path="catalog">
-              <Route index element={<CategoriesView />} />
-              <Route path="newcategory" element={<NewCategory />} />
-              <Route path="parentcategories" element={<ParentCategories />} />
-              <Route path="productlist" element={<ProductList />} />
-              <Route path="addproduct" element={<AddProduct />} />
-              <Route path="serviceareas" element={<ServiceAreas />} />
-            </Route>
-            <Route path="customer">
-              <Route index element={<Customers />} />
-              <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
-            </Route>
-            <Route path="orders">
-              <Route index element={<OrdersList />} />
-              <Route path="orderdetails/:id" element={<Orderdetails />} />
-            </Route>
-            <Route path="marketing">
-              <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
-            </Route>
-          </Routes>
+    <>
+      {user ? <Login login={handelLogin} /> : null}
+      <div className="d-flex">
+        {!user ? <Sidebar logout={handelLogout} /> : null}
+        <div className="content d-flex flex-column  position-relative">
+          {!user ? <Topbar /> : null}
+          <div className="h-100 px-3 bg_light_grey">
+            <Routes>
+              <Route path="dashbord" element={<DashbordCards />} />
+              <Route path="catalog">
+                <Route index element={<CategoriesView />} />
+                <Route path="newcategory" element={<NewCategory />} />
+                <Route path="parentcategories" element={<ParentCategories />} />
+                <Route path="productlist" element={<ProductList />} />
+                <Route path="addproduct" element={<AddProduct />} />
+                <Route path="serviceareas" element={<ServiceAreas />} />
+              </Route>
+              <Route path="customer">
+                <Route index element={<Customers />} />
+                <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
+              </Route>
+              <Route path="orders">
+                <Route index element={<OrdersList />} />
+                <Route path="orderdetails/:id" element={<Orderdetails />} />
+              </Route>
+              <Route path="marketing">
+                <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
+              </Route>
+            </Routes>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

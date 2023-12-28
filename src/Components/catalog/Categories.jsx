@@ -16,6 +16,7 @@ import { useRef } from 'react';
 
 import { ref, getStorage, deleteObject } from 'firebase/storage';
 import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
+import Deletepopup from '../popups/Deletepopup';
 
 const Categories = () => {
   const { categoreis } = useMainCategories();
@@ -26,6 +27,7 @@ const Categories = () => {
   const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);
   };
+  const [deletepopup, setDeletePopup] = useState(false);
 
   /*  *******************************
      Delete functionality start 
@@ -119,6 +121,7 @@ const Categories = () => {
 
   return (
     <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
+      {deletepopup === true ? <div className="bg_black_overlay"></div> : ''}
       <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
         <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
           <div className="d-flex">
@@ -272,9 +275,10 @@ const Categories = () => {
                                   <div class="dropdown-item" href="#">
                                     <div
                                       className="d-flex align-items-center categorie_dropdown_options"
-                                      onClick={() => {
-                                        handleDelete(value.id, value.image);
-                                      }}>
+                                      // onClick={() => {
+                                      //   handleDelete(value.id, value.image);
+                                      // }}
+                                      onClick={() => setDeletePopup(true)}>
                                       <img src={delete_icon} alt="" />
                                       <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
                                     </div>
@@ -292,6 +296,7 @@ const Categories = () => {
             </div>
           </div>
         </div>
+        {deletepopup ? <Deletepopup showPopup={setDeletePopup} /> : null}
       </div>
     </div>
   );

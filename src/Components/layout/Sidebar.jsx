@@ -4,12 +4,16 @@ import dropDown from '../../Images/svgs/dropdown-white-icon.svg';
 import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
 
-function Sidebar() {
+function Sidebar(props) {
   const [openDropdown, setOpenDropdown] = useState(null);
 
   const toggleDropdown = (dropdownName) => {
     setOpenDropdown((prevDropdown) => (prevDropdown === dropdownName ? null : dropdownName));
   };
+  let logout = props.logout;
+  function handelLogout() {
+    logout();
+  }
   return (
     <>
       <aside className="sidebar">
@@ -23,7 +27,7 @@ function Sidebar() {
           <div className="drops_wrap">
             <ul className="px-0 drop_list">
               <li className=" d-flex align-item-center">
-                <NavLink to="/" className="w-100">
+                <NavLink to="dashbord" className="w-100">
                   <div className="d-flex align-items-center w-100 dash_links">
                     <svg
                       className="list_icons"
@@ -446,7 +450,7 @@ function Sidebar() {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/Logout" className="w-100">
+                <NavLink onClick={handelLogout} to="/Logout" className="w-100">
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg

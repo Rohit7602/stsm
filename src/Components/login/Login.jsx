@@ -2,7 +2,11 @@ import React from 'react';
 import loginSideimg from '../../Images/Png/login-side-img.png';
 import { Link } from 'react-router-dom';
 
-export default function Login() {
+export default function Login(props) {
+  let login = props.login;
+  function handelLogin() {
+    login();
+  }
   return (
     <div className="min-vh- 100">
       <div className="row h-100 m-0">
@@ -22,8 +26,10 @@ export default function Login() {
                   type="password"
                   placeholder="Password"
                 />
-                <Link to="mainpanel">
-                  <button className="loin-btn fs-sm fw-500 mt-5">Log IN</button>
+                <Link to="dashbord">
+                  <button onClick={handelLogin} className="loin-btn fs-sm fw-500 mt-5">
+                    Log IN
+                  </button>
                 </Link>
               </div>
             </form>
