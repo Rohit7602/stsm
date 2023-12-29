@@ -23,17 +23,17 @@ import Updatepopup from '../popups/Updatepopup';
 
 
 const Categories = () => {
-  const { ServiceData, addServiceData, deleteServiceData, updateServiceData } = UseServiceContext()
+  const { ServiceData, addServiceData, deleteServiceData, updateServiceData } = UseServiceContext();
   const [addsServicePopup, setAddsServicePopup] = useState(false);
   const [loaderstatus, setLoaderstatus] = useState(false);
-  const [AreaName, SetAreaName] = useState('')
-  const [postalCode, SetPostalCode] = useState()
+  const [AreaName, SetAreaName] = useState('');
+  const [postalCode, SetPostalCode] = useState();
   const [status, setStatus] = useState();
   const pubref = useRef();
   const hideref = useRef();
 
   const [selectedValue, setSelectedValue] = useState('1 Day');
-  const [searchvalue, setSearchvalue] = useState('')
+  const [searchvalue, setSearchvalue] = useState('');
 
   const [deletepopup, setDeletePopup] = useState(false);
   const [ServiceAreaId, setServiceAreaId] = useState(null);
@@ -89,30 +89,23 @@ const Categories = () => {
   // handle reset function start from here
 
   function handleResetServiceArea() {
-    setSelectedValue('1 Day')
-    SetPostalCode('')
-    SetAreaName('')
-    pubref.current.checked = false
-    hideref.current.checked = false
-
+    setSelectedValue('1 Day');
+    SetPostalCode('');
+    SetAreaName('');
+    pubref.current.checked = false;
+    hideref.current.checked = false;
   }
-
-
-
-
 
   /*  *******************************
     Add New Service  functionality start 
   *********************************************   **/
 
-
   async function HandleSaveServiceAreas(e) {
-    e.preventDefault()
+    e.preventDefault();
     if (!AreaName && !postalCode && !status) {
-      alert("Please Fill All Field")
-    }
-    else {
-      setLoaderstatus(true)
+      alert('Please Fill All Field');
+    } else {
+      setLoaderstatus(true);
       try {
         const docRef = await addDoc(collection(db, 'ServiceAreas'), {
           AreaName: AreaName,
@@ -121,43 +114,25 @@ const Categories = () => {
           ExpectedDelivery: selectedValue,
         });
 
-        addServiceData(docRef)
-        setLoaderstatus(false)
+        addServiceData(docRef);
+        setLoaderstatus(false);
         toast.success('Category  added Successfully !', {
           position: toast.POSITION.TOP_RIGHT,
         });
         handleResetServiceArea();
-        setAddsServicePopup(false)
+        setAddsServicePopup(false);
       } catch (error) {
         toast.error('Error in Adding Service Areas', {
           position: toast.POSITION.TOP_RIGHT,
-        })
-        console.error("error is adding service areas ", error)
+        });
+        console.error('error is adding service areas ', error);
       }
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   /*  *******************************
     Add New Service functionality end here  
   *********************************************   **/
-
 
   /*  *******************************
       Delete functionality start 
@@ -189,13 +164,13 @@ const Categories = () => {
         ServiceStatus: newStatus,
       });
       updateServiceData({ id, ServiceStatus: newStatus });
-      toast.success("Status Changed Successfully", {
+      toast.success('Status Changed Successfully', {
         position: toast.POSITION.TOP_RIGHT,
-      })
+      });
     } catch (error) {
-      toast.error((error), {
+      toast.error(error, {
         position: toast.POSITION.TOP_RIGHT,
-      })
+      });
       console.log(error);
     }
   }
@@ -297,8 +272,8 @@ const Categories = () => {
                     <input
                       className="popup_input w-100 fs-xs fw-400 black"
                       type="number"
-                      minLength='6'
-                      maxLength='6'
+                      minLength="6"
+                      maxLength="6"
                       value={postalCode}
                       onInput={(e) => {
                         const value = e.target.value.replace(/\D/g, '');
@@ -320,12 +295,36 @@ const Categories = () => {
                         <img className="float-end" src={dropdown} alt="" />
                       </button>
                       <ul class="dropdown-menu w-100">
-                        <li class="dropdown-item fs-xs fw-400 dropdown_btn_text" onClick={() => handleSelectItem('1 Day')} >1 Day</li>
-                        <li class="dropdown-item fs-xs fw-400 dropdown_btn_text" onClick={() => handleSelectItem('2 Day')} >2 Day</li>
-                        <li class="dropdown-item fs-xs fw-400 dropdown_btn_text" onClick={() => handleSelectItem('3 Day')} >3 Day</li>
-                        <li class="dropdown-item fs-xs fw-400 dropdown_btn_text" onClick={() => handleSelectItem('4 Day')} >4 Day</li>
-                        <li class="dropdown-item fs-xs fw-400 dropdown_btn_text" onClick={() => handleSelectItem('5 Day')} >5 Day</li>
-                        <li class="dropdown-item fs-xs fw-400 dropdown_btn_text" onClick={() => handleSelectItem('6 Day')} >6 Day</li>
+                        <li
+                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                          onClick={() => handleSelectItem('1 Day')}>
+                          1 Day
+                        </li>
+                        <li
+                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                          onClick={() => handleSelectItem('2 Day')}>
+                          2 Day
+                        </li>
+                        <li
+                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                          onClick={() => handleSelectItem('3 Day')}>
+                          3 Day
+                        </li>
+                        <li
+                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                          onClick={() => handleSelectItem('4 Day')}>
+                          4 Day
+                        </li>
+                        <li
+                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                          onClick={() => handleSelectItem('5 Day')}>
+                          5 Day
+                        </li>
+                        <li
+                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                          onClick={() => handleSelectItem('6 Day')}>
+                          6 Day
+                        </li>
                       </ul>
                     </div>
                   </div>
@@ -335,29 +334,32 @@ const Categories = () => {
                       <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
                         <label class="check fw-400 fs-sm black mb-0">
                           Live
-                          <input type="checkbox"
+                          <input
+                            type="checkbox"
                             ref={pubref}
                             onChange={(e) => {
                               if (e.target.checked) {
                                 setStatus('live');
                                 hideref.current.checked = false;
                               }
-                            }} />
+                            }}
+                          />
                           <span class="checkmark"></span>
                         </label>
                       </div>
                       <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
                         <label class="check fw-400 fs-sm black mb-0">
                           Draft
-                          <input type="checkbox"
+                          <input
+                            type="checkbox"
                             ref={hideref}
                             onChange={(e) => {
-
                               if (e.target.checked) {
                                 setStatus('draft');
                                 pubref.current.checked = false;
                               }
-                            }} />
+                            }}
+                          />
                           <span class="checkmark"></span>
                         </label>
                       </div>
@@ -369,7 +371,9 @@ const Categories = () => {
                         Reset
                       </button>
                     </button>
-                    <button onClick={HandleSaveServiceAreas} className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black">
+                    <button
+                      onClick={HandleSaveServiceAreas}
+                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black">
                       <img src={saveicon} alt="saveicon" />
                       Save
                     </button>
@@ -390,7 +394,6 @@ const Categories = () => {
                       <th onClick={() => sorting("AreaName")} className="py-3 ps-3 w-100">
                         <div className="d-flex align-items-center gap-3 min_width_300">
                           <label class="check1 fw-400 fs-sm black mb-0">
-                            Name / Title
                             <input
                               type="checkbox"
                               checked={selectAll}
@@ -398,6 +401,7 @@ const Categories = () => {
                             />
                             <span class="checkmark"></span>
                           </label>
+                          <p className="fw-400 fs-sm black mb-0 ms-1"> Name / Title</p>
                         </div>
                       </th>
                       <th className="mx_160 px-2">
@@ -415,95 +419,107 @@ const Categories = () => {
                     </tr>
                   </thead>
                   <tbody className="table_body">
-                    {ServiceData
-                      .filter((data) => {
-                        return searchvalue.toLowerCase() === ''
-                          ? data
-                          : data.AreaName.toLowerCase().includes(searchvalue);
-                      }).map((data, index) => {
-                        return (
-                          <tr className="product_borderbottom">
-                            <td className="py-3 ps-3 w-100">
-                              <div className="d-flex align-items-center gap-3 min_width_300">
-                                <label class="check1 fw-400 fs-sm black mb-0">
-                                  <div className="d-flex align-items-center">
-                                    <p className="fw-400 fs-sm black mb-0">{data.AreaName}</p>
-                                  </div>
-                                  <input type="checkbox" checked={data.checked || false}
-                                    onChange={() => handleCheckboxChange(index)} />
-                                  <span class="checkmark"></span>
-                                </label>
+                    {ServiceData.filter((data) => {
+                      return searchvalue.toLowerCase() === ''
+                        ? data
+                        : data.AreaName.toLowerCase().includes(searchvalue);
+                    }).map((data, index) => {
+                      return (
+                        <tr className="product_borderbottom">
+                          <td className="py-3 ps-3 w-100">
+                            <div className="d-flex align-items-center gap-3 min_width_300">
+                              <label class="check1 fw-400 fs-sm black mb-0">
+                                <input
+                                  type="checkbox"
+                                  checked={data.checked || false}
+                                  onChange={() => handleCheckboxChange(index)}
+                                />
+                                <span class="checkmark"></span>
+                              </label>
+                              <div className="d-flex align-items-center ms-1">
+                                <p className="fw-400 fs-sm black mb-0">{data.AreaName}</p>
                               </div>
-                            </td>
-                            <td className="px-2 mx_160">
-                              <h3 className="fs-sm fw-400 black mb-0">{data.PostalCode}</h3>
-                            </td>
-                            <td className="ps-4 mw-200">
-                              <h3 className="fs-sm fw-400 black mb-0">{data.ExpectedDelivery}</h3>
-                            </td>
-                            <td className="mx_140">
-                              <h3 className="fs-sm fw-400 black mb-0 color_green">{data.ServiceStatus}</h3>
-                            </td>
-                            <td className="text-center mw-90">
-                              <div class="dropdown">
-                                <button
-                                  class="btn dropdown-toggle"
-                                  type="button"
-                                  id="dropdownMenuButton1"
-                                  data-bs-toggle="dropdown"
-                                  aria-expanded="false">
-                                  <img src={dropdownDots} alt="dropdownDots" />
-                                </button>
-                                <ul
-                                  class="dropdown-menu categories_dropdown"
-                                  aria-labelledby="dropdownMenuButton1">
-                                  <li>
-                                    <div class="dropdown-item" href="#">
-                                      <div className="d-flex align-items-center categorie_dropdown_options">
-                                        <img src={eye_icon} alt="" />
-                                        <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
-                                      </div>
+                            </div>
+                          </td>
+                          <td className="px-2 mx_160">
+                            <h3 className="fs-sm fw-400 black mb-0">{data.PostalCode}</h3>
+                          </td>
+                          <td className="ps-4 mw-200">
+                            <h3 className="fs-sm fw-400 black mb-0">{data.ExpectedDelivery}</h3>
+                          </td>
+                          <td className="mx_140">
+                            <h3 className="fs-sm fw-400 black mb-0 color_green">
+                              {data.ServiceStatus}
+                            </h3>
+                          </td>
+                          <td className="text-center mw-90">
+                            <div class="dropdown">
+                              <button
+                                class="btn dropdown-toggle"
+                                type="button"
+                                id="dropdownMenuButton1"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <img src={dropdownDots} alt="dropdownDots" />
+                              </button>
+                              <ul
+                                class="dropdown-menu categories_dropdown"
+                                aria-labelledby="dropdownMenuButton1">
+                                <li>
+                                  <div class="dropdown-item" href="#">
+                                    <div className="d-flex align-items-center categorie_dropdown_options">
+                                      <img src={eye_icon} alt="" />
+                                      <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
                                     </div>
-                                  </li>
-                                  <li>
-                                    <div class="dropdown-item" href="#">
-                                      <div className="d-flex align-items-center categorie_dropdown_options">
-                                        <img src={pencil_icon} alt="" />
-                                        <p className="fs-sm fw-400 black mb-0 ms-2">Edit ServiceArea </p>
-                                      </div>
+                                  </div>
+                                </li>
+                                <li>
+                                  <div class="dropdown-item" href="#">
+                                    <div className="d-flex align-items-center categorie_dropdown_options">
+                                      <img src={pencil_icon} alt="" />
+                                      <p className="fs-sm fw-400 black mb-0 ms-2">
+                                        Edit ServiceArea{' '}
+                                      </p>
                                     </div>
-                                  </li>
-                                  <li>
-                                    <div class="dropdown-item" href="#">
-                                      <div onClick={() => {
-                                        setServiceAreaId(data.id);
-                                        setServiceStatus(data.ServiceStatus)
-                                        setStatusPopup(true);
-                                      }} className="d-flex align-items-center categorie_dropdown_options">
-                                        <img src={updown_icon} alt="" />
-                                        {<p className="fs-sm fw-400 green mb-0 ms-2">
-                                          {data.ServiceStatus === 'live' ? 'change to  draft' : 'Change to live'}
-                                        </p>}
-                                      </div>
+                                  </div>
+                                </li>
+                                <li>
+                                  <div class="dropdown-item" href="#">
+                                    <div
+                                      onClick={() =>
+                                        handleChangeStatus(data.id, data.ServiceStatus)
+                                      }
+                                      className="d-flex align-items-center categorie_dropdown_options">
+                                      <img src={updown_icon} alt="" />
+                                      {
+                                        <p className="fs-sm fw-400 green mb-0 ms-2">
+                                          {data.ServiceStatus === 'live'
+                                            ? 'change to  draft'
+                                            : 'Change to live'}
+                                        </p>
+                                      }
                                     </div>
-                                  </li>
-                                  <li>
-                                    <div class="dropdown-item" href="#">
-                                      <div onClick={() => {
+                                  </div>
+                                </li>
+                                <li>
+                                  <div class="dropdown-item" href="#">
+                                    <div
+                                      onClick={() => {
                                         setServiceAreaId(data.id);
                                         setDeletePopup(true);
-                                      }} className="d-flex align-items-center categorie_dropdown_options">
-                                        <img src={delete_icon} alt="" />
-                                        <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
-                                      </div>
+                                      }}
+                                      className="d-flex align-items-center categorie_dropdown_options">
+                                      <img src={delete_icon} alt="" />
+                                      <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
                                     </div>
-                                  </li>
-                                </ul>
-                              </div>
-                            </td>
-                          </tr>
-                        )
-                      })}
+                                  </div>
+                                </li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
                 <ToastContainer />
@@ -532,7 +548,7 @@ const Categories = () => {
         </div>
       </div>
     );
-  };
-}
+  }
+};
 
 export default Categories;

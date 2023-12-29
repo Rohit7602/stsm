@@ -189,10 +189,9 @@ const ProductListComponent = () => {
               <table className="w-100">
                 <thead className="table_head w-100">
                   <tr className="product_borderbottom">
-                    <th onClick={() => sorting("name")} className="mw_300 p-3">
+                    <th className="p-3">
                       <div className="d-flex align-items-center">
                         <label className="check1 fw-400 fs-sm black mb-0">
-                          Product
                           <input
                             type="checkbox"
                             checked={selectAll}
@@ -200,6 +199,7 @@ const ProductListComponent = () => {
                           />
                           <span className="checkmark"></span>
                         </label>
+                        <p className="fw-400 fs-sm black mb-0 ms-2">Product</p>
                       </div>
                     </th>
                     <th className="mw_300 p-3">
@@ -226,29 +226,30 @@ const ProductListComponent = () => {
                   {data.map((value, index) => {
                     return (
                       <tr key={index}>
-                        <td className="p-3 mw_300">
+                        <td className="p-3 d-flex align-items-center">
                           <label className="check1 fw-400 fs-sm black mb-0">
-                            <div className="d-flex align-items-center">
-                              <div className="w_40">
-                                <img src={value.productImages} alt="" />
-                              </div>
-                              <div className="ps-3 ms-1">
-                                <p className="fw-400 fs-sm black mb-0">{value.name}</p>
-                                <div className="d-flex align-items-center">
-                                  <p className="mb-0 fs-xxs fw-400 fade_grey d-flex flex-column">
-                                    <span className="pe-1"> ID : {value.id} </span>
-                                    <span>SKU : {value.sku}</span>
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
                             <input
+                              className="position-relative"
                               type="checkbox"
                               checked={value.checked || false}
                               onChange={() => handleCheckboxChange(index)}
                             />
                             <span className="checkmark me-5"></span>
                           </label>
+                          <div className="d-flex align-items-center ms-2">
+                            <div className="w_40">
+                              <img src={value.productImages} alt="" />
+                            </div>
+                            <div className="ps-3 ms-1">
+                              <p className="fw-400 fs-sm black mb-0">{value.name}</p>
+                              <div className="d-flex align-items-center">
+                                <p className="mb-0 fs-xxs fw-400 fade_grey d-flex flex-column">
+                                  <span className="pe-1"> ID : {value.id} </span>
+                                  <span>SKU : {value.sku}</span>
+                                </p>
+                              </div>
+                            </div>
+                          </div>
                         </td>
                         <td className="p-3 mw_300">
                           <h3 className="fs-xs fw-400 black mb-0">{value.shortDescription}</h3>

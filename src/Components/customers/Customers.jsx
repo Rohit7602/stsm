@@ -47,10 +47,10 @@ const Customers = () => {
                       <th className="mw-450 py-2 px-3 w-100">
                         <div className="d-flex align-items-center gap-3 min_width_300">
                           <label class="check1 fw-400 fs-sm black mb-0  align-items-center d-flex">
-                            Name
                             <input type="checkbox" />
                             <span class="checkmark"></span>
                           </label>
+                          <p className="fw-400 fs-sm black mb-0 ">Name</p>
                         </div>
                       </th>
                       <th className="mw_160 p-3">
@@ -102,8 +102,12 @@ const Customers = () => {
                             <td className="py-2 px-3 w-100">
                               <div className="d-flex align-items-center gap-3 min_width_300">
                                 <label class="check1 fw-400 fs-sm black mb-0  align-items-center d-flex">
+                                  <input type="checkbox" />
+                                  <span class="checkmark"></span>
+                                </label>
+                                <div className="d-flex align-items-center">
                                   <img
-                                    className="manicon mx-2"
+                                    className="manicon me-2"
                                     src={!image ? manimage : image}
                                     alt="manicon"
                                   />
@@ -116,9 +120,7 @@ const Customers = () => {
 
                                     <h3 className="fs-xxs fw-400 fade_grey mt-1 mb-0">{email}</h3>
                                   </div>
-                                  <input type="checkbox" />
-                                  <span class="checkmark"></span>
-                                </label>
+                                </div>
                               </div>
                             </td>
                             <td className="p-3 mw_160">
