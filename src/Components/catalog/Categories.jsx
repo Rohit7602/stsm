@@ -33,6 +33,52 @@ const Categories = () => {
   const [deletepopup, setDeletePopup] = useState(false);
   const [statusPopup, setStatusPopup] = useState(false);
   // const [editCatPopup, setEditCatPopup] = useState(true);
+  const [order, setorder] = useState("ASC")
+  const sorting = (col) => {
+    // Create a copy of the data array
+    const sortedData = [...data];
+
+    if (order === "ASC") {
+      sortedData.sort((a, b) => {
+        const valueA = a[col].toLowerCase();
+        const valueB = b[col].toLowerCase();
+        return valueA.localeCompare(valueB);
+      });
+    } else {
+      // If the order is not ASC, assume it's DESC
+      sortedData.sort((a, b) => {
+        const valueA = a[col].toLowerCase();
+        const valueB = b[col].toLowerCase();
+        return valueB.localeCompare(valueA);
+      });
+    }
+
+    // Update the order state
+    const newOrder = order === "ASC" ? "DESC" : "ASC";
+    setorder(newOrder);
+
+    // Update the data using the updateData function from your context
+    updateData(sortedData);
+  };
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /*  *******************************
      Delete functionality start 
@@ -157,7 +203,7 @@ const Categories = () => {
               <table className="w-100">
                 <thead className="w-100 table_head">
                   <tr className="product_borderbottom">
-                    <th className="py-3 ps-3 w-100">
+                    <th onClick={() => sorting("title") } className="py-3 ps-3 w-100">
                       <div className="d-flex align-items-center gap-3 min_width_300">
                         <label class="check1 fw-400 fs-sm black mb-0">
                           Name
@@ -170,13 +216,13 @@ const Categories = () => {
                         </label>
                       </div>
                     </th>
-                    <th className="mw-250 px-2">
+                    <th onClick={() => sorting("cat_ID")} className="mw-250 px-2">
                       <h3 className="fs-sm fw-400 black mb-0">Parent Category</h3>
                     </th>
-                    <th className="mx_160 ps-4">
+                    <th  className="mx_160 ps-4">
                       <h3 className="fs-sm fw-400 black mb-0">Items</h3>
                     </th>
-                    <th className="mx_160">
+                    <th onClick={() => sorting("status")} className="mx_160">
                       <h3 className="fs-sm fw-400 black mb-0">Visibility</h3>
                     </th>
                     <th className="mw-90 p-3 me-1 text-center">

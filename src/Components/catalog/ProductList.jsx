@@ -11,6 +11,7 @@ import { deleteObject, getStorage, ref } from 'firebase/storage';
 import { db } from '../../firebase';
 import { Link, NavLink } from 'react-router-dom';
 import { useProductsContext } from '../../context/productgetter';
+import Updatepopup from '../popups/Updatepopup';
 import Deletepopup from '../popups/Deletepopup';
 
 const ProductListComponent = () => {
@@ -19,8 +20,54 @@ const ProductListComponent = () => {
   // states
 
   const [ProductId, setProductId] = useState(null);
+  const [productStatus, setProductStatus] = useState(null)
   const [ProductImage, setProductImage] = useState(null);
   const [deletepopup, setDeletePopup] = useState(false);
+  const [statusPopup, setStatusPopup] = useState(false);
+
+
+  const [order, setorder] = useState("ASC")
+  const sorting = (col) => {
+    // Create a copy of the data array
+    const sortedData = [...data];
+
+    if (order === "ASC") {
+      sortedData.sort((a, b) => {
+        const valueA = a[col].toLowerCase();
+        const valueB = b[col].toLowerCase();
+        return valueA.localeCompare(valueB);
+      });
+    } else {
+      // If the order is not ASC, assume it's DESC
+      sortedData.sort((a, b) => {
+        const valueA = a[col].toLowerCase();
+        const valueB = b[col].toLowerCase();
+        return valueB.localeCompare(valueA);
+      });
+    }
+
+    // Update the order state
+    const newOrder = order === "ASC" ? "DESC" : "ASC";
+    setorder(newOrder);
+
+    // Update the data using the updateData function from your context
+    updateData(sortedData);
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /*  *******************************
    checkbox functionality start 
@@ -65,14 +112,14 @@ const ProductListComponent = () => {
   *************************************************
      */
 
-  async function handleStatus(id, status) {
+  async function handleChangeStatus(id, status) {
     try {
       // Toggle the status between 'publish' and 'hidden'
       const newStatus = status === 'hidden' ? 'published' : 'hidden';
       await updateDoc(doc(db, 'products', id), {
         status: newStatus,
       });
-      alert('status Change succesffuly ');
+
       updateData({ id, status: newStatus });
     } catch (error) {
       console.log(error);
@@ -116,7 +163,7 @@ const ProductListComponent = () => {
 
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
-      {deletepopup === true ? <div className="bg_black_overlay"></div> : ''}
+      {deletepopup === true || statusPopup==true  ? <div className="bg_black_overlay"></div> : ''}
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
         <div className="d-flex  align-items-center flex-column flex-sm-row  gap-2 gap-sm-0 justify-content-between">
           <div className="d-flex">
@@ -142,7 +189,7 @@ const ProductListComponent = () => {
               <table className="w-100">
                 <thead className="table_head w-100">
                   <tr className="product_borderbottom">
-                    <th className="mw_300 p-3">
+                    <th onClick={() => sorting("name")} className="mw_300 p-3">
                       <div className="d-flex align-items-center">
                         <label className="check1 fw-400 fs-sm black mb-0">
                           Product
@@ -158,13 +205,13 @@ const ProductListComponent = () => {
                     <th className="mw_300 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Short Discription </h3>
                     </th>
-                    <th className="mw_160 p-3">
+                    <th  className="mw_160 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Category</h3>
                     </th>
                     <th className="mw_130 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Stock</h3>
                     </th>
-                    <th className="mw_130 p-3">
+                    <th onClick={() => sorting("status")} className="mw_130 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Status</h3>
                     </th>
                     <th className="mx_100 p-3">
@@ -261,7 +308,11 @@ const ProductListComponent = () => {
                                 <div
                                   class="dropdown-item"
                                   href="#"
-                                  onClick={() => handleStatus(value.id, value.status)}>
+                                  onClick={() => {
+                                    setProductId(value.id);
+                                    setProductStatus(value.status);
+                                    setStatusPopup(true);
+                                  }}>
                                   <div className="d-flex align-items-center categorie_dropdown_options">
                                     <img src={updown_icon} alt="" />
                                     <p className="fs-sm fw-400 green mb-0 ms-2">
@@ -298,7 +349,18 @@ const ProductListComponent = () => {
             {deletepopup ? (
               <Deletepopup
                 showPopup={setDeletePopup}
-                handleDelete={() => handleDeleteProduct(ProductId, ProductImage)}
+                handleDelete={() =>
+                  handleDeleteProduct(ProductId, ProductImage)
+                }
+                itemName="Product"
+              />
+            ) : null}
+            {statusPopup ? (
+              <Updatepopup
+                statusPopup={setStatusPopup}
+                handelStatus={() =>
+                  handleChangeStatus(ProductId, productStatus)
+                }
                 itemName="Product"
               />
             ) : null}

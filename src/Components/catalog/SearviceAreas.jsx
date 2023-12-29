@@ -18,6 +18,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { UseServiceContext } from '../../context/ServiceAreasGetter';
 import Deletepopup from '../popups/Deletepopup';
+import Updatepopup from '../popups/Updatepopup';
+
 
 
 const Categories = () => {
@@ -35,6 +37,48 @@ const Categories = () => {
 
   const [deletepopup, setDeletePopup] = useState(false);
   const [ServiceAreaId, setServiceAreaId] = useState(null);
+  const [ServiceStatus, setServiceStatus] = useState(null);
+  const [statusPopup, setStatusPopup] = useState(false);
+
+  const [order, setorder] = useState("ASC")
+  const sorting = (col) => {
+    // Create a copy of the data array
+    const sortedData = [...ServiceData];
+
+    if (order === "ASC") {
+      sortedData.sort((a, b) => {
+        const valueA = a[col].toLowerCase();
+        const valueB = b[col].toLowerCase();
+        return valueA.localeCompare(valueB);
+      });
+    } else {
+      // If the order is not ASC, assume it's DESC
+      sortedData.sort((a, b) => {
+        const valueA = a[col].toLowerCase();
+        const valueB = b[col].toLowerCase();
+        return valueB.localeCompare(valueA);
+      });
+    }
+
+    // Update the order state
+    const newOrder = order === "ASC" ? "DESC" : "ASC";
+    setorder(newOrder);
+
+    // Update the data using the updateData function from your context
+    updateServiceData(sortedData);
+  };
+
+
+
+
+
+
+
+
+
+
+
+
 
   // Function to handle the selection of an item
   const handleSelectItem = (value) => {
@@ -343,7 +387,7 @@ const Categories = () => {
                 <table className="w-100">
                   <thead className="w-100 table_head">
                     <tr className="product_borderbottom">
-                      <th className="py-3 ps-3 w-100">
+                      <th onClick={() => sorting("AreaName")} className="py-3 ps-3 w-100">
                         <div className="d-flex align-items-center gap-3 min_width_300">
                           <label class="check1 fw-400 fs-sm black mb-0">
                             Name / Title
@@ -362,7 +406,7 @@ const Categories = () => {
                       <th className="mw-200 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Expected Delivery</h3>
                       </th>
-                      <th className="mx_140">
+                      <th onClick={() => sorting("ServiceStatus")} className="mx_140">
                         <h3 className="fs-sm fw-400 black mb-0">Service Status</h3>
                       </th>
                       <th className="mw-90 p-3 me-1 text-center">
@@ -431,7 +475,11 @@ const Categories = () => {
                                   </li>
                                   <li>
                                     <div class="dropdown-item" href="#">
-                                      <div onClick={() => handleChangeStatus(data.id, data.ServiceStatus)} className="d-flex align-items-center categorie_dropdown_options">
+                                      <div onClick={() => {
+                                        setServiceAreaId(data.id);
+                                        setServiceStatus(data.ServiceStatus)
+                                        setStatusPopup(true);
+                                      }} className="d-flex align-items-center categorie_dropdown_options">
                                         <img src={updown_icon} alt="" />
                                         {<p className="fs-sm fw-400 green mb-0 ms-2">
                                           {data.ServiceStatus === 'live' ? 'change to  draft' : 'Change to live'}
@@ -470,11 +518,19 @@ const Categories = () => {
                   />
                 ) : null
               }
+              {statusPopup ? (
+                <Updatepopup
+                  statusPopup={setStatusPopup}
+                  handelStatus={() =>
+                    handleChangeStatus(ServiceAreaId, ServiceStatus)
+                  }
+                  itemName="ServiceArea"
+                />
+              ) : null}
             </div>
           </div>
         </div>
       </div>
-
     );
   };
 }
