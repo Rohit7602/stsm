@@ -17,6 +17,7 @@ import { useRef } from 'react';
 import { ref, getStorage, deleteObject } from 'firebase/storage';
 import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
 import Deletepopup from '../popups/Deletepopup';
+import Updatepopup from '../popups/Updatepopup';
 
 const Categories = () => {
   const { categoreis } = useMainCategories();
@@ -25,11 +26,13 @@ const Categories = () => {
   const [searchvalue, setSearchvalue] = useState('');
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(null);
   const [selectedSubcategoryImage, setSelectedSubcategoryImage] = useState(null);
-
+  const [selectedSubcategoryStatus, setSelectedSubcategoryStatus] = useState(null);
   const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);
   };
   const [deletepopup, setDeletePopup] = useState(false);
+  const [statusPopup, setStatusPopup] = useState(false);
+  // const [editCatPopup, setEditCatPopup] = useState(true);
 
   /*  *******************************
      Delete functionality start 
@@ -62,10 +65,10 @@ const Categories = () => {
     try {
       // Toggle the status between 'publish' and 'hidden'
       const newStatus = status === 'hidden' ? 'published' : 'hidden';
+
       await updateDoc(doc(db, 'sub_categories', id), {
         status: newStatus,
       });
-      alert('status Change succesffuly ');
       updateData({ id, status: newStatus });
     } catch (error) {
       console.log(error);
@@ -123,7 +126,7 @@ const Categories = () => {
 
   return (
     <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
-      {deletepopup === true ? <div className="bg_black_overlay"></div> : ''}
+      {deletepopup || statusPopup ? <div className="bg_black_overlay"></div> : ''}
       <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
         <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
           <div className="d-flex">
@@ -190,7 +193,7 @@ const Categories = () => {
                       return search.toLowerCase() === ''
                         ? item
                         : item.title.toLowerCase().includes(searchvalue) ||
-                        mainCategory.title.toLowerCase().includes(searchvalue);
+                            mainCategory.title.toLowerCase().includes(searchvalue);
                     })
                     .map((value, index) => {
                       const subcategoryId = value.id;
@@ -264,7 +267,9 @@ const Categories = () => {
                                     <div
                                       className="d-flex align-items-center categorie_dropdown_options"
                                       onClick={() => {
-                                        handleChangeStatus(value.id, value.status);
+                                        setSelectedSubcategoryId(value.id);
+                                        setSelectedSubcategoryStatus(value.status);
+                                        setStatusPopup(true);
                                       }}>
                                       <img src={updown_icon} alt="" />
                                       <p className="fs-sm fw-400 green mb-0 ms-2">
@@ -279,9 +284,6 @@ const Categories = () => {
                                   <div class="dropdown-item" href="#">
                                     <div
                                       className="d-flex align-items-center categorie_dropdown_options"
-                                      // onClick={() => {
-                                      //   handleDelete(value.id, value.image);
-                                      // }}
                                       onClick={() => {
                                         setSelectedSubcategoryId(value.id);
                                         setSelectedSubcategoryImage(value.image);
@@ -297,7 +299,6 @@ const Categories = () => {
                           </td>
                         </tr>
                       );
-
                     })}
                 </tbody>
               </table>
@@ -305,15 +306,33 @@ const Categories = () => {
             </div>
           </div>
         </div>
-        {
-          deletepopup ? (
-            <Deletepopup
-              showPopup={setDeletePopup}
-              handleDelete={() => handleDeleteCategory(selectedSubcategoryId, selectedSubcategoryImage)}
-              itemName="SubCategory"
-            />
-          ) : null
-        }
+        {deletepopup ? (
+          <Deletepopup
+            showPopup={setDeletePopup}
+            handleDelete={() =>
+              handleDeleteCategory(selectedSubcategoryId, selectedSubcategoryImage)
+            }
+            itemName="SubCategory"
+          />
+        ) : null}
+        {statusPopup ? (
+          <Updatepopup
+            statusPopup={setStatusPopup}
+            handelStatus={() =>
+              handleChangeStatus(selectedSubcategoryId, selectedSubcategoryStatus)
+            }
+            itemName="SubCategory"
+          />
+        ) : null}
+        {/* <div className="new_cat_popup">
+          <form action="">
+            <p className="fs-4 fw-500">Edit SubCatagory</p>
+            <p className="fs-2sm fw-400">Basic Information</p>
+            <label htmlFor="">Name</label>
+            <br />
+            <input className='' type="text" />
+          </form>
+        </div> */}
       </div>
     </div>
   );

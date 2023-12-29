@@ -15,6 +15,7 @@ import Orderdetails from './Components/orders/Orderdetails';
 import ParentCategories from './Components/catalog/ParentCategories';
 import ServiceAreas from './Components/catalog/SearviceAreas';
 import Login from './Components/login/Login';
+import Stsm from './Components/Stsm';
 import { useState } from 'react';
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
           </div>
         </div>
       </div>
+  
     </>
   );
 }

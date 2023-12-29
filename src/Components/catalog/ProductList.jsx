@@ -13,7 +13,6 @@ import { Link, NavLink } from 'react-router-dom';
 import { useProductsContext } from '../../context/productgetter';
 import Deletepopup from '../popups/Deletepopup';
 
-
 const ProductListComponent = () => {
   const { data, updateData, deleteData } = useProductsContext();
 
@@ -23,13 +22,10 @@ const ProductListComponent = () => {
   const [ProductImage, setProductImage] = useState(null);
   const [deletepopup, setDeletePopup] = useState(false);
 
-
-
   /*  *******************************
    checkbox functionality start 
  *********************************************   **/
   const [selectAll, setSelectAll] = useState(false);
-
 
   useEffect(() => {
     // Check if all checkboxes are checked
@@ -120,6 +116,7 @@ const ProductListComponent = () => {
 
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
+      {deletepopup === true ? <div className="bg_black_overlay"></div> : ''}
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
         <div className="d-flex  align-items-center flex-column flex-sm-row  gap-2 gap-sm-0 justify-content-between">
           <div className="d-flex">
@@ -298,15 +295,13 @@ const ProductListComponent = () => {
                 </tbody>
               </table>
             </div>
-            {
-              deletepopup ? (
-                <Deletepopup
-                  showPopup={setDeletePopup}
-                  handleDelete={() => handleDeleteProduct(ProductId, ProductImage)}
-                  itemName="Product"
-                />
-              ) : null
-            }
+            {deletepopup ? (
+              <Deletepopup
+                showPopup={setDeletePopup}
+                handleDelete={() => handleDeleteProduct(ProductId, ProductImage)}
+                itemName="Product"
+              />
+            ) : null}
           </div>
         </div>
       </div>
