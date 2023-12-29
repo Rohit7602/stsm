@@ -576,7 +576,7 @@ body {
 .check1 {
   display: block;
   position: relative;
-  padding-left: 45px;
+  padding-left: 13px;
   margin-bottom: 12px;
   cursor: pointer;
   font-size: 22px;
@@ -596,11 +596,9 @@ body {
 }
 
 .check1 input {
-  position: absolute;
+  /* position: absolute; */
   opacity: 0;
   cursor: pointer;
-  height: 0;
-  width: 0;
 }
 
 /* Create a custom checkbox */
@@ -1325,6 +1323,12 @@ tbody::-webkit-scrollbar {
 .step_bg {
   background-color: #33495f;
   padding: 21px 10px;
+  cursor: pointer;
+}
+.active_step_bg {
+  background-color: #01bbbd !important;
+  padding: 21px 10px;
+  cursor: pointer;
 }
 
 .next_btn {

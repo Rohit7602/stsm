@@ -98,7 +98,6 @@ const ProductListComponent = (orderStatus) => {
                     <th className="mw-200 p-3 w-100">
                       <div className="d-flex align-items-center min_width_300">
                         <label className="check1 fw-400 fs-sm black mb-0">
-                          Order Number
                           <input
                             type="checkbox"
                             checked={selectAll}
@@ -106,6 +105,7 @@ const ProductListComponent = (orderStatus) => {
                           />
                           <span className="checkmark"></span>
                         </label>
+                        <p className="fw-400 fs-sm black mb-0 ms-2">Order Number</p>
                       </div>
                     </th>
                     <th className="mw-200 p-3">
@@ -143,20 +143,21 @@ const ProductListComponent = (orderStatus) => {
                       return (
                         <tr>
                           <td className="p-3 w-100">
-                            <label className="check1 fw-400 fs-sm black mb-0 min_width_300">
+                            <div className="min_width_300  d-flex align-items-center">
+                              <label className="check1 fw-400 fs-sm black mb-0">
+                                <input
+                                  type="checkbox"
+                                  checked={orderTableData.checked || false}
+                                  onChange={() => handleCheckboxChange(index)}
+                                />
+                                <span className="checkmark"></span>
+                              </label>
                               <Link
-                                className="fw-400 fs-sm black"
+                                className="fw-400 fs-sm black ms-2"
                                 to={`orderdetails/${orderTableData.id}`}>
                                 {orderTableData.id}
                               </Link>
-                              <div className="d-flex align-items-center"></div>
-                              <input
-                                type="checkbox"
-                                checked={orderTableData.checked || false}
-                                onChange={() => handleCheckboxChange(index)}
-                              />
-                              <span className="checkmark"></span>
-                            </label>
+                            </div>
                           </td>
                           <td className="p-3 mw-200">
                             <h3 className="fs-xs fw-400 black mb-0">
