@@ -44,12 +44,19 @@ function App() {
     setUser(false);
   }
   useEffect(() => {
-    // This effect will run after the user state is updated
-    if (!user) {
-      // Redirect or perform any actions after successful login
-      console.log('User logged in');
-    }
-  }, [user]);
+    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        // User is signed in
+        setUser(false);
+      } else {
+        // User is signed out
+        setUser(true);
+      }
+    });
+
+    // Cleanup function to unsubscribe when the component unmounts
+    return () => unsubscribe();
+  }, []);
   return (
     <>
       {user ? <Login login={handleLogin} /> : null}
