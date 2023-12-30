@@ -1,15 +1,16 @@
 import { useState, useEffect, useMemo } from "react";
 import { createContext, useContext } from "react";
-import { getDocs, collection} from "firebase/firestore";
-import { query,where } from "firebase/firestore";
-import { db , storage} from '../firebase'
-import {  getDownloadURL, ref } from "firebase/storage";
+import { getDocs, collection } from "firebase/firestore";
+import { query, where } from "firebase/firestore";
+import { db, storage } from '../firebase'
+import { getDownloadURL, ref } from "firebase/storage";
 
 const BannerGetterContext = createContext()
 
 export const UseBannerData = () => {
     return useContext(BannerGetterContext)
 }
+
 
 export const BannerDataProvider = ({ children }) => {
     const [BannerData, SetBannerData] = useState()
@@ -35,16 +36,37 @@ export const BannerDataProvider = ({ children }) => {
         }
     }, [isdatafetched])
 
+    const deleteObjectByImageUrl = async (imageUrl) => {
+        // Find the object index based on imageUrl
+        const updatedData = BannerData.map((section) => {
+            if (section.data) {
+                section.data = section.data.filter((item) => item.imgUrl !== imageUrl);
+            }
+            return section;
+        });
+
+        // Update the context with the modified data array
+        SetBannerData(updatedData);
+
+        // You may also want to delete the image from storage and Firestore here
+        // ...
+
+        console.log("Object deleted from context");
+    };
+
 
 
     const memodata = useMemo(() => BannerData, [BannerData])
-    
+
     return (
-        <BannerGetterContext.Provider value={{ BannerData: memodata }}>
+        <BannerGetterContext.Provider value={{ BannerData: memodata, deleteObjectByImageUrl }}>
             {children}
         </BannerGetterContext.Provider>
     )
 }
+
+
+
 
 
 

@@ -15,6 +15,7 @@ import { ImageHandleProvider } from './context/ImageHandler'
 import { BannerDataProvider } from './context/BannerGetters';
 import { OrderContextProvider } from './context/OrderGetter';
 import { CustomersProvider } from './context/Customergetters';
+import { ServiceContextProvider } from './context/ServiceAreasGetter'
 
 
 // Put any other imports below so that CSS from your
@@ -31,7 +32,9 @@ root.render(
               <BannerDataProvider>
                 <OrderContextProvider>
                   <CustomersProvider>
-                    <App />
+                    <ServiceContextProvider>
+                      <App />
+                    </ServiceContextProvider>
                   </CustomersProvider>
                 </OrderContextProvider>
               </BannerDataProvider>

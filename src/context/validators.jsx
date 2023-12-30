@@ -10,6 +10,14 @@ export const useImageValidation = () => {
 export const ImageValidationProvider = ({ children }) => {
     // Define your image validation logic here
     const validateImage = async (file, desiredAspectRatio, desiredWidth, desiredHeight) => {
+        // Check image size
+        const maxSizeInBytes = 1.5 * 1024 * 1024; // 1.5 MB in bytes
+
+        if (file.size > maxSizeInBytes) {
+            throw new Error('Image size exceeds the allowed limit.');
+        }
+
+        // Continue with existing validation logic
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = (event) => {
@@ -37,12 +45,16 @@ export const ImageValidationProvider = ({ children }) => {
             reader.readAsDataURL(file);
         });
     };
+
     const contextValue = {
         validateImage,
     };
+
     return (
         <ImageValidationContext.Provider value={contextValue}>
             {children}
         </ImageValidationContext.Provider>
     );
 };
+
+
