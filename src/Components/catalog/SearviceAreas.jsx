@@ -8,6 +8,7 @@ import pencil_icon from '../../Images/svgs/pencil.svg';
 import deleteicon from '../../Images/svgs/deleteicon.svg';
 import delete_icon from '../../Images/svgs/delte.svg';
 import updown_icon from '../../Images/svgs/arross.svg';
+import shortIcon from '../../Images/svgs/short-icon.svg';
 import closeicon from '../../Images/svgs/closeicon.svg';
 import saveicon from '../../Images/svgs/saveicon.svg';
 import { doc, deleteDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
@@ -401,7 +402,12 @@ const Categories = () => {
                             />
                             <span class="checkmark"></span>
                           </label>
-                          <p className="fw-400 fs-sm black mb-0 ms-1"> Name / Title</p>
+                          <p className="fw-400 fs-sm black mb-0 ms-2">
+                            Name / Title{' '}
+                            <span>
+                              <img className='ms-2' width={20} src={shortIcon} alt="short-icon" />
+                            </span>
+                          </p>
                         </div>
                       </th>
                       <th className="mx_160 px-2">
@@ -411,7 +417,12 @@ const Categories = () => {
                         <h3 className="fs-sm fw-400 black mb-0">Expected Delivery</h3>
                       </th>
                       <th onClick={() => sorting("ServiceStatus")} className="mx_140">
-                        <h3 className="fs-sm fw-400 black mb-0">Service Status</h3>
+                        <p className="fw-400 fs-sm black mb-0 ms-2">
+                          Service Status {' '}
+                          <span>
+                            <img className='ms-2' width={20} src={shortIcon} alt="short-icon" />
+                          </span>
+                        </p>
                       </th>
                       <th className="mw-90 p-3 me-1 text-center">
                         <h3 className="fs-sm fw-400 black mb-0">Action</h3>
@@ -437,7 +448,7 @@ const Categories = () => {
                                 <span class="checkmark"></span>
                               </label>
                               <div className="d-flex align-items-center ms-1">
-                                <p className="fw-400 fs-sm black mb-0">{data.AreaName}</p>
+                                <p className="fw-400 fs-sm black mb-0 ms-2">{data.AreaName}</p>
                               </div>
                             </div>
                           </td>
@@ -448,7 +459,7 @@ const Categories = () => {
                             <h3 className="fs-sm fw-400 black mb-0">{data.ExpectedDelivery}</h3>
                           </td>
                           <td className="mx_140">
-                            <h3 className="fs-sm fw-400 black mb-0 color_green">
+                            <h3 className="fs-sm fw-400 black mb-0 color_green ms-5">
                               {data.ServiceStatus}
                             </h3>
                           </td>

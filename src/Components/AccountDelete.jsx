@@ -32,54 +32,48 @@ export default function Stsm() {
           <div className="d-flex align-items-center gap-4 mt-3">
             <div
               onClick={() => setStep('step1')}
-              className={`step_bg d-flex flex-column align-items-center w-100 ${
-                step === 'step1' ? `active_step_bg` : null
-              }`}>
+              className={`step_bg d-flex flex-column align-items-center w-100 ${step === 'step1' ? `active_step_bg` : null
+                }`}>
               <img src={mobileIcon} alt="mobile-icon" />
               <p className="fs-xs fw-700 white my-1">Step 1: </p>
               <p className="fs-xxs fw-400 mb-0 white">Open the Mobile Application</p>
             </div>
             <div
               onClick={() => setStep('step2')}
-              className={`step_bg d-flex flex-column align-items-center w-100 ${
-                step === 'step2' ? `active_step_bg` : null
-              }`}>
+              className={`step_bg d-flex flex-column align-items-center w-100 ${step === 'step2' ? `active_step_bg` : null
+                }`}>
               <img src={settingIcon} alt="mobile-icon" />
               <p className="fs-xs fw-700 white my-1">Step 2: </p>
               <p className="fs-xxs fw-400 mb-0 white">Navigate to Account Settings</p>
             </div>
             <div
               onClick={() => setStep('step3')}
-              className={`step_bg d-flex flex-column align-items-center w-100 ${
-                step === 'step3' ? `active_step_bg` : null
-              }`}>
+              className={`step_bg d-flex flex-column align-items-center w-100 ${step === 'step3' ? `active_step_bg` : null
+                }`}>
               <img src={delteIcon} alt="mobile-icon" />
               <p className="fs-xs fw-700 white my-1">Step 3: </p>
               <p className="fs-xxs fw-400 mb-0 white">Open the Mobile Application</p>
             </div>
             <div
               onClick={() => setStep('step4')}
-              className={`step_bg d-flex flex-column align-items-center w-100 ${
-                step === 'step4' ? `active_step_bg` : null
-              }`}>
+              className={`step_bg d-flex flex-column align-items-center w-100 ${step === 'step4' ? `active_step_bg` : null
+                }`}>
               <img src={thumbupIcon} alt="mobile-icon" />
               <p className="fs-xs fw-700 white my-1">Step 4: </p>
               <p className="fs-xxs fw-400 mb-0 white">Navigate to Account Settings</p>
             </div>
             <div
               onClick={() => setStep('step5')}
-              className={`step_bg d-flex flex-column align-items-center w-100 ${
-                step === 'step5' ? `active_step_bg` : null
-              }`}>
+              className={`step_bg d-flex flex-column align-items-center w-100 ${step === 'step5' ? `active_step_bg` : null
+                }`}>
               <img src={verificationIcon} alt="mobile-icon" />
               <p className="fs-xs fw-700 white my-1">Step 5: </p>
               <p className="fs-xxs fw-400 mb-0 white">Open the Mobile Application</p>
             </div>
             <div
               onClick={() => setStep('step6')}
-              className={`step_bg d-flex flex-column align-items-center w-100 ${
-                step === 'step6' ? `active_step_bg` : null
-              }`}>
+              className={`step_bg d-flex flex-column align-items-center w-100 ${step === 'step6' ? `active_step_bg` : null
+                }`}>
               <img src={checkIcon} alt="mobile-icon" />
               <p className="fs-xs fw-700 white my-1">Step 6: </p>
               <p className="fs-xxs fw-400 mb-0 white">Navigate to Account Settings</p>
@@ -146,14 +140,14 @@ export default function Stsm() {
                     step === 'step6'
                       ? setStep('step5')
                       : step === 'step5'
-                      ? setStep('step4')
-                      : step === 'step4'
-                      ? setStep('step3')
-                      : step === 'step3'
-                      ? setStep('step2')
-                      : step === 'step2'
-                      ? setStep('step1')
-                      : null
+                        ? setStep('step4')
+                        : step === 'step4'
+                          ? setStep('step3')
+                          : step === 'step3'
+                            ? setStep('step2')
+                            : step === 'step2'
+                              ? setStep('step1')
+                              : null
                   }
                   className="text-end">
                   <button className="next_btn fs-sm fw-400 white">Back</button>
@@ -165,14 +159,14 @@ export default function Stsm() {
                     step === 'step1'
                       ? setStep('step2')
                       : step === 'step2'
-                      ? setStep('step3')
-                      : step === 'step3'
-                      ? setStep('step4')
-                      : step === 'step4'
-                      ? setStep('step5')
-                      : step === 'step5'
-                      ? setStep('step6')
-                      : null
+                        ? setStep('step3')
+                        : step === 'step3'
+                          ? setStep('step4')
+                          : step === 'step4'
+                            ? setStep('step5')
+                            : step === 'step5'
+                              ? setStep('step6')
+                              : null
                   }
                   className="text-end">
                   <button className="next_btn fs-sm fw-400 white">Next</button>

@@ -15,51 +15,77 @@ import Orderdetails from './Components/orders/Orderdetails';
 import ParentCategories from './Components/catalog/ParentCategories';
 import ServiceAreas from './Components/catalog/SearviceAreas';
 import Login from './Components/login/Login';
-import Stsm from './Components/Stsm';
+import AccountDelete from './Components/AccountDelete';
+import { useEffect } from 'react';
+import { auth } from './firebase'
+
 import { useState } from 'react';
 
 function App() {
   const [user, setUser] = useState(true);
-  function handelLogout() {
-    setUser(true);
-  }
-  function handelLogin() {
+  const handleLogout = async () => {
+    try {
+      // Sign out the user from Firebase Authentication
+      await auth.signOut();
+
+      // Clear any user-related data from local storage or state
+      // (e.g., clear isAdmin from localStorage)
+      localStorage.removeItem('isAdmin');
+
+      // Update the user state to trigger the rendering of the Login component
+      setUser(true);
+    } catch (error) {
+      console.error('Error signing out:', error.message);
+      // Handle logout error (e.g., display an error message)
+    }
+  };
+
+  function handleLogin() {
     setUser(false);
   }
+  useEffect(() => {
+    // This effect will run after the user state is updated
+    if (!user) {
+      // Redirect or perform any actions after successful login
+      console.log('User logged in');
+    }
+  }, [user]);
   return (
     <>
-      {user ? <Login login={handelLogin} /> : null}
-      <div className="d-flex">
-        {!user ? <Sidebar logout={handelLogout} /> : null}
-        <div className="content d-flex flex-column  position-relative">
-          {!user ? <Topbar /> : null}
-          <div className="h-100 px-3 bg_light_grey">
-            <Routes>
-              <Route path="dashbord" element={<DashbordCards />} />
-              <Route path="catalog">
-                <Route index element={<CategoriesView />} />
-                <Route path="newcategory" element={<NewCategory />} />
-                <Route path="parentcategories" element={<ParentCategories />} />
-                <Route path="productlist" element={<ProductList />} />
-                <Route path="addproduct" element={<AddProduct />} />
-                <Route path="serviceareas" element={<ServiceAreas />} />
-              </Route>
-              <Route path="customer">
-                <Route index element={<Customers />} />
-                <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
-              </Route>
-              <Route path="orders">
-                <Route index element={<OrdersList />} />
-                <Route path="orderdetails/:id" element={<Orderdetails />} />
-              </Route>
-              <Route path="marketing">
-                <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
-              </Route>
-            </Routes>
+      {user ? <Login login={handleLogin} /> : null}
+      {!user ? (
+        <div className="d-flex">
+          <Sidebar logout={handleLogout} />
+          <div className="content d-flex flex-column  position-relative">
+            <Topbar />
+            <div className="h-100 px-3 bg_light_grey">
+              <Routes>
+                <Route path="dashbord" element={<DashbordCards />} />
+                <Route path="deleteAcount" element={<AccountDelete />} />
+                <Route path="catalog">
+                  <Route index element={<CategoriesView />} />
+                  <Route path="newcategory" element={<NewCategory />} />
+                  <Route path="parentcategories" element={<ParentCategories />} />
+                  <Route path="productlist" element={<ProductList />} />
+                  <Route path="addproduct" element={<AddProduct />} />
+                  <Route path="serviceareas" element={<ServiceAreas />} />
+                </Route>
+                <Route path="customer">
+                  <Route index element={<Customers />} />
+                  <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
+                </Route>
+                <Route path="orders">
+                  <Route index element={<OrdersList />} />
+                  <Route path="orderdetails/:id" element={<Orderdetails />} />
+                </Route>
+                <Route path="marketing">
+                  <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
+                </Route>
+              </Routes>
+            </div>
           </div>
         </div>
-      </div>
-      {/* <Stsm /> */}
+      ) : null}
     </>
   );
 }

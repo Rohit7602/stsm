@@ -62,7 +62,7 @@ const Categories = () => {
     updateData(sortedData);
   };
 
-  
+
 
 
 
@@ -204,7 +204,7 @@ const Categories = () => {
               <table className="w-100">
                 <thead className="w-100 table_head">
                   <tr className="product_borderbottom">
-                    <th onClick={() => sorting("title") } className="py-3 ps-3 w-100">
+                    <th onClick={() => sorting("title")} className="py-3 ps-3 w-100">
                       <div className="d-flex align-items-center gap-3 min_width_300">
                         <label class="check1 fw-400 fs-sm black mb-0">
                           <input
@@ -223,13 +223,26 @@ const Categories = () => {
                       </div>
                     </th>
                     <th onClick={() => sorting("cat_ID")} className="mw-250 px-2">
-                      <h3 className="fs-sm fw-400 black mb-0">Parent Category</h3>
+
+                      <p className="fw-400 fs-sm black mb-0">
+                        Parent Category{' '}
+                        <span>
+                          <img className='ms-2' width={20} src={shortIcon} alt="short-icon" />
+                        </span>
+                      </p>
+
+
                     </th>
-                    <th  className="mx_160 ps-4">
+                    <th className="mx_160 ps-4">
                       <h3 className="fs-sm fw-400 black mb-0">Items</h3>
                     </th>
                     <th onClick={() => sorting("status")} className="mx_160">
-                      <h3 className="fs-sm fw-400 black mb-0">Visibility</h3>
+                      <p className="fw-400 fs-sm black mb-0">
+                        Visibility{' '}
+                        <span>
+                          <img className='ms-2' width={20} src={shortIcon} alt="short-icon" />
+                        </span>
+                      </p>
                     </th>
                     <th className="mw-90 p-3 me-1 text-center">
                       <h3 className="fs-sm fw-400 black mb-0">Action</h3>
@@ -245,7 +258,7 @@ const Categories = () => {
                       return search.toLowerCase() === ''
                         ? item
                         : item.title.toLowerCase().includes(searchvalue) ||
-                            mainCategory.title.toLowerCase().includes(searchvalue);
+                        mainCategory.title.toLowerCase().includes(searchvalue);
                     })
                     .map((value, index) => {
                       const subcategoryId = value.id;
@@ -272,16 +285,16 @@ const Categories = () => {
                               </div>
                             </div>
                           </td>
-                          <td className="px-2 mw-250">
-                            <h3 className="fs-sm fw-400 black mb-0">
+                          <td className="px-2 mw-250 ">
+                            <h3 className="fs-sm fw-400 black mb-0 ms-3">
                               {getParentCategoryName(value.cat_ID)}
                             </h3>
                           </td>
                           <td className="ps-4 mw_160">
-                            <h3 className="fs-sm fw-400 black mb-0 width_10">10</h3>
+                            <h3 className="fs-sm fw-400 black mb-0 width_10 ">10</h3>
                           </td>
                           <td className="mx_160">
-                            <h3 className="fs-sm fw-400 black mb-0 width_10 color_green">
+                            <h3 className="fs-sm fw-400 black mb-0 width_10 color_green ms-2">
                               {value.status}
                             </h3>
                           </td>

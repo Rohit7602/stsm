@@ -10,10 +10,6 @@ function Sidebar(props) {
   const toggleDropdown = (dropdownName) => {
     setOpenDropdown((prevDropdown) => (prevDropdown === dropdownName ? null : dropdownName));
   };
-  let logout = props.logout;
-  function handelLogout() {
-    logout();
-  }
   return (
     <>
       <aside className="sidebar">
@@ -422,7 +418,7 @@ function Sidebar(props) {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/termsandconditions" className="w-100">
+                <NavLink to="/deleteAcount" className="w-100">
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg
@@ -450,7 +446,7 @@ function Sidebar(props) {
                 </NavLink>
               </li>
               <li>
-                <NavLink onClick={handelLogout} to="/Logout" className="w-100">
+                <NavLink onClick={props.logout} to="/Logout" className="w-100">
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg
