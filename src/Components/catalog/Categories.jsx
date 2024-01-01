@@ -34,7 +34,7 @@ const Categories = () => {
   };
   const [deletepopup, setDeletePopup] = useState(false);
   const [statusPopup, setStatusPopup] = useState(false);
-  const [editCatPopup, setEditCatPopup] = useState(true);
+  const [editCatPopup, setEditCatPopup] = useState(false);
   const [order, setorder] = useState('ASC');
   const sorting = (col) => {
     // Create a copy of the data array
