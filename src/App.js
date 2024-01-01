@@ -17,7 +17,7 @@ import ServiceAreas from './Components/catalog/SearviceAreas';
 import Login from './Components/login/Login';
 import AccountDelete from './Components/AccountDelete';
 import { useEffect } from 'react';
-import { auth } from './firebase'
+import { auth } from './firebase';
 
 import { useState } from 'react';
 
@@ -59,40 +59,45 @@ function App() {
   }, []);
   return (
     <>
-      {user ? <Login login={handleLogin} /> : null}
-      {!user ? (
-        <div className="d-flex">
-          <Sidebar logout={handleLogout} />
-          <div className="content d-flex flex-column  position-relative">
-            <Topbar />
-            <div className="h-100 px-3 bg_light_grey">
-              <Routes>
-                <Route path="dashbord" element={<DashbordCards />} />
-                <Route path="deleteAcount" element={<AccountDelete />} />
-                <Route path="catalog">
-                  <Route index element={<CategoriesView />} />
-                  <Route path="newcategory" element={<NewCategory />} />
-                  <Route path="parentcategories" element={<ParentCategories />} />
-                  <Route path="productlist" element={<ProductList />} />
-                  <Route path="addproduct" element={<AddProduct />} />
-                  <Route path="serviceareas" element={<ServiceAreas />} />
-                </Route>
-                <Route path="customer">
-                  <Route index element={<Customers />} />
-                  <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
-                </Route>
-                <Route path="orders">
-                  <Route index element={<OrdersList />} />
-                  <Route path="orderdetails/:id" element={<Orderdetails />} />
-                </Route>
-                <Route path="marketing">
-                  <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
-                </Route>
-              </Routes>
+      <div>
+        <Routes>
+          <Route path="deleteAcount" element={<AccountDelete />} />
+        </Routes>
+        {user ? (
+          <Login login={handleLogin} />
+        ) : (
+          <div className="d-flex">
+            <Sidebar logout={handleLogout} />
+            <div className="content d-flex flex-column  position-relative">
+              <Topbar />
+              <div className="h-100 px-3 bg_light_grey">
+                <Routes>
+                  <Route path="dashbord" element={<DashbordCards />} />
+                  <Route path="catalog">
+                    <Route index element={<CategoriesView />} />
+                    <Route path="newcategory" element={<NewCategory />} />
+                    <Route path="parentcategories" element={<ParentCategories />} />
+                    <Route path="productlist" element={<ProductList />} />
+                    <Route path="addproduct" element={<AddProduct />} />
+                    <Route path="serviceareas" element={<ServiceAreas />} />
+                  </Route>
+                  <Route path="customer">
+                    <Route index element={<Customers />} />
+                    <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
+                  </Route>
+                  <Route path="orders">
+                    <Route index element={<OrdersList />} />
+                    <Route path="orderdetails/:id" element={<Orderdetails />} />
+                  </Route>
+                  <Route path="marketing">
+                    <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
+                  </Route>
+                </Routes>
+              </div>
             </div>
           </div>
-        </div>
-      ) : null}
+        )}
+      </div>
     </>
   );
 }

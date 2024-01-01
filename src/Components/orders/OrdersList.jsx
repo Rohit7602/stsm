@@ -7,6 +7,7 @@ import eye_icon from '../../Images/svgs/eye.svg';
 import pencil_icon from '../../Images/svgs/pencil.svg';
 import delete_icon from '../../Images/svgs/delte.svg';
 import updown_icon from '../../Images/svgs/arross.svg';
+import shortIcon from '../../Images/svgs/short-icon.svg';
 import { OrderTable } from '../../Common/Helper';
 import { collection, doc, getDocs, deleteDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -105,17 +106,32 @@ const ProductListComponent = (orderStatus) => {
                           />
                           <span className="checkmark"></span>
                         </label>
-                        <p className="fw-400 fs-sm black mb-0 ms-2">Order Number</p>
+                        <p className="fw-400 fs-sm black mb-0 ms-2">
+                          Order Number{' '}
+                          <span>
+                            <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
+                          </span>
+                        </p>
                       </div>
                     </th>
                     <th className="mw-200 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Date</h3>
                     </th>
                     <th className="mw-200 p-3">
-                      <h3 className="fs-sm fw-400 black mb-0">Customer</h3>
+                      <h3 className="fs-sm fw-400 black mb-0">
+                        Customer{' '}
+                        <span>
+                          <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
+                        </span>
+                      </h3>
                     </th>
                     <th className="mw_160 p-3">
-                      <h3 className="fs-sm fw-400 black mb-0">Payment Status</h3>
+                      <span className="d-flex align-items-center">
+                        <h3 className="fs-sm fw-400 black mb-0 white_space_nowrap">Payment Status</h3>
+                        <span>
+                          <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
+                        </span>
+                      </span>
                     </th>
                     <th className="mw_160 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Order Status</h3>

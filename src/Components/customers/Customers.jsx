@@ -8,6 +8,7 @@ import pencil_icon from '../../Images/svgs/pencil.svg';
 import delete_icon from '../../Images/svgs/delte.svg';
 import updown_icon from '../../Images/svgs/arross.svg';
 import manimage from '../../Images/Png/manimage.jpg';
+import shortIcon from '../../Images/svgs/short-icon.svg';
 import { Link } from 'react-router-dom';
 import { useCustomerContext } from '../../context/Customergetters';
 import { set } from 'date-fns';
@@ -57,7 +58,12 @@ const Customers = () => {
                             <input type="checkbox" />
                             <span class="checkmark"></span>
                           </label>
-                          <p className="fw-400 fs-sm black mb-0 ">Name</p>
+                          <p className="fw-400 fs-sm black mb-0 ">
+                            Name{' '}
+                            <span>
+                              <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
+                            </span>
+                          </p>
                         </div>
                       </th>
                       <th className="mw_160 p-3">
