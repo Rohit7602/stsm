@@ -418,7 +418,7 @@ function Sidebar(props) {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/deleteAcount" className="w-100">
+                <NavLink to="term" className="w-100">
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg
