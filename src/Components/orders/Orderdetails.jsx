@@ -20,7 +20,7 @@ export default function NewOrder() {
 
   const calculateSubtotal = () => {
     return filterData[0].items.reduce(
-      (acc, item) => acc + item.price * item.qnty - item.discount,
+      (acc, item) => acc + item.varient_price * item.quantity - item.varient_discount,
       0
     );
   };
@@ -110,19 +110,19 @@ export default function NewOrder() {
                           </div>
                           <div className="ps-3">
                             <p className="fs-sm fw-400 black mb-0">{products.title}</p>
-                            <p className="fs-xxs fw-400 fade_grey mb-0">ID :{products.item_id}</p>
+                            <p className="fs-xxs fw-400 fade_grey mb-0">ID :{products.product_id}</p>
                           </div>
                         </div>
                         <div className="d-flex align-items-center p-3">
-                          <p className="fs-sm fw-400 black mb-0">₹ {products.price}</p>
-                          <p className="fs-sm fw-400 black mb-0 ps-4 ms-2 me-5">{products.qnty}</p>
+                          <p className="fs-sm fw-400 black mb-0">₹ {products.varient_price}</p>
+                          <p className="fs-sm fw-400 black mb-0 ps-4 ms-2 me-5">{products.quantity}</p>
 
                           <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">
-                            (-) ₹ {products.discount}
+                            (-) ₹ {products.varient_discount}
                           </p>
                         </div>
                         <p className="fs-sm fw-400 black mb-0 p-3">
-                          ₹ {products.price * products.qnty - products.discount}
+                          ₹ {products.varient_price * products.quantity - products.varient_discount}
                         </p>
                       </div>
                     </>

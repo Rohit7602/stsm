@@ -193,7 +193,7 @@ const AddProduct = () => {
       const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
 
       if (!allowedExtensions.includes(`.${fileExtension}`)) {
-        toast.error('Invalid file type. Please select a valid image file.');
+        toast.error('Please select a valid image file within 1.5 MB.')
       } else {
         setImageUpload22((prevImages) => [...prevImages, selectedFile]);
       }

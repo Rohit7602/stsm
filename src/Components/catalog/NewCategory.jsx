@@ -101,7 +101,7 @@ const NewCategory = () => {
     const selectedFile = e.target.files[0];
 
     if (!ImageisValidOrNot(selectedFile)) {
-      toast.error('please select an image file ');
+      toast.error('Please select a valid image file within 1.5 MB.')
       setImageupload(null);
     } else {
       setImageupload(selectedFile);

@@ -50,7 +50,7 @@ const Categories = () => {
   function handelUpload(e) {
     const selectedFile = e.target.files[0];
     if (!ImageisValidOrNot(selectedFile)) {
-      toast.error('Invalid file type. Please select a valid image file.');
+      toast.error('Please select a valid image file within 1.5 MB.')
       setImageupload(null);
     } else {
       setImageupload(selectedFile);

@@ -852,7 +852,6 @@ const BannersAdvertisement = () => {
 
       SetCategoryImage(newCategoryImages);
       console.log("Updated CategoryImage:", CategoryImage);
-
     } catch (error) {
       // Handle the validation error (e.g., show an error message)
       toast.error(error.message, {
@@ -863,47 +862,57 @@ const BannersAdvertisement = () => {
 
 
 
-  async function handleCategoryImagesDelete(index) {
-    const imageUrlToDelete = CategoryImage[index];
+  async function handleCategoryImagesDelete(index, imageUrlToDelete) {
+    console.log("idex sd ", CategoryImage[index])
+    console.log("urel ia ", imageUrlToDelete)
+    console.log("delee function working ")
 
+    try {
+      if (
+        imageUrlToDelete &&
+        typeof imageUrlToDelete === 'string' &&
+        imageUrlToDelete.startsWith('http')
+      ) {
+        console.log("if working ")
+        const imageURL = imageUrlToDelete.split("$$$$")[0]
+        const id = imageUrlToDelete.split('$$$$')[1];
+        const storageRef = getStorage();
+        const reference = ref(storageRef, imageUrlToDelete);
 
-    if (
-      imageUrlToDelete &&
-      typeof imageUrlToDelete === 'string' &&
-      imageUrlToDelete.startsWith('http')
-    ) {
-      const imageURL = imageUrlToDelete.split("$$$$")[0]
-      const id = imageUrlToDelete.split('$$$$')[1];
-      const storageRef = getStorage();
-      const reference = ref(storageRef, imageUrlToDelete);
+        // Delete the image from storage
+        await deleteObject(reference);
+        deleteObjectByImageUrl(imageURL);
 
-      // Delete the image from storage
-      await deleteObject(reference);
-      deleteObjectByImageUrl(imageURL)
+        // After successful deletion, update Firestore data
+        const docRef = doc(db, 'Banner', id);
+        const docSnapshot = await getDoc(docRef);
 
-      const docRef = doc(db, 'Banner', id);
-      const docSnapshot = await getDoc(docRef);
+        if (docSnapshot.exists()) {
+          const existingData = docSnapshot.data();
 
-      if (docSnapshot.exists()) {
-        const existingData = docSnapshot.data();
+          // Check if 'data' is an array with at least one item
+          if (Array.isArray(existingData.data) && existingData.data.length > 0) {
+            // Filter out the item at the specified index
+            const filteredData = existingData.data.filter((item, i) => i !== index);
 
-        // Check if 'data' is an array with at least one item
-        if (Array.isArray(existingData.data) && existingData.data.length > 0) {
-          // Filter out the item at the specified index
-          const filteredData = existingData.data.filter((item, i) => i !== index);
-
-          // Update the document in Firestore with the modified 'data' array
-          await updateDoc(docRef, { data: filteredData });
+            // Update the document in Firestore with the modified 'data' array
+            await updateDoc(docRef, { data: filteredData });
+          }
         }
       }
+
+      // Update the state to remove the deleted image
+      const newCategoryImages = [...CategoryImage];
+      newCategoryImages[index] = ''; // Set the image for the specified index to an empty string
+      SetCategoryImage(newCategoryImages);
+    } catch (error) {
+      console.error("Error deleting from storage or updating Firestore:", error);
+      // Handle error as needed
     }
-
-    // Update the state to remove the deleted image
-    const newCategoryImages = [...CategoryImage];
-    newCategoryImages[index] = ''; // Set the image for the specified index to an empty string
-    SetCategoryImage(newCategoryImages);
-
   }
+
+
+
 
   async function handleUpdateCategoryBanner() {
     setLoaderstatus(true);
@@ -911,12 +920,10 @@ const BannersAdvertisement = () => {
     try {
       if (CategoryImage.every(Boolean) && categoreis.every(Boolean)) {
         const newImageData = [];
-
         // Fetch existing data
         const querySnapshot = await getDocs(
           query(collection(db, 'Banner'), where('title', '==', 'CategoryBanners'))
         );
-
         // Collect existing image URLs
         const existingImageUrls = [];
         if (querySnapshot.size > 0) {
@@ -1033,8 +1040,7 @@ const BannersAdvertisement = () => {
     });
 
     if (matchingImage) {
-      const imageUrl = matchingImage.split('$$$$')[0];
-      return imageUrl;
+      return matchingImage;
     }
 
     // If image not found and a new image exists at the specified index, create a URL for it
@@ -1519,11 +1525,11 @@ const BannersAdvertisement = () => {
                             <div className="position-relative imagemedia_btn">
                               <img
                                 className="w-100 h-100 object-fit-cover"
-                                src={findImageSourceByTitle(data)}
+                                  src={findImageSourceByTitle(data).split('$$$$')[0]}
                                 alt=""
                               />
                               <img
-                                onClick={() => handleCategoryImagesDelete(index)}
+                                  onClick={() => handleCategoryImagesDelete(index, findImageSourceByTitle(data))}
                                 className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
                                 src={deleteicon}
                                 alt="deleteicon"
