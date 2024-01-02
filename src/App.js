@@ -1,6 +1,6 @@
 import './App.css';
 import CategoriesView from './Components/catalog/Categories';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import Sidebar from './Components/layout/Sidebar';
 import DashbordCards from './Components/dashbord/DashbordCards';
 import ProductList from './Components/catalog/ProductList';
@@ -16,13 +16,20 @@ import ParentCategories from './Components/catalog/ParentCategories';
 import ServiceAreas from './Components/catalog/SearviceAreas';
 import Login from './Components/login/Login';
 import AccountDelete from './Components/AccountDelete';
-import { useEffect } from 'react';
+import { useEffect,useState } from 'react';
 import { auth } from './firebase';
+import HashLoader from "react-spinners/HashLoader";
 
-import { useState } from 'react';
 
 function App() {
   const [user, setUser] = useState(true);
+  const [authchecked, setauthchecked] = useState(false)
+  const [loading, setloading] = useState(false)
+  useEffect(() => {
+    setloading(true)
+    setTimeout(() => { setloading(false) }, 3000)
+  }, []) 
+
   const handleLogout = async () => {
     try {
       // Sign out the user from Firebase Authentication
@@ -57,46 +64,68 @@ function App() {
     // Cleanup function to unsubscribe when the component unmounts
     return () => unsubscribe();
   }, []);
+
+  const location = useLocation();
+  console.log(location.pathname);
+
+
   return (
     <>
       <div>
-        <Routes>
-          <Route path="deleteAcount" element={<AccountDelete />} />
-        </Routes>
-        {user ? (
-          <Login login={handleLogin} />
-        ) : (
-          <div className="d-flex">
-            <Sidebar logout={handleLogout} />
-            <div className="content d-flex flex-column  position-relative">
-              <Topbar />
-              <div className="h-100 px-3 bg_light_grey">
-                <Routes>
-                  <Route path="dashbord" element={<DashbordCards />} />
-                  <Route path="catalog">
-                    <Route index element={<CategoriesView />} />
-                    <Route path="newcategory" element={<NewCategory />} />
-                    <Route path="parentcategories" element={<ParentCategories />} />
-                    <Route path="productlist" element={<ProductList />} />
-                    <Route path="addproduct" element={<AddProduct />} />
-                    <Route path="serviceareas" element={<ServiceAreas />} />
-                  </Route>
-                  <Route path="customer">
-                    <Route index element={<Customers />} />
-                    <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
-                  </Route>
-                  <Route path="orders">
-                    <Route index element={<OrdersList />} />
-                    <Route path="orderdetails/:id" element={<Orderdetails />} />
-                  </Route>
-                  <Route path="marketing">
-                    <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
-                  </Route>
-                </Routes>
+        {loading ? <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <HashLoader
+            color={"#ffae00"}
+            loading={loading}
+            height={100}
+            width={3}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+        </div> :
+              <div>
+            {location.pathname == '/deleteAcount' ? <Routes>
+              <Route path="/deleteAcount" element={<AccountDelete />} />
+            </Routes> :
+            <>
+              {
+                user?(
+                  <Login login = { handleLogin } />
+                ): (
+                    <div className = "d-flex">
+                    <Sidebar logout = { handleLogout } />
+              <div className="content d-flex flex-column  position-relative">
+                <Topbar />
+                <div className="h-100 px-3 bg_light_grey">
+                  <Routes>
+                    <Route path="dashbord" element={<DashbordCards />} />
+                    <Route path="catalog">
+                      <Route index element={<CategoriesView />} />
+                      <Route path="newcategory" element={<NewCategory />} />
+                      <Route path="parentcategories" element={<ParentCategories />} />
+                      <Route path="productlist" element={<ProductList />} />
+                      <Route path="addproduct" element={<AddProduct />} />
+                      <Route path="serviceareas" element={<ServiceAreas />} />
+                    </Route>
+                    <Route path="customer">
+                      <Route index element={<Customers />} />
+                      <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
+                    </Route>
+                    <Route path="orders">
+                      <Route index element={<OrdersList />} />
+                      <Route path="orderdetails/:id" element={<Orderdetails />} />
+                    </Route>
+                    <Route path="marketing">
+                      <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
+                    </Route>
+                  </Routes>
+                </div>
               </div>
-            </div>
+                  </div>
+                  )}
+              </>
+            }
           </div>
-        )}
+        }
       </div>
     </>
   );
