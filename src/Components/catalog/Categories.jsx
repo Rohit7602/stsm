@@ -8,7 +8,10 @@ import deleteicon from '../../Images/svgs/deleteicon.svg';
 import delete_icon from '../../Images/svgs/delte.svg';
 import updown_icon from '../../Images/svgs/arross.svg';
 import saveicon from '../../Images/svgs/saveicon.svg';
+import SearchIcon from '../../Images/svgs/search.svg';
 import closeIcon from '../../Images/svgs/closeicon.svg';
+import Dropdown from 'react-bootstrap/Dropdown';
+import savegreenicon from '../../Images/svgs/save_green_icon.svg';
 import shortIcon from '../../Images/svgs/short-icon.svg';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -22,9 +25,11 @@ import Deletepopup from '../popups/Deletepopup';
 import Updatepopup from '../popups/Updatepopup';
 
 const Categories = () => {
-  const { categoreis } = useMainCategories();
+  const { categoreis, addDataParent } = useMainCategories();
   const { data, updateData, deleteData } = useSubCategories();
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [category, setCategory] = useState();
+  const [perName, setPerName] = useState('');
   const [searchvalue, setSearchvalue] = useState('');
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(null);
   const [selectedSubcategoryImage, setSelectedSubcategoryImage] = useState(null);
@@ -34,8 +39,21 @@ const Categories = () => {
   };
   const [deletepopup, setDeletePopup] = useState(false);
   const [statusPopup, setStatusPopup] = useState(false);
-  const [editCatPopup, setEditCatPopup] = useState(false);
+  const [editCatPopup, setEditCatPopup] = useState(true);
+  const [editsearchvalue, setEditSearchvalue] = useState('');
+
   const [order, setorder] = useState('ASC');
+
+  //
+  const { addData } = useSubCategories();
+  const handleSelectCategory = (category) => {
+    setEditSearchvalue('');
+    setSelectedCategory(category);
+    setCategory(category);
+  };
+
+  //
+
   const sorting = (col) => {
     // Create a copy of the data array
     const sortedData = [...data];
@@ -236,8 +254,9 @@ const Categories = () => {
                       );
                       return search.toLowerCase() === ''
                         ? item
-                        : item.title.toLowerCase().includes(searchvalue) ||
-                            mainCategory.title.toLowerCase().includes(searchvalue);
+                        : item.title.toLowerCase().includes(searchvalue);
+                      // ||
+                      //     mainCategory.title.toLowerCase().includes(searchvalue);
                     })
                     .map((value, index) => {
                       const subcategoryId = value.id;
@@ -390,7 +409,7 @@ const Categories = () => {
               <br />
               <input className="product_input fade_grey fw-400" type="text" />
               <div className="mt-3">
-                <p className="fs-sm fw-400 black mb-1">Category Image</p>
+                <p className="fs-sm fw-400 black mb-3">Category Image</p>
                 <input type="file" id="catImg" hidden />
                 <div className=" d-flex flex-wrap">
                   <div className="position-relative ">
@@ -425,7 +444,81 @@ const Categories = () => {
                   </div>
                 </div>
               </div>
-              <div>                
+              <div>
+                <div className="mt-3 bg_white">
+                  <div className="d-flex align-items-center justify-content-between">
+                    <h2 className="fw-400 fs-2sm black mb-0">Parent Category</h2>
+                    <Link to="/catalog/parentcategories" className="fs-2sm fw-400 red">
+                      View All
+                    </Link>
+                  </div>
+                  <Dropdown className="category_dropdown z-1">
+                    <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
+                      <div className="product_input">
+                        <p className="fade_grey fw-400 w-100 mb-0 text-start">
+                          {selectedCategory ? selectedCategory.title : 'Select Category'}
+                        </p>
+                      </div>
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu className="w-100">
+                      <div className="d-flex flex-column">
+                        <div className="d-flex align-items-center product_input position-sticky top-0">
+                          <img src={SearchIcon} alt="SearchIcon" />
+                          <input
+                            onChange={(e) => setEditSearchvalue(e.target.value)}
+                            placeholder="search for category"
+                            className="fade_grey fw-400 border-0 outline_none ms-2 w-100"
+                            type="text"
+                          />
+                        </div>
+                        <div>
+                          {categoreis
+                            .filter((items) => {
+                              return (
+                                editsearchvalue.toLowerCase() === '' ||
+                                items.title.toLowerCase().includes(editsearchvalue)
+                              );
+                            })
+                            .map((category) => (
+                              <Dropdown.Item key={category.id}>
+                                <div
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
+                                  onClick={() => handleSelectCategory(category)}>
+                                  <p className="fs-xs fw-400 black mb-0">{category.title}</p>
+                                  {selectedCategory && selectedCategory.id === category.id && (
+                                    <img src={savegreenicon} alt="savegreenicon" />
+                                  )}
+                                </div>
+                              </Dropdown.Item>
+                            ))}
+                          {editsearchvalue &&
+                            !categoreis.some((category) =>
+                              category.title.toLowerCase().includes(editsearchvalue.toLowerCase())
+                            ) && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setPerName(editsearchvalue);
+                                }}
+                                className="addnew_category_btn fs-xs green">
+                                +Add <span className="black">"{editsearchvalue}"</span> in Parent
+                                Category
+                              </button>
+                            )}
+                        </div>
+                      </div>
+                    </Dropdown.Menu>
+                  </Dropdown>
+
+                  <p className="black fw-400 fs-xxs mb-0 mt-3">
+                    Select a category that will be the parent of the current one.
+                  </p>
+                </div>
               </div>
             </form>
           </div>

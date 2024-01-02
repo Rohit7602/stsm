@@ -1313,8 +1313,7 @@ tbody::-webkit-scrollbar {
   transform: translate(-50%, -50%);
   background-color: white;
   width: 600px;
-  height: 600px;
-  padding: 10px 15px;
+  padding: 20px;
   border-radius: 8px;
 }
 .bg_green_yellow {
