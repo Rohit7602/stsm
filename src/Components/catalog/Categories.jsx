@@ -39,11 +39,12 @@ const Categories = () => {
   };
   const [deletepopup, setDeletePopup] = useState(false);
   const [statusPopup, setStatusPopup] = useState(false);
-  const [editCatPopup, setEditCatPopup] = useState(true);
+  const [editCatPopup, setEditCatPopup] = useState(false);
   const [editsearchvalue, setEditSearchvalue] = useState('');
 
+  const [editCatName, setEditCatName] = useState('');
+  const [editCatImg, setEditCatImg] = useState('');
   const [order, setorder] = useState('ASC');
-
   //
   const { addData } = useSubCategories();
   const handleSelectCategory = (category) => {
@@ -320,7 +321,12 @@ const Categories = () => {
                                 <li>
                                   <div class="dropdown-item" href="#">
                                     <div
-                                      onClick={() => setEditCatPopup(true)}
+                                      onClick={() => {
+                                        setEditCatPopup(true);
+                                        setEditCatName(value.title);
+                                        setEditCatImg(value.image);
+                                        setSelectedCategory(getParentCategoryName(value.cat_ID));
+                                      }}
                                       className="d-flex align-items-center categorie_dropdown_options">
                                       <img src={pencil_icon} alt="" />
                                       <p className="fs-sm fw-400 black mb-0 ms-2">Edit Category</p>
@@ -407,22 +413,44 @@ const Categories = () => {
                 Name
               </label>
               <br />
-              <input className="product_input fade_grey fw-400" type="text" />
+              <input
+                onChange={(e) => setEditCatName(e.target.value)}
+                value={editCatName}
+                className="product_input fade_grey fw-400"
+                type="text"
+              />
               <div className="mt-3">
                 <p className="fs-sm fw-400 black mb-3">Category Image</p>
-                <input type="file" id="catImg" hidden />
+                <input
+                  onChange={(e) => setEditCatImg(e.target.files[0])}
+                  type="file"
+                  id="catImg"
+                  accept=".png, .jpeg, .jpg"
+                  hidden
+                />
                 <div className=" d-flex flex-wrap">
-                  <div className="position-relative ">
-                    {/* <img className="mobile_image object-fit-cover" src="" alt="" />
-                  <img
-                    className="position-absolute top-0 end-0 cursor_pointer"
-                    src={deleteicon}
-                    alt="deleteicon"
-                  /> */}
-                  </div>
-                  <label htmlFor="catImg" className="color_green cursor_pointer fs-sm addmedia_btn">
-                    + Add Media
-                  </label>
+                  {editCatImg ? (
+                    <div className="position-relative ">
+                      <img
+                        className="mobile_image object-fit-cover"
+                        src={editCatImg ? editCatImg : URL.createObjectURL(editCatImg[0])}
+                        alt=""
+                      />
+                      {/* <img className="mobile_image object-fit-cover" src={editCatImg} alt="" /> */}
+                      <img
+                        onClick={() => setEditCatImg('')}
+                        className="position-absolute top-0 end-0 cursor_pointer"
+                        src={deleteicon}
+                        alt="deleteicon"
+                      />
+                    </div>
+                  ) : (
+                    <label
+                      htmlFor="catImg"
+                      className="color_green cursor_pointer fs-sm addmedia_btn">
+                      + Add Media
+                    </label>
+                  )}
                 </div>
               </div>
               <div className="mt-3">
@@ -456,7 +484,9 @@ const Categories = () => {
                     <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
                       <div className="product_input">
                         <p className="fade_grey fw-400 w-100 mb-0 text-start">
-                          {selectedCategory ? selectedCategory.title : 'Select Category'}
+                          {selectedCategory
+                            ? selectedCategory.title || selectedCategory
+                            : 'Select Category'}
                         </p>
                       </div>
                     </Dropdown.Toggle>
@@ -518,6 +548,12 @@ const Categories = () => {
                   <p className="black fw-400 fs-xxs mb-0 mt-3">
                     Select a category that will be the parent of the current one.
                   </p>
+                  <div className="d-flex justify-content-end">
+                    <button className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-2 px-2 py-2 save_btn fw-400 black">
+                      <img src={saveicon} alt="saveicon" />
+                      Save
+                    </button>
+                  </div>
                 </div>
               </div>
             </form>
