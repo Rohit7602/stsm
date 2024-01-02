@@ -54,6 +54,8 @@ const ViewCustomerDetails = () => {
   const calculateTimeAgo = (timestamp) => {
     return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
   };
+
+  
   // calculate  time end
 
   // useEffect(() => {

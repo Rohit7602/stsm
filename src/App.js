@@ -25,6 +25,8 @@ function App() {
   const [user, setUser] = useState(true);
   const [authchecked, setauthchecked] = useState(false)
   const [loading, setloading] = useState(false)
+  const location = useLocation(); 
+  
   useEffect(() => {
     setloading(true)
     setTimeout(() => { setloading(false) }, 3000)
@@ -65,8 +67,7 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  const location = useLocation();
-  console.log(location.pathname);
+  
 
 
   return (
