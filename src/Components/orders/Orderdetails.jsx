@@ -8,9 +8,12 @@ import manimage from '../../Images/Png/manimage.jpg';
 import { Col, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useOrdercontext } from '../../context/OrderGetter';
+import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
+
 export default function NewOrder() {
   const { id } = useParams();
-  const { orders } = useOrdercontext();
+  const { orders ,updateData} = useOrdercontext();
   let filterData = orders.filter((item) => item.id == id);
   function formatDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -33,6 +36,21 @@ export default function NewOrder() {
     return subtotal + shippingCost - promoDiscount;
   };
 
+  const handleAcceptOrder = async (id) => {
+    try {
+      // Toggle the status between 'publish' and 'hidden'
+      const newStatus = 'PROCESSING'
+
+      await updateDoc(doc(db, 'order', id), {
+        status: newStatus,
+      });
+      updateData({ id, status: newStatus });
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+
   return (
     <>
       {filterData.map((item, index) => (
@@ -48,7 +66,7 @@ export default function NewOrder() {
                   <button className="reset_border">
                     <button className="fs-sm reset_btn  border-0 fw-400">Reject Order</button>
                   </button>
-                  <button
+                  <button onClick={() => handleAcceptOrder(item.id)}
                     className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
                     type="submit">
                     <img src={saveicon} alt="saveicon" />
