@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;500;600;700;800;900&display=swap');
 
-.App{
+.App {
   text-align: center;
   background-color: #1a181896;
   display: flex;
@@ -1322,8 +1322,7 @@ tbody::-webkit-scrollbar {
   transform: translate(-50%, -50%);
   background-color: white;
   width: 600px;
-  height: 600px;
-  padding: 10px 15px;
+  padding: 20px;
   border-radius: 8px;
 }
 .bg_green_yellow {
@@ -1351,6 +1350,12 @@ tbody::-webkit-scrollbar {
 .steps_data {
   padding: 20px;
   background-color: #f0f4f7;
+}
+.min_width_700 {
+  min-width: 700px;
+}
+.steps::-webkit-scrollbar {
+  height: 5px;
 }
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
