@@ -29,54 +29,62 @@ export default function Stsm() {
             your privacy is important. If you wish to delete your user account, please follow the
             steps below.
           </p>
-          <div className="d-flex align-items-center gap-4 mt-3">
-            <div
-              onClick={() => setStep('step1')}
-              className={`step_bg d-flex flex-column align-items-center w-100 ${step === 'step1' ? `active_step_bg` : null
+          <div className="overflow-auto steps">
+            <div className="d-flex align-items-center gap-2 gap-lg-4 mt-3 min_width_700 mb-1">
+              <div
+                onClick={() => setStep('step1')}
+                className={`step_bg d-flex flex-column align-items-center w-100 ${
+                  step === 'step1' ? `active_step_bg` : null
                 }`}>
-              <img src={mobileIcon} alt="mobile-icon" />
-              <p className="fs-xs fw-700 white my-1">Step 1: </p>
-              <p className="fs-xxs fw-400 mb-0 white">Open the Mobile Application</p>
-            </div>
-            <div
-              onClick={() => setStep('step2')}
-              className={`step_bg d-flex flex-column align-items-center w-100 ${step === 'step2' ? `active_step_bg` : null
+                <img src={mobileIcon} alt="mobile-icon" />
+                <p className="fs-xs fw-700 white my-1">Step 1: </p>
+                <p className="fs-xxs fw-400 mb-0 white text-center">Open the Mobile Application</p>
+              </div>
+              <div
+                onClick={() => setStep('step2')}
+                className={`step_bg d-flex flex-column align-items-center w-100 ${
+                  step === 'step2' ? `active_step_bg` : null
                 }`}>
-              <img src={settingIcon} alt="mobile-icon" />
-              <p className="fs-xs fw-700 white my-1">Step 2: </p>
-              <p className="fs-xxs fw-400 mb-0 white">Navigate to Account Settings</p>
-            </div>
-            <div
-              onClick={() => setStep('step3')}
-              className={`step_bg d-flex flex-column align-items-center w-100 ${step === 'step3' ? `active_step_bg` : null
+                <img src={settingIcon} alt="mobile-icon" />
+                <p className="fs-xs fw-700 white my-1">Step 2: </p>
+                <p className="fs-xxs fw-400 mb-0 white text-center">Navigate to Account Settings</p>
+              </div>
+              <div
+                onClick={() => setStep('step3')}
+                className={`step_bg d-flex flex-column align-items-center w-100 ${
+                  step === 'step3' ? `active_step_bg` : null
                 }`}>
-              <img src={delteIcon} alt="mobile-icon" />
-              <p className="fs-xs fw-700 white my-1">Step 3: </p>
-              <p className="fs-xxs fw-400 mb-0 white">Open the Mobile Application</p>
-            </div>
-            <div
-              onClick={() => setStep('step4')}
-              className={`step_bg d-flex flex-column align-items-center w-100 ${step === 'step4' ? `active_step_bg` : null
+                <img src={delteIcon} alt="mobile-icon" />
+                <p className="fs-xs fw-700 white my-1">Step 3: </p>
+                <p className="fs-xxs fw-400 mb-0 white text-center">Open the Mobile Application</p>
+              </div>
+              <div
+                onClick={() => setStep('step4')}
+                className={`step_bg d-flex flex-column align-items-center w-100 ${
+                  step === 'step4' ? `active_step_bg` : null
                 }`}>
-              <img src={thumbupIcon} alt="mobile-icon" />
-              <p className="fs-xs fw-700 white my-1">Step 4: </p>
-              <p className="fs-xxs fw-400 mb-0 white">Navigate to Account Settings</p>
-            </div>
-            <div
-              onClick={() => setStep('step5')}
-              className={`step_bg d-flex flex-column align-items-center w-100 ${step === 'step5' ? `active_step_bg` : null
+                <img src={thumbupIcon} alt="mobile-icon" />
+                <p className="fs-xs fw-700 white my-1">Step 4: </p>
+                <p className="fs-xxs fw-400 mb-0 white text-center">Navigate to Account Settings</p>
+              </div>
+              <div
+                onClick={() => setStep('step5')}
+                className={`step_bg d-flex flex-column align-items-center w-100 ${
+                  step === 'step5' ? `active_step_bg` : null
                 }`}>
-              <img src={verificationIcon} alt="mobile-icon" />
-              <p className="fs-xs fw-700 white my-1">Step 5: </p>
-              <p className="fs-xxs fw-400 mb-0 white">Open the Mobile Application</p>
-            </div>
-            <div
-              onClick={() => setStep('step6')}
-              className={`step_bg d-flex flex-column align-items-center w-100 ${step === 'step6' ? `active_step_bg` : null
+                <img src={verificationIcon} alt="mobile-icon" />
+                <p className="fs-xs fw-700 white my-1">Step 5: </p>
+                <p className="fs-xxs fw-400 mb-0 white text-center">Open the Mobile Application</p>
+              </div>
+              <div
+                onClick={() => setStep('step6')}
+                className={`step_bg d-flex flex-column align-items-center w-100 ${
+                  step === 'step6' ? `active_step_bg` : null
                 }`}>
-              <img src={checkIcon} alt="mobile-icon" />
-              <p className="fs-xs fw-700 white my-1">Step 6: </p>
-              <p className="fs-xxs fw-400 mb-0 white">Navigate to Account Settings</p>
+                <img src={checkIcon} alt="mobile-icon" />
+                <p className="fs-xs fw-700 white my-1">Step 6: </p>
+                <p className="fs-xxs fw-400 mb-0 white text-center">Navigate to Account Settings</p>
+              </div>
             </div>
           </div>
           <div className="steps_data mt-3">
@@ -94,7 +102,7 @@ export default function Stsm() {
                   <p className="fs-sm fw-400 black mb-0 mt-2">
                     In the app, locate and navigate to the "Account Settings" or a similar section.
                   </p>
-                  <img className="mt-2" src={step2img1} alt="step2-img" />
+                  <img className="mt-2 w_xsm_100" src={step2img1} alt="step2-img" />
                 </div>
               </div>
             ) : step === 'step3' ? (
@@ -103,7 +111,7 @@ export default function Stsm() {
                 <p className="fs-sm fw-400 black mb-0 mt-2">
                   Look for the "Delete Account" feature or button within the "Help Centre" section.
                 </p>
-                <img className="mt-2" src={step3} alt="step2-img" />
+                <img className="mt-2 w_xsm_100" src={step3} alt="step2-img" />
               </div>
             ) : step === 'step4' ? (
               <div>
@@ -112,7 +120,7 @@ export default function Stsm() {
                   Upon selecting the "Delete Account" feature, the app may prompt you to confirm
                   your decision. Please review the confirmation message carefully.
                 </p>
-                <img className="mt-2" src={step4} alt="step2-img" />
+                <img className="mt-2 w_xsm_100" src={step4} alt="step2-img" />
               </div>
             ) : step === 'step5' ? (
               <div>
@@ -140,14 +148,14 @@ export default function Stsm() {
                     step === 'step6'
                       ? setStep('step5')
                       : step === 'step5'
-                        ? setStep('step4')
-                        : step === 'step4'
-                          ? setStep('step3')
-                          : step === 'step3'
-                            ? setStep('step2')
-                            : step === 'step2'
-                              ? setStep('step1')
-                              : null
+                      ? setStep('step4')
+                      : step === 'step4'
+                      ? setStep('step3')
+                      : step === 'step3'
+                      ? setStep('step2')
+                      : step === 'step2'
+                      ? setStep('step1')
+                      : null
                   }
                   className="text-end">
                   <button className="next_btn fs-sm fw-400 white">Back</button>
@@ -159,14 +167,14 @@ export default function Stsm() {
                     step === 'step1'
                       ? setStep('step2')
                       : step === 'step2'
-                        ? setStep('step3')
-                        : step === 'step3'
-                          ? setStep('step4')
-                          : step === 'step4'
-                            ? setStep('step5')
-                            : step === 'step5'
-                              ? setStep('step6')
-                              : null
+                      ? setStep('step3')
+                      : step === 'step3'
+                      ? setStep('step4')
+                      : step === 'step4'
+                      ? setStep('step5')
+                      : step === 'step5'
+                      ? setStep('step6')
+                      : null
                   }
                   className="text-end">
                   <button className="next_btn fs-sm fw-400 white">Next</button>
