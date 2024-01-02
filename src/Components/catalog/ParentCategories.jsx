@@ -13,6 +13,7 @@ import minilayoutImgGroup8 from '../../Images/Png/minilayoutImgGroup8.png';
 import deleteicon from '../../Images/svgs/deleteicon.svg';
 import updown_icon from '../../Images/svgs/arross.svg';
 import saveicon from '../../Images/svgs/saveicon.svg';
+import shortIcon from '../../Images/svgs/short-icon.svg';
 import { useRef } from 'react';
 import { collection, doc, addDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -50,7 +51,7 @@ const Categories = () => {
   function handelUpload(e) {
     const selectedFile = e.target.files[0];
     if (!ImageisValidOrNot(selectedFile)) {
-      toast.error('Invalid file type. Please select a valid image file.');
+      toast.error('Please select a valid image file within 1.5 MB.')
       setImageupload(null);
     } else {
       setImageupload(selectedFile);
@@ -451,7 +452,6 @@ const Categories = () => {
                       <th className="py-3 ps-3">
                         <div className="d-flex align-items-center gap-3 min_width_300">
                           <label class="check1 fw-400 fs-sm black mb-0">
-                            Name
                             <input
                               type="checkbox"
                               checked={selectAll}
@@ -459,6 +459,13 @@ const Categories = () => {
                             />
                             <span class="checkmark"></span>
                           </label>
+                          <p className="fw-400 fs-sm black mb-0">
+                            {' '}
+                            Name{' '}
+                            <span>
+                              <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
+                            </span>
+                          </p>
                         </div>
                       </th>
                       <th className="mx_160 ps-4">
@@ -485,14 +492,6 @@ const Categories = () => {
                             <td className="py-3 ps-3 w-100">
                               <div className="d-flex align-items-center gap-3 min_width_300">
                                 <label className="check1 fw-400 fs-sm black mb-0">
-                                  <div className="d-flex align-items-center">
-                                    <div className="w_40">
-                                      <img src={value.image} alt="categoryImg" />
-                                    </div>
-                                    <div className="ps-3 ms-1">
-                                      <p className="fw-400 fs-sm black mb-0">{value.title}</p>
-                                    </div>
-                                  </div>
                                   <input
                                     type="checkbox"
                                     checked={value.checked || false}
@@ -500,6 +499,14 @@ const Categories = () => {
                                   />
                                   <span className="checkmark me-5"></span>
                                 </label>
+                                <div className="d-flex align-items-center">
+                                  <div className="w_40">
+                                    <img src={value.image} alt="categoryImg" />
+                                  </div>
+                                  <div className="ps-3 ms-1">
+                                    <p className="fw-400 fs-sm black mb-0">{value.title}</p>
+                                  </div>
+                                </div>
                               </div>
                             </td>
                             <td className="ps-4 mx_160">

@@ -197,7 +197,7 @@ export default function Stsm() {
         </div>
         <div className="bg_green_yellow py-3">
           <div className="container">
-            <p className="mb-0">@ All Rights Reserved at STSM - Save Time Save Money</p>
+            <p className="mb-0 white">@ All Rights Reserved at STSM - Save Time Save Money</p>
           </div>
         </div>
       </div>

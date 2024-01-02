@@ -180,7 +180,8 @@ const Categories = () => {
       Change service  status functionality end 
     *********************************************   **/
 
-  /*  *******************************
+  
+      /*  *******************************
       checkbox functionality start 
     *********************************************   **/
   const [selectAll, setSelectAll] = useState(false);

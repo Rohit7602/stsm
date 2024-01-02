@@ -8,9 +8,12 @@ import manimage from '../../Images/Png/manimage.jpg';
 import { Col, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useOrdercontext } from '../../context/OrderGetter';
+import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
+
 export default function NewOrder() {
   const { id } = useParams();
-  const { orders } = useOrdercontext();
+  const { orders ,updateData} = useOrdercontext();
   let filterData = orders.filter((item) => item.id == id);
   function formatDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -20,7 +23,7 @@ export default function NewOrder() {
 
   const calculateSubtotal = () => {
     return filterData[0].items.reduce(
-      (acc, item) => acc + item.price * item.qnty - item.discount,
+      (acc, item) => acc + item.varient_price * item.quantity - item.varient_discount,
       0
     );
   };
@@ -32,6 +35,21 @@ export default function NewOrder() {
     const promoDiscount = filterData[0].promo_discount;
     return subtotal + shippingCost - promoDiscount;
   };
+
+  const handleAcceptOrder = async (id) => {
+    try {
+      // Toggle the status between 'publish' and 'hidden'
+      const newStatus = 'PROCESSING'
+
+      await updateDoc(doc(db, 'order', id), {
+        status: newStatus,
+      });
+      updateData({ id, status: newStatus });
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
 
   return (
     <>
@@ -48,7 +66,7 @@ export default function NewOrder() {
                   <button className="reset_border">
                     <button className="fs-sm reset_btn  border-0 fw-400">Reject Order</button>
                   </button>
-                  <button
+                  <button onClick={() => handleAcceptOrder(item.id)}
                     className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
                     type="submit">
                     <img src={saveicon} alt="saveicon" />
@@ -110,19 +128,19 @@ export default function NewOrder() {
                           </div>
                           <div className="ps-3">
                             <p className="fs-sm fw-400 black mb-0">{products.title}</p>
-                            <p className="fs-xxs fw-400 fade_grey mb-0">ID :{products.item_id}</p>
+                            <p className="fs-xxs fw-400 fade_grey mb-0">ID :{products.product_id}</p>
                           </div>
                         </div>
                         <div className="d-flex align-items-center p-3">
-                          <p className="fs-sm fw-400 black mb-0">₹ {products.price}</p>
-                          <p className="fs-sm fw-400 black mb-0 ps-4 ms-2 me-5">{products.qnty}</p>
+                          <p className="fs-sm fw-400 black mb-0">₹ {products.varient_price}</p>
+                          <p className="fs-sm fw-400 black mb-0 ps-4 ms-2 me-5">{products.quantity}</p>
 
                           <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">
-                            (-) ₹ {products.discount}
+                            (-) ₹ {products.varient_discount}
                           </p>
                         </div>
                         <p className="fs-sm fw-400 black mb-0 p-3">
-                          ₹ {products.price * products.qnty - products.discount}
+                          ₹ {products.varient_price * products.quantity - products.varient_discount}
                         </p>
                       </div>
                     </>

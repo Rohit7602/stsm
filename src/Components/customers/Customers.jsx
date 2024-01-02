@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import filtericon from '../../Images/svgs/filtericon.svg';
 import manicon from '../../Images/svgs/manicon.svg';
 import threedot from '../../Images/svgs/threedot.svg';
@@ -8,10 +8,16 @@ import pencil_icon from '../../Images/svgs/pencil.svg';
 import delete_icon from '../../Images/svgs/delte.svg';
 import updown_icon from '../../Images/svgs/arross.svg';
 import manimage from '../../Images/Png/manimage.jpg';
+import shortIcon from '../../Images/svgs/short-icon.svg';
 import { Link } from 'react-router-dom';
 import { useCustomerContext } from '../../context/Customergetters';
+import { set } from 'date-fns';
+
 
 const Customers = () => {
+
+  const [searchvalue, setSearchvalue] = useState('')
+
   const { customer } = useCustomerContext();
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
@@ -25,9 +31,11 @@ const Customers = () => {
             <div className="d-flex px-2 gap-2 align-items-center input_wrapper">
               <img src={search} alt="searchicon" />
               <input
-                type="text"
+                type="text" 
+                value={searchvalue}
+                onChange={(e)=> setSearchvalue(e.target.value)}
                 className="fw-400 categorie_input"
-                placeholder="Search for categories..."
+                placeholder="Search for Customers..."
               />
             </div>
             <button className="filter_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400  ">
@@ -50,7 +58,12 @@ const Customers = () => {
                             <input type="checkbox" />
                             <span class="checkmark"></span>
                           </label>
-                          <p className="fw-400 fs-sm black mb-0 ">Name</p>
+                          <p className="fw-400 fs-sm black mb-0 ">
+                            Name{' '}
+                            <span>
+                              <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
+                            </span>
+                          </p>
                         </div>
                       </th>
                       <th className="mw_160 p-3">
@@ -71,7 +84,9 @@ const Customers = () => {
                     </tr>
                   </thead>
                   <tbody className="table_body">
-                    {customer.map((item, index) => {
+                    {customer.filter((data) => {
+                      return searchvalue.toLowerCase() === '' ? data : data.name.toLowerCase().includes(searchvalue)
+                    }).map((item, index) => {
                       const {
                         id,
                         city,
