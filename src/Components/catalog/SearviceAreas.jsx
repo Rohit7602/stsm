@@ -132,6 +132,43 @@ const Categories = () => {
     Add New Service functionality end here  
   *********************************************   **/
 
+  // Function to handle the selection of an item
+  const handleSelectEditItem = (value) => {
+    // Update the selected value in the state
+    setEditServiceDay(value);
+  };
+
+
+
+  /*  *******************************
+    Edit  Service functionality start from  here  
+  *********************************************   **/
+  async function HandleEditSaveServiceAreas(e) {
+    e.preventDefault()
+    try {
+      await updateDoc(doc(db, "ServiceAreas", ServiceAreaId), {
+        AreaName: editServiceName,
+        PostalCode: editPinCode,
+        ServiceStatus: editServiceStatus,
+        ExpectedDelivery: editServiceDay,
+      })
+
+      updateServiceData({ ServiceAreaId, AreaName: editServiceName, PostalCode: editPinCode, ServiceStatus: editServiceStatus, ExpectedDelivery: editServiceDay });
+      toast.success('Service area Updated  Successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (Error) {
+      console.error(Error)
+    }
+    setEditServicePopup(false)
+  }
+
+
+  /*  *******************************
+    Edit  Service functionality end from  here  
+  *********************************************   **/
+
+
   /*  *******************************
       Delete functionality start 
    *********************************************   **/
@@ -429,32 +466,32 @@ const Categories = () => {
                       <ul class="dropdown-menu w-100">
                         <li
                           class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectItem('1 Day')}>
+                          onClick={() => handleSelectEditItem('1 Day')}>
                           1 Day
                         </li>
                         <li
                           class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectItem('2 Day')}>
+                          onClick={() => handleSelectEditItem('2 Day')}>
                           2 Day
                         </li>
                         <li
                           class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectItem('3 Day')}>
+                          onClick={() => handleSelectEditItem('3 Day')}>
                           3 Day
                         </li>
                         <li
                           class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectItem('4 Day')}>
+                          onClick={() => handleSelectEditItem('4 Day')}>
                           4 Day
                         </li>
                         <li
                           class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectItem('5 Day')}>
+                          onClick={() => handleSelectEditItem('5 Day')}>
                           5 Day
                         </li>
                         <li
                           class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectItem('6 Day')}>
+                          onClick={() => handleSelectEditItem('6 Day')}>
                           6 Day
                         </li>
                       </ul>
@@ -498,7 +535,7 @@ const Categories = () => {
                       </button>
                     </button>
                     <button
-                      onClick={HandleSaveServiceAreas}
+                      onClick={HandleEditSaveServiceAreas}
                       className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black">
                       <img src={saveicon} alt="saveicon" />
                       Save
@@ -611,6 +648,7 @@ const Categories = () => {
                                   <div class="dropdown-item" href="#">
                                     <div
                                       onClick={() => {
+                                        setServiceAreaId(data.id)
                                         setEditServicePopup(true);
                                         setEditServiceName(data.AreaName);
                                         setEditServiceDay(data.ExpectedDelivery);

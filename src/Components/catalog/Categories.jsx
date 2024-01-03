@@ -14,12 +14,18 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import savegreenicon from '../../Images/svgs/save_green_icon.svg';
 import shortIcon from '../../Images/svgs/short-icon.svg';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useRef } from 'react';
 
-import { ref, getStorage, deleteObject } from 'firebase/storage';
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  getStorage,
+  deleteObject,
+} from 'firebase/storage';
+import { storage, db } from '../../firebase';
 import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
 import Deletepopup from '../popups/Deletepopup';
 import Updatepopup from '../popups/Updatepopup';
@@ -45,9 +51,11 @@ const Categories = () => {
   const [editCatName, setEditCatName] = useState('');
   const [editCatImg, setEditCatImg] = useState('');
   const [editStatus, setEditStatus] = useState('');
+
   const [order, setorder] = useState('ASC');
-  //
-  const { addData } = useSubCategories();
+
+
+
   const handleSelectCategory = (category) => {
     setEditSearchvalue('');
     setSelectedCategory(category);
@@ -127,6 +135,103 @@ const Categories = () => {
   /*  *******************************
       Change status functionality end 
     *********************************************   **/
+
+
+
+  /*  *******************************
+     Edit  Image  functionality start 
+   *********************************************   **/
+
+  function handleDeleteEditImge() {
+    setEditCatImg('');
+    if (typeof editCatImg === "string" && editCatImg.startsWith('http')) {
+      try {
+        if (editCatImg.length !== 0) {
+          var st = getStorage()
+          var reference = ref(st, editCatImg);
+          deleteObject(reference)
+        }
+      } catch (Error) {
+        console.log(Error)
+      }
+    }
+  }
+
+
+
+
+
+
+
+  /*  *******************************
+     Edit  Image  functionality end 
+   *********************************************   **/
+
+
+
+
+  /*  *******************************
+     Edit  Category   functionality start 
+   *********************************************   **/
+  async function HandleEditCategory(e) {
+    e.preventDefault();
+
+    try {
+      let imageUrl = null;
+
+      if (editCatImg instanceof File) {
+        // Handle the case where editCatImg is a File
+        const filename = Math.floor(Date.now() / 1000) + '-' + editCatImg.name;
+        const storageRef = ref(storage, `/Sub-categories/${filename}`);
+        await uploadBytes(storageRef, editCatImg);
+        imageUrl = await getDownloadURL(storageRef);
+      } else if (typeof editCatImg === "string" && editCatImg.startsWith("http")) {
+        // Handle the case where editCatImg is a URL
+        imageUrl = editCatImg;
+      }
+
+      await updateDoc(doc(db, "sub_categories", selectedSubcategoryId), {
+        title: editCatName,
+        status: editStatus,
+        image: imageUrl,
+        cat_ID: category.id,
+      });
+
+      updateData({
+        selectedSubcategoryId,
+        title: editCatName,
+        status: editStatus,
+        image: imageUrl,
+        cat_ID: category.id,
+      });
+
+      alert("Updated Successfully");
+      setEditCatPopup(false);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+  /*  *******************************
+     Edit  Category  functionality end 
+   *********************************************   **/
+
+
+
+
+
+
 
   /*  *******************************
       checkbox functionality start 
@@ -257,7 +362,7 @@ const Categories = () => {
                       return search.toLowerCase() === ''
                         ? item
                         : item.title.toLowerCase().includes(searchvalue)
-                            
+
                     })
                     .map((value, index) => {
                       const subcategoryId = value.id;
@@ -323,6 +428,7 @@ const Categories = () => {
                                     <div
                                       onClick={() => {
                                         setEditCatPopup(true);
+                                        setSelectedSubcategoryId(value.id);
                                         setEditCatName(value.title);
                                         setEditCatImg(value.image);
                                         setSelectedCategory(getParentCategoryName(value.cat_ID));
@@ -436,8 +542,8 @@ const Categories = () => {
                         className="mobile_image object-fit-cover"
                         src={
                           editCatImg &&
-                          typeof editCatImg === 'string' &&
-                          editCatImg.startsWith('http')
+                            typeof editCatImg === 'string' &&
+                            editCatImg.startsWith('http')
                             ? editCatImg
                             : URL.createObjectURL(editCatImg)
                         }
@@ -445,7 +551,7 @@ const Categories = () => {
                       />
                       {/* <img className="mobile_image object-fit-cover" src={editCatImg} alt="" /> */}
                       <img
-                        onClick={() => setEditCatImg()}
+                        onClick={() => handleDeleteEditImge()}
                         className="position-absolute top-0 end-0 cursor_pointer"
                         src={deleteicon}
                         alt="deleteicon"
@@ -509,7 +615,6 @@ const Categories = () => {
                         </p>
                       </div>
                     </Dropdown.Toggle>
-
                     <Dropdown.Menu className="w-100">
                       <div className="d-flex flex-column">
                         <div className="d-flex align-items-center product_input position-sticky top-0">
@@ -532,11 +637,10 @@ const Categories = () => {
                             .map((category) => (
                               <Dropdown.Item key={category.id}>
                                 <div
-                                  className={`d-flex justify-content-between ${
-                                    selectedCategory && selectedCategory.id === category.id
-                                      ? 'selected'
-                                      : ''
-                                  }`}
+                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
+                                    ? 'selected'
+                                    : ''
+                                    }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (
@@ -567,7 +671,7 @@ const Categories = () => {
                     Select a category that will be the parent of the current one.
                   </p>
                   <div className="d-flex justify-content-end">
-                    <button
+                    <button onClick={HandleEditCategory}
                       type="submit"
                       className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-2 px-2 py-2 save_btn fw-400 black">
                       <img src={saveicon} alt="saveicon" />
