@@ -19,6 +19,7 @@ import AccountDelete from './Components/AccountDelete';
 import { useEffect,useState } from 'react';
 import { auth } from './firebase';
 import HashLoader from "react-spinners/HashLoader";
+import Checkconnnection from './Components/CheckConnection'
 
 
 function App() {
@@ -71,7 +72,7 @@ function App() {
 
 
   return (
-    <>
+    <Checkconnnection>
       <div>
         {loading ? <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <HashLoader
@@ -128,7 +129,7 @@ function App() {
           </div>
         }
       </div>
-    </>
+    </Checkconnnection>
   );
 }
 

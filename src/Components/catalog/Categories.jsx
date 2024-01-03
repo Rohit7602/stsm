@@ -254,9 +254,8 @@ const Categories = () => {
                       );
                       return search.toLowerCase() === ''
                         ? item
-                        : item.title.toLowerCase().includes(searchvalue);
-                      // ||
-                      //     mainCategory.title.toLowerCase().includes(searchvalue);
+                        : item.title.toLowerCase().includes(searchvalue)
+                            
                     })
                     .map((value, index) => {
                       const subcategoryId = value.id;

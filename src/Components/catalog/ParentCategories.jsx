@@ -325,7 +325,7 @@ const Categories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
-                                    onChange={() => handleLayoutChange('1X3')}
+                                    onChange={() => handleLayoutChange('oneByThree')}
                                   />
                                   <label htmlFor="one" className="fs-xs fw-400 black mb-0 ms-2">
                                     1 x 3
@@ -340,7 +340,7 @@ const Categories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
-                                    onChange={() => handleLayoutChange('2X2')}
+                                    onChange={() => handleLayoutChange(' twoByTwo')}
                                   />
                                   <label htmlFor="two" className="fs-xs fw-400 black mb-0 ms-2">
                                     2 x 2
@@ -355,10 +355,10 @@ const Categories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
-                                    onChange={() => handleLayoutChange('2X3')}
+                                    onChange={() => handleLayoutChange('threeByTwo')}
                                   />
                                   <label htmlFor="three" className="fs-xs fw-400 black mb-0 ms-2">
-                                    2 x 3
+                                    3 x 2
                                   </label>
                                 </div>
                                 <img src={minilayoutImgGroup6} alt="" />
@@ -370,7 +370,7 @@ const Categories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
-                                    onChange={() => handleLayoutChange('3X3')}
+                                    onChange={() => handleLayoutChange('threeByThree')}
                                   />
                                   <label htmlFor="four" className="fs-xs fw-400 black mb-0 ms-2">
                                     3 x 3
@@ -385,7 +385,7 @@ const Categories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
-                                    onChange={() => handleLayoutChange('2X2 Inline3')}
+                                    onChange={() => handleLayoutChange('twoByTwoWithList')}
                                   />
                                   <label htmlFor="five" className="fs-xs fw-400 black mb-0 ms-2">
                                     2 x 2 Inline3
