@@ -1251,6 +1251,7 @@ tbody::-webkit-scrollbar {
 .table_body {
   display: block !important;
   max-height: calc(100vh - 290px) !important;
+  min-height: 300px;
   overflow: auto !important;
 }
 .table_head,

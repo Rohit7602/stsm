@@ -44,6 +44,7 @@ const Categories = () => {
 
   const [editCatName, setEditCatName] = useState('');
   const [editCatImg, setEditCatImg] = useState('');
+  const [editStatus, setEditStatus] = useState('');
   const [order, setorder] = useState('ASC');
   //
   const { addData } = useSubCategories();
@@ -225,7 +226,7 @@ const Categories = () => {
                     </th>
                     <th onClick={() => sorting('cat_ID')} className="mw-250 px-2">
                       <p className="fw-400 fs-sm black mb-0">
-                        Parent Category{' '}
+                        Parent Category
                         <span>
                           <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
                         </span>
@@ -285,7 +286,7 @@ const Categories = () => {
                             </div>
                           </td>
                           <td className="px-2 mw-250 ">
-                            <h3 className="fs-sm fw-400 black mb-0 ms-3">
+                            <h3 className="fs-sm fw-400 black mb-0">
                               {getParentCategoryName(value.cat_ID)}
                             </h3>
                           </td>
@@ -293,7 +294,7 @@ const Categories = () => {
                             <h3 className="fs-sm fw-400 black mb-0 width_10 ">10</h3>
                           </td>
                           <td className="mx_160">
-                            <h3 className="fs-sm fw-400 black mb-0 width_10 color_green ms-2">
+                            <h3 className="fs-sm fw-400 black mb-0 color_green">
                               {value.status}
                             </h3>
                           </td>
@@ -326,6 +327,7 @@ const Categories = () => {
                                         setEditCatName(value.title);
                                         setEditCatImg(value.image);
                                         setSelectedCategory(getParentCategoryName(value.cat_ID));
+                                        setEditStatus(value.status);
                                       }}
                                       className="d-flex align-items-center categorie_dropdown_options">
                                       <img src={pencil_icon} alt="" />
@@ -433,12 +435,18 @@ const Categories = () => {
                     <div className="position-relative ">
                       <img
                         className="mobile_image object-fit-cover"
-                        src={editCatImg ? editCatImg : URL.createObjectURL(editCatImg[0])}
+                        src={
+                          editCatImg &&
+                          typeof editCatImg === 'string' &&
+                          editCatImg.startsWith('http')
+                            ? editCatImg
+                            : URL.createObjectURL(editCatImg)
+                        }
                         alt=""
                       />
                       {/* <img className="mobile_image object-fit-cover" src={editCatImg} alt="" /> */}
                       <img
-                        onClick={() => setEditCatImg('')}
+                        onClick={() => setEditCatImg()}
                         className="position-absolute top-0 end-0 cursor_pointer"
                         src={deleteicon}
                         alt="deleteicon"
@@ -459,14 +467,26 @@ const Categories = () => {
                   <div className="mt-3 py-1 d-flex align-items-center gap-3">
                     <label class="check fw-400 fs-sm black mb-0">
                       Published
-                      <input type="checkbox" />
+                      <input
+                        onChange={() =>
+                          setEditStatus(editStatus === 'hidden' ? 'published' : 'hidden')
+                        }
+                        checked={editStatus === 'published'}
+                        type="checkbox"
+                      />
                       <span class="checkmark"></span>
                     </label>
                   </div>
                   <div className="mt-3 py-1 d-flex align-items-center gap-3 ms-5">
                     <label class="check fw-400 fs-sm black mb-0">
                       Hidden
-                      <input type="checkbox" />
+                      <input
+                        onChange={() =>
+                          setEditStatus(editStatus === 'published' ? 'hidden' : 'published')
+                        }
+                        checked={editStatus === 'hidden'}
+                        type="checkbox"
+                      />
                       <span class="checkmark"></span>
                     </label>
                   </div>
@@ -544,12 +564,13 @@ const Categories = () => {
                       </div>
                     </Dropdown.Menu>
                   </Dropdown>
-
                   <p className="black fw-400 fs-xxs mb-0 mt-3">
                     Select a category that will be the parent of the current one.
                   </p>
                   <div className="d-flex justify-content-end">
-                    <button className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-2 px-2 py-2 save_btn fw-400 black">
+                    <button
+                      type="submit"
+                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-2 px-2 py-2 save_btn fw-400 black">
                       <img src={saveicon} alt="saveicon" />
                       Save
                     </button>
