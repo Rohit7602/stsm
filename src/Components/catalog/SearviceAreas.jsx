@@ -21,8 +21,6 @@ import { UseServiceContext } from '../../context/ServiceAreasGetter';
 import Deletepopup from '../popups/Deletepopup';
 import Updatepopup from '../popups/Updatepopup';
 
-
-
 const Categories = () => {
   const { ServiceData, addServiceData, deleteServiceData, updateServiceData } = UseServiceContext();
   const [addsServicePopup, setAddsServicePopup] = useState(false);
@@ -41,12 +39,23 @@ const Categories = () => {
   const [ServiceStatus, setServiceStatus] = useState(null);
   const [statusPopup, setStatusPopup] = useState(false);
 
-  const [order, setorder] = useState("ASC")
+  //  edit popup states //
+  const [editServicePopup, setEditServicePopup] = useState(false);
+  const [editServiceName, setEditServiceName] = useState('');
+  const [editServiceDay, setEditServiceDay] = useState('');
+  const [editServiceStatus, setEditServiceStatus] = useState('');
+  const [editPinCode, setEditPinCode] = useState('');
+
+  // 
+
+
+
+  const [order, setorder] = useState('ASC');
   const sorting = (col) => {
     // Create a copy of the data array
     const sortedData = [...ServiceData];
 
-    if (order === "ASC") {
+    if (order === 'ASC') {
       sortedData.sort((a, b) => {
         const valueA = a[col].toLowerCase();
         const valueB = b[col].toLowerCase();
@@ -62,24 +71,12 @@ const Categories = () => {
     }
 
     // Update the order state
-    const newOrder = order === "ASC" ? "DESC" : "ASC";
+    const newOrder = order === 'ASC' ? 'DESC' : 'ASC';
     setorder(newOrder);
 
     // Update the data using the updateData function from your context
     updateServiceData(sortedData);
   };
-
-
-
-
-
-
-
-
-
-
-
-
 
   // Function to handle the selection of an item
   const handleSelectItem = (value) => {
@@ -180,8 +177,7 @@ const Categories = () => {
       Change service  status functionality end 
     *********************************************   **/
 
-  
-      /*  *******************************
+  /*  *******************************
       checkbox functionality start 
     *********************************************   **/
   const [selectAll, setSelectAll] = useState(false);
@@ -227,7 +223,7 @@ const Categories = () => {
   } else {
     return (
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
-        {addsServicePopup === true ? <div className="bg_black_overlay"></div> : ''}
+        {addsServicePopup || editServicePopup ? <div className="bg_black_overlay"></div> : ''}
         <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
           <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
             <div className="d-flex">
@@ -254,6 +250,7 @@ const Categories = () => {
                   <div className="d-flex align-items-center justify-content-between">
                     <p className="fs-sm fw-400 black mb-0">Add Service Area</p>
                     <img
+                      className="cursor_pointer"
                       onClick={() => setAddsServicePopup(!addsServicePopup)}
                       src={closeicon}
                       alt="closeicon"
@@ -381,9 +378,134 @@ const Categories = () => {
                     </button>
                   </div>
                 </div>
-              ) : (
-                ''
-              )}
+              ) : null}
+              {editServicePopup ? (
+                <div className="add_service_area_popup">
+                  <div className="d-flex align-items-center justify-content-between">
+                    <p className="fs-sm fw-400 black mb-0">Edit Service Area</p>
+                    <img
+                      className="cursor_pointer"
+                      onClick={() => setEditServicePopup(false)}
+                      src={closeicon}
+                      alt="closeicon"
+                    />
+                  </div>
+                  <div className="d-flex align-items-start flex-column border_top_gray pt-3 mt-3">
+                    <label htmlFor="">Name / Title</label>
+                    <input
+                      className="popup_input w-100 fs-xs fw-400 black"
+                      type="text"
+                      value={editServiceName}
+                      onChange={(e) => setEditServiceName(e.target.value)}
+                      placeholder="Enter Area Name"
+                    />
+                  </div>
+                  <div className="d-flex align-items-start flex-column pt-3 mt-1">
+                    <label htmlFor="">Pin Code</label>
+                    <input
+                      className="popup_input w-100 fs-xs fw-400 black"
+                      type="number"
+                      minLength="6"
+                      maxLength="6"
+                      value={editPinCode}
+                      onInput={(e) => {
+                        setEditPinCode(e.target.value);
+                      }}
+                      placeholder="Enter Pin Code "
+                    />
+                  </div>
+                  <div className="d-flex align-items-start flex-column pt-3 mt-1">
+                    <label htmlFor="">Expected Delivery</label>
+                    <div class="dropdown w-100 mt-2">
+                      <button
+                        class="btn btn-secondary fs_xs fw-400 dropdown-toggle w-100 text-start popup_input py-2 dropdown_btn_text rounded-0
+                      mt-0 bg-white"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        {editServiceDay}
+                        <img className="float-end" src={dropdown} alt="" />
+                      </button>
+                      <ul class="dropdown-menu w-100">
+                        <li
+                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                          onClick={() => handleSelectItem('1 Day')}>
+                          1 Day
+                        </li>
+                        <li
+                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                          onClick={() => handleSelectItem('2 Day')}>
+                          2 Day
+                        </li>
+                        <li
+                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                          onClick={() => handleSelectItem('3 Day')}>
+                          3 Day
+                        </li>
+                        <li
+                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                          onClick={() => handleSelectItem('4 Day')}>
+                          4 Day
+                        </li>
+                        <li
+                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                          onClick={() => handleSelectItem('5 Day')}>
+                          5 Day
+                        </li>
+                        <li
+                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                          onClick={() => handleSelectItem('6 Day')}>
+                          6 Day
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <h2 className="fw-400 fs-2sm black mb-0">Status</h2>
+                    <div className="d-flex align-items-center gap-5">
+                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
+                        <label class="check fw-400 fs-sm black mb-0">
+                          Live
+                          <input
+                            type="checkbox"
+                            onChange={() => {
+                              setEditServiceStatus('live');
+                            }}
+                            checked={editServiceStatus === 'live'}
+                          />
+                          <span class="checkmark"></span>
+                        </label>
+                      </div>
+                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
+                        <label class="check fw-400 fs-sm black mb-0">
+                          Draft
+                          <input
+                            type="checkbox"
+                            onChange={(e) => {
+                              setEditServiceStatus('draft');
+                            }}
+                            checked={editServiceStatus === 'draft'}
+                          />
+                          <span class="checkmark"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="d-flex align-items-center gap-3 justify-content-end pt-3 mt-3 border_top_gray">
+                    <button className="reset_border" onClick={handleResetServiceArea}>
+                      <button className="fs-sm fw-400 reset_btn border-0 px-sm-3 px-2 py-2 ">
+                        Reset
+                      </button>
+                    </button>
+                    <button
+                      onClick={HandleSaveServiceAreas}
+                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black">
+                      <img src={saveicon} alt="saveicon" />
+                      Save
+                    </button>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
           {/* categories details  */}
@@ -393,7 +515,7 @@ const Categories = () => {
                 <table className="w-100">
                   <thead className="w-100 table_head">
                     <tr className="product_borderbottom">
-                      <th onClick={() => sorting("AreaName")} className="py-3 ps-3 w-100">
+                      <th onClick={() => sorting('AreaName')} className="py-3 ps-3 w-100">
                         <div className="d-flex align-items-center gap-3 min_width_300">
                           <label class="check1 fw-400 fs-sm black mb-0">
                             <input
@@ -406,7 +528,7 @@ const Categories = () => {
                           <p className="fw-400 fs-sm black mb-0 ms-2">
                             Name / Title{' '}
                             <span>
-                              <img className='ms-2' width={20} src={shortIcon} alt="short-icon" />
+                              <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
                             </span>
                           </p>
                         </div>
@@ -417,11 +539,11 @@ const Categories = () => {
                       <th className="mw-200 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Expected Delivery</h3>
                       </th>
-                      <th onClick={() => sorting("ServiceStatus")} className="mx_140">
+                      <th onClick={() => sorting('ServiceStatus')} className="mx_140">
                         <p className="fw-400 fs-sm black mb-0 ms-2">
-                          Service Status {' '}
+                          Service Status{' '}
                           <span>
-                            <img className='ms-2' width={20} src={shortIcon} alt="short-icon" />
+                            <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
                           </span>
                         </p>
                       </th>
@@ -487,10 +609,18 @@ const Categories = () => {
                                 </li>
                                 <li>
                                   <div class="dropdown-item" href="#">
-                                    <div className="d-flex align-items-center categorie_dropdown_options">
+                                    <div
+                                      onClick={() => {
+                                        setEditServicePopup(true);
+                                        setEditServiceName(data.AreaName);
+                                        setEditServiceDay(data.ExpectedDelivery);
+                                        setEditPinCode(data.PostalCode);
+                                        setEditServiceStatus(data.ServiceStatus);
+                                      }}
+                                      className="d-flex align-items-center categorie_dropdown_options">
                                       <img src={pencil_icon} alt="" />
                                       <p className="fs-sm fw-400 black mb-0 ms-2">
-                                        Edit ServiceArea{' '}
+                                        Edit ServiceArea
                                       </p>
                                     </div>
                                   </div>
@@ -537,21 +667,17 @@ const Categories = () => {
                 <ToastContainer />
                 {/* <div className=""></div> */}
               </div>
-              {
-                deletepopup ? (
-                  <Deletepopup
-                    showPopup={setDeletePopup}
-                    handleDelete={() => handleDeleteServiceArea(ServiceAreaId)}
-                    itemName="ServiceArea"
-                  />
-                ) : null
-              }
+              {deletepopup ? (
+                <Deletepopup
+                  showPopup={setDeletePopup}
+                  handleDelete={() => handleDeleteServiceArea(ServiceAreaId)}
+                  itemName="ServiceArea"
+                />
+              ) : null}
               {statusPopup ? (
                 <Updatepopup
                   statusPopup={setStatusPopup}
-                  handelStatus={() =>
-                    handleChangeStatus(ServiceAreaId, ServiceStatus)
-                  }
+                  handelStatus={() => handleChangeStatus(ServiceAreaId, ServiceStatus)}
                   itemName="ServiceArea"
                 />
               ) : null}
