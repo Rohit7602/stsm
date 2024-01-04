@@ -17,6 +17,8 @@ import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useRef } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import {
   ref,
@@ -164,18 +166,18 @@ const Categories = () => {
 
 
   /*  *******************************
-     Edit  Image  functionality end 
+      Edit  Image  functionality end 
    *********************************************   **/
 
 
 
 
   /*  *******************************
-     Edit  Category   functionality start 
+      Edit  Category   functionality start 
    *********************************************   **/
   async function HandleEditCategory(e) {
     e.preventDefault();
-
+    setEditCatPopup(false);
     try {
       let imageUrl = null;
 
@@ -205,10 +207,14 @@ const Categories = () => {
         cat_ID: category.id,
       });
 
-      alert("Updated Successfully");
-      setEditCatPopup(false);
+      // alert("Updated Successfully");
+      toast.success('Category updated Successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     } catch (error) {
-      console.log(error);
+      toast.error(error, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     }
   }
 
@@ -224,7 +230,7 @@ const Categories = () => {
 
 
   /*  *******************************
-     Edit  Category  functionality end 
+      Edit  Category  functionality end 
    *********************************************   **/
 
 
@@ -684,6 +690,7 @@ const Categories = () => {
           </div>
         ) : null}
       </div>
+      <ToastContainer />
     </div>
   );
 };
