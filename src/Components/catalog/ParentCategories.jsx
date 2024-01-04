@@ -31,6 +31,11 @@ const Categories = () => {
   const [name, setName] = useState();
   const [imageupload, setImageupload] = useState('');
   const [addCatPopup, setAddCatPopup] = useState(false);
+  const [editPerCatPopup, setEditPerCatPopup] = useState(false);
+  const [editStatus, setEditStatus] = useState('');
+  const [editName, setEditName] = useState('');
+  const [editImg, setEditImg] = useState('');
+  const [EditSelectedLayout, setEditSelectedLayout] = useState('');
   const [status, setStatus] = useState();
   const [searchvalue, setSearchvalue] = useState('');
   const [loaderstatus, setLoaderstatus] = useState(false);
@@ -51,19 +56,22 @@ const Categories = () => {
   function handelUpload(e) {
     const selectedFile = e.target.files[0];
     if (!ImageisValidOrNot(selectedFile)) {
-      toast.error('Please select a valid image file within 1.5 MB.')
+      toast.error('Please select a valid image file within 1.5 MB.');
       setImageupload(null);
     } else {
       setImageupload(selectedFile);
     }
   }
 
-  const [selectedLayout, setSelectedLayout] = useState('');
+  const [selectedLayout, setSelectedLayout] = useState('oneByThree');
 
   // ...
 
   const handleLayoutChange = (layout) => {
     setSelectedLayout(layout);
+  };
+  const handleEditLayoutChange = (layout) => {
+    setEditSelectedLayout(layout);
   };
 
   //   handle image upload functionality end  here
@@ -209,7 +217,7 @@ const Categories = () => {
   } else {
     return (
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
-        {addCatPopup === true ? <div className="bg_black_overlay"></div> : ''}
+        {addCatPopup || editPerCatPopup ? <div className="bg_black_overlay"></div> : ''}
         <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
           <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
             <div className="d-flex">
@@ -227,7 +235,10 @@ const Categories = () => {
               </div>
               <div>
                 <button
-                  onClick={() => setAddCatPopup(true)}
+                  onClick={() => {
+                    setAddCatPopup(true);
+                    setSelectedLayout('oneByThree');
+                  }}
                   className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
                   <img className="me-1" width={20} src={addicon} alt="add-icon" />
                   Add New Category
@@ -326,8 +337,11 @@ const Categories = () => {
                                     type="radio"
                                     name="minilayout"
                                     onChange={() => handleLayoutChange('oneByThree')}
+                                    checked={selectedLayout === 'oneByThree'}
                                   />
-                                  <label htmlFor="one" className="fs-xs fw-400 black mb-0 ms-2">
+                                  <label
+                                    htmlFor="one"
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
                                     1 x 3
                                   </label>
                                 </div>
@@ -340,9 +354,12 @@ const Categories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
-                                    onChange={() => handleLayoutChange(' twoByTwo')}
+                                    onChange={() => handleLayoutChange('twoByTwo')}
+                                    checked={selectedLayout === 'twoByTwo'}
                                   />
-                                  <label htmlFor="two" className="fs-xs fw-400 black mb-0 ms-2">
+                                  <label
+                                    htmlFor="two"
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
                                     2 x 2
                                   </label>
                                 </div>
@@ -356,8 +373,11 @@ const Categories = () => {
                                     type="radio"
                                     name="minilayout"
                                     onChange={() => handleLayoutChange('threeByTwo')}
+                                    checked={selectedLayout === 'threeByTwo'}
                                   />
-                                  <label htmlFor="three" className="fs-xs fw-400 black mb-0 ms-2">
+                                  <label
+                                    htmlFor="three"
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
                                     3 x 2
                                   </label>
                                 </div>
@@ -371,8 +391,11 @@ const Categories = () => {
                                     type="radio"
                                     name="minilayout"
                                     onChange={() => handleLayoutChange('threeByThree')}
+                                    checked={selectedLayout === 'threeByThree'}
                                   />
-                                  <label htmlFor="four" className="fs-xs fw-400 black mb-0 ms-2">
+                                  <label
+                                    htmlFor="four"
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
                                     3 x 3
                                   </label>
                                 </div>
@@ -386,8 +409,11 @@ const Categories = () => {
                                     type="radio"
                                     name="minilayout"
                                     onChange={() => handleLayoutChange('twoByTwoWithList')}
+                                    checked={selectedLayout === 'twoByTwoWithList'}
                                   />
-                                  <label htmlFor="five" className="fs-xs fw-400 black mb-0 ms-2">
+                                  <label
+                                    htmlFor="five"
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
                                     2 x 2 Inline3
                                   </label>
                                 </div>
@@ -436,9 +462,228 @@ const Categories = () => {
                       </div>
                     </form>
                   </div>
-                ) : (
-                  ''
-                )}
+                ) : null}
+                {editPerCatPopup === true ? (
+                  <div className="parent_category_popup">
+                    <form action="">
+                      <div className="d-flex align-items-center justify-content-between">
+                        <p className="fs-4 fw-400 black mb-0">Edit Parent Category</p>
+                        <div className="d-flex align-items-center gap-3">
+                          <button
+                            onClick={() => {
+                              setEditPerCatPopup(false);
+                              setSelectedLayout('oneByThree');
+                            }}
+                            className="reset_border">
+                            <button className="fs-sm fw-400 reset_btn border-0 px-sm-3 px-2 py-2 ">
+                              Cancel
+                            </button>
+                          </button>
+                          <button
+                            type="submit"
+                            className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn">
+                            <img src={saveicon} alt="saveicon" />
+                            <p className="fs-sm fw-400 black mb-0 ps-1">Save</p>
+                          </button>
+                        </div>
+                      </div>
+                      <div className="mt-4">
+                        <h2 className="fw-400 fs-2sm black mb-0">Basic Information</h2>
+                        {/* ist input */}
+                        <label htmlFor="Name" className="fs-xs fw-400 mt-3 black">
+                          Name
+                        </label>
+                        <br />
+                        <input
+                          type="text"
+                          className="mt-2 product_input fade_grey fw-400"
+                          placeholder="Enter Category name"
+                          id="Name"
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                        />{' '}
+                        <br />
+                        {/* 2nd input */}
+                        <label htmlFor="des" className="fs-xs fw-400 mt-3 black">
+                          Category Image
+                        </label>{' '}
+                        <br />
+                        <div className="d-flex flex-wrap  gap-4 mt-3 align-items-center">
+                          {!editImg ? (
+                            <input
+                              type="file"
+                              id="file23"
+                              hidden
+                              accept="/*"
+                              multiple
+                              onChange={(e) => setEditImg(e.target.files[0])}
+                            />
+                          ) : (
+                            <div className=" d-flex flex-wrap">
+                              <div className="position-relative ">
+                                <img
+                                  className="mobile_image object-fit-cover"
+                                  // src={URL.createObjectURL(editImg)}
+                                  src={
+                                    editImg &&
+                                    typeof editImg === 'string' &&
+                                    editImg.startsWith('http')
+                                      ? editImg
+                                      : URL.createObjectURL(editImg)
+                                  }
+                                  alt=""
+                                />
+                                <img
+                                  className="position-absolute top-0 end-0 cursor_pointer"
+                                  src={deleteicon}
+                                  alt="deleteicon"
+                                  onClick={() => setEditImg()}
+                                />
+                              </div>
+                            </div>
+                          )}
+
+                          {!editImg ? (
+                            <label
+                              htmlFor="file23"
+                              className="color_green cursor_pointer fs-sm addmedia_btn d-flex justify-content-center align-items-center">
+                              + Add Media
+                            </label>
+                          ) : null}
+                        </div>
+                      </div>
+                      <div className="banner_advertisement mt-4">
+                        <Accordion className="w-100 rounded-none bg-white product_input py-0">
+                          <Accordion.Header className="bg_grey fs-xs fw-400 white mb-0 bg-white d-flex justify-content-between">
+                            <div className="d-flex justify-content-between w-100 py-3">
+                              <h3 className="fs-sm fw-400 black mb-0">Select Homepage Layout</h3>
+                            </div>
+                          </Accordion.Header>
+                          <Accordion.Body className="py-2 px-0">
+                            <div className="d-flex align-items-start gap-4">
+                              <div>
+                                <div className="d-flex align-items-center mb-2 pb-1 cursor_pointer">
+                                  <input
+                                    id="one"
+                                    className="raido-black"
+                                    type="radio"
+                                    onChange={() => handleEditLayoutChange('oneByThree')}
+                                    checked={EditSelectedLayout === 'oneByThree'}
+                                  />
+                                  <label
+                                    htmlFor="one"
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    1 x 3
+                                  </label>
+                                </div>
+                                <img src={minilayoutImgGroup3} alt="" />
+                              </div>
+                              <div>
+                                <div className="d-flex align-items-center mb-2 pb-1 cursor_pointer">
+                                  <input
+                                    id="two"
+                                    className="raido-black"
+                                    type="radio"
+                                    onChange={() => handleEditLayoutChange('twoByTwo')}
+                                    checked={EditSelectedLayout === 'twoByTwo'}
+                                  />
+                                  <label
+                                    htmlFor="two"
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    2 x 2
+                                  </label>
+                                </div>
+                                <img src={minilayoutImgGroup4} alt="" />
+                              </div>
+                              <div>
+                                <div className="d-flex align-items-center mb-2 pb-1 cursor_pointer">
+                                  <input
+                                    id="three"
+                                    className="raido-black"
+                                    type="radio"
+                                    onChange={() => handleEditLayoutChange('threeByTwo')}
+                                    checked={EditSelectedLayout === 'threeByTwo'}
+                                  />
+                                  <label
+                                    htmlFor="three"
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    3 x 2
+                                  </label>
+                                </div>
+                                <img src={minilayoutImgGroup6} alt="" />
+                              </div>
+                              <div>
+                                <div className="d-flex align-items-center mb-2 pb-1 cursor_pointer">
+                                  <input
+                                    id="four"
+                                    className="raido-black"
+                                    type="radio"
+                                    name="minilayout"
+                                    onChange={() => handleEditLayoutChange('threeByThree')}
+                                    checked={EditSelectedLayout === 'threeByThree'}
+                                  />
+                                  <label
+                                    htmlFor="four"
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    3 x 3
+                                  </label>
+                                </div>
+                                <img src={minilayoutImgGroup9} alt="" />
+                              </div>
+                              <div>
+                                <div className="d-flex align-items-center mb-2 pb-1 cursor_pointer">
+                                  <input
+                                    id="five"
+                                    className="raido-black"
+                                    type="radio"
+                                    name="minilayout"
+                                    onChange={() => handleEditLayoutChange('twoByTwoWithList')}
+                                    checked={EditSelectedLayout === 'twoByTwoWithList'}
+                                  />
+                                  <label
+                                    htmlFor="five"
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    2 x 2 Inline3
+                                  </label>
+                                </div>
+                                <img src={minilayoutImgGroup8} alt="" />
+                              </div>
+                            </div>
+                          </Accordion.Body>
+                        </Accordion>
+                      </div>
+                      <div className="mt-4">
+                        <h2 className="fw-400 fs-2sm black mb-0">Status</h2>
+                        <div className="d-flex align-items-center gap-5">
+                          <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
+                            <label class="check fw-400 fs-sm black mb-0">
+                              Published
+                              <input
+                                ref={pubref}
+                                onChange={(e) => setEditStatus('published')}
+                                checked={editStatus === 'published'}
+                                type="checkbox"
+                              />
+                              <span class="checkmark"></span>
+                            </label>
+                          </div>
+                          <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
+                            <label class="check fw-400 fs-sm black mb-0">
+                              Hidden
+                              <input
+                                ref={hidref}
+                                onChange={(e) => setEditStatus('hidden')}
+                                checked={editStatus == 'hidden'}
+                                type="checkbox"
+                              />
+                              <span class="checkmark"></span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
@@ -481,7 +726,9 @@ const Categories = () => {
                   </thead>
                   <tbody className="table_body">
                     {categoreis
+
                       .filter((data) => {
+                        console.log(data);
                         return search.toLowerCase() === ''
                           ? data
                           : data.title.toLowerCase().includes(searchvalue);
@@ -548,7 +795,15 @@ const Categories = () => {
                                   </li>
                                   <li>
                                     <div class="dropdown-item" href="#">
-                                      <div className="d-flex align-items-center categorie_dropdown_options">
+                                      <div
+                                        onClick={() => {
+                                          setEditPerCatPopup(true);
+                                          setEditName(value.title);
+                                          setEditStatus(value.status);
+                                          setEditImg(value.image);
+                                          setEditSelectedLayout(value.homepagelayout);
+                                        }}
+                                        className="d-flex align-items-center categorie_dropdown_options">
                                         <img src={pencil_icon} alt="" />
                                         <p className="fs-sm fw-400 black mb-0 ms-2">
                                           Edit Category

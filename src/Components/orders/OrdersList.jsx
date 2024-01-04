@@ -64,7 +64,6 @@ const ProductListComponent = (orderStatus) => {
       Checbox  functionality end 
     *********************************************   **/
 
-
   /*  *******************************
       Sorting Functionality start from here 
     *********************************************   **/
@@ -84,7 +83,7 @@ const ProductListComponent = (orderStatus) => {
       // If the order is not ASC, assume it's DESC
       sortedData.sort((a, b) => {
         const valueA = a[col].toLowerCase();
-        console.log("asdf",valueA)
+        console.log('asdf', valueA);
         const valueB = b[col].toLowerCase();
         return valueB.localeCompare(valueA);
       });
@@ -98,18 +97,9 @@ const ProductListComponent = (orderStatus) => {
     updateData(sortedData);
   };
 
-
-
   /*  *******************************
       Sorting Functionality end from here  
     *********************************************   **/
-
-
-
-
-
-
-
 
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
@@ -143,7 +133,7 @@ const ProductListComponent = (orderStatus) => {
               <table className="w-100">
                 <thead className="table_head w-100">
                   <tr className="product_borderbottom">
-                    <th className="mw-200 p-3 w-100" onClick={() => sorting('id')}>
+                    <th className="mw-200 p-3 w-100 cursor_pointer" onClick={() => sorting('id')}>
                       <div className="d-flex align-items-center min_width_300">
                         <label className="check1 fw-400 fs-sm black mb-0">
                           <input
@@ -154,9 +144,14 @@ const ProductListComponent = (orderStatus) => {
                           <span className="checkmark"></span>
                         </label>
                         <p className="fw-400 fs-sm black mb-0 ms-2">
-                          Order Number{' '}
+                          Order Number
                           <span>
-                            <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
+                            <img
+                              className="ms-2 cursor_pointer"
+                              width={20}
+                              src={shortIcon}
+                              alt="short-icon"
+                            />
                           </span>
                         </p>
                       </div>
@@ -164,14 +159,14 @@ const ProductListComponent = (orderStatus) => {
                     <th className="mw-200 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Date</h3>
                     </th>
-                    <th className="mw-200 p-3" onClick={() => sorting('customer.name')} >
-                      <h3 className="fs-sm fw-400 black mb-0">
-                        Customer{' '}
-                      </h3>
+                    <th className="mw-200 p-3" onClick={() => sorting('customer.name')}>
+                      <h3 className="fs-sm fw-400 black mb-0">Customer </h3>
                     </th>
                     <th className="mw_160 p-3">
                       <span className="d-flex align-items-center">
-                        <h3 className="fs-sm fw-400 black mb-0 white_space_nowrap">Payment Status</h3>
+                        <h3 className="fs-sm fw-400 black mb-0 white_space_nowrap">
+                          Payment Status
+                        </h3>
                       </span>
                     </th>
                     <th className="mw_160 p-3">
@@ -230,30 +225,32 @@ const ProductListComponent = (orderStatus) => {
                           </td>
                           <td className="p-3 mw_160">
                             <h3
-                              className={`fs-sm fw-400 mb-0 d-inline-block ${orderTableData.transaction.status.toString().toLowerCase() ===
-                                  'paid'
+                              className={`fs-sm fw-400 mb-0 d-inline-block ${
+                                orderTableData.transaction.status.toString().toLowerCase() ===
+                                'paid'
                                   ? 'black stock_bg'
                                   : orderTableData.transaction.status.toString().toLowerCase() ===
                                     'cod'
-                                    ? 'black cancel_gray'
-                                    : orderTableData.transaction.status.toString().toLowerCase() ===
-                                      'refund'
-                                      ? 'new_order red'
-                                      : 'color_brown on_credit_bg'
-                                }`}>
+                                  ? 'black cancel_gray'
+                                  : orderTableData.transaction.status.toString().toLowerCase() ===
+                                    'refund'
+                                  ? 'new_order red'
+                                  : 'color_brown on_credit_bg'
+                              }`}>
                               {orderTableData.transaction.status}
                             </h3>
                           </td>
                           <td className="p-3 mw_160">
                             <p
-                              className={`d-inline-block ${orderTableData.status.toString().toLowerCase() === 'new'
+                              className={`d-inline-block ${
+                                orderTableData.status.toString().toLowerCase() === 'new'
                                   ? 'fs-sm fw-400 red mb-0 new_order'
                                   : orderTableData.status.toString().toLowerCase() === 'processing'
-                                    ? 'fs-sm fw-400 mb-0 processing_skyblue'
-                                    : orderTableData.status.toString().toLowerCase() === 'delivered'
-                                      ? 'fs-sm fw-400 mb-0 green stock_bg'
-                                      : 'fs-sm fw-400 mb-0 black cancel_gray'
-                                }`}>
+                                  ? 'fs-sm fw-400 mb-0 processing_skyblue'
+                                  : orderTableData.status.toString().toLowerCase() === 'delivered'
+                                  ? 'fs-sm fw-400 mb-0 green stock_bg'
+                                  : 'fs-sm fw-400 mb-0 black cancel_gray'
+                              }`}>
                               {orderTableData.status}
                             </p>
                           </td>
@@ -291,14 +288,15 @@ const ProductListComponent = (orderStatus) => {
                                     <div className="d-flex align-items-center categorie_dropdown_options">
                                       <img src={eye_icon} alt="" />
                                       <Link
-                                        to={`/orderslist/${orderTableData.OrderStatus === 'New Order'
+                                        to={`/orderslist/${
+                                          orderTableData.OrderStatus === 'New Order'
                                             ? 'neworder'
                                             : orderTableData.OrderStatus === 'Processing'
-                                              ? 'processing'
-                                              : orderTableData.OrderStatus === 'Delivered'
-                                                ? 'delivered'
-                                                : 'canceled'
-                                          }`}>
+                                            ? 'processing'
+                                            : orderTableData.OrderStatus === 'Delivered'
+                                            ? 'delivered'
+                                            : 'canceled'
+                                        }`}>
                                         <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
                                       </Link>
                                     </div>

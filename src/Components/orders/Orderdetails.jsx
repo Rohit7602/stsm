@@ -13,7 +13,7 @@ import { db } from '../../firebase';
 
 export default function NewOrder() {
   const { id } = useParams();
-  const { orders ,updateData} = useOrdercontext();
+  const { orders, updateData } = useOrdercontext();
   let filterData = orders.filter((item) => item.id == id);
   function formatDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -39,7 +39,7 @@ export default function NewOrder() {
   const handleAcceptOrder = async (id) => {
     try {
       // Toggle the status between 'publish' and 'hidden'
-      const newStatus = 'PROCESSING'
+      const newStatus = 'PROCESSING';
 
       await updateDoc(doc(db, 'order', id), {
         status: newStatus,
@@ -48,8 +48,7 @@ export default function NewOrder() {
     } catch (error) {
       console.log(error);
     }
-
-  }
+  };
 
   return (
     <>
@@ -58,7 +57,18 @@ export default function NewOrder() {
           <div className="d-flex align-items-center justify-content-between py-3 my-1">
             <div className="d-flex align-items-center">
               <h1 className="fs-lg fw-500 black mb-0 me-1">{item.id}</h1>
-              <p className="neworder_red fs-xs fw-400 red mb-0 ms-3">{item.status}</p>
+              <p
+                className={`d-inline-block ms-3 ${
+                  item.status.toString().toLowerCase() === 'new'
+                    ? 'fs-sm fw-400 red mb-0 new_order'
+                    : item.status.toString().toLowerCase() === 'processing'
+                    ? 'fs-sm fw-400 mb-0 processing_skyblue'
+                    : item.status.toString().toLowerCase() === 'delivered'
+                    ? 'fs-sm fw-400 mb-0 green stock_bg'
+                    : 'fs-sm fw-400 mb-0 black cancel_gray'
+                }`}>
+                {item.status}
+              </p>
             </div>
             {item.status == 'NEW' ? (
               <div className="d-flex align-items-center">
@@ -66,7 +76,8 @@ export default function NewOrder() {
                   <button className="reset_border">
                     <button className="fs-sm reset_btn  border-0 fw-400">Reject Order</button>
                   </button>
-                  <button onClick={() => handleAcceptOrder(item.id)}
+                  <button
+                    onClick={() => handleAcceptOrder(item.id)}
                     className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
                     type="submit">
                     <img src={saveicon} alt="saveicon" />
@@ -128,12 +139,16 @@ export default function NewOrder() {
                           </div>
                           <div className="ps-3">
                             <p className="fs-sm fw-400 black mb-0">{products.title}</p>
-                            <p className="fs-xxs fw-400 fade_grey mb-0">ID :{products.product_id}</p>
+                            <p className="fs-xxs fw-400 fade_grey mb-0">
+                              ID :{products.product_id}
+                            </p>
                           </div>
                         </div>
                         <div className="d-flex align-items-center p-3">
                           <p className="fs-sm fw-400 black mb-0">₹ {products.varient_price}</p>
-                          <p className="fs-sm fw-400 black mb-0 ps-4 ms-2 me-5">{products.quantity}</p>
+                          <p className="fs-sm fw-400 black mb-0 ps-4 ms-2 me-5">
+                            {products.quantity}
+                          </p>
 
                           <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">
                             (-) ₹ {products.varient_discount}
