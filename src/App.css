@@ -851,9 +851,13 @@ body {
   height: 100vh;
   width: 100%;
   display: flex;
+  position: fixed;
+  left: 0;
+  top: 0;
   justify-content: center;
   background-color: rgb(240, 240, 240);
   align-items: center;
+  z-index: 20;
 }
 
 .loader .heading {
@@ -1106,7 +1110,7 @@ body {
 }
 
 .parent_category_popup {
-  width: 600px;
+  width: 620px;
   padding: 20px;
   position: fixed;
   top: 50%;

@@ -191,7 +191,7 @@ const ProductListComponent = () => {
               <table className="w-100">
                 <thead className="table_head w-100">
                   <tr className="product_borderbottom">
-                    <th onClick={() => sorting("name")} className="p-3">
+                    <th onClick={() => sorting("name")} className="p-3 cursor_pointer">
                       <div className="d-flex align-items-center">
                         <label className="check1 fw-400 fs-sm black mb-0">
                           <input
@@ -204,7 +204,7 @@ const ProductListComponent = () => {
                         <p className="fw-400 fs-sm black mb-0 ms-2">
                           Product{' '}
                           <span>
-                            <img className='ms-2' width={20} src={shortIcon} alt="short-icon" />
+                            <img className='ms-2 cursor_pointer' width={20} src={shortIcon} alt="short-icon" />
                           </span>
                         </p>
                       </div>
@@ -218,11 +218,11 @@ const ProductListComponent = () => {
                     <th className="mw_130 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Stock</h3>
                     </th>
-                    <th onClick={() => sorting("status")} className="mw_130 p-3">
+                    <th onClick={() => sorting("status")} className="mw_130 p-3 cursor_pointer">
                       <p className="fw-400 fs-sm black mb-0 ms-2">
                         Status{' '}
                         <span>
-                          <img className='ms-2' width={20} src={shortIcon} alt="short-icon" />
+                          <img className='ms-2 cursor_pointer' width={20} src={shortIcon} alt="short-icon" />
                         </span>
                       </p>
                     </th>

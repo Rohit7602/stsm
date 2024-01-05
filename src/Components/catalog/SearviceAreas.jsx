@@ -46,9 +46,7 @@ const Categories = () => {
   const [editServiceStatus, setEditServiceStatus] = useState('');
   const [editPinCode, setEditPinCode] = useState('');
 
-  // 
-
-
+  //
 
   const [order, setorder] = useState('ASC');
   const sorting = (col) => {
@@ -138,36 +136,38 @@ const Categories = () => {
     setEditServiceDay(value);
   };
 
-
-
   /*  *******************************
     Edit  Service functionality start from  here  
   *********************************************   **/
   async function HandleEditSaveServiceAreas(e) {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      await updateDoc(doc(db, "ServiceAreas", ServiceAreaId), {
+      await updateDoc(doc(db, 'ServiceAreas', ServiceAreaId), {
         AreaName: editServiceName,
         PostalCode: editPinCode,
         ServiceStatus: editServiceStatus,
         ExpectedDelivery: editServiceDay,
-      })
+      });
 
-      updateServiceData({ ServiceAreaId, AreaName: editServiceName, PostalCode: editPinCode, ServiceStatus: editServiceStatus, ExpectedDelivery: editServiceDay });
+      updateServiceData({
+        ServiceAreaId,
+        AreaName: editServiceName,
+        PostalCode: editPinCode,
+        ServiceStatus: editServiceStatus,
+        ExpectedDelivery: editServiceDay,
+      });
       toast.success('Service area Updated  Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (Error) {
-      console.error(Error)
+      console.error(Error);
     }
-    setEditServicePopup(false)
+    setEditServicePopup(false);
   }
-
 
   /*  *******************************
     Edit  Service functionality end from  here  
   *********************************************   **/
-
 
   /*  *******************************
       Delete functionality start 
@@ -552,7 +552,7 @@ const Categories = () => {
                 <table className="w-100">
                   <thead className="w-100 table_head">
                     <tr className="product_borderbottom">
-                      <th onClick={() => sorting('AreaName')} className="py-3 ps-3 w-100">
+                      <th onClick={() => sorting('AreaName')} className="py-3 ps-3 w-100 cursor_pointer">
                         <div className="d-flex align-items-center gap-3 min_width_300">
                           <label class="check1 fw-400 fs-sm black mb-0">
                             <input
@@ -565,7 +565,12 @@ const Categories = () => {
                           <p className="fw-400 fs-sm black mb-0 ms-2">
                             Name / Title{' '}
                             <span>
-                              <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
+                              <img
+                                className="ms-2 cursor_pointer"
+                                width={20}
+                                src={shortIcon}
+                                alt="short-icon"
+                              />
                             </span>
                           </p>
                         </div>
@@ -576,11 +581,16 @@ const Categories = () => {
                       <th className="mw-200 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Expected Delivery</h3>
                       </th>
-                      <th onClick={() => sorting('ServiceStatus')} className="mx_140">
+                      <th onClick={() => sorting('ServiceStatus')} className="mx_140 cursor_pointer">
                         <p className="fw-400 fs-sm black mb-0 ms-2">
                           Service Status{' '}
                           <span>
-                            <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
+                            <img
+                              className="ms-2 cursor_pointer"
+                              width={20}
+                              src={shortIcon}
+                              alt="short-icon"
+                            />
                           </span>
                         </p>
                       </th>
@@ -648,7 +658,7 @@ const Categories = () => {
                                   <div class="dropdown-item" href="#">
                                     <div
                                       onClick={() => {
-                                        setServiceAreaId(data.id)
+                                        setServiceAreaId(data.id);
                                         setEditServicePopup(true);
                                         setEditServiceName(data.AreaName);
                                         setEditServiceDay(data.ExpectedDelivery);

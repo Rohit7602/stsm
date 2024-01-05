@@ -13,10 +13,8 @@ import { Link } from 'react-router-dom';
 import { useCustomerContext } from '../../context/Customergetters';
 import { set } from 'date-fns';
 
-
 const Customers = () => {
-
-  const [searchvalue, setSearchvalue] = useState('')
+  const [searchvalue, setSearchvalue] = useState('');
 
   const { customer } = useCustomerContext();
   return (
@@ -31,9 +29,9 @@ const Customers = () => {
             <div className="d-flex px-2 gap-2 align-items-center input_wrapper">
               <img src={search} alt="searchicon" />
               <input
-                type="text" 
+                type="text"
                 value={searchvalue}
-                onChange={(e)=> setSearchvalue(e.target.value)}
+                onChange={(e) => setSearchvalue(e.target.value)}
                 className="fw-400 categorie_input"
                 placeholder="Search for Customers..."
               />
@@ -52,16 +50,21 @@ const Customers = () => {
                 <table className="w-100">
                   <thead className="table_head w-100">
                     <tr className="product_borderbottom">
-                      <th className="mw-450 py-2 px-3 w-100">
+                      <th className="mw-450 py-2 px-3 w-100 cursor_pointer">
                         <div className="d-flex align-items-center gap-3 min_width_300">
                           <label class="check1 fw-400 fs-sm black mb-0  align-items-center d-flex">
                             <input type="checkbox" />
                             <span class="checkmark"></span>
                           </label>
                           <p className="fw-400 fs-sm black mb-0 ">
-                            Name{' '}
+                            Name
                             <span>
-                              <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
+                              <img
+                                className="ms-2 cursor_pointer"
+                                width={20}
+                                src={shortIcon}
+                                alt="short-icon"
+                              />
                             </span>
                           </p>
                         </div>
@@ -84,136 +87,144 @@ const Customers = () => {
                     </tr>
                   </thead>
                   <tbody className="table_body">
-                    {customer.filter((data) => {
-                      return searchvalue.toLowerCase() === '' ? data : data.name.toLowerCase().includes(searchvalue)
-                    }).map((item, index) => {
-                      const {
-                        id,
-                        city,
-                        is_customer,
-                        email,
-                        is_salesman,
-                        state,
-                        is_wholesaler,
-                        name,
-                        image,
-                        created_at,
-                      } = item;
-                      const formatNumbers = function (num) {
-                        return num < 10 ? '0' + num : num;
-                      };
-                      const formatDate = function (date) {
-                        let day = formatNumbers(date.getDate());
-                        let month = formatNumbers(date.getMonth() + 1);
-                        let year = date.getFullYear();
+                    {customer
+                      .filter((data) => {
+                        return searchvalue.toLowerCase() === ''
+                          ? data
+                          : data.name.toLowerCase().includes(searchvalue);
+                      })
+                      .map((item, index) => {
+                        const {
+                          id,
+                          city,
+                          is_customer,
+                          email,
+                          is_salesman,
+                          state,
+                          is_wholesaler,
+                          name,
+                          image,
+                          created_at,
+                        } = item;
+                        const formatNumbers = function (num) {
+                          return num < 10 ? '0' + num : num;
+                        };
+                        const formatDate = function (date) {
+                          let day = formatNumbers(date.getDate());
+                          let month = formatNumbers(date.getMonth() + 1);
+                          let year = date.getFullYear();
 
-                        return day + '-' + month + '-' + year;
-                      };
-                      const newval = new Date(created_at);
-                      const newDate = formatDate(newval);
-                      return (
-                        <>
-                          <tr>
-                            <td className="py-2 px-3 w-100">
-                              <div className="d-flex align-items-center gap-3 min_width_300">
-                                <label class="check1 fw-400 fs-sm black mb-0  align-items-center d-flex">
-                                  <input type="checkbox" />
-                                  <span class="checkmark"></span>
-                                </label>
-                                <div className="d-flex align-items-center">
-                                  <img
-                                    className="manicon me-2"
-                                    src={!image ? manimage : image}
-                                    alt="manicon"
-                                  />
-                                  <div>
-                                    <Link
-                                      className="d-flex py-1 color_black_02"
-                                      to={`viewcustomerdetails/${id}`}>
-                                      {name}
-                                    </Link>
+                          return day + '-' + month + '-' + year;
+                        };
+                        const newval = new Date(created_at);
+                        const newDate = formatDate(newval);
+                        return (
+                          <>
+                            <tr>
+                              <td className="py-2 px-3 w-100">
+                                <div className="d-flex align-items-center gap-3 min_width_300">
+                                  <label class="check1 fw-400 fs-sm black mb-0  align-items-center d-flex">
+                                    <input type="checkbox" />
+                                    <span class="checkmark"></span>
+                                  </label>
+                                  <div className="d-flex align-items-center">
+                                    <img
+                                      className="manicon me-2"
+                                      src={!image ? manimage : image}
+                                      alt="manicon"
+                                    />
+                                    <div>
+                                      <Link
+                                        className="d-flex py-1 color_black_02"
+                                        to={`viewcustomerdetails/${id}`}>
+                                        {name}
+                                      </Link>
 
-                                    <h3 className="fs-xxs fw-400 fade_grey mt-1 mb-0">{email}</h3>
+                                      <h3 className="fs-xxs fw-400 fade_grey mt-1 mb-0">{email}</h3>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </td>
-                            <td className="p-3 mw_160">
-                              <h3 className="fs-sm fw-400 black mb-0">{newDate}</h3>
-                            </td>
-                            <td className="p-3 mw-300">
-                              <h3 className="fs-sm fw-400 black mb-0">
-                                {city} / {state}
-                              </h3>
-                            </td>
-                            <td className="p-3 mw_160">
-                              <h3 className="fs-sm fw-400 black mb-0">Public</h3>
-                            </td>
-                            <td className="p-3 mw-200">
-                              <h3 className="fs-sm fw-400 black mb-0">₹ 32,460.00</h3>
-                            </td>
-                            <td className="text-center mw-90">
-                              <div class="dropdown">
-                                <button
-                                  class="btn dropdown-toggle"
-                                  type="button"
-                                  id="dropdownMenuButton3"
-                                  data-bs-toggle="dropdown"
-                                  aria-expanded="false">
-                                  <img
-                                    // onClick={() => {
-                                    //  ;
-                                    // }}
-                                    src={threedot}
-                                    alt="dropdownDots"
-                                  />
-                                </button>
-                                <ul
-                                  class="dropdown-menu categories_dropdown"
-                                  aria-labelledby="dropdownMenuButton3">
-                                  <li>
-                                    <div class="dropdown-item" href="#">
-                                      <div className="d-flex align-items-center categorie_dropdown_options">
-                                        <img src={eye_icon} alt="" />
-                                        <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
+                              </td>
+                              <td className="p-3 mw_160">
+                                <h3 className="fs-sm fw-400 black mb-0">{newDate}</h3>
+                              </td>
+                              <td className="p-3 mw-300">
+                                <h3 className="fs-sm fw-400 black mb-0">
+                                  {city} / {state}
+                                </h3>
+                              </td>
+                              <td className="p-3 mw_160">
+                                <h3 className="fs-sm fw-400 black mb-0">Public</h3>
+                              </td>
+                              <td className="p-3 mw-200">
+                                <h3 className="fs-sm fw-400 black mb-0">₹ 32,460.00</h3>
+                              </td>
+                              <td className="text-center mw-90">
+                                <div class="dropdown">
+                                  <button
+                                    class="btn dropdown-toggle"
+                                    type="button"
+                                    id="dropdownMenuButton3"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    <img
+                                      // onClick={() => {
+                                      //  ;
+                                      // }}
+                                      src={threedot}
+                                      alt="dropdownDots"
+                                    />
+                                  </button>
+                                  <ul
+                                    class="dropdown-menu categories_dropdown"
+                                    aria-labelledby="dropdownMenuButton3">
+                                    <li>
+                                      <div class="dropdown-item" href="#">
+                                        <div className="d-flex align-items-center categorie_dropdown_options">
+                                          <img src={eye_icon} alt="" />
+                                          <p className="fs-sm fw-400 black mb-0 ms-2">
+                                            View Details
+                                          </p>
+                                        </div>
                                       </div>
-                                    </div>
-                                  </li>
-                                  <li>
-                                    <div class="dropdown-item" href="#">
-                                      <div className="d-flex align-items-center categorie_dropdown_options">
-                                        <img src={pencil_icon} alt="" />
-                                        <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
+                                    </li>
+                                    <li>
+                                      <div class="dropdown-item" href="#">
+                                        <div className="d-flex align-items-center categorie_dropdown_options">
+                                          <img src={pencil_icon} alt="" />
+                                          <p className="fs-sm fw-400 black mb-0 ms-2">
+                                            Edit Product
+                                          </p>
+                                        </div>
                                       </div>
-                                    </div>
-                                  </li>
-                                  <li>
-                                    <div class="dropdown-item" href="#">
-                                      <div className="d-flex align-items-center categorie_dropdown_options">
-                                        <img src={updown_icon} alt="" />
-                                        <p className="fs-sm fw-400 green mb-0 ms-2">
-                                          Change to Hidden
-                                        </p>
+                                    </li>
+                                    <li>
+                                      <div class="dropdown-item" href="#">
+                                        <div className="d-flex align-items-center categorie_dropdown_options">
+                                          <img src={updown_icon} alt="" />
+                                          <p className="fs-sm fw-400 green mb-0 ms-2">
+                                            Change to Hidden
+                                          </p>
+                                        </div>
                                       </div>
-                                    </div>
-                                  </li>
-                                  <li>
-                                    <div class="dropdown-item" href="#">
-                                      <div
-                                        // onClick={() => handleDelete(item.id)}
-                                        className="d-flex align-items-center categorie_dropdown_options">
-                                        <img src={delete_icon} alt="" />
-                                        <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
+                                    </li>
+                                    <li>
+                                      <div class="dropdown-item" href="#">
+                                        <div
+                                          // onClick={() => handleDelete(item.id)}
+                                          className="d-flex align-items-center categorie_dropdown_options">
+                                          <img src={delete_icon} alt="" />
+                                          <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
+                                        </div>
                                       </div>
-                                    </div>
-                                  </li>
-                                </ul>
-                              </div>
-                            </td>
-                          </tr>
-                        </>
-                      );
-                    })}
+                                    </li>
+                                  </ul>
+                                </div>
+                              </td>
+                            </tr>
+                          </>
+                        );
+                      })}
                   </tbody>
                 </table>
               </div>

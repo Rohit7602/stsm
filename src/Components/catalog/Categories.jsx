@@ -20,13 +20,7 @@ import { useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  getStorage,
-  deleteObject,
-} from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, getStorage, deleteObject } from 'firebase/storage';
 import { storage, db } from '../../firebase';
 import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
 import Deletepopup from '../popups/Deletepopup';
@@ -55,8 +49,6 @@ const Categories = () => {
   const [editStatus, setEditStatus] = useState('');
 
   const [order, setorder] = useState('ASC');
-
-
 
   const handleSelectCategory = (category) => {
     setEditSearchvalue('');
@@ -138,39 +130,28 @@ const Categories = () => {
       Change status functionality end 
     *********************************************   **/
 
-
-
   /*  *******************************
      Edit  Image  functionality start 
    *********************************************   **/
 
   function handleDeleteEditImge() {
     setEditCatImg('');
-    if (typeof editCatImg === "string" && editCatImg.startsWith('http')) {
+    if (typeof editCatImg === 'string' && editCatImg.startsWith('http')) {
       try {
         if (editCatImg.length !== 0) {
-          var st = getStorage()
+          var st = getStorage();
           var reference = ref(st, editCatImg);
-          deleteObject(reference)
+          deleteObject(reference);
         }
       } catch (Error) {
-        console.log(Error)
+        console.log(Error);
       }
     }
   }
 
-
-
-
-
-
-
   /*  *******************************
       Edit  Image  functionality end 
    *********************************************   **/
-
-
-
 
   /*  *******************************
       Edit  Category   functionality start 
@@ -187,12 +168,12 @@ const Categories = () => {
         const storageRef = ref(storage, `/Sub-categories/${filename}`);
         await uploadBytes(storageRef, editCatImg);
         imageUrl = await getDownloadURL(storageRef);
-      } else if (typeof editCatImg === "string" && editCatImg.startsWith("http")) {
+      } else if (typeof editCatImg === 'string' && editCatImg.startsWith('http')) {
         // Handle the case where editCatImg is a URL
         imageUrl = editCatImg;
       }
 
-      await updateDoc(doc(db, "sub_categories", selectedSubcategoryId), {
+      await updateDoc(doc(db, 'sub_categories', selectedSubcategoryId), {
         title: editCatName,
         status: editStatus,
         image: imageUrl,
@@ -218,26 +199,9 @@ const Categories = () => {
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
   /*  *******************************
       Edit  Category  functionality end 
    *********************************************   **/
-
-
-
-
-
-
 
   /*  *******************************
       checkbox functionality start 
@@ -317,7 +281,7 @@ const Categories = () => {
               <table className="w-100">
                 <thead className="w-100 table_head">
                   <tr className="product_borderbottom">
-                    <th onClick={() => sorting('title')} className="py-3 ps-3 w-100">
+                    <th onClick={() => sorting('title')} className="py-3 ps-3 w-100 cursor_pointer">
                       <div className="d-flex align-items-center gap-3 min_width_300">
                         <label class="check1 fw-400 fs-sm black mb-0">
                           <input
@@ -330,27 +294,42 @@ const Categories = () => {
                         <p className="fw-400 fs-sm black mb-0 ms-2">
                           Name{' '}
                           <span>
-                            <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
+                            <img
+                              className="ms-2 cursor_pointer"
+                              width={20}
+                              src={shortIcon}
+                              alt="short-icon"
+                            />
                           </span>
                         </p>
                       </div>
                     </th>
                     <th onClick={() => sorting('cat_ID')} className="mw-250 px-2">
-                      <p className="fw-400 fs-sm black mb-0">
+                      <p className="fw-400 fs-sm black mb-0 cursor_pointer">
                         Parent Category
                         <span>
-                          <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
+                          <img
+                            className="ms-2 cursor_pointer"
+                            width={20}
+                            src={shortIcon}
+                            alt="short-icon"
+                          />
                         </span>
                       </p>
                     </th>
                     <th className="mx_160 ps-4">
                       <h3 className="fs-sm fw-400 black mb-0">Items</h3>
                     </th>
-                    <th onClick={() => sorting('status')} className="mx_160">
+                    <th onClick={() => sorting('status')} className="mx_160 cursor_pointer">
                       <p className="fw-400 fs-sm black mb-0">
                         Visibility{' '}
                         <span>
-                          <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
+                          <img
+                            className="ms-2 cursor_pointer"
+                            width={20}
+                            src={shortIcon}
+                            alt="short-icon"
+                          />
                         </span>
                       </p>
                     </th>
@@ -367,8 +346,7 @@ const Categories = () => {
                       );
                       return search.toLowerCase() === ''
                         ? item
-                        : item.title.toLowerCase().includes(searchvalue)
-
+                        : item.title.toLowerCase().includes(searchvalue);
                     })
                     .map((value, index) => {
                       const subcategoryId = value.id;
@@ -404,9 +382,7 @@ const Categories = () => {
                             <h3 className="fs-sm fw-400 black mb-0 width_10 ">10</h3>
                           </td>
                           <td className="mx_160">
-                            <h3 className="fs-sm fw-400 black mb-0 color_green">
-                              {value.status}
-                            </h3>
+                            <h3 className="fs-sm fw-400 black mb-0 color_green">{value.status}</h3>
                           </td>
                           <td className="text-center mw-90">
                             <div class="dropdown">
@@ -548,8 +524,8 @@ const Categories = () => {
                         className="mobile_image object-fit-cover"
                         src={
                           editCatImg &&
-                            typeof editCatImg === 'string' &&
-                            editCatImg.startsWith('http')
+                          typeof editCatImg === 'string' &&
+                          editCatImg.startsWith('http')
                             ? editCatImg
                             : URL.createObjectURL(editCatImg)
                         }
@@ -607,9 +583,9 @@ const Categories = () => {
                 <div className="mt-3 bg_white">
                   <div className="d-flex align-items-center justify-content-between">
                     <h2 className="fw-400 fs-2sm black mb-0">Parent Category</h2>
-                    <Link to="/catalog/parentcategories" className="fs-2sm fw-400 red">
+                    {/* <Link to="/catalog/parentcategories" className="fs-2sm fw-400 red">
                       View All
-                    </Link>
+                    </Link> */}
                   </div>
                   <Dropdown className="category_dropdown z-1">
                     <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
@@ -643,10 +619,11 @@ const Categories = () => {
                             .map((category) => (
                               <Dropdown.Item key={category.id}>
                                 <div
-                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                    ? 'selected'
-                                    : ''
-                                    }`}
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (
@@ -655,7 +632,7 @@ const Categories = () => {
                                 </div>
                               </Dropdown.Item>
                             ))}
-                          {editsearchvalue &&
+                          {/* {editsearchvalue &&
                             !categoreis.some((category) =>
                               category.title.toLowerCase().includes(editsearchvalue.toLowerCase())
                             ) && (
@@ -668,7 +645,7 @@ const Categories = () => {
                                 +Add <span className="black">"{editsearchvalue}"</span> in Parent
                                 Category
                               </button>
-                            )}
+                            )} */}
                         </div>
                       </div>
                     </Dropdown.Menu>
@@ -677,7 +654,8 @@ const Categories = () => {
                     Select a category that will be the parent of the current one.
                   </p>
                   <div className="d-flex justify-content-end">
-                    <button onClick={HandleEditCategory}
+                    <button
+                      onClick={HandleEditCategory}
                       type="submit"
                       className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-2 px-2 py-2 save_btn fw-400 black">
                       <img src={saveicon} alt="saveicon" />
