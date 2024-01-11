@@ -20,7 +20,7 @@ import { db } from '../../firebase';
 import { useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, getStorage, deleteObject } from 'firebase/storage';
 import { storage } from '../../firebase';
 import { useImageHandleContext } from '../../context/ImageHandler';
 import { useMainCategories, useSubCategories } from '../../context/categoriesGetter';
@@ -35,6 +35,7 @@ const Categories = () => {
   const [editStatus, setEditStatus] = useState('');
   const [editName, setEditName] = useState('');
   const [editImg, setEditImg] = useState('');
+  const [EditCatId, SetEditCatId] = useState('');
   const [EditSelectedLayout, setEditSelectedLayout] = useState('');
   const [status, setStatus] = useState();
   const [searchvalue, setSearchvalue] = useState('');
@@ -205,6 +206,105 @@ const Categories = () => {
   /*  *******************************
       Change status functionality end 
     *********************************************   **/
+
+
+  /*  *******************************
+    Edit  Image Upload   functionality start 
+  *********************************************   **/
+
+  function HanleEditImgUpload(e) {
+    const selectedFile = e.target.files[0];
+    if (!ImageisValidOrNot(selectedFile)) {
+      toast.error('Please select a valid image file within 1.5 MB. ');
+      setEditImg(null);
+    } else {
+      setEditImg(selectedFile);
+    }
+  }
+
+
+
+  /*  *******************************
+    Edit  Image  upload  functionality start 
+  *********************************************   **/
+
+
+
+  /*  *******************************
+    Edit  Image  functionality start 
+  *********************************************   **/
+
+  function HandleDeleteEditImg() {
+    setEditImg('');
+    if (typeof editImg === 'string' && editImg.startsWith('http')) {
+      try {
+        if (editImg.length !== 0) {
+          var st = getStorage();
+          var reference = ref(st, editImg);
+          deleteObject(reference);
+        }
+      } catch (Error) {
+        console.log(Error);
+      }
+    }
+  }
+
+  /*  *******************************
+      Edit  Image  functionality end 
+   *********************************************   **/
+
+
+  /*  *******************************
+     Edit Parent  Category   functionality start 
+  *********************************************   **/
+  async function HandleSaveEditCategory(e) {
+    e.preventDefault();
+    setEditPerCatPopup(false);
+    try {
+      let imageUrl = null;
+      if (editImg instanceof File) {
+        // Handle the case where editCatImg is a File
+        const filename = Math.floor(Date.now() / 1000) + '-' + editImg.name;
+        const storageRef = ref(storage, `/Parent-category/${filename}`);
+        await uploadBytes(storageRef, editImg);
+        imageUrl = await getDownloadURL(storageRef);
+      } else if (typeof editImg === 'string' && editImg.startsWith('http')) {
+        // Handle the case where editCatImg is a URL
+        imageUrl = editImg;
+      }
+
+      await updateDoc(doc(db, 'categories', EditCatId), {
+        title: editName,
+        status: editStatus,
+        image: imageUrl,
+        homepagelayout: EditSelectedLayout,
+      });
+
+      updateData({
+        EditCatId,
+        title: editName,
+        status: editStatus,
+        image: imageUrl,
+        homepagelayout: EditSelectedLayout,
+      });
+
+      // alert("Updated Successfully");
+      toast.success('Parent Category updated Successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      toast.error(error, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+  }
+
+  /*  *******************************
+      Edit  Parent  Category  functionality end 
+   *********************************************   **/
+
+
+
 
   if (loaderstatus) {
     return (
@@ -479,7 +579,7 @@ const Categories = () => {
                               Cancel
                             </button>
                           </button>
-                          <button
+                          <button onClick={HandleSaveEditCategory}
                             type="submit"
                             className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn">
                             <img src={saveicon} alt="saveicon" />
@@ -516,7 +616,7 @@ const Categories = () => {
                               hidden
                               accept="/*"
                               multiple
-                              onChange={(e) => setEditImg(e.target.files[0])}
+                              onChange={HanleEditImgUpload}
                             />
                           ) : (
                             <div className=" d-flex flex-wrap">
@@ -526,8 +626,8 @@ const Categories = () => {
                                   // src={URL.createObjectURL(editImg)}
                                   src={
                                     editImg &&
-                                    typeof editImg === 'string' &&
-                                    editImg.startsWith('http')
+                                      typeof editImg === 'string' &&
+                                      editImg.startsWith('http')
                                       ? editImg
                                       : URL.createObjectURL(editImg)
                                   }
@@ -537,7 +637,7 @@ const Categories = () => {
                                   className="position-absolute top-0 end-0 cursor_pointer"
                                   src={deleteicon}
                                   alt="deleteicon"
-                                  onClick={() => setEditImg()}
+                                  onClick={() => HandleDeleteEditImg()}
                                 />
                               </div>
                             </div>
@@ -728,7 +828,7 @@ const Categories = () => {
                     {categoreis
 
                       .filter((data) => {
-                        console.log(data);
+                        // console.log(data);
                         return search.toLowerCase() === ''
                           ? data
                           : data.title.toLowerCase().includes(searchvalue);
@@ -799,6 +899,7 @@ const Categories = () => {
                                         onClick={() => {
                                           setEditPerCatPopup(true);
                                           setEditName(value.title);
+                                          SetEditCatId(value.id);
                                           setEditStatus(value.status);
                                           setEditImg(value.image);
                                           setEditSelectedLayout(value.homepagelayout);

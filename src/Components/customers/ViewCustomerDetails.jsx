@@ -76,6 +76,9 @@ const ViewCustomerDetails = () => {
   //   };
   //   fetchData();
   // }, []);
+
+
+  
   return (
     <>
       {filterData.map((Customerdata, index) => (
