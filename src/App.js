@@ -3,6 +3,7 @@ import CategoriesView from './Components/catalog/Categories';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Sidebar from './Components/layout/Sidebar';
 import DashbordCards from './Components/dashbord/DashbordCards';
+
 import ProductList from './Components/catalog/ProductList';
 import NewCategory from './Components/catalog/NewCategory';
 import AddProduct from './Components/catalog/AddProduct';

@@ -9,6 +9,8 @@ const CheckConnection = (props) => {
         image.src = nointernetimg;
     }, []);
 
+    
+
     return (
         <Detector
             render={({ online }) => {
