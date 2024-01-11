@@ -179,6 +179,7 @@ const Categories = () => {
   const getSubcategoriesCount = (ID) => {
     const subCategory = data.filter((category) => category.cat_ID === ID);
     return subCategory.length;
+    
 
   };
 
