@@ -212,9 +212,9 @@ const Categories = () => {
 
 
 
-  
 
-  
+
+
 
   /*  *******************************
       checkbox functionality start 
@@ -537,8 +537,8 @@ const Categories = () => {
                         className="mobile_image object-fit-cover"
                         src={
                           editCatImg &&
-                          typeof editCatImg === 'string' &&
-                          editCatImg.startsWith('http')
+                            typeof editCatImg === 'string' &&
+                            editCatImg.startsWith('http')
                             ? editCatImg
                             : URL.createObjectURL(editCatImg)
                         }
@@ -632,11 +632,10 @@ const Categories = () => {
                             .map((category) => (
                               <Dropdown.Item key={category.id}>
                                 <div
-                                  className={`d-flex justify-content-between ${
-                                    selectedCategory && selectedCategory.id === category.id
+                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
                                       ? 'selected'
                                       : ''
-                                  }`}
+                                    }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (

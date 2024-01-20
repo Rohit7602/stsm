@@ -83,15 +83,15 @@ const BannersAdvertisement = () => {
       // Example: Accessing images for categories
 
       if (selectedImages['categorybanners']) {
-        SetCategoryImage(selectedImages['categorybanners']);
+        setCategoryImage(selectedImages['categorybanners']);
         console.log("categoreis banner is ", selectedImages['categorybanners'])
       }
 
       if (selectedImages['salesoffers']) {
-        SetBannerSaleImg(selectedImages['salesoffers']);
+        setBannerSaleImg(selectedImages['salesoffers']);
       }
       if (selectedImages['animalsupliments']) {
-        SetAnimalSuplimentsImages(selectedImages['animalsupliments']);
+        setAnimalSuplimentsImages(selectedImages['animalsupliments']);
       }
 
       // Add more cases as needed
@@ -459,8 +459,8 @@ const BannersAdvertisement = () => {
  Sales and offer   Banner functionaltiy start from here 
  */
 
-  const [BannerSaleImg, SetBannerSaleImg] = useState([]);
-  const [SelectedBannerImg, SetSelectedBannerImg] = useState(null);
+  const [BannerSaleImg, setBannerSaleImg] = useState([]);
+  const [SelectedBannerImg, setSelectedBannerImg] = useState(null);
 
   const handelSaleBannerImg = async (e) => {
     const selectedFile = e.target.files[0];
@@ -475,9 +475,9 @@ const BannersAdvertisement = () => {
         desiredWidth,
         desiredHeight
       );
-      SetBannerSaleImg([...BannerSaleImg, validatedImage]);
+      setBannerSaleImg([...BannerSaleImg, validatedImage]);
       // Reset the selected image state after successful addition
-      SetSelectedBannerImg(null);
+      setSelectedBannerImg(null);
     } catch (error) {
       toast.error(error.message);
     }
@@ -485,8 +485,8 @@ const BannersAdvertisement = () => {
 
   const handleAddMediaSaleOffer = () => {
     if (SelectedBannerImg) {
-      SetBannerSaleImg([...BannerSaleImg, SelectedBannerImg]);
-      SetSelectedBannerImg(null);
+      setBannerSaleImg([...BannerSaleImg, SelectedBannerImg]);
+      setSelectedBannerImg(null);
       // document.getElementById('Sales_Offers').value = '';
     }
   };
@@ -528,7 +528,7 @@ const BannersAdvertisement = () => {
 
     // Update the state to remove the deleted image
     const newImages = BannerSaleImg.filter((_, i) => i !== index); // [...BannerSaleImg];
-    SetBannerSaleImg(newImages);
+    setBannerSaleImg(newImages);
     deleteObjectByImageUrl(imageURL)
   }
 
@@ -634,11 +634,11 @@ const BannersAdvertisement = () => {
   
   */
 
-  const [AnimalSuplimentsImages, SetAnimalSuplimentsImages] = useState([]);
+  const [AnimalSuplimentsImages, setAnimalSuplimentsImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   async function handelAnimalSuplimentImg(e) {
     const selectedFile = e.target.files[0];
-    // console.log(selectedFile)
+    // console.log(selectedFile)F
     try {
       const desiredAspectRatio = 16 / 9;
       const desiredWidth = 1280;
@@ -650,7 +650,7 @@ const BannersAdvertisement = () => {
         desiredWidth,
         desiredHeight
       );
-      SetAnimalSuplimentsImages([...AnimalSuplimentsImages, validatedImage]);
+      setAnimalSuplimentsImages([...AnimalSuplimentsImages, validatedImage]);
       setSelectedImage(null);
     } catch (error) {
       toast.error(error.message);
@@ -695,7 +695,7 @@ const BannersAdvertisement = () => {
 
     // Update the state to remove the deleted image
     const newImages = AnimalSuplimentsImages.filter((_, i) => i !== index);
-    SetAnimalSuplimentsImages(newImages);
+    setAnimalSuplimentsImages(newImages);
     deleteObjectByImageUrl(imageURL)
   }
 
@@ -804,7 +804,7 @@ const BannersAdvertisement = () => {
 
   const handleAddMedia = () => {
     if (selectedImage) {
-      SetAnimalSuplimentsImages([...AnimalSuplimentsImages, selectedImage]);
+      setAnimalSuplimentsImages([...AnimalSuplimentsImages, selectedImage]);
       setSelectedImage(null);
       // document.getElementById('animal_suppliments').value = '';
     }
@@ -821,7 +821,7 @@ const BannersAdvertisement = () => {
   Categoroies  Banner functionaltiy start 
   */
 
-  const [CategoryImage, SetCategoryImage] = useState(Array(categoreis.length).fill(''));
+  const [CategoryImage, setCategoryImage] = useState(Array(categoreis.length).fill(''));
 
   async function handleCategoryImages(e, index) {
     let file = e.target.files[0];
@@ -850,7 +850,7 @@ const BannersAdvertisement = () => {
         newCategoryImages.push(validatedImage);
       }
 
-      SetCategoryImage(newCategoryImages);
+      setCategoryImage(newCategoryImages);
       console.log("Updated CategoryImage:", CategoryImage);
     } catch (error) {
       // Handle the validation error (e.g., show an error message)
@@ -904,7 +904,7 @@ const BannersAdvertisement = () => {
       // Update the state to remove the deleted image
       const newCategoryImages = [...CategoryImage];
       newCategoryImages[index] = ''; // Set the image for the specified index to an empty string
-      SetCategoryImage(newCategoryImages);
+      setCategoryImage(newCategoryImages);
     } catch (error) {
       console.error("Error deleting from storage or updating Firestore:", error);
       // Handle error as needed
@@ -1525,11 +1525,11 @@ const BannersAdvertisement = () => {
                             <div className="position-relative imagemedia_btn">
                               <img
                                 className="w-100 h-100 object-fit-cover"
-                                  src={findImageSourceByTitle(data).split('$$$$')[0]}
+                                src={findImageSourceByTitle(data).split('$$$$')[0]}
                                 alt=""
                               />
                               <img
-                                  onClick={() => handleCategoryImagesDelete(index, findImageSourceByTitle(data))}
+                                onClick={() => handleCategoryImagesDelete(index, findImageSourceByTitle(data))}
                                 className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
                                 src={deleteicon}
                                 alt="deleteicon"
