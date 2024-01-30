@@ -813,7 +813,6 @@ const BannersAdvertisement = () => {
   /*
   *********************************************************
   Animal And it's suplliments Banner functionaltiy end from here 
-   
   */
 
   /*
@@ -1558,4 +1557,5 @@ const BannersAdvertisement = () => {
     );
   };
 }
+
 export default BannersAdvertisement;
