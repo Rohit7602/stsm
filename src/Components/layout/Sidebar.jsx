@@ -75,21 +75,13 @@ function Sidebar(props) {
                         <h3 className="fs-xs fw-400  white mb-0">Category List</h3>
                       </NavLink>
                     </li>
-                    <li>
-                      <NavLink className="dash_links_inner" to="catalog/newcategory">
-                        <h3 className="fs-xs fw-400  white mb-0">Add Category</h3>
-                      </NavLink>
-                    </li>
+  
                     <li>
                       <NavLink className="dash_links_inner" to="catalog/productlist">
                         <h3 className="fs-xs fw-400  white mb-0">Product List</h3>
                       </NavLink>
                     </li>
-                    <li>
-                      <NavLink className="dash_links_inner" to="catalog/addproduct">
-                        <h3 className="fs-xs fw-400  white mb-0">Add Product</h3>
-                      </NavLink>
-                    </li>
+                    
                     <li>
                       <NavLink className="dash_links_inner" to="catalog/serviceareas">
                         <h3 className="fs-xs fw-400  white mb-0">Service Areas</h3>
