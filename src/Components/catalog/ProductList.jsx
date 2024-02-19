@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import filtericon from '../../Images/svgs/filtericon.svg';
 import addicon from '../../Images/svgs/addicon.svg';
 import dropdownDots from '../../Images/svgs/dots2.svg';
@@ -6,7 +6,6 @@ import eye_icon from '../../Images/svgs/eye.svg';
 import pencil_icon from '../../Images/svgs/pencil.svg';
 import delete_icon from '../../Images/svgs/delte.svg';
 import shortIcon from '../../Images/svgs/short-icon.svg';
-
 import updown_icon from '../../Images/svgs/arross.svg';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { deleteObject, getStorage, ref } from 'firebase/storage';
@@ -15,25 +14,22 @@ import { Link, NavLink } from 'react-router-dom';
 import { useProductsContext } from '../../context/productgetter';
 import Updatepopup from '../popups/Updatepopup';
 import Deletepopup from '../popups/Deletepopup';
-
-const ProductListComponent = () => {
-  const { data, updateData, deleteData } = useProductsContext();
-
+const EditProductData = createContext();
+const ProductList = (props) => {
+  const { productData, updateData, deleteData } = useProductsContext();
   // states
-
   const [ProductId, setProductId] = useState(null);
-  const [productStatus, setProductStatus] = useState(null)
+  const [productStatus, setProductStatus] = useState(null);
   const [ProductImage, setProductImage] = useState(null);
   const [deletepopup, setDeletePopup] = useState(false);
   const [statusPopup, setStatusPopup] = useState(false);
 
-
-  const [order, setorder] = useState("ASC")
+  const [order, setorder] = useState('ASC');
   const sorting = (col) => {
     // Create a copy of the data array
-    const sortedData = [...data];
+    const sortedData = [...productData];
 
-    if (order === "ASC") {
+    if (order === 'ASC') {
       sortedData.sort((a, b) => {
         const valueA = a[col].toLowerCase();
         const valueB = b[col].toLowerCase();
@@ -49,27 +45,12 @@ const ProductListComponent = () => {
     }
 
     // Update the order state
-    const newOrder = order === "ASC" ? "DESC" : "ASC";
+    const newOrder = order === 'ASC' ? 'DESC' : 'ASC';
     setorder(newOrder);
 
     // Update the data using the updateData function from your context
     updateData(sortedData);
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /*  *******************************
    checkbox functionality start 
@@ -78,14 +59,14 @@ const ProductListComponent = () => {
 
   useEffect(() => {
     // Check if all checkboxes are checked
-    const allChecked = data.every((item) => item.checked);
+    const allChecked = productData.every((item) => item.checked);
     setSelectAll(allChecked);
-  }, [data]);
+  }, [productData]);
 
   // Main checkbox functionality start from here
 
   const handleMainCheckboxChange = () => {
-    const updatedData = data.map((item) => ({
+    const updatedData = productData.map((item) => ({
       ...item,
       checked: !selectAll,
     }));
@@ -95,8 +76,8 @@ const ProductListComponent = () => {
 
   // Datacheckboxes functionality strat from here
   const handleCheckboxChange = (index) => {
-    const updatedData = [...data];
-    updatedData[index].checked = !data[index].checked;
+    const updatedData = [...productData];
+    updatedData[index].checked = !productData[index].checked;
     updateData(updatedData);
 
     // Check if all checkboxes are checked
@@ -165,7 +146,9 @@ const ProductListComponent = () => {
 
   return (
     <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
-      {deletepopup === true || statusPopup == true ? <div className="bg_black_overlay"></div> : ''}
+      {deletepopup === true || statusPopup === true ? (
+        <div className="bg_black_overlay"></div>
+      ) : null}
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
         <div className="d-flex  align-items-center flex-column flex-sm-row  gap-2 gap-sm-0 justify-content-between">
           <div className="d-flex">
@@ -191,7 +174,7 @@ const ProductListComponent = () => {
               <table className="w-100">
                 <thead className="table_head w-100">
                   <tr className="product_borderbottom">
-                    <th onClick={() => sorting("name")} className="p-3 cursor_pointer">
+                    <th onClick={() => sorting('name')} className="p-3 cursor_pointer">
                       <div className="d-flex align-items-center">
                         <label className="check1 fw-400 fs-sm black mb-0">
                           <input
@@ -204,7 +187,12 @@ const ProductListComponent = () => {
                         <p className="fw-400 fs-sm black mb-0 ms-2">
                           Product{' '}
                           <span>
-                            <img className='ms-2 cursor_pointer' width={20} src={shortIcon} alt="short-icon" />
+                            <img
+                              className="ms-2 cursor_pointer"
+                              width={20}
+                              src={shortIcon}
+                              alt="short-icon"
+                            />
                           </span>
                         </p>
                       </div>
@@ -218,11 +206,16 @@ const ProductListComponent = () => {
                     <th className="mw_130 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Stock</h3>
                     </th>
-                    <th onClick={() => sorting("status")} className="mw_130 p-3 cursor_pointer">
+                    <th onClick={() => sorting('status')} className="mw_130 p-3 cursor_pointer">
                       <p className="fw-400 fs-sm black mb-0 ms-2">
-                        Status{' '}
+                        Status
                         <span>
-                          <img className='ms-2 cursor_pointer' width={20} src={shortIcon} alt="short-icon" />
+                          <img
+                            className="ms-2 cursor_pointer"
+                            width={20}
+                            src={shortIcon}
+                            alt="short-icon"
+                          />
                         </span>
                       </p>
                     </th>
@@ -235,7 +228,7 @@ const ProductListComponent = () => {
                   </tr>
                 </thead>
                 <tbody className="table_body">
-                  {data.map((value, index) => {
+                  {productData.map((value, index) => {
                     return (
                       <tr key={index}>
                         <td className="p-3 d-flex align-items-center">
@@ -311,10 +304,17 @@ const ProductListComponent = () => {
                               </li>
                               <li>
                                 <div class="dropdown-item" href="#">
-                                  <div className="d-flex align-items-center categorie_dropdown_options">
-                                    <img src={pencil_icon} alt="" />
-                                    <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
-                                  </div>
+                                  <NavLink to="/catalog/addproduct">
+                                    <div
+                                      onClick={() => {
+                                        props.setProductId(value.id);
+                                        setProductId(value.id);
+                                      }}
+                                      className="d-flex align-items-center categorie_dropdown_options">
+                                      <img src={pencil_icon} alt="" />
+                                      <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
+                                    </div>
+                                  </NavLink>
                                 </div>
                               </li>
                               <li>
@@ -362,18 +362,14 @@ const ProductListComponent = () => {
             {deletepopup ? (
               <Deletepopup
                 showPopup={setDeletePopup}
-                handleDelete={() =>
-                  handleDeleteProduct(ProductId, ProductImage)
-                }
+                handleDelete={() => handleDeleteProduct(ProductId, ProductImage)}
                 itemName="Product"
               />
             ) : null}
             {statusPopup ? (
               <Updatepopup
                 statusPopup={setStatusPopup}
-                handelStatus={() =>
-                  handleChangeStatus(ProductId, productStatus)
-                }
+                handelStatus={() => handleChangeStatus(ProductId, productStatus)}
                 itemName="Product"
               />
             ) : null}
@@ -384,4 +380,5 @@ const ProductListComponent = () => {
   );
 };
 
-export default ProductListComponent;
+export default ProductList;
+export { EditProductData };

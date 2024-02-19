@@ -21,7 +21,7 @@ import { UseServiceContext } from '../../context/ServiceAreasGetter';
 import Deletepopup from '../popups/Deletepopup';
 import Updatepopup from '../popups/Updatepopup';
 
-const Categories = () => {
+const ServiceArea = () => {
   const { ServiceData, addServiceData, deleteServiceData, updateServiceData } = UseServiceContext();
   const [addsServicePopup, setAddsServicePopup] = useState(false);
   const [loaderstatus, setLoaderstatus] = useState(false);
@@ -737,4 +737,4 @@ const Categories = () => {
   }
 };
 
-export default Categories;
+export default ServiceArea;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import saveicon from '../../Images/svgs/saveicon.svg';
 import savegreenicon from '../../Images/svgs/save_green_icon.svg';
 import SearchIcon from '../../Images/svgs/search.svg';
@@ -17,9 +17,11 @@ import { storage } from '../../firebase';
 import { useRef } from 'react';
 import { useProductsContext } from '../../context/productgetter';
 import { useSubCategories } from '../../context/categoriesGetter';
+import { EditProductData } from './ProductList';
+const AddProduct = (props) => {
+  const { productData } = useProductsContext();
+  const productId = props.productId;
 
-const AddProduct = () => {
-  // const { data } = useProductsContext()
   const [name, setName] = useState('');
   const [shortDes, setShortDes] = useState('');
   const [longDes, setLongDes] = useState('');
@@ -135,7 +137,6 @@ const AddProduct = () => {
           const upload = await uploadBytes(storageRef, file);
           const imageUrl = await getDownloadURL(storageRef);
           imagelinks.push(imageUrl);
-          
         }
 
         const docRef = await addDoc(collection(db, 'products'), {
@@ -193,7 +194,7 @@ const AddProduct = () => {
       const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
 
       if (!allowedExtensions.includes(`.${fileExtension}`)) {
-        toast.error('Please select a valid image file within 1.5 MB.')
+        toast.error('Please select a valid image file within 1.5 MB.');
       } else {
         setImageUpload22((prevImages) => [...prevImages, selectedFile]);
       }
@@ -205,6 +206,51 @@ const AddProduct = () => {
     updatedImages.splice(index, 1);
     setImageUpload22(updatedImages);
   }
+
+  // Edit Product
+  let filterdata;
+  if (productId) {
+    filterdata = productData.filter((items) => items.id === productId);
+  }
+  useEffect(() => {
+    if (filterdata) {
+      filterdata.map((items) => {
+        setName(items.name);
+        setShortDes(items.shortDescription);
+        setLongDes(items.longDescription);
+        setStatus(items.status);
+        setFreeDelivery(items.Freedelivery);
+        setTotalStock(items.totalStock);
+        setSku(items.sku);
+        setVarient(items.isMultipleVariant);
+        setVariantsNAME(items.varients.VarientName);
+        setSelectedCategory(items.categories.name);
+        setImageUpload22(items.productImages);
+
+        items.varients.map((itm) => {
+          setVariants((prevVariants) => [
+            ...prevVariants,
+            {
+              VarientName: VarintName,
+              originalPrice: originalPrice,
+              discountType: discountType,
+              discount: discount,
+            },
+          ]);
+
+          setOriginalPrice(itm.originalPrice);
+          setVariantsNAME(itm.VarientName);
+          setDiscount(itm.discount);
+          setDiscountType(itm.discountType);
+
+          console.log(itm.VarientName);
+        });
+
+        console.log(items);
+        console.log(items.varients);
+      });
+    }
+  }, []);
 
   if (loaderstatus) {
     return (
@@ -516,7 +562,11 @@ const AddProduct = () => {
                             <div className="position-relative " key={index}>
                               <img
                                 className="mobile_image object-fit-cover"
-                                src={URL.createObjectURL(img)}
+                                src={
+                                  img && typeof img === 'string' && img.startsWith('http')
+                                    ? img
+                                    : URL.createObjectURL(img)
+                                }
                                 alt=""
                               />
                               <img
@@ -702,7 +752,9 @@ const AddProduct = () => {
                     <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
                       <div className="product_input">
                         <p className="fade_grey fw-400 w-100 mb-0 text-start" required>
-                          {selectedCategory ? selectedCategory.title : 'Select Category'}
+                          {selectedCategory
+                            ? selectedCategory.title || selectedCategory
+                            : 'Select Category'}
                         </p>
                       </div>
                     </Dropdown.Toggle>
@@ -750,7 +802,6 @@ const AddProduct = () => {
             </Row>
           </form>
         </div>
-
         <ToastContainer />
       </div>
     );
