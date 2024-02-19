@@ -79,7 +79,7 @@ export const ProductsProvider = ({ children }) => {
     };
 
     return (
-        <productsContext.Provider value={{ data: memoizedData, updateData, addData, deleteData }}>
+        <productsContext.Provider value={{ productData: memoizedData, updateData, addData, deleteData }}>
             {children}
         </productsContext.Provider>
     );

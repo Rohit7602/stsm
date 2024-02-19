@@ -88,9 +88,7 @@ export const SubCategoriesProvider = ({ children }) => {
         <SubCategoriesContext.Provider value={{ data:memodata,deleteData,updateData,addData }}>
             {children}
         </SubCategoriesContext.Provider>
-    );
-
-    
+    ); 
 };
 
 

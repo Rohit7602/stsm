@@ -24,7 +24,7 @@ import { ref, uploadBytes, getDownloadURL, getStorage, deleteObject } from 'fire
 import { storage } from '../../firebase';
 import { useImageHandleContext } from '../../context/ImageHandler';
 import { useMainCategories, useSubCategories } from '../../context/categoriesGetter';
-const Categories = () => {
+const ParentCategories = () => {
   // const [data, setData] = useState([]);
   // const [mainCategory, setMainCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -949,4 +949,4 @@ const Categories = () => {
   }
 };
 
-export default Categories;
+export default ParentCategories;

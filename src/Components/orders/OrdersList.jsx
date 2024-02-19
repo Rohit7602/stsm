@@ -14,7 +14,7 @@ import { db } from '../../firebase';
 import { Link, NavLink } from 'react-router-dom';
 import { useOrdercontext } from '../../context/OrderGetter';
 
-const ProductListComponent = (orderStatus) => {
+const OrderList = () => {
   // context
   const { orders, updateData } = useOrdercontext();
   const [searchvalue, setSearchvalue] = useState('');
@@ -344,4 +344,4 @@ const ProductListComponent = (orderStatus) => {
   );
 };
 
-export default ProductListComponent;
+export default OrderList;

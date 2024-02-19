@@ -11,12 +11,11 @@ import { ImageValidationProvider } from './context/validators';
 import { SubCategoriesProvider } from './context/categoriesGetter';
 import { MainCategoriesProvider } from './context/categoriesGetter';
 import { ProductsProvider } from './context/productgetter';
-import { ImageHandleProvider } from './context/ImageHandler'
+import { ImageHandleProvider } from './context/ImageHandler';
 import { BannerDataProvider } from './context/BannerGetters';
 import { OrderContextProvider } from './context/OrderGetter';
 import { CustomersProvider } from './context/Customergetters';
-import { ServiceContextProvider } from './context/ServiceAreasGetter'
-
+import { ServiceContextProvider } from './context/ServiceAreasGetter';
 
 // Put any other imports below so that CSS from your
 // components takes precedence over default styles.
