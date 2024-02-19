@@ -14,7 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { storage } from '../../firebase';
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { useProductsContext } from '../../context/productgetter';
 import { useSubCategories } from '../../context/categoriesGetter';
 

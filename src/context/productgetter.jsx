@@ -9,8 +9,6 @@ export const useProductsContext = () => {
     return useContext(productsContext);
 }
 
-
-
 export const ProductsProvider = ({ children }) => {
     const [data, setData] = useState([]);
     const [isDataFetched, setIsDataFetched] = useState(false);
