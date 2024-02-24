@@ -18,35 +18,37 @@ export default function Login(props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const handleLogin = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
       // Fetch the user's data from Firestore using the provided email
       const userQuerySnapshot = await getDocs(query(collection(db, 'User'), where('Email', '==', email)));
-
       // Check if a user with the provided email exists in Firestore
-      if (userQuerySnapshot.size === 1) {
-        const userDoc = userQuerySnapshot.docs[0];
+      if (email != "" && password != "") {
+        if (userQuerySnapshot.size === 1) {
+          const userDoc = userQuerySnapshot.docs[0];
+          // Check if the user is an admin
+          if (userDoc.exists() && userDoc.data().is_admin) {
+            // If the user is an admin, sign in with Firebase Authentication
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
-        // Check if the user is an admin
-        if (userDoc.exists() && userDoc.data().is_admin) {
-          // If the user is an admin, sign in with Firebase Authentication
-          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            // Store the admin status in localStorage
+            localStorage.setItem('isAdmin', 'true');
 
-          // Store the admin status in localStorage
-          localStorage.setItem('isAdmin', 'true');
+            // Trigger the login function
+            props.login();
 
-          // Trigger the login function
-          props.login();
-
-          // Redirect to the dashboard or another page using the navigate function
-          navigate('/dashbord');
+            // Redirect to the dashboard or another page using the navigate function
+            navigate('/dashbord');
+          } else {
+            // If the user is not an admin, show an error
+            toast.error('User is not an admin', { position: toast.POSITION.TOP_CENTER });
+          }
         } else {
-          // If the user is not an admin, show an error
-          toast.error('User is not an admin', { position: toast.POSITION.TOP_CENTER });
+          // If the user with the provided email does not exist, show an error
+          toast.error('User not found', { position: toast.POSITION.TOP_CENTER });
         }
       } else {
-        // If the user with the provided email does not exist, show an error
-        toast.error('User not found', { position: toast.POSITION.TOP_CENTER });
+        toast.error('Please Enter Email and Password', { position: toast.POSITION.TOP_CENTER });
       }
     } catch (error) {
       console.error('Error signing in:', error.message);
@@ -56,7 +58,9 @@ export default function Login(props) {
     }
   };
 
-  return (
+  return (<>
+    <ToastContainer />
+
     <div className="min-vh- 100">
       <div className="row h-100 m-0">
         <div className="col-7 h-100 p-0">
@@ -81,9 +85,10 @@ export default function Login(props) {
               </div>
             </form>
           </div>
-          <ToastContainer />
         </div>
       </div>
+
     </div>
+  </>
   );
 }

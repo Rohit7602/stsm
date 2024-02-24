@@ -1,7 +1,7 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 
-function ApexBarChart() {
+function ApexBarChart({ orderData }) {
   const options = {
     chart: {
       id: "basic-bar",
@@ -12,9 +12,11 @@ function ApexBarChart() {
         "Feb",
         "March",
         "April",
+        "May",
         "June",
         "July",
         "Aug",
+        "Sep",
         "Oct",
         "Nov",
         "Dec",
@@ -53,12 +55,23 @@ function ApexBarChart() {
     },
   };
 
+  // Initialize series with 0 values for each month
+  const initialSeriesData = Array.from({ length: 12 }, () => 0);
+
   const series = [
     {
-      name: "series-1",
-      data: [30, 20, 45, 30, 49, 60, 70, 91, 50, 80],
+      name: "Orders",
+      data: initialSeriesData,
     },
   ];
+
+  // Update the series data based on the orderData prop
+  if (orderData) {
+    orderData.forEach((order) => {
+      const monthIndex = new Date(order.created_at).getMonth();
+      series[0].data[monthIndex]++;
+    });
+  }
 
   return (
     <div className="app">
@@ -69,7 +82,7 @@ function ApexBarChart() {
             series={series}
             type="bar"
             width="100%"
-            height="220" // Set the width to 800 pixels
+            height="220"
           />
         </div>
       </div>

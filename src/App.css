@@ -17,7 +17,6 @@
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   text-decoration: none !important;
-  transition: all 0.3s ease-in-out;
 }
 
 body {
@@ -834,9 +833,9 @@ body {
   border-bottom: 1px solid #d9d9d9;
 }
 
-.donut {
+/* .donut {
   height: 300px;
-}
+} */
 
 .upload_btn {
   top: 0;
@@ -1254,8 +1253,8 @@ tbody::-webkit-scrollbar {
 }
 .table_body {
   display: block !important;
-  max-height: calc(100vh - 290px) !important;
-  min-height: 300px;
+  height: calc(100vh - 265px) !important;
+  height: 100%;
   overflow: auto !important;
 }
 .table_head,
@@ -1382,6 +1381,15 @@ tbody::-webkit-scrollbar {
 
   .Customers_overflow_X {
     width: 1020px;
+  }
+  .recent_order_table {
+    overflow-x: scroll;
+  }
+  .recent_order_table::-webkit-scrollbar {
+    height: 4px;
+  }
+  .recent_order_table table {
+    min-width: 613px;
   }
 }
 

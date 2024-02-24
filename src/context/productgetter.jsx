@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { getDocs, collection, addDoc, deleteDoc, doc,onSnapshot } from "firebase/firestore";
+import { getDocs, collection, addDoc, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 
 const productsContext = createContext();
@@ -8,8 +8,6 @@ const productsContext = createContext();
 export const useProductsContext = () => {
     return useContext(productsContext);
 }
-
-
 
 export const ProductsProvider = ({ children }) => {
     const [data, setData] = useState([]);
@@ -41,18 +39,18 @@ export const ProductsProvider = ({ children }) => {
     }, [isDataFetched]);
 
     const memoizedData = useMemo(() => data, [data]);
-    
+
     const updateData = (updatedProduct) => {
         if (typeof updatedProduct === 'object' && updatedProduct.id) {
             setData(prevData => {
                 const existingProductIndex = prevData.findIndex(product => product.id === updatedProduct.id);
 
-                if (existingProductIndex !== -1) { 
+                if (existingProductIndex !== -1) {
                     const newData = [...prevData];
                     newData[existingProductIndex] = { ...newData[existingProductIndex], ...updatedProduct };
                     return newData;
                 } else {
-                    
+
                     return [...prevData, updatedProduct];
                 }
             });

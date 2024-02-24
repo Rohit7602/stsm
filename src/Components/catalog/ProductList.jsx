@@ -145,7 +145,7 @@ const ProductList = (props) => {
      */
 
   return (
-    <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
+    <div className="main_panel_wrapper overflow-x-hidden bg_light_grey w-100">
       {deletepopup === true || statusPopup === true ? (
         <div className="bg_black_overlay"></div>
       ) : null}

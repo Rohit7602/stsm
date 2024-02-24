@@ -259,7 +259,7 @@ const ServiceArea = () => {
     );
   } else {
     return (
-      <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
+      <div className="main_panel_wrapper bg_light_grey w-100">
         {addsServicePopup || editServicePopup ? <div className="bg_black_overlay"></div> : ''}
         <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
           <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
@@ -552,7 +552,9 @@ const ServiceArea = () => {
                 <table className="w-100">
                   <thead className="w-100 table_head">
                     <tr className="product_borderbottom">
-                      <th onClick={() => sorting('AreaName')} className="py-3 ps-3 w-100 cursor_pointer">
+                      <th
+                        onClick={() => sorting('AreaName')}
+                        className="py-3 ps-3 w-100 cursor_pointer">
                         <div className="d-flex align-items-center gap-3 min_width_300">
                           <label class="check1 fw-400 fs-sm black mb-0">
                             <input
@@ -581,7 +583,9 @@ const ServiceArea = () => {
                       <th className="mw-200 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Expected Delivery</h3>
                       </th>
-                      <th onClick={() => sorting('ServiceStatus')} className="mx_140 cursor_pointer">
+                      <th
+                        onClick={() => sorting('ServiceStatus')}
+                        className="mx_140 cursor_pointer">
                         <p className="fw-400 fs-sm black mb-0 ms-2">
                           Service Status{' '}
                           <span>

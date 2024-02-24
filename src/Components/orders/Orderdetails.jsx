@@ -108,7 +108,7 @@ export default function NewOrder() {
                     className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 green_btn fw-400 white"
                     type="submit">
                     <img src={whitesaveicon} alt="whitesaveicon" />
-                    Mark as Refunded
+                    Mark as Delivered
                   </button>
                 </div>
               </div>

@@ -17,9 +17,8 @@ import { useOrdercontext } from '../../context/OrderGetter';
 const Customers = () => {
   const [searchvalue, setSearchvalue] = useState('');
 
-  const { orders } = useOrdercontext()
+  const { orders } = useOrdercontext();
   const { customer } = useCustomerContext();
-
 
   // Function to calculate total spent by a customer
   const calculateTotalSpent = (customerId) => {
@@ -28,10 +27,8 @@ const Customers = () => {
       .reduce((total, order) => total + order.order_price, 0);
   };
 
-
-
   return (
-    <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
+    <div className="main_panel_wrapper overflow-x-hidden bg_light_grey w-100">
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
         <div className="d-flex  align-items-center flex-column flex-sm-row gap-2 gap-sm-0 justify-content-between">
           <div className="d-flex">
@@ -170,7 +167,9 @@ const Customers = () => {
                                 <h3 className="fs-sm fw-400 black mb-0">Public</h3>
                               </td>
                               <td className="p-3 mw-200">
-                                <h3 className="fs-sm fw-400 black mb-0">₹ {calculateTotalSpent(id)}</h3>
+                                <h3 className="fs-sm fw-400 black mb-0">
+                                  ₹ {calculateTotalSpent(id)}
+                                </h3>
                               </td>
                               <td className="text-center mw-90">
                                 <div class="dropdown">

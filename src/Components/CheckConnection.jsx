@@ -1,29 +1,39 @@
 import React, { useEffect } from "react";
 import { Detector } from 'react-detect-offline';
-import nointernetimg from '../Images/Png/no-internet.png';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CheckConnection = (props) => {
-    // Preload the image to ensure it's available offline
     useEffect(() => {
-        const image = new Image();
-        image.src = nointernetimg;
+        const onlineHandler = () => {
+            toast.dismiss();
+        };
+
+        const offlineHandler = () => {
+            toast.error('No Internet Connection', {
+                autoClose: false,
+                toastId: 'offline-toast',
+            });
+        };
+
+        window.addEventListener('online', onlineHandler);
+        window.addEventListener('offline', offlineHandler);
+
+        return () => {
+            window.removeEventListener('online', onlineHandler);
+            window.removeEventListener('offline', offlineHandler);
+        };
     }, []);
 
     return (
         <>
+            <ToastContainer />
+
             <Detector
                 render={({ online }) => {
-                    console.log('Online status:', online);
-
                     return online ? (
                         props.children
-                    ) : (
-                        <div style={{ paddingTop: '10px', textAlign: 'center' }}>
-                            <img src={nointernetimg} alt="No Connection Image" style={{ maxWidth: '100%', maxHeight: '100%' }} />
-                            <h1 style={{ marginBottom: '10px' }}>No Internet Connection</h1>
-                            <h4 style={{ margin: '0' }}>Please Check Your Internet Connection</h4>
-                        </div>
-                    );
+                    ) : null;
                 }}
             />
         </>
@@ -31,4 +41,3 @@ const CheckConnection = (props) => {
 };
 
 export default CheckConnection;
-

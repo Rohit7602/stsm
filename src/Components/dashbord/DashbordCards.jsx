@@ -4,8 +4,72 @@ import ApexBarChart from '../charts/bar';
 import Donut from '../charts/donatchart';
 import eyeIcon from '../../Images/svgs/eye-icon.svg';
 import printIcon from '../../Images/svgs/print-icon.svg';
+import { useOrdercontext } from '../../context/OrderGetter';
 
 function DashbordCards() {
+  const { orders } = useOrdercontext();
+  /**  ******************************************* Calculation of Average ORder value According to current Month
+   * ****************************************    */
+
+  // Get the current month and last month
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1; // Handle January as special case
+
+  // Filter orders for the current month and last month
+  const ordersThisMonth = orders.filter(
+    (order) => new Date(order.created_at).getMonth() === currentMonth
+  );
+  const ordersLastMonth = orders.filter(
+    (order) => new Date(order.created_at).getMonth() === lastMonth
+  );
+
+  // Calculate the average order value for each month
+  const averageOrderValueThisMonth =
+    ordersThisMonth.reduce((total, order) => total + order.order_price, 0) / ordersThisMonth.length;
+  const averageOrderValueLastMonth =
+    ordersLastMonth.reduce((total, order) => total + order.order_price, 0) / ordersLastMonth.length;
+
+  // Calculate the percentage change
+  const percentageChangeOfOrder = Math.round(
+    ((averageOrderValueThisMonth - averageOrderValueLastMonth) / averageOrderValueLastMonth) * 100,
+    3
+  );
+
+  /**  ******************************************* Calculation of Average ORder value According to current Month End
+   * ****************************************    */
+
+  /**  ******************************************* Filter the Recent orders of last week
+   * ****************************************    */
+
+  // Calculate the start and end dates for one week ago
+
+  const oneWeekAgoStartDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    currentDate.getDate() - 7
+  );
+  console.log('asdfasfasdfasdf', oneWeekAgoStartDate);
+  console.log('ASDFAsdf current date ', currentDate);
+
+  // Filter orders for one week ago
+
+  const ordersOneWeekAgo = orders.filter(
+    (order) =>
+      new Date(order.created_at) >= oneWeekAgoStartDate && new Date(order.created_at) <= currentDate
+  );
+
+  /**  ******************************************* Filter the Recent orders of last week End here
+   * ****************************************    */
+
+  // format date function
+
+  function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
+    return formattedDate;
+  }
+
   return (
     <>
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
@@ -42,9 +106,13 @@ function DashbordCards() {
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
-                  <h3 className="fw-500 black mb-0 fs-lg">₹ 50680.00</h3>
+                  <h3 className="fw-500 black mb-0 fs-lg">
+                    ₹ {isNaN(averageOrderValueThisMonth) ? 0 : averageOrderValueThisMonth}
+                  </h3>
                   <div className="d-flex flex-column   justify-content-between">
-                    <h3 className="color_green fs-xxs mb-0 text-end">15.3%</h3>
+                    <h3 className="color_green fs-xxs mb-0 text-end">
+                      {isNaN(percentageChangeOfOrder) ? 0 : percentageChangeOfOrder} %
+                    </h3>
                     <p className="text-end  para mb-0">Compared to Last Month</p>
                   </div>
                 </div>
@@ -59,7 +127,7 @@ function DashbordCards() {
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
-                  <h3 className="fw-500 black mb-0 fs-lg"> 3368</h3>
+                  <h3 className="fw-500 black mb-0 fs-lg">{orders.length}</h3>
                   <div className="d-flex flex-column   justify-content-between">
                     <h3 className="color_green fs-xxs mb-0 text-end">15.3%</h3>
                     <p className="text-end  para mb-0">Compared to Last Month</p>
@@ -116,7 +184,7 @@ function DashbordCards() {
                 <div className="d-flex justify-content-between   bg-white">
                   <h3 className="fw-400 black fs-xs">Income Statistics</h3>
                 </div>
-                <ApexBarChart className="w-100" />
+                <ApexBarChart className="w-100" orderData={orders} />
               </div>
             </div>
           </div>
@@ -125,226 +193,88 @@ function DashbordCards() {
         {/* Chart-section-donat  */}
         <div className="chat_wrapper px-3 mt-4">
           <div className="row  justify-content-between ">
-            <div className="col-xl-9 table_box col-lg-7 mb-xl-0 mb-4 col-12 ">
+            <div className="col-xl-9 table_box col-lg-7 mb-xl-0 col-12 ">
               <div className=" px-3 tables mb-2 chart_content_wrapper p-2 bg-white h-100">
                 <div className="d-flex align-items-center justify-content-between">
                   <h3 className="fw-600 black  mb-0 fs-xs py-2">Recent Orders</h3>
                 </div>
-                <table className="w-100">
-                  <tr className="product_borderbottom">
-                    <th className="py-2 px-3 mw_50">
-                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> No</h4>
-                    </th>
-                    <th className="py-2 px-3 mx_100">
-                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> Status</h4>
-                    </th>
-                    <th className="py-2 px-3 mx_100">
-                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> City</h4>
-                    </th>
-                    <th className="py-2 px-3 mw-250">
-                      <h4 className="fw-400 fade_grey mb-0 fs-xs">Customer</h4>
-                    </th>
-                    <th className="py-2 px-3 mx_160">
-                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> Date</h4>
-                    </th>
-                    <th className="py-2 px-3 mx_100">
-                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> Total</h4>
-                    </th>
-                    <th className="mx_70"></th>
-                  </tr>
-                  <tr className="product_borderbottom">
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
-                    </td>
-                  </tr>
-                  <tr className="product_borderbottom">
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
-                    </td>
-                  </tr>
-                  <tr className="product_borderbottom">
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
-                    </td>
-                  </tr>
-                  <tr className="product_borderbottom">
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
-                    </td>
-                  </tr>
-                  <tr className="product_borderbottom">
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
-                    </td>
-                  </tr>
-                  <tr className="product_borderbottom">
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
-                    </td>
-                  </tr>
-                  <tr className="product_borderbottom">
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
-                    </td>
-                  </tr>
-                  <tr className="product_borderbottom">
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
-                    </td>
-                  </tr>
-                  <tr className="product_borderbottom">
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
-                    </td>
-                  </tr>
-                </table>
+                <div className="recent_order_table">
+                  <table className="w-100 ">
+                    <tr className="product_borderbottom">
+                      <th className="py-2 px-3 mw_50">
+                        <h4 className="fw-400 fade_grey mb-0 fs-xs"> No</h4>
+                      </th>
+                      <th className="py-2 px-3 mx_100">
+                        <h4 className="fw-400 fade_grey mb-0 fs-xs"> Status</h4>
+                      </th>
+                      <th className="py-2 px-3 mx_100">
+                        <h4 className="fw-400 fade_grey mb-0 fs-xs"> City</h4>
+                      </th>
+                      <th className="py-2 px-3 mw-250">
+                        <h4 className="fw-400 fade_grey mb-0 fs-xs">Customer</h4>
+                      </th>
+                      <th className="py-2 px-3 mx_160">
+                        <h4 className="fw-400 fade_grey mb-0 fs-xs"> Date</h4>
+                      </th>
+                      <th className="py-2 px-3 mx_100">
+                        <h4 className="fw-400 fade_grey mb-0 fs-xs"> Total</h4>
+                      </th>
+                      <th className="mx_70"></th>
+                    </tr>
+                    {ordersOneWeekAgo.length === 0 ? (
+                      <tr>
+                        <td className="text-center py-2 " colSpan="6">
+                          No recent orders in the last week
+                        </td>
+                      </tr>
+                    ) : (
+                      ordersOneWeekAgo.map((data, index) => {
+                        return (
+                          <tr key={data.created_at} className="product_borderbottom">
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0  fs-xs">{index + 1}</h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0  fs-xs"> {data.status}</h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0  fs-xs">city</h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0 fs-xs">{data.customer.name}</h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0 fs-xs white_space_nowrap">
+                                {formatDate(data.created_at)}
+                              </h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0 fs-xs white_space_nowrap">
+                                {' '}
+                                ₹ {data.order_price}
+                              </h4>
+                            </td>
+                            <td className="d-flex align-items-center gap-3 py-1">
+                              <img className="cursor_pointer" src={eyeIcon} alt="" />
+                              <img className="cursor_pointer" src={printIcon} alt="" />
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </table>
+                </div>
               </div>
             </div>
-            <div className="col-xl-3 col-lg-5 col-12 h-100 ">
-              <div className="  h-100 chart_box px-3 py-3  chart_content_wrapper bg-white">
+            <div className="col-xl-3 col-lg-5 col-12 mt-4 mt-lg-0">
+              <div className="  h-100 chart_box px-3 py-3  chart_content_wrapper bg-white h-100">
                 <div className="d-flex justify-content-between   bg-white">
                   <h3 className="fw-400 black fs-xs">Sales by source</h3>
-                  <div>
-                    <img src={Dots} alt="dots" />
-                  </div>
                 </div>
                 <div className="text-center">
-                  <Donut />
+                  <div className="col-8 col-lg-12 m-auto">
+                    <Donut />
+                  </div>
                 </div>
 
                 <div className="d-flex     align-items-center   p-2 bottom_border  justify-content-between">

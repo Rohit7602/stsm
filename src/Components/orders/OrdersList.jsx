@@ -261,7 +261,7 @@ const OrderList = () => {
                           </td>
                           <td className="p-3 mw_160">
                             <h3 className="fs-sm fw-400 black mb-0">
-                              {orderTableData.order_price}
+                              ₹ {orderTableData.order_price}
                             </h3>
                           </td>
                           <td className="text-center mx_100">
