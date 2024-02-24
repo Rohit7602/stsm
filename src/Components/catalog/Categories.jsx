@@ -157,11 +157,11 @@ const Categories = () => {
       Edit  Category   functionality start 
    *********************************************   **/
   async function HandleEditCategory(e) {
-    e.preventDefault();
+    e.preventDefault()
     setEditCatPopup(false);
     try {
+      console.log("try is  working ")
       let imageUrl = null;
-
       if (editCatImg instanceof File) {
         // Handle the case where editCatImg is a File
         const filename = Math.floor(Date.now() / 1000) + '-' + editCatImg.name;
@@ -172,7 +172,6 @@ const Categories = () => {
         // Handle the case where editCatImg is a URL
         imageUrl = editCatImg;
       }
-
       await updateDoc(doc(db, 'sub_categories', selectedSubcategoryId), {
         title: editCatName,
         status: editStatus,
@@ -633,8 +632,8 @@ const Categories = () => {
                               <Dropdown.Item key={category.id}>
                                 <div
                                   className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                      ? 'selected'
-                                      : ''
+                                    ? 'selected'
+                                    : ''
                                     }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>

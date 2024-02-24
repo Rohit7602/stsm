@@ -18,9 +18,11 @@ import ServiceAreas from './Components/catalog/SearviceAreas';
 import Login from './Components/login/Login';
 import AccountDelete from './Components/AccountDelete';
 import { useEffect, useState } from 'react';
-import { auth } from './firebase';
+import { auth, messaging } from './firebase';
 import HashLoader from 'react-spinners/HashLoader';
 import CheckConnection from './Components/CheckConnection';
+
+import { permissionHandler } from './firebase';
 function App() {
   const [user, setUser] = useState(true);
   const [authchecked, setauthchecked] = useState(false);
@@ -28,7 +30,11 @@ function App() {
   const location = useLocation();
   const [productId, setProductId] = useState('');
 
+
+  
+
   useEffect(() => {
+    permissionHandler();
     setloading(true);
     setTimeout(() => {
       setloading(false);
@@ -71,8 +77,8 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  return (
 
+  return (
     <div>
       {loading ? (
         <div

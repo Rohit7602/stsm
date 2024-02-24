@@ -22,10 +22,11 @@ function DashbordCards() {
 
   // Calculate the average order value for each month
   const averageOrderValueThisMonth = ordersThisMonth.reduce((total, order) => total + order.order_price, 0) / ordersThisMonth.length;
+
   const averageOrderValueLastMonth = ordersLastMonth.reduce((total, order) => total + order.order_price, 0) / ordersLastMonth.length;
 
   // Calculate the percentage change
-  const percentageChangeOfOrder = Math.round(((averageOrderValueThisMonth - averageOrderValueLastMonth) / averageOrderValueLastMonth) * 100, 3);
+  const percentageChangeOfOrder = ((averageOrderValueThisMonth - averageOrderValueLastMonth) / averageOrderValueLastMonth) * 100
 
 
   /**  ******************************************* Calculation of Average ORder value According to current Month End
@@ -41,8 +42,8 @@ function DashbordCards() {
 
 
   const oneWeekAgoStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 7);
-  console.log("asdfasfasdfasdf", oneWeekAgoStartDate)
-  console.log("ASDFAsdf current date ", currentDate)
+  // console.log("asdfasfasdfasdf", oneWeekAgoStartDate)
+  // console.log("ASDFAsdf current date ", currentDate)
 
   // Filter orders for one week ago
 
@@ -105,9 +106,9 @@ function DashbordCards() {
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
-                  <h3 className="fw-500 black mb-0 fs-lg">₹ {isNaN(averageOrderValueThisMonth) ? 0 : averageOrderValueThisMonth}</h3>
+                  <h3 className="fw-500 black mb-0 fs-lg">₹ {isNaN(averageOrderValueThisMonth) ? 0 : averageOrderValueThisMonth.toFixed(2)}</h3>
                   <div className="d-flex flex-column   justify-content-between">
-                    <h3 className="color_green fs-xxs mb-0 text-end">{isNaN(percentageChangeOfOrder) ? 0 : percentageChangeOfOrder} %</h3>
+                    <h3 className="color_green fs-xxs mb-0 text-end">{isNaN(percentageChangeOfOrder) ? 0 : percentageChangeOfOrder.toFixed(2)} %</h3>
                     <p className="text-end  para mb-0">Compared to Last Month</p>
                   </div>
                 </div>

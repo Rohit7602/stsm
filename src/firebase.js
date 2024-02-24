@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-
+import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 const firebaseConfig = {
   apiKey: "AIzaSyAnDazUpRDmNMYIF5V5GAZZeBO2Ovn0v6Q",
   authDomain: "save-time-save-money-a36f2.firebaseapp.com",
@@ -18,7 +18,27 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const firestore = getFirestore(app);
-const db = getFirestore(app); // Corrected from getFirestore to getStorage
+const db = getFirestore(app); 
 const storage = getStorage(app);
+const messaging = getMessaging(app);
 
-export { auth, firestore, storage, db ,app};
+
+export function permissionHandler() {
+  console.log("Permission handler working");
+  Notification.requestPermission().then((permission) => {
+    if (permission === "granted") {
+      console.log(permission);
+      return getToken(messaging, { vapidKey: `BAo2r-3i9R7lLolDnY2C5EoRVnFzgNQnbECTIrQeoEbStEJyM9mcTX` }).then((currentToken) => {
+        if (currentToken) {
+          console.log('Client Token : ', currentToken)
+        } else {
+          console.log("Failed to generate token");
+        }
+      }).catch((err) => console.log(err))
+    } else {
+      console.log("User Denied permission")
+    }
+  })
+}
+
+export { auth, firestore, storage, db, app, messaging };
