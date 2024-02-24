@@ -275,7 +275,7 @@ const Categories = () => {
           </div>
         </div>
         {/* categories details  */}
-        <div className="p-3 mt-3 bg-white product_shadow mt-4">
+        <div className="p-3 bg-white product_shadow mt-4">
           <div className="overflow_xl_scroll line_scroll">
             <div className="categories_xl_overflow_X ">
               <table className="w-100">
