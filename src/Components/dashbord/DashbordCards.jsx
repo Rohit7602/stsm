@@ -71,7 +71,7 @@ function DashbordCards() {
   console.log("lastmonthdeliverd", deliveredOrdersLastMonthValue)
 
   let totalDeliverdOrderValue = DeliverdOrder.reduce((total, order) => total + order.order_price, 0)
-  let comparedLastSaleValue = ((deliveredOrdersThisMonthValue - deliveredOrdersLastMonthValue) - deliveredOrdersLastMonthValue) * 100
+  let comparedLastSaleValue = (deliveredOrdersThisMonthValue - deliveredOrdersLastMonthValue)
 
 
   // format date function
@@ -104,7 +104,7 @@ function DashbordCards() {
                 <div className="d-flex justify-content-between   align-items-center bg_white">
                   <h3 className="fw-500 black mb-0 fs-lg">₹{isNaN(totalDeliverdOrderValue) ? 0 : totalDeliverdOrderValue.toFixed(2)} </h3>
                   <div className="d-flex flex-column   justify-content-between">
-                    <h3 className="color_green fs-xxs mb-0 text-end">₹{isNaN(comparedLastSaleValue) ? 0 : comparedLastSaleValue.toFixed(2)} %</h3>
+                    <h3 className="color_green fs-xxs mb-0 text-end">₹{isNaN(comparedLastSaleValue) ? 0 : comparedLastSaleValue.toFixed(2)}</h3>
                     <p className="text-end  para mb-0">Compared to Last Month</p>
                   </div>
                 </div>
