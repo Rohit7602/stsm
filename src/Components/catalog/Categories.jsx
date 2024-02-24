@@ -202,19 +202,6 @@ const Categories = () => {
       Edit  Category  functionality end 
    *********************************************   **/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   /*  *******************************
       checkbox functionality start 
     *********************************************   **/
@@ -261,7 +248,7 @@ const Categories = () => {
   //  get parent category  function  end  from here
 
   return (
-    <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
+    <div className="main_panel_wrapper bg_light_grey w-100">
       {deletepopup || statusPopup || editCatPopup ? <div className="bg_black_overlay"></div> : null}
       <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
         <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
@@ -536,8 +523,8 @@ const Categories = () => {
                         className="mobile_image object-fit-cover"
                         src={
                           editCatImg &&
-                            typeof editCatImg === 'string' &&
-                            editCatImg.startsWith('http')
+                          typeof editCatImg === 'string' &&
+                          editCatImg.startsWith('http')
                             ? editCatImg
                             : URL.createObjectURL(editCatImg)
                         }

@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useCustomerContext } from '../../context/Customergetters';
-import { formatDistanceToNow } from 'date-fns';
+import { add, formatDistanceToNow } from 'date-fns';
 import { useOrdercontext } from '../../context/OrderGetter';
 
 const ViewCustomerDetails = () => {
@@ -55,7 +55,6 @@ const ViewCustomerDetails = () => {
     return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
   };
 
-  
   // calculate  time end
 
   // useEffect(() => {
@@ -77,8 +76,6 @@ const ViewCustomerDetails = () => {
   //   fetchData();
   // }, []);
 
-
-  
   return (
     <>
       {filterData.map((Customerdata, index) => (
@@ -146,7 +143,7 @@ const ViewCustomerDetails = () => {
                   <div className="overflow_lg_scroll">
                     <div className="customer_lg_overflow_X">
                       <div className="d-flex justify-content-between align-items-center">
-                        <h2 className="fw-400 fs-2sm black mb-0  "> Order</h2>{' '}
+                        <h2 className="fw-400 fs-2sm black mb-0  "> Order</h2>
                         <h2 className="fw-400 fs-2sm black mb-0  ">Total Spent :₹{totalSpent}</h2>
                       </div>
                       <div className="d-flex justify-content-between align-items-center mt-3"></div>
@@ -206,24 +203,37 @@ const ViewCustomerDetails = () => {
                   </div>
                 </div>
                 <div className="product_shadow p-3 bg_white mt-3">
-                  <h2 className="fw-400 fs-2sm black mb-0  "> Addresses</h2>{' '}
+                  <h2 className="fw-400 fs-2sm black mb-0  "> Addresses</h2>
                   <div className="product_borderbottom mt-3"></div>
                   {/* 1st */}
                   {Customerdata.addresses.map((address, index) => {
                     return (
-                      <>
+                      <div key={index}>
                         <div className="d-flex justify-content-between align-items-center mt-3 py-2">
                           <div>
-                            <h2 className="fw-700 fs-sm black mb-0   ">{address.name}</h2>
-                            <h2 className="fw-400 fs-xs black mb-0   ">
-                              {address.house_no}, {address.colony} {address.landmark},{' '}
-                              {address.city}, {address.state}
+                            <h2 className="fw-700 fs-sm black mb-0">{address.name}</h2>
+                            <h2 className="fw-400 fs-xs black mb-0 mt-2">
+                              {address.house_no ||
+                              address.colony ||
+                              add.landmark ||
+                              address.city ||
+                              add.state
+                                ? address.house_no +
+                                  ', ' +
+                                  address.colony +
+                                  ', ' +
+                                  address.landmark +
+                                  ', ' +
+                                  address.city +
+                                  ', ' +
+                                  address.state
+                                : 'not found'}
                             </h2>
                           </div>
                           <img className="threedot" src={threedot} alt="threedot" />
                         </div>
                         <div className="product_borderbottom mt-3"></div>
-                      </>
+                      </div>
                     );
                   })}
                   {/* 2nd */}

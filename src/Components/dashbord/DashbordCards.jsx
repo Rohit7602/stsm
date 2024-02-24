@@ -8,7 +8,7 @@ import { useOrdercontext } from '../../context/OrderGetter';
 
 function DashbordCards() {
   const { orders } = useOrdercontext();
-  /**  ******************************************* Calculation of Average ORder value According to current Month 
+  /**  ******************************************* Calculation of Average ORder value According to current Month
    * ****************************************    */
 
   // Get the current month and last month
@@ -22,9 +22,9 @@ function DashbordCards() {
 
   // Calculate the average order value for each month
   const averageOrderValueThisMonth = ordersThisMonth.reduce((total, order) => total + order.order_price, 0) / ordersThisMonth.length;
-
+  // console.log("averageordrebalue this ", averageOrderValueThisMonth)
   const averageOrderValueLastMonth = ordersLastMonth.reduce((total, order) => total + order.order_price, 0) / ordersLastMonth.length;
-
+  // console.log("averageOrderValueLastMonth", averageOrderValueLastMonth)
   // Calculate the percentage change
   const percentageChangeOfOrder = ((averageOrderValueThisMonth - averageOrderValueLastMonth) / averageOrderValueLastMonth) * 100
 
@@ -32,11 +32,8 @@ function DashbordCards() {
   /**  ******************************************* Calculation of Average ORder value According to current Month End
    * ****************************************    */
 
-
-
-  /**  ******************************************* Filter the Recent orders of last week 
+  /**  ******************************************* Filter the Recent orders of last week
    * ****************************************    */
-
 
   // Calculate the start and end dates for one week ago
 
@@ -47,23 +44,21 @@ function DashbordCards() {
 
   // Filter orders for one week ago
 
-  const ordersOneWeekAgo = orders.filter(order => new Date(order.created_at) >= oneWeekAgoStartDate && new Date(order.created_at) <= currentDate);
+  const ordersOneWeekAgo = orders.filter(
+    (order) =>
+      new Date(order.created_at) >= oneWeekAgoStartDate && new Date(order.created_at) <= currentDate
+  );
 
+  /**  ******************************************* Filter the Recent orders of last week End here
+   * ****************************************    */
 
-  /**  ******************************************* Filter the Recent orders of last week End here 
-  * ****************************************    */
-
-
-  // format date function 
-
+  // format date function
 
   function formatDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
     return formattedDate;
-
   }
-
 
   return (
     <>
@@ -76,14 +71,12 @@ function DashbordCards() {
             </div>
             <button className="export_btn  white fs-xxs px-3 py-2 fw-400 border-0">Export</button>
           </div>
-          <div className="  row justify-content-star  mt-3">
-            <div className="    col-xl col-lg-4 col-md-6  mb-3 mr-3  ">
-              <div className="   bg-white cards  flex-column d-flex justify-content-around px-3">
+          <div className="row justify-content-star  mt-3">
+            <div className="col-xl col-lg-4 col-md-6 mr-3  ">
+              <div className="bg-white cards  flex-column d-flex justify-content-around px-3">
                 <div className="d-flex justify-content-between   bg-white">
                   <h3 className="fw-400 fade_grey fs-xs">Total Sales</h3>
-                  <div>
-                    <img src={Dots} alt="dots" />
-                  </div>
+                  <button className="fw-400 color_blue fs-xs border-0 bg-white">View all</button>
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
@@ -96,13 +89,10 @@ function DashbordCards() {
               </div>
             </div>
 
-            <div className="    col-xl col-lg-4 col-md-6 mb-3 mr-3  ">
+            <div className="    col-xl col-lg-4 col-md-6 mr-3">
               <div className=" bg-white   cards  flex-column d-flex justify-content-around px-3">
                 <div className="d-flex justify-content-between   bg-white">
                   <h3 className="fw-400 fade_grey fs-xs">Average Order Value</h3>
-                  <div>
-                    <img src={Dots} alt="dots" />
-                  </div>
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
@@ -115,13 +105,11 @@ function DashbordCards() {
               </div>
             </div>
 
-            <div className="     col-xl col-lg-4 col-md-6 mb-3    ">
-              <div className="  bg-white  cards  flex-column d-flex justify-content-around px-3">
-                <div className="d-flex justify-content-between   bg-white">
+            <div className="col-xl col-lg-4 col-md-6 mt-4 mt-lg-0">
+              <div className="bg-white  cards  flex-column d-flex justify-content-around px-3">
+                <div className="d-flex justify-content-between bg-white">
                   <h3 className="fw-400 fade_grey fs-xs">Total Orders</h3>
-                  <div>
-                    <img src={Dots} alt="dots" />
-                  </div>
+                  <button className="fw-400 color_blue fs-xs border-0 bg-white">View all</button>
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
@@ -139,13 +127,10 @@ function DashbordCards() {
         {/* Chart-section-bar  */}
         <div className="chat_wrapper px-3">
           <div className="row  justify-content-between ">
-            <div className="col-xl-3 col-lg-5 mb-4 col-12 ">
-              <div className="chart_content_wrapper p-2 bg-white">
+            <div className="col-xl-3 col-lg-5 col-12 ">
+              <div className="chart_content_wrapper p-2 bg-white h-100">
                 <div className="d-flex align-items-center justify-content-between">
                   <h3 className="fw-400 fade_grey mb-0 fs-xs"> Active Users</h3>
-                  <div>
-                    <img src={Dots} alt="dots" />
-                  </div>
                 </div>
                 <div className="grey_box my-2 text-center w-100 p-2">
                   <h3 className="fw-500 black mb-0 fs-lg">56</h3>
@@ -180,13 +165,10 @@ function DashbordCards() {
                 </div>
               </div>
             </div>
-            <div className="col-xl-9 col-lg-7 col-12 h-100 ">
+            <div className="col-xl-9 col-lg-7 col-12 h-100 mt-4 mt-lg-0">
               <div className="  h-100 chart_box px-2 py-3  chart_content_wrapper bg-white">
                 <div className="d-flex justify-content-between   bg-white">
                   <h3 className="fw-400 black fs-xs">Income Statistics</h3>
-                  <div>
-                    <img src={Dots} alt="dots" />
-                  </div>
                 </div>
                 <ApexBarChart className="w-100" orderData={orders} />
               </div>
@@ -195,84 +177,90 @@ function DashbordCards() {
         </div>
 
         {/* Chart-section-donat  */}
-        <div className="chat_wrapper px-3  mt-4">
+        <div className="chat_wrapper px-3 mt-4">
           <div className="row  justify-content-between ">
-            <div className="col-xl-9 table_box col-lg-7 mb-xl-0 mb-4 col-12 ">
-              <div className=" px-3 tables mb-2 chart_content_wrapper p-2 bg-white">
+            <div className="col-xl-9 table_box col-lg-7 mb-xl-0 col-12 ">
+              <div className=" px-3 tables mb-2 chart_content_wrapper p-2 bg-white h-100">
                 <div className="d-flex align-items-center justify-content-between">
-                  <h3 className="fw-600 black  mb-0 fs-xs">Recent Orders</h3>
-                  <div>
-                    <img src={Dots} alt="dots" />
-                  </div>
+                  <h3 className="fw-600 black  mb-0 fs-xs py-2">Recent Orders</h3>
                 </div>
-                <table className="w-100">
-                  <tr className="product_borderbottom">
-                    <th className="py-2 px-3 mw_50">
-                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> No</h4>
-                    </th>
-                    <th className="py-2 px-3 mx_100">
-                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> Status</h4>
-                    </th>
-                    <th className="py-2 px-3 mx_100">
-                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> City</h4>
-                    </th>
-                    <th className="py-2 px-3 mw-250">
-                      <h4 className="fw-400 fade_grey mb-0 fs-xs">Customer</h4>
-                    </th>
-                    <th className="py-2 px-3 mx_160">
-                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> Date</h4>
-                    </th>
-                    <th className="py-2 px-3 mx_100">
-                      <h4 className="fw-400 fade_grey mb-0 fs-xs"> Total</h4>
-                    </th>
-                    <th className="mx_70"></th>
-                  </tr>
-                  {ordersOneWeekAgo.length === 0 ? (
-                    <tr>
-                      <td className='text-center py-2 ' colSpan="6">No recent orders in the last week</td>
+                <div className="recent_order_table">
+                  <table className="w-100 ">
+                    <tr className="product_borderbottom">
+                      <th className="py-2 px-3 mw_50">
+                        <h4 className="fw-400 fade_grey mb-0 fs-xs"> No</h4>
+                      </th>
+                      <th className="py-2 px-3 mx_100">
+                        <h4 className="fw-400 fade_grey mb-0 fs-xs"> Status</h4>
+                      </th>
+                      <th className="py-2 px-3 mx_100">
+                        <h4 className="fw-400 fade_grey mb-0 fs-xs"> City</h4>
+                      </th>
+                      <th className="py-2 px-3 mw-250">
+                        <h4 className="fw-400 fade_grey mb-0 fs-xs">Customer</h4>
+                      </th>
+                      <th className="py-2 px-3 mx_160">
+                        <h4 className="fw-400 fade_grey mb-0 fs-xs"> Date</h4>
+                      </th>
+                      <th className="py-2 px-3 mx_100">
+                        <h4 className="fw-400 fade_grey mb-0 fs-xs"> Total</h4>
+                      </th>
+                      <th className="mx_70"></th>
                     </tr>
-                  ) : (
-                    ordersOneWeekAgo.map((data, index) => {
-                      return (
-                        <tr key={data.created_at} className="product_borderbottom">
-                          <td className="py-2 px-3">
-                            <h4 className="fw-400 black mb-0  fs-xs">{index}</h4>
-                          </td>
-                          <td className="py-2 px-3">
-                            <h4 className="fw-400 black mb-0  fs-xs"> {data.status}</h4>
-                          </td>
-                          <td className="py-2 px-3">
-                            <h4 className="fw-400 black mb-0  fs-xs">city</h4>
-                          </td>
-                          <td className="py-2 px-3">
-                            <h4 className="fw-400 black mb-0 fs-xs">{data.customer.name}</h4>
-                          </td>
-                          <td className="py-2 px-3">
-                            <h4 className="fw-400 black mb-0  fs-xs">{formatDate(data.created_at)}</h4>
-                          </td>
-                          <td className="py-2 px-3">
-                            <h4 className="fw-400 black mb-0  fs-xs"> ₹ {data.order_price}</h4>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-
-
-
-                </table>
+                    {ordersOneWeekAgo.length === 0 ? (
+                      <tr>
+                        <td className="text-center py-2 " colSpan="6">
+                          No recent orders in the last week
+                        </td>
+                      </tr>
+                    ) : (
+                      ordersOneWeekAgo.map((data, index) => {
+                        return (
+                          <tr key={data.created_at} className="product_borderbottom">
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0  fs-xs">{index + 1}</h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0  fs-xs"> {data.status}</h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0  fs-xs">city</h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0 fs-xs">{data.customer.name}</h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0 fs-xs white_space_nowrap">
+                                {formatDate(data.created_at)}
+                              </h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0 fs-xs white_space_nowrap">
+                                {' '}
+                                ₹ {data.order_price}
+                              </h4>
+                            </td>
+                            <td className="d-flex align-items-center gap-3 py-1">
+                              <img className="cursor_pointer" src={eyeIcon} alt="" />
+                              <img className="cursor_pointer" src={printIcon} alt="" />
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </table>
+                </div>
               </div>
             </div>
-            <div className="col-xl-3 col-lg-5 col-12 h-100 ">
-              <div className="  h-100 chart_box px-3 py-3  chart_content_wrapper bg-white">
+            <div className="col-xl-3 col-lg-5 col-12 mt-4 mt-lg-0">
+              <div className="  h-100 chart_box px-3 py-3  chart_content_wrapper bg-white h-100">
                 <div className="d-flex justify-content-between   bg-white">
                   <h3 className="fw-400 black fs-xs">Sales by source</h3>
-                  <div>
-                    <img src={Dots} alt="dots" />
-                  </div>
                 </div>
                 <div className="text-center">
-                  <Donut />
+                  <div className="col-8 col-lg-12 m-auto">
+                    <Donut />
+                  </div>
                 </div>
 
                 <div className="d-flex     align-items-center   p-2 bottom_border  justify-content-between">
