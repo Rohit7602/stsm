@@ -665,12 +665,11 @@ const Categories = () => {
                     Select a category that will be the parent of the current one.
                   </p>
                   <div className="d-flex justify-content-end">
-                    <button
-                      onClick={HandleEditCategory}
+                    <button onClick={HandleEditCategory}
                       type="submit"
-                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-2 px-2 py-2 save_btn fw-400 black">
+                      className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn">
                       <img src={saveicon} alt="saveicon" />
-                      Save
+                      <p className="fs-sm fw-400 black mb-0 ps-1">Save</p>
                     </button>
                   </div>
                 </div>
