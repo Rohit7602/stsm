@@ -17,14 +17,12 @@ function DashbordCards() {
             </div>
             <button className="export_btn  white fs-xxs px-3 py-2 fw-400 border-0">Export</button>
           </div>
-          <div className="  row justify-content-star  mt-3">
-            <div className="    col-xl col-lg-4 col-md-6  mb-3 mr-3  ">
-              <div className="   bg-white cards  flex-column d-flex justify-content-around px-3">
+          <div className="row justify-content-star  mt-3">
+            <div className="col-xl col-lg-4 col-md-6 mr-3  ">
+              <div className="bg-white cards  flex-column d-flex justify-content-around px-3">
                 <div className="d-flex justify-content-between   bg-white">
                   <h3 className="fw-400 fade_grey fs-xs">Total Sales</h3>
-                  <div>
-                    <img src={Dots} alt="dots" />
-                  </div>
+                  <button className="fw-400 color_blue fs-xs border-0 bg-white">View all</button>
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
@@ -37,13 +35,10 @@ function DashbordCards() {
               </div>
             </div>
 
-            <div className="    col-xl col-lg-4 col-md-6 mb-3 mr-3  ">
+            <div className="    col-xl col-lg-4 col-md-6 mr-3">
               <div className=" bg-white   cards  flex-column d-flex justify-content-around px-3">
                 <div className="d-flex justify-content-between   bg-white">
                   <h3 className="fw-400 fade_grey fs-xs">Average Order Value</h3>
-                  <div>
-                    <img src={Dots} alt="dots" />
-                  </div>
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
@@ -56,13 +51,11 @@ function DashbordCards() {
               </div>
             </div>
 
-            <div className="     col-xl col-lg-4 col-md-6 mb-3    ">
-              <div className="  bg-white  cards  flex-column d-flex justify-content-around px-3">
-                <div className="d-flex justify-content-between   bg-white">
+            <div className="col-xl col-lg-4 col-md-6 mt-4 mt-lg-0">
+              <div className="bg-white  cards  flex-column d-flex justify-content-around px-3">
+                <div className="d-flex justify-content-between bg-white">
                   <h3 className="fw-400 fade_grey fs-xs">Total Orders</h3>
-                  <div>
-                    <img src={Dots} alt="dots" />
-                  </div>
+                  <button className="fw-400 color_blue fs-xs border-0 bg-white">View all</button>
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
@@ -80,13 +73,10 @@ function DashbordCards() {
         {/* Chart-section-bar  */}
         <div className="chat_wrapper px-3">
           <div className="row  justify-content-between ">
-            <div className="col-xl-3 col-lg-5 mb-4 col-12 ">
-              <div className="chart_content_wrapper p-2 bg-white">
+            <div className="col-xl-3 col-lg-5 col-12 ">
+              <div className="chart_content_wrapper p-2 bg-white h-100">
                 <div className="d-flex align-items-center justify-content-between">
                   <h3 className="fw-400 fade_grey mb-0 fs-xs"> Active Users</h3>
-                  <div>
-                    <img src={Dots} alt="dots" />
-                  </div>
                 </div>
                 <div className="grey_box my-2 text-center w-100 p-2">
                   <h3 className="fw-500 black mb-0 fs-lg">56</h3>
@@ -121,13 +111,10 @@ function DashbordCards() {
                 </div>
               </div>
             </div>
-            <div className="col-xl-9 col-lg-7 col-12 h-100 ">
+            <div className="col-xl-9 col-lg-7 col-12 h-100 mt-4 mt-lg-0">
               <div className="  h-100 chart_box px-2 py-3  chart_content_wrapper bg-white">
                 <div className="d-flex justify-content-between   bg-white">
                   <h3 className="fw-400 black fs-xs">Income Statistics</h3>
-                  <div>
-                    <img src={Dots} alt="dots" />
-                  </div>
                 </div>
                 <ApexBarChart className="w-100" />
               </div>
@@ -136,15 +123,12 @@ function DashbordCards() {
         </div>
 
         {/* Chart-section-donat  */}
-        <div className="chat_wrapper px-3  mt-4">
+        <div className="chat_wrapper px-3 mt-4">
           <div className="row  justify-content-between ">
             <div className="col-xl-9 table_box col-lg-7 mb-xl-0 mb-4 col-12 ">
-              <div className=" px-3 tables mb-2 chart_content_wrapper p-2 bg-white">
+              <div className=" px-3 tables mb-2 chart_content_wrapper p-2 bg-white h-100">
                 <div className="d-flex align-items-center justify-content-between">
-                  <h3 className="fw-600 black  mb-0 fs-xs">Recent Orders</h3>
-                  <div>
-                    <img src={Dots} alt="dots" />
-                  </div>
+                  <h3 className="fw-600 black  mb-0 fs-xs py-2">Recent Orders</h3>
                 </div>
                 <table className="w-100">
                   <tr className="product_borderbottom">
@@ -167,70 +151,6 @@ function DashbordCards() {
                       <h4 className="fw-400 fade_grey mb-0 fs-xs"> Total</h4>
                     </th>
                     <th className="mx_70"></th>
-                  </tr>
-                  <tr className="product_borderbottom">
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
-                    </td>
-                    <td className="d-flex align-items-center gap-3 py-1">
-                      <img src={eyeIcon} alt="" />
-                      <img src={printIcon} alt="" />
-                    </td>
-                  </tr>
-                  <tr className="product_borderbottom">
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
-                    </td>
-                  </tr>
-                  <tr className="product_borderbottom">
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> #0012</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Status</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> Hisar</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0 fs-xs">John Doe</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> 18-10-2023</h4>
-                    </td>
-                    <td className="py-2 px-3">
-                      <h4 className="fw-400 black mb-0  fs-xs"> ₹ 360.00</h4>
-                    </td>
                   </tr>
                   <tr className="product_borderbottom">
                     <td className="py-2 px-3">
