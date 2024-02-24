@@ -28,7 +28,6 @@ function DashbordCards() {
   // Calculate the percentage change
   const percentageChangeOfOrder = ((averageOrderValueThisMonth - averageOrderValueLastMonth) / averageOrderValueLastMonth) * 100
 
-
   /**  ******************************************* Calculation of Average ORder value According to current Month End
    * ****************************************    */
 
