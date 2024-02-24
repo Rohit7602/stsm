@@ -67,8 +67,8 @@ function DashbordCards() {
   console.log(DeliverdOrder)
   const deliveredOrdersThisMonthValue = DeliverdOrder.filter(order => new Date(order.created_at).getMonth() === currentMonth).reduce((total, order) => total + order.order_price, 0);
   const deliveredOrdersLastMonthValue = DeliverdOrder.filter(order => new Date(order.created_at).getMonth() === lastMonth).reduce((total, order) => total + order.order_price, 0);
-  console.log("thismonthdeliverd", deliveredOrdersThisMonthValue)
-  console.log("lastmonthdeliverd", deliveredOrdersLastMonthValue)
+  // console.log("thismonthdeliverd", deliveredOrdersThisMonthValue)
+  // console.log("lastmonthdeliverd", deliveredOrdersLastMonthValue)
 
   let totalDeliverdOrderValue = DeliverdOrder.reduce((total, order) => total + order.order_price, 0)
   let comparedLastSaleValue = (deliveredOrdersThisMonthValue - deliveredOrdersLastMonthValue)
