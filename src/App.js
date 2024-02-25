@@ -31,7 +31,7 @@ function App() {
   const [productId, setProductId] = useState('');
 
 
-  
+
 
   useEffect(() => {
     permissionHandler();
@@ -119,7 +119,7 @@ function App() {
                     <Topbar />
                     <div className="h-100 px-3 bg_light_grey">
                       <Routes>
-                        <Route path="dashbord" element={<DashbordCards />} />
+                        <Route path="" element={<DashbordCards />} />
                         <Route path="catalog">
                           <Route index element={<CategoriesView />} />
                           <Route path="newcategory" element={<NewCategory />} />

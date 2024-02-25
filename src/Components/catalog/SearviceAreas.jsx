@@ -672,7 +672,7 @@ const ServiceArea = () => {
                                       className="d-flex align-items-center categorie_dropdown_options">
                                       <img src={pencil_icon} alt="" />
                                       <p className="fs-sm fw-400 black mb-0 ms-2">
-                                        Edit ServiceArea
+                                        Edit Service Area
                                       </p>
                                     </div>
                                   </div>

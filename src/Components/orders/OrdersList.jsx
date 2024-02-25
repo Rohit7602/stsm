@@ -13,8 +13,10 @@ import { collection, doc, getDocs, deleteDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { Link, NavLink } from 'react-router-dom';
 import { useOrdercontext } from '../../context/OrderGetter';
-
+import { useCustomerContext } from '../../context/Customergetters';
 const OrderList = () => {
+  const { customer } = useCustomerContext();
+
   // context
   const { orders, updateData } = useOrdercontext();
   const [searchvalue, setSearchvalue] = useState('');
@@ -102,7 +104,7 @@ const OrderList = () => {
     *********************************************   **/
 
   return (
-    <div className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
+    <div className="main_panel_wrapper overflow-x-hidden bg_light_grey w-100">
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
         <div className="d-flex  align-items-center flex-column flex-sm-row  gap-2 gap-sm-0 justify-content-between">
           <div className="d-flex">
@@ -127,7 +129,7 @@ const OrderList = () => {
           </div>
         </div>
         {/* product details  */}
-        <div className="p-3 mt-3 bg-white product_shadow">
+        <div className="p-3 mt-4 bg-white product_shadow">
           <div className="overflow-x-scroll line_scroll">
             <div className="min_width_1350">
               <table className="w-100">
@@ -205,7 +207,7 @@ const OrderList = () => {
                                 <span className="checkmark"></span>
                               </label>
                               <Link
-                                className="fw-400 fs-sm black ms-2"
+                                className="fw-400 fs-sm color-blue ms-2"
                                 to={`orderdetails/${orderTableData.id}`}>
                                 {orderTableData.id}
                               </Link>
@@ -217,40 +219,38 @@ const OrderList = () => {
                             </h3>
                           </td>
                           <td className="p-3 mw-200">
-                            <Link to="viewcustomerdetails">
-                              <h3 className="fs-sm fw-400 black mb-0">
+                            <Link to={`/customer/viewcustomerdetails/${orderTableData.uid}`}>
+                              <h3 className="fs-sm fw-400 color-blue mb-0">
                                 {orderTableData.customer.name}
                               </h3>
                             </Link>
                           </td>
                           <td className="p-3 mw_160">
                             <h3
-                              className={`fs-sm fw-400 mb-0 d-inline-block ${
-                                orderTableData.transaction.status.toString().toLowerCase() ===
+                              className={`fs-sm fw-400 mb-0 d-inline-block ${orderTableData.transaction.status.toString().toLowerCase() ===
                                 'paid'
-                                  ? 'black stock_bg'
-                                  : orderTableData.transaction.status.toString().toLowerCase() ===
-                                    'cod'
+                                ? 'black stock_bg'
+                                : orderTableData.transaction.status.toString().toLowerCase() ===
+                                  'cod'
                                   ? 'black cancel_gray'
                                   : orderTableData.transaction.status.toString().toLowerCase() ===
                                     'refund'
-                                  ? 'new_order red'
-                                  : 'color_brown on_credit_bg'
-                              }`}>
+                                    ? 'new_order red'
+                                    : 'color_brown on_credit_bg'
+                                }`}>
                               {orderTableData.transaction.status}
                             </h3>
                           </td>
                           <td className="p-3 mw_160">
                             <p
-                              className={`d-inline-block ${
-                                orderTableData.status.toString().toLowerCase() === 'new'
-                                  ? 'fs-sm fw-400 red mb-0 new_order'
-                                  : orderTableData.status.toString().toLowerCase() === 'processing'
+                              className={`d-inline-block ${orderTableData.status.toString().toLowerCase() === 'new'
+                                ? 'fs-sm fw-400 red mb-0 new_order'
+                                : orderTableData.status.toString().toLowerCase() === 'processing'
                                   ? 'fs-sm fw-400 mb-0 processing_skyblue'
                                   : orderTableData.status.toString().toLowerCase() === 'delivered'
-                                  ? 'fs-sm fw-400 mb-0 green stock_bg'
-                                  : 'fs-sm fw-400 mb-0 black cancel_gray'
-                              }`}>
+                                    ? 'fs-sm fw-400 mb-0 green stock_bg'
+                                    : 'fs-sm fw-400 mb-0 black cancel_gray'
+                                }`}>
                               {orderTableData.status}
                             </p>
                           </td>
@@ -272,13 +272,7 @@ const OrderList = () => {
                                 id="dropdownMenuButton3"
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false">
-                                <img
-                                  // onClick={() => {
-                                  //   handleDelete(value.id);
-                                  // }}
-                                  src={dropdownDots}
-                                  alt="dropdownDots"
-                                />
+                                <img src={dropdownDots} alt="dropdownDots" />
                               </button>
                               <ul
                                 class="dropdown-menu categories_dropdown"
@@ -288,25 +282,9 @@ const OrderList = () => {
                                     <div className="d-flex align-items-center categorie_dropdown_options">
                                       <img src={eye_icon} alt="" />
                                       <Link
-                                        to={`/orderslist/${
-                                          orderTableData.OrderStatus === 'New Order'
-                                            ? 'neworder'
-                                            : orderTableData.OrderStatus === 'Processing'
-                                            ? 'processing'
-                                            : orderTableData.OrderStatus === 'Delivered'
-                                            ? 'delivered'
-                                            : 'canceled'
-                                        }`}>
+                                        to={`orderdetails/${orderTableData.id}`}>
                                         <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
                                       </Link>
-                                    </div>
-                                  </div>
-                                </li>
-                                <li>
-                                  <div class="dropdown-item" href="#">
-                                    <div className="d-flex align-items-center categorie_dropdown_options">
-                                      <img src={pencil_icon} alt="" />
-                                      <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
                                     </div>
                                   </div>
                                 </li>
@@ -317,14 +295,6 @@ const OrderList = () => {
                                       <p className="fs-sm fw-400 green mb-0 ms-2">
                                         Change to Hidden
                                       </p>
-                                    </div>
-                                  </div>
-                                </li>
-                                <li>
-                                  <div class="dropdown-item" href="#">
-                                    <div className="d-flex align-items-center categorie_dropdown_options">
-                                      <img src={delete_icon} alt="" />
-                                      <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
                                     </div>
                                   </div>
                                 </li>

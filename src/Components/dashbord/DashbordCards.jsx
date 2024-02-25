@@ -5,7 +5,7 @@ import Donut from '../charts/donatchart';
 import eyeIcon from '../../Images/svgs/eye-icon.svg';
 import printIcon from '../../Images/svgs/print-icon.svg';
 import { useOrdercontext } from '../../context/OrderGetter';
-
+import { Link } from 'react-router-dom';
 function DashbordCards() {
   const { orders } = useOrdercontext();
   /**  ******************************************* Calculation of Average ORder value According to current Month
@@ -19,8 +19,13 @@ function DashbordCards() {
   // Filter orders for the current month and last month
   const ordersThisMonth = orders.filter(order => new Date(order.created_at).getMonth() === currentMonth);
   const ordersLastMonth = orders.filter(order => new Date(order.created_at).getMonth() === lastMonth);
-
+  console.log("ordrethismonth", ordersThisMonth.length)
+  console.log("orderlastmonth", ordersLastMonth.length)
   // Calculate the average order value for each month
+
+  const percentageChangeOfOrderMonth = ((ordersThisMonth.length - ordersLastMonth.length) / ordersLastMonth.length) * 100
+
+
   const averageOrderValueThisMonth = ordersThisMonth.reduce((total, order) => total + order.order_price, 0) / ordersThisMonth.length;
   // console.log("averageordrebalue this ", averageOrderValueThisMonth)
   const averageOrderValueLastMonth = ordersLastMonth.reduce((total, order) => total + order.order_price, 0) / ordersLastMonth.length;
@@ -48,8 +53,25 @@ function DashbordCards() {
       new Date(order.created_at) >= oneWeekAgoStartDate && new Date(order.created_at) <= currentDate
   );
 
+
+
+
   /**  ******************************************* Filter the Recent orders of last week End here
    * ****************************************    */
+
+  /**  ******************************************* Calculate Total Sales of ORder
+ * ****************************************    */
+
+  let DeliverdOrder = orders.filter((item) => item.status.toString().toLowerCase() === 'delivered')
+  console.log(DeliverdOrder)
+  const deliveredOrdersThisMonthValue = DeliverdOrder.filter(order => new Date(order.created_at).getMonth() === currentMonth).reduce((total, order) => total + order.order_price, 0);
+  const deliveredOrdersLastMonthValue = DeliverdOrder.filter(order => new Date(order.created_at).getMonth() === lastMonth).reduce((total, order) => total + order.order_price, 0);
+  // console.log("thismonthdeliverd", deliveredOrdersThisMonthValue)
+  // console.log("lastmonthdeliverd", deliveredOrdersLastMonthValue)
+
+  let totalDeliverdOrderValue = DeliverdOrder.reduce((total, order) => total + order.order_price, 0)
+  let comparedLastSaleValue = (deliveredOrdersThisMonthValue - deliveredOrdersLastMonthValue)
+
 
   // format date function
 
@@ -79,9 +101,9 @@ function DashbordCards() {
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
-                  <h3 className="fw-500 black mb-0 fs-lg">₹ 50680.00</h3>
+                  <h3 className="fw-500 black mb-0 fs-lg">₹{isNaN(totalDeliverdOrderValue) ? 0 : totalDeliverdOrderValue.toFixed(2)} </h3>
                   <div className="d-flex flex-column   justify-content-between">
-                    <h3 className="color_green fs-xxs mb-0 text-end">15.3%</h3>
+                    <h3 className="color_green fs-xxs mb-0 text-end">₹{isNaN(comparedLastSaleValue) ? 0 : comparedLastSaleValue.toFixed(2)}</h3>
                     <p className="text-end  para mb-0">Compared to Last Month</p>
                   </div>
                 </div>
@@ -108,13 +130,15 @@ function DashbordCards() {
               <div className="bg-white  cards  flex-column d-flex justify-content-around px-3">
                 <div className="d-flex justify-content-between bg-white">
                   <h3 className="fw-400 fade_grey fs-xs">Total Orders</h3>
-                  <button className="fw-400 color_blue fs-xs border-0 bg-white">View all</button>
+                  <Link to={'/orders'}>
+                    <button className="fw-400 color_blue fs-xs border-0 bg-white">View all</button>
+                  </Link>
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
                   <h3 className="fw-500 black mb-0 fs-lg">{orders.length}</h3>
                   <div className="d-flex flex-column   justify-content-between">
-                    <h3 className="color_green fs-xxs mb-0 text-end">15.3%</h3>
+                    <h3 className="color_green fs-xxs mb-0 text-end">{isNaN(percentageChangeOfOrderMonth) ? 0 : percentageChangeOfOrderMonth.toFixed(2)}%</h3>
                     <p className="text-end  para mb-0">Compared to Last Month</p>
                   </div>
                 </div>

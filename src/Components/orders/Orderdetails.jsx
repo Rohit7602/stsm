@@ -123,7 +123,9 @@ export default function NewOrder() {
             <span>|</span>
             <p className="fs-xs fw-400 black mb-0">₹ {calculateTotal().toFixed(2)}</p>
             <span>|</span>
-            <p className="fs-xs fw-400 black mb-0 paid stock_bg">{item.transaction.status}</p>
+            <p className="fs-xs fw-400 black mb-0 paid stock_bg">
+              {item.transaction.status.toUpperCase()}
+            </p>
           </div>
           <Row className="">
             <Col xxl={8}>
@@ -145,11 +147,12 @@ export default function NewOrder() {
                           </div>
                         </div>
                         <div className="d-flex align-items-center p-3">
-                          <p className="fs-sm fw-400 black mb-0">₹ {products.varient_price}</p>
+                          <p className="fs-sm fw-400 black mb-0">
+                            ₹ {products.varient_price} <span className="ms-4">X</span>
+                          </p>
                           <p className="fs-sm fw-400 black mb-0 ps-4 ms-2 me-5">
                             {products.quantity}
                           </p>
-
                           <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">
                             (-) ₹ {products.varient_discount}
                           </p>
