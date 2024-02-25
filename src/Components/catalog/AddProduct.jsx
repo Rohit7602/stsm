@@ -156,17 +156,17 @@ const AddProduct = (props) => {
           isMultipleVariant: varient === true,
           ...(varient === false
             ? {
-              varients: [
-                {
-                  originalPrice: originalPrice,
-                  discountType: discountType,
-                  discount: deliveryCharges,
-                },
-              ],
-            }
+                varients: [
+                  {
+                    originalPrice: originalPrice,
+                    discountType: discountType,
+                    discount: deliveryCharges,
+                  },
+                ],
+              }
             : {
-              varients: variants,
-            }), // Include the actual list of variants if varient is true
+                varients: variants,
+              }), // Include the actual list of variants if varient is true
         });
         setSearchdata([]);
         setLoaderstatus(false);
@@ -200,8 +200,6 @@ const AddProduct = (props) => {
       }
     });
   }
-
-
 
   function handleDeleteImages(index) {
     const updatedImages = [...imageUpload22];
@@ -434,12 +432,12 @@ const AddProduct = (props) => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                            ...v,
-                                            discountType: selectedDiscountType,
-                                            // Reset discount value when changing the discount type to "Amount"
-                                            discount:
-                                              selectedDiscountType === 'Amount' ? 0 : v.discount,
-                                          }
+                                              ...v,
+                                              discountType: selectedDiscountType,
+                                              // Reset discount value when changing the discount type to "Amount"
+                                              discount:
+                                                selectedDiscountType === 'Amount' ? 0 : v.discount,
+                                            }
                                           : v
                                       )
                                     );
@@ -664,17 +662,12 @@ const AddProduct = (props) => {
                     <input
                       required
                       type="text"
-                      className="fade_grey fw-400 w-100 border-0 bg-white"
+                      className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                       placeholder="6HK3I5"
                       value={sku}
                       id="sku"
                       onChange={(e) => setSku(e.target.value)}
                     />
-                    <button
-                      type="button"
-                      className="white_space_nowrap border-0 bg-white color_blue">
-                      Generate SKU
-                    </button>
                   </div>
                   {/* 2nd input */}
                   <label htmlFor="total" className="fs-xs fw-400 mt-3 black">
@@ -782,10 +775,11 @@ const AddProduct = (props) => {
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                    ? 'selected'
-                                    : ''
-                                    }`}
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (
