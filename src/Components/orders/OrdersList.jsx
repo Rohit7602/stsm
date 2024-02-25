@@ -219,7 +219,7 @@ const OrderList = () => {
                             </h3>
                           </td>
                           <td className="p-3 mw-200">
-                            <Link to={`/viewcustomerdetails/${'id'}`}>
+                            <Link to={`/customer/viewcustomerdetails/${orderTableData.uid}`}>
                               <h3 className="fs-sm fw-400 color-blue mb-0">
                                 {orderTableData.customer.name}
                               </h3>
@@ -227,32 +227,30 @@ const OrderList = () => {
                           </td>
                           <td className="p-3 mw_160">
                             <h3
-                              className={`fs-sm fw-400 mb-0 d-inline-block ${
-                                orderTableData.transaction.status.toString().toLowerCase() ===
+                              className={`fs-sm fw-400 mb-0 d-inline-block ${orderTableData.transaction.status.toString().toLowerCase() ===
                                 'paid'
-                                  ? 'black stock_bg'
-                                  : orderTableData.transaction.status.toString().toLowerCase() ===
-                                    'cod'
+                                ? 'black stock_bg'
+                                : orderTableData.transaction.status.toString().toLowerCase() ===
+                                  'cod'
                                   ? 'black cancel_gray'
                                   : orderTableData.transaction.status.toString().toLowerCase() ===
                                     'refund'
-                                  ? 'new_order red'
-                                  : 'color_brown on_credit_bg'
-                              }`}>
+                                    ? 'new_order red'
+                                    : 'color_brown on_credit_bg'
+                                }`}>
                               {orderTableData.transaction.status}
                             </h3>
                           </td>
                           <td className="p-3 mw_160">
                             <p
-                              className={`d-inline-block ${
-                                orderTableData.status.toString().toLowerCase() === 'new'
-                                  ? 'fs-sm fw-400 red mb-0 new_order'
-                                  : orderTableData.status.toString().toLowerCase() === 'processing'
+                              className={`d-inline-block ${orderTableData.status.toString().toLowerCase() === 'new'
+                                ? 'fs-sm fw-400 red mb-0 new_order'
+                                : orderTableData.status.toString().toLowerCase() === 'processing'
                                   ? 'fs-sm fw-400 mb-0 processing_skyblue'
                                   : orderTableData.status.toString().toLowerCase() === 'delivered'
-                                  ? 'fs-sm fw-400 mb-0 green stock_bg'
-                                  : 'fs-sm fw-400 mb-0 black cancel_gray'
-                              }`}>
+                                    ? 'fs-sm fw-400 mb-0 green stock_bg'
+                                    : 'fs-sm fw-400 mb-0 black cancel_gray'
+                                }`}>
                               {orderTableData.status}
                             </p>
                           </td>
@@ -284,15 +282,7 @@ const OrderList = () => {
                                     <div className="d-flex align-items-center categorie_dropdown_options">
                                       <img src={eye_icon} alt="" />
                                       <Link
-                                        to={`/orderslist/${
-                                          orderTableData.OrderStatus === 'New Order'
-                                            ? 'neworder'
-                                            : orderTableData.OrderStatus === 'Processing'
-                                            ? 'processing'
-                                            : orderTableData.OrderStatus === 'Delivered'
-                                            ? 'delivered'
-                                            : 'canceled'
-                                        }`}>
+                                        to={`orderdetails/${orderTableData.id}`}>
                                         <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
                                       </Link>
                                     </div>
@@ -305,14 +295,6 @@ const OrderList = () => {
                                       <p className="fs-sm fw-400 green mb-0 ms-2">
                                         Change to Hidden
                                       </p>
-                                    </div>
-                                  </div>
-                                </li>
-                                <li>
-                                  <div class="dropdown-item" href="#">
-                                    <div className="d-flex align-items-center categorie_dropdown_options">
-                                      <img src={delete_icon} alt="" />
-                                      <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
                                     </div>
                                   </div>
                                 </li>

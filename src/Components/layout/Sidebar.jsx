@@ -23,7 +23,7 @@ function Sidebar(props) {
           <div className="drops_wrap">
             <ul className="px-0 drop_list">
               <li className=" d-flex align-item-center">
-                <NavLink to="dashbord" className="w-100">
+                <NavLink to="" className="w-100">
                   <div className="d-flex align-items-center w-100 dash_links">
                     <svg
                       className="list_icons"
@@ -75,13 +75,13 @@ function Sidebar(props) {
                         <h3 className="fs-xs fw-400  white mb-0">Category List</h3>
                       </NavLink>
                     </li>
-  
+
                     <li>
                       <NavLink className="dash_links_inner" to="catalog/productlist">
                         <h3 className="fs-xs fw-400  white mb-0">Product List</h3>
                       </NavLink>
                     </li>
-                    
+
                     <li>
                       <NavLink className="dash_links_inner" to="catalog/serviceareas">
                         <h3 className="fs-xs fw-400  white mb-0">Service Areas</h3>

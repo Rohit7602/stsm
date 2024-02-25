@@ -38,7 +38,7 @@ export default function Login(props) {
             props.login();
 
             // Redirect to the dashboard or another page using the navigate function
-            navigate('/dashbord');
+            navigate('');
           } else {
             // If the user is not an admin, show an error
             toast.error('User is not an admin', { position: toast.POSITION.TOP_CENTER });
