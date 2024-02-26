@@ -264,7 +264,9 @@ function DashbordCards() {
                               </h4>
                             </td>
                             <td className="d-flex align-items-center gap-3 py-1">
-                              <img className="cursor_pointer" src={eyeIcon} alt="" />
+                              <Link to={`/orders/orderdetails/${data.id}`}>
+                                <img className="cursor_pointer" src={eyeIcon} alt="" />
+                              </Link>
                               <img className="cursor_pointer" src={printIcon} alt="" />
                             </td>
                           </tr>
