@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import filtericon from '../../Images/svgs/filtericon.svg';
 import SearchIcon from '../../Images/svgs/search.svg';
-import addicon from '../../Images/svgs/addicon.svg';
 import dropdownDots from '../../Images/svgs/dots2.svg';
 import eye_icon from '../../Images/svgs/eye.svg';
-import pencil_icon from '../../Images/svgs/pencil.svg';
-import delete_icon from '../../Images/svgs/delte.svg';
 import updown_icon from '../../Images/svgs/arross.svg';
 import shortIcon from '../../Images/svgs/short-icon.svg';
-import { OrderTable } from '../../Common/Helper';
-import { collection, doc, getDocs, deleteDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useOrdercontext } from '../../context/OrderGetter';
-import { useCustomerContext } from '../../context/Customergetters';
 const OrderList = () => {
-  const { customer } = useCustomerContext();
-
   // context
   const { orders, updateData } = useOrdercontext();
   const [searchvalue, setSearchvalue] = useState('');
@@ -227,30 +218,32 @@ const OrderList = () => {
                           </td>
                           <td className="p-3 mw_160">
                             <h3
-                              className={`fs-sm fw-400 mb-0 d-inline-block ${orderTableData.transaction.status.toString().toLowerCase() ===
+                              className={`fs-sm fw-400 mb-0 d-inline-block ${
+                                orderTableData.transaction.status.toString().toLowerCase() ===
                                 'paid'
-                                ? 'black stock_bg'
-                                : orderTableData.transaction.status.toString().toLowerCase() ===
-                                  'cod'
+                                  ? 'black stock_bg'
+                                  : orderTableData.transaction.status.toString().toLowerCase() ===
+                                    'cod'
                                   ? 'black cancel_gray'
                                   : orderTableData.transaction.status.toString().toLowerCase() ===
                                     'refund'
-                                    ? 'new_order red'
-                                    : 'color_brown on_credit_bg'
-                                }`}>
+                                  ? 'new_order red'
+                                  : 'color_brown on_credit_bg'
+                              }`}>
                               {orderTableData.transaction.status}
                             </h3>
                           </td>
                           <td className="p-3 mw_160">
                             <p
-                              className={`d-inline-block ${orderTableData.status.toString().toLowerCase() === 'new'
-                                ? 'fs-sm fw-400 red mb-0 new_order'
-                                : orderTableData.status.toString().toLowerCase() === 'processing'
+                              className={`d-inline-block ${
+                                orderTableData.status.toString().toLowerCase() === 'new'
+                                  ? 'fs-sm fw-400 red mb-0 new_order'
+                                  : orderTableData.status.toString().toLowerCase() === 'processing'
                                   ? 'fs-sm fw-400 mb-0 processing_skyblue'
                                   : orderTableData.status.toString().toLowerCase() === 'delivered'
-                                    ? 'fs-sm fw-400 mb-0 green stock_bg'
-                                    : 'fs-sm fw-400 mb-0 black cancel_gray'
-                                }`}>
+                                  ? 'fs-sm fw-400 mb-0 green stock_bg'
+                                  : 'fs-sm fw-400 mb-0 black cancel_gray'
+                              }`}>
                               {orderTableData.status}
                             </p>
                           </td>
@@ -281,8 +274,7 @@ const OrderList = () => {
                                   <div class="dropdown-item" href="#">
                                     <div className="d-flex align-items-center categorie_dropdown_options">
                                       <img src={eye_icon} alt="" />
-                                      <Link
-                                        to={`orderdetails/${orderTableData.id}`}>
+                                      <Link to={`orderdetails/${orderTableData.id}`}>
                                         <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
                                       </Link>
                                     </div>
