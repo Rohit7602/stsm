@@ -50,7 +50,6 @@ export const BannerDataProvider = ({ children }) => {
 
         // You may also want to delete the image from storage and Firestore here
         // ...
-
         console.log("Object deleted from context");
     };
 

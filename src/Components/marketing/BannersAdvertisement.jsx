@@ -140,18 +140,22 @@ const BannersAdvertisement = () => {
     }
   };
 
+
+
   const handleDeleteLargeBanner = async (index) => {
-    const imageURL = selectedImagesLargeBanner[index].split('$$$$')[0]
+    const image = selectedImagesLargeBanner[index]
     if (
       selectedImagesLargeBanner[index] &&
       typeof selectedImagesLargeBanner[index] === 'string' &&
       selectedImagesLargeBanner[index].startsWith('http')
     ) {
 
+      const imageURL = selectedImagesLargeBanner[index].split('$$$$')[0]
       const id = selectedImagesLargeBanner[index].split('$$$$')[1];
       const storageRef = getStorage();
       const reference = ref(storageRef, selectedImagesLargeBanner[index]);
       await deleteObject(reference);
+      deleteObjectByImageUrl(imageURL)
 
       const docRef = doc(db, 'Banner', id);
       const docSnapshot = await getDoc(docRef);
@@ -173,7 +177,6 @@ const BannersAdvertisement = () => {
     const newImages = [...selectedImagesLargeBanner];
     newImages[index] = null;
     setSelectedImagesLargeBanner(newImages);
-    deleteObjectByImageUrl(imageURL)
   };
 
   async function handleSaveLargeBanner() {
@@ -314,12 +317,15 @@ const BannersAdvertisement = () => {
   };
 
   const handleDeleteSmallPatti = async (index) => {
-    const imageURL = selectedImagesSmallPatii[index].split('$$$$')[0];
+    const imageURL = selectedImagesSmallPatii[index]
+
+    // const imageURL = selectedImagesSmallPatii[index].split('$$$$')[0];
     if (
       selectedImagesSmallPatii[index] &&
       typeof selectedImagesSmallPatii[index] === 'string' &&
       selectedImagesSmallPatii[index].startsWith('http')
     ) {
+      const imageURLtoDelete = selectedImagesSmallPatii[index].split('$$$$')[0];
       const id = selectedImagesSmallPatii[index].split('$$$$')[1];
       const storageRef = getStorage();
       const reference = ref(storageRef, selectedImagesSmallPatii[index]);
@@ -327,6 +333,7 @@ const BannersAdvertisement = () => {
 
       const docRef = doc(db, 'Banner', id);
       const docSnapshot = await getDoc(docRef);
+      deleteObjectByImageUrl(imageURLtoDelete)
 
       if (docSnapshot.exists()) {
         const existingData = docSnapshot.data();
@@ -345,7 +352,6 @@ const BannersAdvertisement = () => {
     const newImages = [...selectedImagesSmallPatii];
     newImages[index] = null;
     setselectedImagesSmallPatii(newImages);
-    deleteObjectByImageUrl(imageURL)
   };
 
   async function handleSaveSmallPattiBanner() {
@@ -493,18 +499,19 @@ const BannersAdvertisement = () => {
 
   async function handeldeleteSaleBannerImg(index) {
     const imageUrlToDelete = BannerSaleImg[index];
-    const imageURL = imageUrlToDelete.split("$$$$")[0]
     if (
       imageUrlToDelete &&
       typeof imageUrlToDelete === 'string' &&
       imageUrlToDelete.startsWith('http')
     ) {
+      const imageURL = imageUrlToDelete.split("$$$$")[0]
       const id = imageUrlToDelete.split('$$$$')[1];
       const storageRef = getStorage();
       const reference = ref(storageRef, imageUrlToDelete);
 
       // Delete the image from storage
       await deleteObject(reference);
+      deleteObjectByImageUrl(imageURL)
 
       // Get the document reference
       const docRef = doc(db, 'Banner', id);
@@ -529,7 +536,6 @@ const BannersAdvertisement = () => {
     // Update the state to remove the deleted image
     const newImages = BannerSaleImg.filter((_, i) => i !== index); // [...BannerSaleImg];
     setBannerSaleImg(newImages);
-    deleteObjectByImageUrl(imageURL)
   }
 
   async function handleSaveBannerSliderSale() {
@@ -659,19 +665,19 @@ const BannersAdvertisement = () => {
 
   async function handeldeleteAnimalSupliment(index) {
     const imageUrlToDelete = AnimalSuplimentsImages[index];
-    const imageURL = imageUrlToDelete.split("$$$$")[0]
-
     if (
       imageUrlToDelete &&
       typeof imageUrlToDelete === 'string' &&
       imageUrlToDelete.startsWith('http')
     ) {
+      const imageURL = imageUrlToDelete.split("$$$$")[0]
       const id = imageUrlToDelete.split('$$$$')[1];
       const storageRef = getStorage();
       const reference = ref(storageRef, imageUrlToDelete);
 
       // Delete the image from storage
       await deleteObject(reference);
+      deleteObjectByImageUrl(imageURL)
 
       // Get the document reference
       const docRef = doc(db, 'Banner', id);
@@ -696,7 +702,6 @@ const BannersAdvertisement = () => {
     // Update the state to remove the deleted image
     const newImages = AnimalSuplimentsImages.filter((_, i) => i !== index);
     setAnimalSuplimentsImages(newImages);
-    deleteObjectByImageUrl(imageURL)
   }
 
   async function handleSaveAnimalSuppliments() {
