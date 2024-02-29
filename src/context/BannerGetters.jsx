@@ -56,7 +56,7 @@ export const BannerDataProvider = ({ children }) => {
     const memodata = useMemo(() => BannerData, [BannerData]);
 
     return (
-        <BannerGetterContext.Provider value={{ BannerData: memodata, deleteObjectByImageUrl }}>
+        <BannerGetterContext.Provider value={{ BannerData: memodata, deleteObjectByImageUrl,SetBannerData }}>
             {children}
         </BannerGetterContext.Provider>
     );
