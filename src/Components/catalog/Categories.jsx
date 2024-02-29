@@ -141,12 +141,14 @@ const Categories = () => {
     setloading(true)
     setEditCatImg('');
     if (typeof editCatImg === 'string' && editCatImg.startsWith('http')) {
+      setloading(true)
       try {
         if (editCatImg.length !== 0) {
           var st = getStorage();
           var reference = ref(st, editCatImg);
           deleteObject(reference);
         }
+        setloading(false)
       } catch (Error) {
         console.log(Error);
       }
@@ -165,6 +167,7 @@ const Categories = () => {
   async function HandleEditCategory(e) {
     e.preventDefault();
     setEditCatPopup(false);
+    setloading(true)
     try {
       console.log("try is working");
       let imageUrl = null;
@@ -196,6 +199,8 @@ const Categories = () => {
         selectedSubcategoryId,
         ...updateData
       });
+
+      setloading(false)
 
       toast.success('Category updated Successfully', {
         position: toast.POSITION.TOP_RIGHT,

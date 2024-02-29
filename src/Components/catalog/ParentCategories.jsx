@@ -24,6 +24,7 @@ import { ref, uploadBytes, getDownloadURL, getStorage, deleteObject } from 'fire
 import { storage } from '../../firebase';
 import { useImageHandleContext } from '../../context/ImageHandler';
 import { useMainCategories, useSubCategories } from '../../context/categoriesGetter';
+import Loader from '../Loader';
 const ParentCategories = () => {
   // const [data, setData] = useState([]);
   // const [mainCategory, setMainCategory] = useState([]);
@@ -179,7 +180,7 @@ const ParentCategories = () => {
   const getSubcategoriesCount = (ID) => {
     const subCategory = data.filter((category) => category.cat_ID === ID);
     return subCategory.length;
-    
+
 
   };
 
@@ -216,6 +217,7 @@ const ParentCategories = () => {
   *********************************************   **/
 
   function HanleEditImgUpload(e) {
+
     const selectedFile = e.target.files[0];
     if (!ImageisValidOrNot(selectedFile)) {
       toast.error('Please select a valid image file within 1.5 MB. ');
@@ -238,6 +240,7 @@ const ParentCategories = () => {
   *********************************************   **/
 
   function HandleDeleteEditImg() {
+    setLoaderstatus(true)
     setEditImg('');
     if (typeof editImg === 'string' && editImg.startsWith('http')) {
       try {
@@ -246,7 +249,9 @@ const ParentCategories = () => {
           var reference = ref(st, editImg);
           deleteObject(reference);
         }
+        setLoaderstatus(false)
       } catch (Error) {
+        setLoaderstatus(false)
         console.log(Error);
       }
     }
@@ -263,6 +268,7 @@ const ParentCategories = () => {
   async function HandleSaveEditCategory(e) {
     e.preventDefault();
     setEditPerCatPopup(false);
+    setLoaderstatus(true)
     try {
       let imageUrl = null;
       if (editImg instanceof File) {
@@ -292,10 +298,12 @@ const ParentCategories = () => {
       });
 
       // alert("Updated Successfully");
+      setLoaderstatus(false)
       toast.success('Parent Category updated Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
+      setLoaderstatus(false)
       toast.error(error, {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -311,11 +319,7 @@ const ParentCategories = () => {
 
   if (loaderstatus) {
     return (
-      <>
-        <div className="loader">
-          <h3 className="heading">Uploading Data... Please Wait</h3>
-        </div>
-      </>
+      <Loader></Loader>
     );
   } else {
     return (
