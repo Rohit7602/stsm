@@ -22,6 +22,7 @@ import { storage } from '../../firebase';
 import { NavLink, Link } from 'react-router-dom';
 import { useImageHandleContext } from '../../context/ImageHandler';
 import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
+import Loader from '../Loader';
 
 // import { Toast } from 'react-toastify/dist/components';
 
@@ -155,7 +156,7 @@ const NewCategory = () => {
   async function handleSaveParentCategory(e) {
     e.preventDefault();
     try {
-      
+
       if (perName === undefined || null) {
         alert('please enter the name of the category ');
       } else if (imageupload2.length === 0) {
@@ -185,7 +186,9 @@ const NewCategory = () => {
         // context
         addDataParent(docRef);
       }
-    } catch (e) {
+    }
+    catch (e) {
+      setLoaderstatus(false)
       toast.error(e, {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -199,11 +202,7 @@ const NewCategory = () => {
 
   if (loaderstatus) {
     return (
-      <>
-        <div className="loader">
-          <h3 className="heading">Uploading Data... Please Wait</h3>
-        </div>
-      </>
+      <Loader></Loader>
     );
   } else {
     return (
@@ -373,11 +372,10 @@ const NewCategory = () => {
                             .map((category) => (
                               <Dropdown.Item key={category.id}>
                                 <div
-                                  className={`d-flex justify-content-between ${
-                                    selectedCategory && selectedCategory.id === category.id
-                                      ? 'selected'
-                                      : ''
-                                  }`}
+                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
+                                    ? 'selected'
+                                    : ''
+                                    }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (

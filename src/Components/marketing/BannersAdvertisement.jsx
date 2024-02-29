@@ -34,9 +34,13 @@ import Loader from '../Loader';
 // check accordian and save button
 
 const BannersAdvertisement = () => {
+
+
   const [loaderstatus, setLoaderstatus] = useState(false);
+
+
   // context
-  const { BannerData, deleteObjectByImageUrl } = UseBannerData();
+  const { BannerData, deleteObjectByImageUrl, SetBannerData } = UseBannerData();
   const { ImageisValidOrNot } = useImageHandleContext();
   const { validateImage } = useImageValidation();
   const { categoreis } = useMainCategories();
@@ -256,12 +260,18 @@ const BannersAdvertisement = () => {
                 title: 'LargeBanner',
                 data: updatedData,
               });
+
+              SetBannerData([...BannerData, { id: docRef.id, title: 'LargeBanner', data: updatedData }]);
+
+
             } else {
               // Document doesn't exist, create a new one with new images
               const docRef = await addDoc(collection(db, 'Banner'), {
                 title: 'LargeBanner',
                 data: newImageData,
               });
+
+              SetBannerData([...BannerData, { id: docRef.id, title: 'LargeBanner', data: [...newImageData] }]);
             }
           } catch (error) {
             console.log(error);
@@ -434,12 +444,17 @@ const BannersAdvertisement = () => {
                 title: 'SmallPattBanner',
                 data: updatedData,
               });
+
+              SetBannerData([...BannerData, { id: docRef.id, title: 'SmallPattBanner', data: updatedData }]);
+
             } else {
               // Document doesn't exist, create a new one with new images
               const docRef = await addDoc(collection(db, 'Banner'), {
                 title: 'SmallPattBanner',
                 data: [...newImageData],
               });
+
+              SetBannerData([...BannerData, { id: docRef.id, title: 'SmallPattBanner', data: [...newImageData] }]);
             }
           } catch (error) {
             setLoaderstatus(false)
@@ -613,6 +628,9 @@ const BannersAdvertisement = () => {
                 title: 'SalesOffers',
                 data: updatedData,
               });
+              SetBannerData([...BannerData, { id: docRef.id, title: 'SalesOffers', data: updatedData }]);
+
+
             } else {
               const docRef = await addDoc(collection(db, 'Banner'), {
                 // Sales_Offers: [{
@@ -622,6 +640,9 @@ const BannersAdvertisement = () => {
                 title: 'SalesOffers',
                 data: [...newImageData],
               });
+
+              SetBannerData([...BannerData, { id: docRef.id, title: 'SalesOffers', data: [...newImageData] }]);
+
             }
           } catch (error) {
             setLoaderstatus(false)
@@ -795,12 +816,18 @@ const BannersAdvertisement = () => {
                 title: 'AnimalSupliments',
                 data: updatedData,
               });
+
+              // Update context directly after saving
+              SetBannerData([...BannerData, { id: docRef.id, title: 'AnimalSupliments', data: updatedData }]);
             } else {
               // Document doesn't exist, create a new one with new images
               const docRef = await addDoc(collection(db, 'Banner'), {
                 title: 'AnimalSupliments',
                 data: [...newImageData],
               });
+
+              // Update context directly after saving
+              SetBannerData([...BannerData, { id: docRef.id, title: 'AnimalSupliments', data: [...newImageData] }]);
             }
           } catch (error) {
             setLoaderstatus(false)
@@ -823,6 +850,7 @@ const BannersAdvertisement = () => {
       console.error(error);
     }
   }
+
 
   const handleAddMedia = () => {
     if (selectedImage) {
@@ -1014,12 +1042,19 @@ const BannersAdvertisement = () => {
                 title: 'CategoryBanners',
                 data: updatedData,
               });
+
+
+              SetBannerData([...BannerData, { id: docRef.id, title: 'CategoryBanners', data: updatedData }]);
+
+
             } else {
               // Document doesn't exist, create a new one with new images
               const docRef = await addDoc(collection(db, 'Banner'), {
                 title: 'CategoryBanners',
                 data: [...newImageData],
               });
+
+              SetBannerData([...BannerData, { id: docRef.id, title: 'CategoryBanners', data: [...newImageData] }]);
             }
           } catch (error) {
             setLoaderstatus(false);
