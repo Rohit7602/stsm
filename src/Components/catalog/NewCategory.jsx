@@ -161,6 +161,7 @@ const NewCategory = () => {
       } else if (imageupload2.length === 0) {
         alert('please upload image of the category ');
       } else if (perStatus === undefined || null) {
+        
         alert('please Set the status ');
       } else {
         setLoaderstatus(true);

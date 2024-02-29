@@ -583,6 +583,7 @@ const ParentCategories = () => {
                             </button>
                           </button>
                           <button onClick={HandleSaveEditCategory}
+                            
                             type="submit"
                             className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn">
                             <img src={saveicon} alt="saveicon" />

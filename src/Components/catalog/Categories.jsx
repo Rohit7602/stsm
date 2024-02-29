@@ -146,7 +146,7 @@ const Categories = () => {
           var st = getStorage();
           var reference = ref(st, editCatImg);
           deleteObject(reference);
-          
+
         }
       } catch (Error) {
         console.log(Error);
@@ -197,6 +197,9 @@ const Categories = () => {
 
       updateSubData({
         selectedSubcategoryId,
+
+
+        
         ...updateData
       });
 
