@@ -28,7 +28,7 @@ import { useImageHandleContext } from '../../context/ImageHandler';
 import { useMainCategories } from '../../context/categoriesGetter';
 import { UseBannerData } from '../../context/BannerGetters';
 import { uploadBytes } from 'firebase/storage';
-
+import Loader from '../Loader';
 
 //  banner advertisement up start from here
 // check accordian and save button
@@ -143,6 +143,7 @@ const BannersAdvertisement = () => {
 
 
   const handleDeleteLargeBanner = async (index) => {
+    setLoaderstatus(true)
     const image = selectedImagesLargeBanner[index]
     if (
       selectedImagesLargeBanner[index] &&
@@ -172,11 +173,16 @@ const BannersAdvertisement = () => {
           await updateDoc(docRef, { data: existingData.data });
         }
       }
-    }
 
+      setLoaderstatus(false)
+
+
+    }
     const newImages = [...selectedImagesLargeBanner];
     newImages[index] = null;
     setSelectedImagesLargeBanner(newImages);
+    setLoaderstatus(false)
+
   };
 
   async function handleSaveLargeBanner() {
@@ -317,6 +323,7 @@ const BannersAdvertisement = () => {
   };
 
   const handleDeleteSmallPatti = async (index) => {
+    setLoaderstatus(true)
     const imageURL = selectedImagesSmallPatii[index]
 
     // const imageURL = selectedImagesSmallPatii[index].split('$$$$')[0];
@@ -333,7 +340,6 @@ const BannersAdvertisement = () => {
 
       const docRef = doc(db, 'Banner', id);
       const docSnapshot = await getDoc(docRef);
-      deleteObjectByImageUrl(imageURLtoDelete)
 
       if (docSnapshot.exists()) {
         const existingData = docSnapshot.data();
@@ -347,11 +353,14 @@ const BannersAdvertisement = () => {
           await updateDoc(docRef, { data: filteredData });
         }
       }
+      deleteObjectByImageUrl(imageURLtoDelete)
+      setLoaderstatus(false)
     }
 
     const newImages = [...selectedImagesSmallPatii];
     newImages[index] = null;
     setselectedImagesSmallPatii(newImages);
+    setLoaderstatus(false)
   };
 
   async function handleSaveSmallPattiBanner() {
@@ -498,6 +507,7 @@ const BannersAdvertisement = () => {
   };
 
   async function handeldeleteSaleBannerImg(index) {
+    setLoaderstatus(true)
     const imageUrlToDelete = BannerSaleImg[index];
     if (
       imageUrlToDelete &&
@@ -531,11 +541,14 @@ const BannersAdvertisement = () => {
           await updateDoc(docRef, { data: filteredData });
         }
       }
+      setLoaderstatus(false)
     }
 
     // Update the state to remove the deleted image
     const newImages = BannerSaleImg.filter((_, i) => i !== index); // [...BannerSaleImg];
     setBannerSaleImg(newImages);
+    setLoaderstatus(false)
+
   }
 
   async function handleSaveBannerSliderSale() {
@@ -664,6 +677,7 @@ const BannersAdvertisement = () => {
   }
 
   async function handeldeleteAnimalSupliment(index) {
+    setLoaderstatus(true)
     const imageUrlToDelete = AnimalSuplimentsImages[index];
     if (
       imageUrlToDelete &&
@@ -697,11 +711,14 @@ const BannersAdvertisement = () => {
           await updateDoc(docRef, { data: filteredData });
         }
       }
+
+      setLoaderstatus(false)
     }
 
     // Update the state to remove the deleted image
     const newImages = AnimalSuplimentsImages.filter((_, i) => i !== index);
     setAnimalSuplimentsImages(newImages);
+    setLoaderstatus(false)
   }
 
   async function handleSaveAnimalSuppliments() {
@@ -828,6 +845,7 @@ const BannersAdvertisement = () => {
   const [CategoryImage, setCategoryImage] = useState(Array(categoreis.length).fill(''));
 
   async function handleCategoryImages(e, index) {
+    console.log("index is ", index)
     let file = e.target.files[0];
     console.log("file is ", file);
 
@@ -845,16 +863,13 @@ const BannersAdvertisement = () => {
         desiredHeight
       );
 
-      // If validation succeeds, update the state
-      const newCategoryImages = [...CategoryImage];
-      // If image at the specified index exists, update it; otherwise, add a new image
-      if (newCategoryImages[index]) {
+      // Update the state at the specified index
+      setCategoryImage(prevCategoryImages => {
+        const newCategoryImages = [...prevCategoryImages];
         newCategoryImages[index] = validatedImage;
-      } else {
-        newCategoryImages.push(validatedImage);
-      }
+        return newCategoryImages;
+      });
 
-      setCategoryImage(newCategoryImages);
       console.log("Updated CategoryImage:", CategoryImage);
     } catch (error) {
       // Handle the validation error (e.g., show an error message)
@@ -866,7 +881,9 @@ const BannersAdvertisement = () => {
 
 
 
+
   async function handleCategoryImagesDelete(index, imageUrlToDelete) {
+    setLoaderstatus(true)
     console.log("idex sd ", CategoryImage[index])
     console.log("urel ia ", imageUrlToDelete)
     console.log("delee function working ")
@@ -903,12 +920,14 @@ const BannersAdvertisement = () => {
             await updateDoc(docRef, { data: filteredData });
           }
         }
+        setLoaderstatus(false)
       }
 
       // Update the state to remove the deleted image
       const newCategoryImages = [...CategoryImage];
       newCategoryImages[index] = ''; // Set the image for the specified index to an empty string
       setCategoryImage(newCategoryImages);
+      setLoaderstatus(false)
     } catch (error) {
       console.error("Error deleting from storage or updating Firestore:", error);
       // Handle error as needed
@@ -1061,11 +1080,7 @@ const BannersAdvertisement = () => {
 
   if (loaderstatus) {
     return (
-      <>
-        <div className="loader">
-          <h3 className="heading">Uploading Images... Please Wait</h3>
-        </div>
-      </>
+      <Loader></Loader>
     );
   } else {
     return (
