@@ -47,7 +47,7 @@ export const SubCategoriesProvider = ({ children }) => {
     const memodata = useMemo(() => data, [data])
 
     // update data function 
-    const updateData = (updatecategories) => {
+    const updateSubData = (updatecategories) => {
         if (typeof updatecategories === 'object' && updatecategories.id) {
             setData(prevData => {
                 const existingProductIndex = prevData.findIndex(product => product.id === updatecategories.id);
@@ -69,7 +69,7 @@ export const SubCategoriesProvider = ({ children }) => {
     // Function to add new data
     const addData = async (newcategories) => {
         try {
-            updateData(newcategories);
+            updateSubData(newcategories);
         } catch (error) {
             console.error(error);
         }
@@ -85,7 +85,7 @@ export const SubCategoriesProvider = ({ children }) => {
     };
 
     return (
-        <SubCategoriesContext.Provider value={{ data:memodata,deleteData,updateData,addData }}>
+        <SubCategoriesContext.Provider value={{ data: memodata, deleteData, updateSubData,addData }}>
             {children}
         </SubCategoriesContext.Provider>
     ); 

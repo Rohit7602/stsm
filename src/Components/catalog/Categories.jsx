@@ -31,7 +31,7 @@ import Loader from '../Loader';
 const Categories = () => {
   const { categoreis, addDataParent } = useMainCategories();
   const [loading, setloading] = useState(false);
-  const { data, updateData, deleteData } = useSubCategories();
+  const { data, updateSubData, deleteData } = useSubCategories();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [category, setCategory] = useState();
   const [perName, setPerName] = useState('');
@@ -85,7 +85,7 @@ const Categories = () => {
     setorder(newOrder);
 
     // Update the data using the updateData function from your context
-    updateData(sortedData);
+    updateSubData(sortedData);
   };
 
   /*  *******************************
@@ -123,7 +123,7 @@ const Categories = () => {
       await updateDoc(doc(db, 'sub_categories', id), {
         status: newStatus,
       });
-      updateData({ id, status: newStatus });
+      updateSubData({ id, status: newStatus });
     } catch (error) {
       console.log(error);
     }
@@ -163,10 +163,10 @@ const Categories = () => {
       Edit  Category   functionality start 
    *********************************************   **/
   async function HandleEditCategory(e) {
-    e.preventDefault()
+    e.preventDefault();
     setEditCatPopup(false);
     try {
-      console.log("try is  working ")
+      console.log("try is working");
       let imageUrl = null;
       if (editCatImg instanceof File) {
         // Handle the case where editCatImg is a File
@@ -178,31 +178,36 @@ const Categories = () => {
         // Handle the case where editCatImg is a URL
         imageUrl = editCatImg;
       }
-      await updateDoc(doc(db, 'sub_categories', selectedSubcategoryId), {
+
+      const updateData = {
         title: editCatName,
         status: editStatus,
-        image: imageUrl,
-        cat_ID: category.id,
-      });
+        image: imageUrl
+      };
 
-      updateData({
+      // Update the category ID only if a new category is selected
+      if (selectedCategory && selectedCategory.id) {
+        updateData.cat_ID = selectedCategory.id;
+      }
+
+      await updateDoc(doc(db, 'sub_categories', selectedSubcategoryId), updateData);
+
+      updateSubData({
         selectedSubcategoryId,
-        title: editCatName,
-        status: editStatus,
-        image: imageUrl,
-        cat_ID: category.id,
+        ...updateData
       });
 
-      // alert("Updated Successfully");
       toast.success('Category updated Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
+      console.log(error);
       toast.error(error, {
         position: toast.POSITION.TOP_RIGHT,
       });
     }
   }
+
 
   /*  *******************************
       Edit  Category  functionality end 
@@ -226,14 +231,14 @@ const Categories = () => {
       ...item,
       checked: !selectAll,
     }));
-    updateData(updatedData);
+    updateSubData(updatedData);
     setSelectAll(!selectAll);
   };
   // Datacheckboxes functionality strat from here
   const handleCheckboxChange = (index) => {
     const updatedData = [...data];
     updatedData[index].checked = !data[index].checked;
-    updateData(updatedData);
+    updateSubData(updatedData);
 
     // Check if all checkboxes are checked
     const allChecked = updatedData.every((item) => item.checked);
