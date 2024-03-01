@@ -27,6 +27,10 @@ const ViewCustomerDetails = () => {
     console.log('Order not found');
   }
 
+
+
+
+
   const mostRecentOrder = targetOrder.reduce((maxOrder, currentOrder) => {
     // Compare the created_at timestamps
     const maxTimestamp = maxOrder ? new Date(maxOrder.created_at).getTime() : 0;
@@ -171,7 +175,8 @@ const ViewCustomerDetails = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {targetOrder.map((data, index) => {
+
+                            {targetOrder.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map((data, index) => {
                               return (
                                 <>
                                   <tr className="product_borderbottom">
