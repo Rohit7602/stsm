@@ -23,6 +23,7 @@ import HashLoader from 'react-spinners/HashLoader';
 import CheckConnection from './Components/CheckConnection';
 
 import { permissionHandler } from './firebase';
+import DeliveryManList from './Components/deliveryman/DeliveryManList';
 function App() {
   const [user, setUser] = useState(true);
   const [authchecked, setauthchecked] = useState(false);
@@ -141,6 +142,9 @@ function App() {
                         <Route path="orders">
                           <Route index element={<OrdersList />} />
                           <Route path="orderdetails/:id" element={<Orderdetails />} />
+                        </Route>
+                        <Route path="deliveryman">
+                          <Route index element={<DeliveryManList />} />
                         </Route>
                         <Route path="marketing">
                           <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
