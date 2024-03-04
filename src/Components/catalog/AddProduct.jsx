@@ -21,7 +21,7 @@ import { useParams } from 'react-router-dom';
 const AddProduct = () => {
   const { productData } = useProductsContext();
   const productId = useParams();
-  console.log("product id is ",productId)
+  console.log("product id is ", productId)
   const [name, setName] = useState('');
   const [shortDes, setShortDes] = useState('');
   const [longDes, setLongDes] = useState('');
@@ -54,7 +54,7 @@ const AddProduct = () => {
   };
 
   const [variants, setVariants] = useState([]);
-  const [discount, setDiscount] = useState('');
+  const [discount, setDiscount] = useState(0);
   const [originalPrice, setOriginalPrice] = useState('');
   const [VarintName, setVariantsNAME] = useState('');
   const [discountType, setDiscountType] = useState('Amount');
@@ -159,17 +159,17 @@ const AddProduct = () => {
           isMultipleVariant: varient === true,
           ...(varient === false
             ? {
-                varients: [
-                  {
-                    originalPrice: originalPrice,
-                    discountType: discountType,
-                    discount: deliveryCharges,
-                  },
-                ],
-              }
+              varients: [
+                {
+                  originalPrice: originalPrice,
+                  discountType: discountType,
+                  discount: discount,
+                },
+              ],
+            }
             : {
-                varients: variants,
-              }), // Include the actual list of variants if varient is true
+              varients: variants,
+            }), // Include the actual list of variants if varient is true
         });
         setSearchdata([]);
         setLoaderstatus(false);
@@ -435,12 +435,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                              ...v,
-                                              discountType: selectedDiscountType,
-                                              // Reset discount value when changing the discount type to "Amount"
-                                              discount:
-                                                selectedDiscountType === 'Amount' ? 0 : v.discount,
-                                            }
+                                            ...v,
+                                            discountType: selectedDiscountType,
+                                            // Reset discount value when changing the discount type to "Amount"
+                                            discount:
+                                              selectedDiscountType === 'Amount' ? 0 : v.discount,
+                                          }
                                           : v
                                       )
                                     );
@@ -504,7 +504,6 @@ const AddProduct = () => {
                                 value={discountType}
                                 onChange={(e) => {
                                   setDiscountType(e.target.value);
-                                  setDiscount(0);
                                 }}>
                                 <option
                                   className="mt-2 product_input fade_grey fw-400"
@@ -779,11 +778,10 @@ const AddProduct = () => {
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${
-                                    selectedCategory && selectedCategory.id === category.id
+                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
                                       ? 'selected'
                                       : ''
-                                  }`}
+                                    }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (
