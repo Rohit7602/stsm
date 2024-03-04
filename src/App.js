@@ -28,13 +28,6 @@ function App() {
   const [authchecked, setauthchecked] = useState(false);
   const [loading, setloading] = useState(false);
   const location = useLocation();
-  const params = useParams();
-
-  console.log('params id is ', params.id);
-
-  // const [productId, setProductId] = useState('');
-
-  console.log(location.pathname);
 
   useEffect(() => {
     permissionHandler();
@@ -127,11 +120,7 @@ function App() {
                           <Route path="newcategory" element={<NewCategory />} />
                           <Route path="parentcategories" element={<ParentCategories />} />
                           <Route path="productlist" element={<ProductList />} />
-                          <Route
-                            path={`${params.id ? 'addproduct/:id' : 'addproduct'}`}
-                            element={<AddProduct />}
-                          />
-
+                          <Route path="addproduct/:id?" element={<AddProduct />} />
                           <Route path="serviceareas" element={<ServiceAreas />} />
                         </Route>
                         <Route path="customer">

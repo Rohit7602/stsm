@@ -15,15 +15,13 @@ function Sidebar(props) {
     <>
       <aside className="sidebar">
         <div className="sidebar_position d-flex flex-column">
-          <div className="logo_bar bg_brown d-flex justify-content-center p-2 position-sticky top-0 z-1">
-            <div>
-              <img className="mx-2" src={Logo} alt="Logo" />
-            </div>
+          <div className="logo_bar bg_brown d-flex justify-content-center p-2 position-sticky top-0 z-1 align-items-center">
+            <img className="mx-2" src={Logo} alt="Logo" />
             <button className="admin_btn fs-xxs p-2 py-1 fw-400 border-0">ADMIN</button>
           </div>
           <div className="drops_wrap">
             <ul className="px-0 drop_list">
-              <li onClick={() => toggleDropdown('das')} className=" d-flex align-item-center">
+              <li onClick={() => toggleDropdown('das')} className=" d-flex align-item-center mt-3">
                 <NavLink to="" className="w-100">
                   <div className="d-flex align-items-center w-100 dash_links">
                     <svg
