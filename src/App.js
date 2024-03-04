@@ -28,13 +28,7 @@ function App() {
   const [authchecked, setauthchecked] = useState(false);
   const [loading, setloading] = useState(false);
   const location = useLocation();
-  const params = useParams();
-
-  console.log('params id is ', params.id);
-
-  // const [productId, setProductId] = useState('');
-
-  console.log(location.pathname);
+  const params = new URLSearchParams(location.search);
 
   useEffect(() => {
     permissionHandler();
@@ -128,7 +122,7 @@ function App() {
                           <Route path="parentcategories" element={<ParentCategories />} />
                           <Route path="productlist" element={<ProductList />} />
                           <Route
-                            path={`${params.id ? 'addproduct/:id' : 'addproduct'}`}
+                            path="/catalog/addproduct/:id?"
                             element={<AddProduct />}
                           />
 
