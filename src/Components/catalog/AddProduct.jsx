@@ -6,7 +6,8 @@ import whiteSaveicon from '../../Images/svgs/white_saveicon.svg';
 import deleteicon from '../../Images/svgs/deleteicon.svg';
 import closeicon from '../../Images/svgs/closeicon.svg';
 import addIcon from '../../Images/svgs/addicon.svg';
-import { Col, Row } from 'react-bootstrap';
+import dropdownImg from '../../Images/svgs/dropdown_icon.svg';
+import { Col, DropdownButton, Row } from 'react-bootstrap';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { ToastContainer, toast } from 'react-toastify';
@@ -18,19 +19,19 @@ import { useRef } from 'react';
 import { useProductsContext } from '../../context/productgetter';
 import { useSubCategories } from '../../context/categoriesGetter';
 import { useParams } from 'react-router-dom';
-const AddProduct = () => {
+const AddProduct = (props) => {
   const { productData } = useProductsContext();
   const productId = useParams();
-  console.log("product id is ", productId)
   const [name, setName] = useState('');
   const [shortDes, setShortDes] = useState('');
   const [longDes, setLongDes] = useState('');
   const [varient, setVarient] = useState(false);
-
+  const [colorVar, setColorVar] = useState(false);
+  const [color, setColor] = useState([]);
   // context
   const { addData } = useProductsContext();
   const { data } = useSubCategories();
-
+  console.log(color);
   const [status, setStatus] = useState('published');
   const [Freedelivery, setFreeDelivery] = useState(true);
   const [sku, setSku] = useState('');
@@ -43,7 +44,7 @@ const AddProduct = () => {
   const [searchdata, setSearchdata] = useState([]);
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [stockpopup, setStockpopup] = useState(false);
-
+  const [unitType, setUnitType] = useState('');
   //  search functionaltiy in categories and selected categories
   const [searchvalue, setSearchvalue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -74,6 +75,17 @@ const AddProduct = () => {
     setDiscountType('Amount');
     setDiscount(0);
     setVariantsNAME('');
+  }
+
+  function checkboxHandler(e) {
+    const value = e.target.value;
+    const isChecked = e.target.checked;
+
+    if (isChecked) {
+      setColor([...color, value]);
+    } else {
+      setColor(color.filter((color) => color !== value));
+    }
   }
 
   // stock popup save functionality
@@ -544,6 +556,96 @@ const AddProduct = () => {
                         </div>
                       )}
                     </div>
+                    <div className="product_shadow bg_white p-3 mt-4">
+                      <div className=" d-flex align-items-center w-75 justify-content-between pb-3 mb-1">
+                        <h2 className="fw-400 fs-2sm black mb-0">
+                          Have More Colours ? <span className="red ms-1 fs-sm">*</span>
+                        </h2>
+                        <div className="d-flex align-items-center">
+                          <label className="pe-3 me-1" for="color_yes">
+                            Yes
+                          </label>
+                          <input
+                            onChange={() => setColorVar(true)}
+                            className="fs-xs fw-400 black varient_btn"
+                            type="radio"
+                            id="color_yes"
+                            checked={colorVar === true}
+                          />
+                        </div>
+                        <div className="d-flex align-items-center">
+                          <label className="pe-3 me-1" for="color_no">
+                            No
+                          </label>
+                          <input
+                            onChange={() => setColorVar(false)}
+                            className="fs-xs fw-400 black varient_btn"
+                            type="radio"
+                            id="color_no"
+                            checked={colorVar === false}
+                          />
+                        </div>
+                      </div>
+                      {colorVar === true ? (
+                        <div>
+                          <h2 className="fw-400 fs-2sm black mb-0">Colours Varient</h2>
+                          <div className=" d-flex align-items-center justify-content-between mt-3 pt-1 me-5">
+                            <div className="d-flex align-items-center">
+                              <label className="fs-xs fw-400 black" htmlFor="green">
+                                Green
+                              </label>
+                              <input type="color" />
+                              <input
+                                className="fs-xs fw-400 black varient_btn ms-3 ps-1"
+                                type="radio"
+                                id="green"
+                                value="green"
+                                checked={color.includes('green')}
+                              />
+                            </div>
+                            <div className="d-flex align-items-center">
+                              <label className="fs-xs fw-400 black" htmlFor="black">
+                                Black
+                              </label>
+                              <input
+                                onChange={checkboxHandler}
+                                className="fs-xs fw-400 black varient_btn ms-3 ps-1"
+                                type="radio"
+                                id="black"
+                                value="black"
+                                checked={color.includes('black')}
+                              />
+                            </div>
+                            <div className="d-flex align-items-center">
+                              <label className="fs-xs fw-400 black" htmlFor="purple">
+                                Purple
+                              </label>
+                              <input
+                                onChange={checkboxHandler}
+                                className="fs-xs fw-400 black varient_btn ms-3 ps-1"
+                                type="radio"
+                                id="purple"
+                                value="purple"
+                                checked={color.includes('purple')}
+                              />
+                            </div>
+                            <div className="d-flex align-items-center">
+                              <label className="fs-xs fw-400 black" htmlFor="lightGreen">
+                                Light Green
+                              </label>
+                              <input
+                                onChange={checkboxHandler}
+                                className="fs-xs fw-400 black varient_btn ms-3 ps-1"
+                                type="radio"
+                                id="lightGreen"
+                                value="lightGreen"
+                                checked={color.includes('lightGreen')}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
                     {/* images  */}
                     <div className="product_shadow bg_white p-3 mt-4">
                       <h2 className="fw-400 fs-2sm black mb-0">
@@ -646,6 +748,91 @@ const AddProduct = () => {
                           <span className="checkmark"></span>
                         </label>
                       </div>
+                    </div>
+                    <label htmlFor="deliveryCharge" className="fs-xs fw-400 mt-3 black pt-1">
+                      Delivery Charge
+                    </label>
+                    <br />
+                    <div className="d-flex align-items-center justify-content-between product_input mt-2">
+                      <input
+                        required
+                        type="number"
+                        className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
+                        placeholder="₹ 0.00"
+                        id="deliveryCharge"
+                      />
+                    </div>
+                    <label htmlFor="serviceCharge" className="fs-xs fw-400 mt-3 black">
+                      Service charge
+                    </label>
+                    <br />
+                    <div className="d-flex align-items-center justify-content-between product_input mt-2">
+                      <input
+                        required
+                        type="text"
+                        className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
+                        placeholder="Amount"
+                        id="serviceCharge"
+                      />
+                    </div>
+                    <label htmlFor="salesMan" className="fs-xs fw-400 mt-3 black">
+                      Sales man Commission
+                    </label>
+                    <br />
+                    <div className="d-flex align-items-center justify-content-between product_input mt-2">
+                      <input
+                        required
+                        type="number"
+                        className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
+                        placeholder="₹ 0.00"
+                        id="salesMan"
+                      />
+                    </div>
+                    <label htmlFor="salesMan" className="fs-xs fw-400 mt-3 black">
+                      Unit type
+                    </label>
+                    <br />
+                    <div className="d-flex align-items-center justify-content-between product _input mt -2">
+                      <Dropdown className="category_dropdown z-1 w-100">
+                        <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
+                          <div className="product_input d-flex align-items-center justify-content-between">
+                            <p className="fade_grey fw-400 w-100 mb-0 text-start">
+                              {unitType == '' ? 'Unit type' : unitType}
+                            </p>
+                            <img src={dropdownImg} alt="" />
+                          </div>
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu className="w-100">
+                          <div>
+                            <Dropdown.Item>
+                              <div
+                                onClick={() => setUnitType('Kilogram')}
+                                className="d-flex justify-content-between">
+                                <p className="fs-xs fw-400 black mb-0">Kilogram</p>
+                                {unitType == 'Kilogram' ? (
+                                  <img src={savegreenicon} alt="savegreenicon" />
+                                ) : null}
+                              </div>
+                              <div
+                                onClick={() => setUnitType('Liters')}
+                                className="d-flex justify-content-between">
+                                <p className="fs-xs fw-400 black mb-0">Liters</p>
+                                {unitType == 'Liters' ? (
+                                  <img src={savegreenicon} alt="savegreenicon" />
+                                ) : null}
+                              </div>
+                              <div
+                                onClick={() => setUnitType('Numerical')}
+                                className="d-flex justify-content-between">
+                                <p className="fs-xs fw-400 black mb-0">Numerical</p>
+                                {unitType == 'Numerical' ? (
+                                  <img src={savegreenicon} alt="savegreenicon" />
+                                ) : null}
+                              </div>
+                            </Dropdown.Item>
+                          </div>
+                        </Dropdown.Menu>
+                      </Dropdown>
                     </div>
                   </div>
                 </div>

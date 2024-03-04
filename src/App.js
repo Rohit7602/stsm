@@ -28,7 +28,10 @@ function App() {
   const [authchecked, setauthchecked] = useState(false);
   const [loading, setloading] = useState(false);
   const location = useLocation();
+<<<<<<< HEAD
   const params = new URLSearchParams(location.search);
+=======
+>>>>>>> ac77335dbe9bb49ac294bd4ad6066fe5daab05f5
 
   useEffect(() => {
     permissionHandler();
@@ -121,11 +124,15 @@ function App() {
                           <Route path="newcategory" element={<NewCategory />} />
                           <Route path="parentcategories" element={<ParentCategories />} />
                           <Route path="productlist" element={<ProductList />} />
+<<<<<<< HEAD
                           <Route
                             path="/catalog/addproduct/:id?"
                             element={<AddProduct />}
                           />
 
+=======
+                          <Route path="addproduct/:id?" element={<AddProduct />} />
+>>>>>>> ac77335dbe9bb49ac294bd4ad6066fe5daab05f5
                           <Route path="serviceareas" element={<ServiceAreas />} />
                         </Route>
                         <Route path="customer">
