@@ -35,6 +35,7 @@ const AddProduct = (props) => {
   const [Freedelivery, setFreeDelivery] = useState(true);
   const [sku, setSku] = useState('');
   const [totalStock, setTotalStock] = useState('');
+  const [StockCount, setStockCount] = useState('');
   const [stockPrice, setStockPrice] = useState('');
   const [categories, setCategories] = useState('');
   const [imageUpload22, setImageUpload22] = useState([]);
@@ -147,26 +148,28 @@ const AddProduct = (props) => {
           sku: sku,
           Freedelivery: Freedelivery,
           totalStock: totalStock,
+          stockAlert: StockCount,
           categories: {
             parent_id: selectedCategory.cat_ID,
             id: selectedCategory.id,
             name: selectedCategory.title,
           },
           productImages: imagelinks,
+
           isMultipleVariant: varient === true,
           ...(varient === false
             ? {
-                varients: [
-                  {
-                    originalPrice: originalPrice,
-                    discountType: discountType,
-                    discount: deliveryCharges,
-                  },
-                ],
-              }
+              varients: [
+                {
+                  originalPrice: originalPrice,
+                  discountType: discountType,
+                  discount: deliveryCharges,
+                },
+              ],
+            }
             : {
-                varients: variants,
-              }), // Include the actual list of variants if varient is true
+              varients: variants,
+            }), // Include the actual list of variants if varient is true
         });
         setSearchdata([]);
         setLoaderstatus(false);
@@ -432,12 +435,12 @@ const AddProduct = (props) => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                              ...v,
-                                              discountType: selectedDiscountType,
-                                              // Reset discount value when changing the discount type to "Amount"
-                                              discount:
-                                                selectedDiscountType === 'Amount' ? 0 : v.discount,
-                                            }
+                                            ...v,
+                                            discountType: selectedDiscountType,
+                                            // Reset discount value when changing the discount type to "Amount"
+                                            discount:
+                                              selectedDiscountType === 'Amount' ? 0 : v.discount,
+                                          }
                                           : v
                                       )
                                     );
@@ -731,9 +734,10 @@ const AddProduct = (props) => {
                     <br />
                     <input
                       required
-                      type="text"
+                      type="number"
                       className="mt-2 product_input fade_grey fw-400"
                       placeholder="2"
+                      onChange={(e) => setStockCount(e.target.value)}
                     />{' '}
                   </div>
                   <br />
@@ -775,11 +779,10 @@ const AddProduct = (props) => {
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${
-                                    selectedCategory && selectedCategory.id === category.id
-                                      ? 'selected'
-                                      : ''
-                                  }`}
+                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
+                                    ? 'selected'
+                                    : ''
+                                    }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (

@@ -95,8 +95,11 @@ function DashbordCards() {
           <div className="row justify-content-star  mt-3">
             <div className="col-xl col-lg-4 col-md-6 mr-3  ">
               <div className="bg-white cards  flex-column d-flex justify-content-around px-3">
-                <div className="d-flex justify-content-between   bg-white">
-                  <h3 className="fw-400 fade_grey fs-xs">Total Sales</h3>
+                <div className="d-flex justify-content-between align-items-center justify-content-center   bg-white">
+                  <div>
+                    <h3 className="fw-400 fade_grey fs-xs">Total Sales</h3>
+                    <p className='fw-400 fade_grey para2'>Delivered Products Only</p>
+                  </div>
                   <button className="fw-400 color_blue fs-xs border-0 bg-white">View all</button>
                 </div>
 

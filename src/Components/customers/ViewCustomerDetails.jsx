@@ -178,7 +178,6 @@ const ViewCustomerDetails = () => {
                           </thead>
                           <tbody>
 
-
                             {targetOrder.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map((data, index) => {
                               return (
                                 <>

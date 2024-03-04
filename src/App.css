@@ -536,6 +536,11 @@ body {
   margin-left: auto;
 }
 
+.para2{
+  font-size: 10px;
+  margin-left: auto;
+}
+
 /* my csss  */
 .active.list_icons path {
   fill: var(--color-brown);
