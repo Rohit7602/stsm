@@ -8,7 +8,7 @@ import closeicon from '../../Images/svgs/closeicon.svg';
 import addIcon from '../../Images/svgs/addicon.svg';
 import dropdownImg from '../../Images/svgs/dropdown_icon.svg';
 import { Col, DropdownButton, Row } from 'react-bootstrap';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,7 +19,11 @@ import { useRef } from 'react';
 import { useProductsContext } from '../../context/productgetter';
 import { useSubCategories } from '../../context/categoriesGetter';
 import { useParams } from 'react-router-dom';
-const AddProduct = (props) => {
+import { increment } from 'firebase/firestore';
+
+
+
+const AddProduct = () => {
   const { productData } = useProductsContext();
   const productId = useParams();
   const [name, setName] = useState('');
@@ -31,7 +35,7 @@ const AddProduct = (props) => {
   // context
   const { addData } = useProductsContext();
   const { data } = useSubCategories();
-  console.log(color);
+  // console.log(color);
   const [status, setStatus] = useState('published');
   const [Freedelivery, setFreeDelivery] = useState(true);
   const [sku, setSku] = useState('');
@@ -45,21 +49,36 @@ const AddProduct = (props) => {
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [stockpopup, setStockpopup] = useState(false);
   const [unitType, setUnitType] = useState('');
+  const [DeliveryCharge, setDeliveryCharges] = useState(0);
+  const [ServiceCharge, setServiceCharge] = useState(0);
+  const [SalesmanCommission, setSalesmanComssion] = useState(0);
+
+
   //  search functionaltiy in categories and selected categories
   const [searchvalue, setSearchvalue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   const handleSelectCategory = (category) => {
     setSearchvalue('');
     setSelectedCategory(category);
+    setSelectedCategoryId(category.id);
   };
+
+
+
+
+
+
+
+
+
 
   const [variants, setVariants] = useState([]);
   const [discount, setDiscount] = useState(0);
   const [originalPrice, setOriginalPrice] = useState('');
   const [VarintName, setVariantsNAME] = useState('');
   const [discountType, setDiscountType] = useState('Amount');
-  const [deliveryCharges, setDeliveryCharges] = useState(0);
   function HandleAddVarients() {
     setVariants((prevVariants) => [
       ...prevVariants,
@@ -124,11 +143,16 @@ const AddProduct = (props) => {
     setImageUpload22([]);
     setSelectedCategory(null);
     setStockPrice('');
+    setDeliveryCharges(0)
+    setSalesmanComssion(0)
+    setServiceCharge(0)
 
     pubref.current.checked = false;
     hidref.current.checked = false;
     // setSearchdata([]);
   }
+
+
   async function handlesave(e) {
     e.preventDefault();
 
@@ -167,7 +191,12 @@ const AddProduct = (props) => {
             name: selectedCategory.title,
           },
           productImages: imagelinks,
-
+          created_at: Date.now(),
+          updated_at: Date.now(),
+          SalesmanCommission,
+          ServiceCharge,
+          DeliveryCharge,
+          unitType,
           isMultipleVariant: varient === true,
           ...(varient === false
             ? {
@@ -185,11 +214,19 @@ const AddProduct = (props) => {
         });
         setSearchdata([]);
         setLoaderstatus(false);
+
+        await updateDoc(doc(db, 'sub_categories', selectedCategoryId), {
+          'noOfProducts': increment(1)
+        });
+
         toast.success('Product added Successfully !', {
           position: toast.POSITION.TOP_RIGHT,
         });
         handleReset();
         addData(docRef);
+
+
+
       } catch (e) {
         toast.error(e, {
           position: toast.POSITION.TOP_RIGHT,
@@ -266,6 +303,9 @@ const AddProduct = (props) => {
       });
     }
   }, []);
+
+
+
 
   if (loaderstatus) {
     return (
@@ -760,6 +800,8 @@ const AddProduct = (props) => {
                         className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                         placeholder="₹ 0.00"
                         id="deliveryCharge"
+                        value={DeliveryCharge}
+                        onChange={(e) => setDeliveryCharges(e.target.value)}
                       />
                     </div>
                     <label htmlFor="serviceCharge" className="fs-xs fw-400 mt-3 black">
@@ -769,10 +811,13 @@ const AddProduct = (props) => {
                     <div className="d-flex align-items-center justify-content-between product_input mt-2">
                       <input
                         required
-                        type="text"
+                        type="number"
                         className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                         placeholder="Amount"
                         id="serviceCharge"
+                        value={ServiceCharge}
+                        onChange={(e) => setServiceCharge(e.target.value)}
+
                       />
                     </div>
                     <label htmlFor="salesMan" className="fs-xs fw-400 mt-3 black">
@@ -786,6 +831,8 @@ const AddProduct = (props) => {
                         className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                         placeholder="₹ 0.00"
                         id="salesMan"
+                        value={SalesmanCommission}
+                        onChange={(e) => setSalesmanComssion(e.target.value)}
                       />
                     </div>
                     <label htmlFor="salesMan" className="fs-xs fw-400 mt-3 black">
@@ -966,8 +1013,8 @@ const AddProduct = (props) => {
                               <Dropdown.Item>
                                 <div
                                   className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                      ? 'selected'
-                                      : ''
+                                    ? 'selected'
+                                    : ''
                                     }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>

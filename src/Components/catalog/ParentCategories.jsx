@@ -25,6 +25,7 @@ import { storage } from '../../firebase';
 import { useImageHandleContext } from '../../context/ImageHandler';
 import { useMainCategories, useSubCategories } from '../../context/categoriesGetter';
 import Loader from '../Loader';
+import { increment } from 'firebase/firestore';
 const ParentCategories = () => {
   // const [data, setData] = useState([]);
   // const [mainCategory, setMainCategory] = useState([]);
@@ -103,6 +104,9 @@ const ParentCategories = () => {
           status: status,
           image: imageUrl,
           homepagelayout: selectedLayout,
+          created_at: Date.now(),
+          updated_at: Date.now(),
+          noOfSubcateogry: 0
         });
         setLoaderstatus(false);
         toast.success('Category added Successfully !', {
@@ -230,7 +234,7 @@ const ParentCategories = () => {
 
 
   /*  *******************************
-    Edit  Image  upload  functionality start 
+      Edit  Image  upload  functionality start 
   *********************************************   **/
 
 
@@ -287,6 +291,7 @@ const ParentCategories = () => {
         status: editStatus,
         image: imageUrl,
         homepagelayout: EditSelectedLayout,
+        updated_at: Date.now()
       });
 
       updateData({
@@ -295,6 +300,7 @@ const ParentCategories = () => {
         status: editStatus,
         image: imageUrl,
         homepagelayout: EditSelectedLayout,
+        updated_at: Date.now(),
       });
 
       // alert("Updated Successfully");
@@ -587,7 +593,7 @@ const ParentCategories = () => {
                             </button>
                           </button>
                           <button onClick={HandleSaveEditCategory}
-                            
+
                             type="submit"
                             className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn">
                             <img src={saveicon} alt="saveicon" />

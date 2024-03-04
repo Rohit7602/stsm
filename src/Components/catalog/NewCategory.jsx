@@ -22,6 +22,9 @@ import { storage } from '../../firebase';
 import { NavLink, Link } from 'react-router-dom';
 import { useImageHandleContext } from '../../context/ImageHandler';
 import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
+import { increment } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
+
 import Loader from '../Loader';
 
 // import { Toast } from 'react-toastify/dist/components';
@@ -82,7 +85,14 @@ const NewCategory = () => {
           status: status,
           image: imageUrl,
           cat_ID: category.id,
+          created_at: Date.now(),
+          updated_at: Date.now(),
+          noOfProducts: 0
         });
+        await updateDoc(doc(db, 'categories', category.id), {
+          'noOfSubcateogry': increment(1)
+        });
+
         setLoaderstatus(false);
         toast.success('Category  added Successfully !', {
           position: toast.POSITION.TOP_RIGHT,
@@ -162,7 +172,7 @@ const NewCategory = () => {
       } else if (imageupload2.length === 0) {
         alert('please upload image of the category ');
       } else if (perStatus === undefined || null) {
-        
+
         alert('please Set the status ');
       } else {
         setLoaderstatus(true);
@@ -175,6 +185,9 @@ const NewCategory = () => {
           status: perStatus,
           image: imageUrl,
           homepagelayout: selectedLayout,
+          created_at: Date.now(),
+          updated_at: Date.now(),
+          noOfSubcateogry: 0,
         });
         setLoaderstatus(false);
         toast.success('Category added Successfully !', {
