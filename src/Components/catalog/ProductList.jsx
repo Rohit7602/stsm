@@ -304,10 +304,9 @@ const ProductList = (props) => {
                               </li>
                               <li>
                                 <div class="dropdown-item" href="#">
-                                  <NavLink to="/catalog/addproduct">
+                                  <NavLink to={`/catalog/addproduct/${value.id}`}>
                                     <div
                                       onClick={() => {
-                                        props.setProductId(value.id);
                                         setProductId(value.id);
                                       }}
                                       className="d-flex align-items-center categorie_dropdown_options">

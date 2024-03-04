@@ -1,6 +1,6 @@
 import './App.css';
 import CategoriesView from './Components/catalog/Categories';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, useParams } from 'react-router-dom';
 import Sidebar from './Components/layout/Sidebar';
 import DashbordCards from './Components/dashbord/DashbordCards';
 
@@ -28,10 +28,13 @@ function App() {
   const [authchecked, setauthchecked] = useState(false);
   const [loading, setloading] = useState(false);
   const location = useLocation();
-  const [productId, setProductId] = useState('');
+  const params = useParams();
 
+  console.log('params id is ', params.id);
 
+  // const [productId, setProductId] = useState('');
 
+  console.log(location.pathname);
 
   useEffect(() => {
     permissionHandler();
@@ -76,7 +79,6 @@ function App() {
     // Cleanup function to unsubscribe when the component unmounts
     return () => unsubscribe();
   }, []);
-
 
   return (
     <div>
@@ -124,22 +126,17 @@ function App() {
                           <Route index element={<CategoriesView />} />
                           <Route path="newcategory" element={<NewCategory />} />
                           <Route path="parentcategories" element={<ParentCategories />} />
+                          <Route path="productlist" element={<ProductList />} />
                           <Route
-                            path="productlist"
-                            element={<ProductList setProductId={setProductId} />}
+                            path={`${params.id ? 'addproduct/:id' : 'addproduct'}`}
+                            element={<AddProduct />}
                           />
-                          <Route
-                            path="addproduct"
-                            element={<AddProduct productId={productId} />}
-                          />
+
                           <Route path="serviceareas" element={<ServiceAreas />} />
                         </Route>
                         <Route path="customer">
                           <Route index element={<Customers />} />
-                          <Route
-                            path="viewcustomerdetails/:id"
-                            element={<ViewCustomerDetails />}
-                          />
+                          <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
                         </Route>
                         <Route path="orders">
                           <Route index element={<OrdersList />} />
