@@ -44,15 +44,14 @@ function Sidebar(props) {
               <li>
                 <div
                   onClick={() => toggleDropdown('catalog')}
-                  className={`w-100 m-0 cursor_pointer ${
-                    path.pathname === '/catalog' ||
-                    path.pathname === '/catalog/productlist' ||
-                    path.pathname === '/catalog/serviceareas' ||
-                    path.pathname === '/catalog/newcategory' ||
-                    path.pathname === '/catalog/addproduct'
+                  className={`w-100 m-0 cursor_pointer ${path.pathname === '/catalog' ||
+                      path.pathname === '/catalog/productlist' ||
+                      path.pathname === '/catalog/serviceareas' ||
+                      path.pathname === '/catalog/newcategory' ||
+                      path.pathname === '/catalog/addproduct'
                       ? 'active'
                       : null
-                  }`}>
+                    }`}>
                   <div className="d-flex align-items-center w-100 dash_links ps-3 ">
                     <div className="d-flex align-items-center w-100">
                       <svg
@@ -82,18 +81,16 @@ function Sidebar(props) {
                       <NavLink
                         to="catalog"
                         end
-                        className={`dash_links_inner ${
-                          path.pathname === '/catalog/newcategory' ? 'active' : null
-                        }`}>
+                        className={`dash_links_inner ${path.pathname === '/catalog/newcategory' ? 'active' : null
+                          }`}>
                         <h3 className="fs-xs fw-400  white mb-0">Category List</h3>
                       </NavLink>
                     </li>
 
                     <li>
                       <NavLink
-                        className={`dash_links_inner ${
-                          path.pathname === '/catalog/addproduct' ? 'active' : null
-                        }`}
+                        className={`dash_links_inner ${path.pathname === '/catalog/addproduct' ? 'active' : null
+                          }`}
                         to="catalog/productlist">
                         <h3 className="fs-xs fw-400  white mb-0">Product List</h3>
                       </NavLink>
@@ -110,9 +107,8 @@ function Sidebar(props) {
               <li>
                 <div
                   onClick={() => toggleDropdown('vendors')}
-                  className={`w-100 cursor_pointer ${
-                    path.pathname === '/venders' ? 'active' : null
-                  }`}>
+                  className={`w-100 cursor_pointer ${path.pathname === '/venders' ? 'active' : null
+                    }`}>
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg
@@ -145,9 +141,8 @@ function Sidebar(props) {
               <li>
                 <div
                   onClick={() => toggleDropdown('wholesalers')}
-                  className={`w-100 cursor_pointer ${
-                    path.pathname === '/wholesalers' ? 'active' : null
-                  }`}>
+                  className={`w-100 cursor_pointer ${path.pathname === '/wholesalers' ? 'active' : null
+                    }`}>
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg
@@ -186,9 +181,8 @@ function Sidebar(props) {
               <li>
                 <div
                   onClick={() => toggleDropdown('salesman')}
-                  className={`w-100 cursor_pointer ${
-                    path.pathname === '/salesman' ? 'active' : null
-                  }`}>
+                  className={`w-100 cursor_pointer ${path.pathname === '/salesman' ? 'active' : null
+                    }`}>
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg
@@ -289,12 +283,11 @@ function Sidebar(props) {
                 <div
                   onClick={() => toggleDropdown('marketing')}
                   to="marketing"
-                  className={`w-100 cursor_pointer ${
-                    path.pathname === '/marketing/coupans' ||
-                    path.pathname === '/marketing/bannersadvertisement'
+                  className={`w-100 cursor_pointer ${path.pathname === '/marketing/coupans' ||
+                      path.pathname === '/marketing/bannersadvertisement'
                       ? 'active'
                       : null
-                  }`}>
+                    }`}>
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg
@@ -379,7 +372,7 @@ function Sidebar(props) {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/faqs" className="w-100">
+                <NavLink to="/FAQ" className="w-100">
                   <div className="d-flex align-items-center w-100 dash_links dash_links2 ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg
@@ -511,7 +504,7 @@ function Sidebar(props) {
           </div>
         </div>
       </aside>
-      
+
     </>
   );
 }
