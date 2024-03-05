@@ -436,7 +436,7 @@ const AddProduct = () => {
                               <img src={deleteicon} alt="deleteicon" />
                             </div>
                             <div className="d-flex flex-column flex-sm-row gap-3">
-                              <div className="width_33 w_xsm_100">
+                              <div className="w-100">
                                 <label htmlFor="origi" className="fs-xs fw-400 mt-3 black">
                                   Original Price
                                 </label>
@@ -456,7 +456,7 @@ const AddProduct = () => {
                                   }
                                 />
                               </div>
-                              <div className="width_33 w_xsm_100">
+                              <div className="w-100">
                                 <label htmlFor="Discount" className="fs-xs fw-400 mt-3 black">
                                   Discount Type
                                 </label>{' '}
@@ -484,7 +484,7 @@ const AddProduct = () => {
                                   <option value="Percentage">Percentage</option>
                                 </select>
                               </div>
-                              <div className="width_33 w_xsm_100">
+                              <div className="w-100">
                                 <label htmlFor="ddisc" className="fs-xs fw-400 mt-3 black">
                                   Discount
                                 </label>
@@ -506,6 +506,56 @@ const AddProduct = () => {
                                   }
                                 />
                               </div>
+                              <div className="w-100">
+                                <label htmlFor="salesMan" className="fs-xs fw-400 mt-3 black">
+                                  Unit type
+                                </label>
+                                <br />
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <Dropdown className="category_dropdown z-1 w-100">
+                                    <Dropdown.Toggle
+                                      id="dropdown-basic"
+                                      className="mt-2 unit_type_input border-0">
+                                      <div className="product_input d-flex align-items-center justify-content-between">
+                                        <p className="fade_grey fw-400 w-100 mb-0 text-start">
+                                          {unitType == '' ? 'Unit type' : unitType}
+                                        </p>
+                                        <img src={dropdownImg} alt="" />
+                                      </div>
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu className="w-100 p-0">
+                                      <div>
+                                        <Dropdown.Item>
+                                          <div
+                                            onClick={() => setUnitType('Kilogram')}
+                                            className="d-flex justify-content-between">
+                                            <p className="fs-xs fw-400 black mb-0">Kilogram</p>
+                                            {unitType == 'Kilogram' ? (
+                                              <img src={savegreenicon} alt="savegreenicon" />
+                                            ) : null}
+                                          </div>
+                                          <div
+                                            onClick={() => setUnitType('Liters')}
+                                            className="d-flex justify-content-between">
+                                            <p className="fs-xs fw-400 black mb-0">Liters</p>
+                                            {unitType == 'Liters' ? (
+                                              <img src={savegreenicon} alt="savegreenicon" />
+                                            ) : null}
+                                          </div>
+                                          <div
+                                            onClick={() => setUnitType('Numerical')}
+                                            className="d-flex justify-content-between">
+                                            <p className="fs-xs fw-400 black mb-0">Numerical</p>
+                                            {unitType == 'Numerical' ? (
+                                              <img src={savegreenicon} alt="savegreenicon" />
+                                            ) : null}
+                                          </div>
+                                        </Dropdown.Item>
+                                      </div>
+                                    </Dropdown.Menu>
+                                  </Dropdown>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         ))
@@ -514,7 +564,7 @@ const AddProduct = () => {
                           <h2 className="fw-400 fs-2sm black mb-0">Pricing</h2>
                           <div className="d-flex flex-column flex-sm-row gap-3">
                             {/* ist input */}
-                            <div className="width_33 w_xsm_100">
+                            <div className="w-100">
                               <label htmlFor="origi" className="fs-xs fw-400 mt-3 black">
                                 Original Price
                               </label>
@@ -529,7 +579,7 @@ const AddProduct = () => {
                               />
                             </div>
                             {/* 2nd input */}
-                            <div className="width_33 w_xsm_100">
+                            <div className="w-100">
                               <label htmlFor="Discount" className="fs-xs fw-400 mt-3 black">
                                 Discount Type
                               </label>
@@ -553,7 +603,7 @@ const AddProduct = () => {
                               </select>
                             </div>
                             {/* 3rd input */}
-                            <div className="width_33 w_xsm_100">
+                            <div className="w-100">
                               <label htmlFor="ddisc" className="fs-xs fw-400 mt-3 black">
                                 Discount
                               </label>
@@ -574,6 +624,56 @@ const AddProduct = () => {
                                   }
                                 }}
                               />
+                            </div>
+                            <div className="w-100">
+                              <label htmlFor="salesMan" className="fs-xs fw-400 mt-3 black">
+                                Unit type
+                              </label>
+                              <br />
+                              <div className="d-flex align-items-center justify-content-between">
+                                <Dropdown className="category_dropdown z-1 w-100">
+                                  <Dropdown.Toggle
+                                    id="dropdown-basic"
+                                    className="mt-2 unit_type_input border-0">
+                                    <div className="product_input d-flex align-items-center justify-content-between">
+                                      <p className="fade_grey fw-400 w-100 mb-0 text-start">
+                                        {unitType == '' ? 'Unit type' : unitType}
+                                      </p>
+                                      <img src={dropdownImg} alt="" />
+                                    </div>
+                                  </Dropdown.Toggle>
+                                  <Dropdown.Menu className="w-100 p-0">
+                                    <div>
+                                      <Dropdown.Item>
+                                        <div
+                                          onClick={() => setUnitType('Kilogram')}
+                                          className="d-flex justify-content-between">
+                                          <p className="fs-xs fw-400 black mb-0">Kilogram</p>
+                                          {unitType == 'Kilogram' ? (
+                                            <img src={savegreenicon} alt="savegreenicon" />
+                                          ) : null}
+                                        </div>
+                                        <div
+                                          onClick={() => setUnitType('Liters')}
+                                          className="d-flex justify-content-between">
+                                          <p className="fs-xs fw-400 black mb-0">Liters</p>
+                                          {unitType == 'Liters' ? (
+                                            <img src={savegreenicon} alt="savegreenicon" />
+                                          ) : null}
+                                        </div>
+                                        <div
+                                          onClick={() => setUnitType('Numerical')}
+                                          className="d-flex justify-content-between">
+                                          <p className="fs-xs fw-400 black mb-0">Numerical</p>
+                                          {unitType == 'Numerical' ? (
+                                            <img src={savegreenicon} alt="savegreenicon" />
+                                          ) : null}
+                                        </div>
+                                      </Dropdown.Item>
+                                    </div>
+                                  </Dropdown.Menu>
+                                </Dropdown>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -778,52 +878,6 @@ const AddProduct = () => {
                         value={SalesmanCommission}
                         onChange={(e) => setSalesmanComssion(e.target.value)}
                       />
-                    </div>
-                    <label htmlFor="salesMan" className="fs-xs fw-400 mt-3 black">
-                      Unit type
-                    </label>
-                    <br />
-                    <div className="d-flex align-items-center justify-content-between product _input mt -2">
-                      <Dropdown className="category_dropdown z-1 w-100">
-                        <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
-                          <div className="product_input d-flex align-items-center justify-content-between">
-                            <p className="fade_grey fw-400 w-100 mb-0 text-start">
-                              {unitType == '' ? 'Unit type' : unitType}
-                            </p>
-                            <img src={dropdownImg} alt="" />
-                          </div>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu className="w-100">
-                          <div>
-                            <Dropdown.Item>
-                              <div
-                                onClick={() => setUnitType('Kilogram')}
-                                className="d-flex justify-content-between">
-                                <p className="fs-xs fw-400 black mb-0">Kilogram</p>
-                                {unitType == 'Kilogram' ? (
-                                  <img src={savegreenicon} alt="savegreenicon" />
-                                ) : null}
-                              </div>
-                              <div
-                                onClick={() => setUnitType('Liters')}
-                                className="d-flex justify-content-between">
-                                <p className="fs-xs fw-400 black mb-0">Liters</p>
-                                {unitType == 'Liters' ? (
-                                  <img src={savegreenicon} alt="savegreenicon" />
-                                ) : null}
-                              </div>
-                              <div
-                                onClick={() => setUnitType('Numerical')}
-                                className="d-flex justify-content-between">
-                                <p className="fs-xs fw-400 black mb-0">Numerical</p>
-                                {unitType == 'Numerical' ? (
-                                  <img src={savegreenicon} alt="savegreenicon" />
-                                ) : null}
-                              </div>
-                            </Dropdown.Item>
-                          </div>
-                        </Dropdown.Menu>
-                      </Dropdown>
                     </div>
                   </div>
                 </div>

@@ -24,6 +24,7 @@ import CheckConnection from './Components/CheckConnection';
 
 import { permissionHandler } from './firebase';
 import DeliveryManList from './Components/deliveryman/DeliveryManList';
+import Faqs from './Components/faqs/Faqs';
 function App() {
   const [user, setUser] = useState(true);
   const [authchecked, setauthchecked] = useState(false);
@@ -122,16 +123,13 @@ function App() {
                           <Route path="newcategory" element={<NewCategory />} />
                           <Route path="parentcategories" element={<ParentCategories />} />
                           <Route path="productlist" element={<ProductList />} />
-                          <Route
-                            path="/catalog/addproduct/:id?"
-                            element={<AddProduct />}
-                          />
+                          <Route path="/catalog/addproduct/:id?" element={<AddProduct />} />
 
                           <Route path="serviceareas" element={<ServiceAreas />} />
                         </Route>
                         <Route path="customer">
                           <Route index element={<Customers />} />
-                                <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
+                          <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
                         </Route>
                         <Route path="orders">
                           <Route index element={<OrdersList />} />
@@ -143,6 +141,7 @@ function App() {
                         <Route path="marketing">
                           <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
                         </Route>
+                        <Route path="faqs" element={<Faqs />} />
                       </Routes>
                     </div>
                   </div>

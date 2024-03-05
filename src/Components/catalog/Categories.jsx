@@ -663,20 +663,6 @@ const Categories = () => {
                                   </div>
                                 </Dropdown.Item>
                               ))}
-                            {/* {editsearchvalue &&
-                            !categoreis.some((category) =>
-                              category.title.toLowerCase().includes(editsearchvalue.toLowerCase())
-                            ) && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setPerName(editsearchvalue);
-                                }}
-                                className="addnew_category_btn fs-xs green">
-                                +Add <span className="black">"{editsearchvalue}"</span> in Parent
-                                Category
-                              </button>
-                            )} */}
                           </div>
                         </div>
                       </Dropdown.Menu>
