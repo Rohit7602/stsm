@@ -6,6 +6,8 @@ import whiteSaveicon from '../../Images/svgs/white_saveicon.svg';
 import deleteicon from '../../Images/svgs/deleteicon.svg';
 import closeicon from '../../Images/svgs/closeicon.svg';
 import addIcon from '../../Images/svgs/addicon.svg';
+import checkGreen from '../../Images/svgs/check-green-btn.svg';
+import closeRed from '../../Images/svgs/close-red-icon.svg';
 import dropdownImg from '../../Images/svgs/dropdown_icon.svg';
 import { Col, DropdownButton, Row } from 'react-bootstrap';
 import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
@@ -21,8 +23,6 @@ import { useSubCategories } from '../../context/categoriesGetter';
 import { useParams } from 'react-router-dom';
 import { increment } from 'firebase/firestore';
 
-
-
 const AddProduct = () => {
   const { productData } = useProductsContext();
   const productId = useParams();
@@ -31,13 +31,14 @@ const AddProduct = () => {
   const [longDes, setLongDes] = useState('');
   const [varient, setVarient] = useState(false);
   const [colorVar, setColorVar] = useState(false);
-  const [color, setColor] = useState([]);
+  const [color, setColor] = useState('');
+  const [storeColors, setStoreColors] = useState([]);
+  const [colorInput, setColorInput] = useState(false);
   // context
   const { addData } = useProductsContext();
   const { data } = useSubCategories();
   // console.log(color);
   const [status, setStatus] = useState('published');
-  const [Freedelivery, setFreeDelivery] = useState(true);
   const [sku, setSku] = useState('');
   const [totalStock, setTotalStock] = useState('');
   const [StockCount, setStockCount] = useState('');
@@ -52,7 +53,6 @@ const AddProduct = () => {
   const [DeliveryCharge, setDeliveryCharges] = useState(0);
   const [ServiceCharge, setServiceCharge] = useState(0);
   const [SalesmanCommission, setSalesmanComssion] = useState(0);
-
 
   //  search functionaltiy in categories and selected categories
   const [searchvalue, setSearchvalue] = useState('');
@@ -89,17 +89,6 @@ const AddProduct = () => {
     setVariantsNAME('');
   }
 
-  function checkboxHandler(e) {
-    const value = e.target.value;
-    const isChecked = e.target.checked;
-
-    if (isChecked) {
-      setColor([...color, value]);
-    } else {
-      setColor(color.filter((color) => color !== value));
-    }
-  }
-
   // stock popup save functionality
 
   // get total amount functionality
@@ -130,21 +119,19 @@ const AddProduct = () => {
     setVariants([]);
     setCategories();
     setStatus('published');
-    setFreeDelivery(true);
     setSku();
     setTotalStock();
     setImageUpload22([]);
     setSelectedCategory(null);
     setStockPrice('');
-    setDeliveryCharges(0)
-    setSalesmanComssion(0)
-    setServiceCharge(0)
+    setDeliveryCharges(0);
+    setSalesmanComssion(0);
+    setServiceCharge(0);
 
     pubref.current.checked = false;
     hidref.current.checked = false;
     // setSearchdata([]);
   }
-
 
   async function handlesave(e) {
     e.preventDefault();
@@ -175,7 +162,6 @@ const AddProduct = () => {
           longDescription: longDes,
           status: status,
           sku: sku,
-          Freedelivery: Freedelivery,
           totalStock: totalStock,
           stockAlert: StockCount,
           categories: {
@@ -193,23 +179,23 @@ const AddProduct = () => {
           isMultipleVariant: varient === true,
           ...(varient === false
             ? {
-              varients: [
-                {
-                  originalPrice: originalPrice,
-                  discountType: discountType,
-                  discount: discount,
-                },
-              ],
-            }
+                varients: [
+                  {
+                    originalPrice: originalPrice,
+                    discountType: discountType,
+                    discount: discount,
+                  },
+                ],
+              }
             : {
-              varients: variants,
-            }), // Include the actual list of variants if varient is true
+                varients: variants,
+              }), // Include the actual list of variants if varient is true
         });
         setSearchdata([]);
         setLoaderstatus(false);
 
         await updateDoc(doc(db, 'sub_categories', selectedCategoryId), {
-          'noOfProducts': increment(1)
+          noOfProducts: increment(1),
         });
 
         toast.success('Product added Successfully !', {
@@ -261,14 +247,16 @@ const AddProduct = () => {
         setShortDes(items.shortDescription);
         setLongDes(items.longDescription);
         setStatus(items.status);
-        setFreeDelivery(items.Freedelivery);
         setTotalStock(items.totalStock);
         setSku(items.sku);
         setVarient(items.isMultipleVariant);
         setVariantsNAME(items.varients.VarientName);
         setSelectedCategory(items.categories.name);
         setImageUpload22(items.productImages);
-
+        setDeliveryCharges(items.DeliveryCharge);
+        setServiceCharge(items.ServiceCharge);
+        setSalesmanComssion(items.SalesmanCommission);
+        setUnitType(items.unitType);
         items.varients.map((itm) => {
           setVariants((prevVariants) => [
             ...prevVariants,
@@ -284,18 +272,25 @@ const AddProduct = () => {
           setVariantsNAME(itm.VarientName);
           setDiscount(itm.discount);
           setDiscountType(itm.discountType);
-
-          console.log(itm.VarientName);
         });
 
         console.log(items);
-        console.log(items.varients);
       });
     }
   }, []);
-
-
-
+  function handelStoreColor() {
+    if (color !== '') {
+      setStoreColors([...storeColors, color]);
+      setColorInput(false);
+      setColor('');
+    }
+  }
+  console.log(storeColors);
+  function handelColorDelete(index) {
+    let updaedColor = [...storeColors];
+    updaedColor.splice(index, 1);
+    setStoreColors(updaedColor);
+  }
 
   if (loaderstatus) {
     return (
@@ -477,12 +472,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                            ...v,
-                                            discountType: selectedDiscountType,
-                                            // Reset discount value when changing the discount type to "Amount"
-                                            discount:
-                                              selectedDiscountType === 'Amount' ? 0 : v.discount,
-                                          }
+                                              ...v,
+                                              discountType: selectedDiscountType,
+                                              // Reset discount value when changing the discount type to "Amount"
+                                              discount:
+                                                selectedDiscountType === 'Amount' ? 0 : v.discount,
+                                            }
                                           : v
                                       )
                                     );
@@ -619,59 +614,44 @@ const AddProduct = () => {
                       {colorVar === true ? (
                         <div>
                           <h2 className="fw-400 fs-2sm black mb-0">Colours Varient</h2>
-                          <div className=" d-flex align-items-center justify-content-between mt-3 pt-1 me-5">
-                            <div className="d-flex align-items-center">
-                              <label className="fs-xs fw-400 black" htmlFor="green">
-                                Green
-                              </label>
-                              <input type="color" />
-                              <input
-                                className="fs-xs fw-400 black varient_btn ms-3 ps-1"
-                                type="radio"
-                                id="green"
-                                value="green"
-                                checked={color.includes('green')}
-                              />
-                            </div>
-                            <div className="d-flex align-items-center">
-                              <label className="fs-xs fw-400 black" htmlFor="black">
-                                Black
-                              </label>
-                              <input
-                                onChange={checkboxHandler}
-                                className="fs-xs fw-400 black varient_btn ms-3 ps-1"
-                                type="radio"
-                                id="black"
-                                value="black"
-                                checked={color.includes('black')}
-                              />
-                            </div>
-                            <div className="d-flex align-items-center">
-                              <label className="fs-xs fw-400 black" htmlFor="purple">
-                                Purple
-                              </label>
-                              <input
-                                onChange={checkboxHandler}
-                                className="fs-xs fw-400 black varient_btn ms-3 ps-1"
-                                type="radio"
-                                id="purple"
-                                value="purple"
-                                checked={color.includes('purple')}
-                              />
-                            </div>
-                            <div className="d-flex align-items-center">
-                              <label className="fs-xs fw-400 black" htmlFor="lightGreen">
-                                Light Green
-                              </label>
-                              <input
-                                onChange={checkboxHandler}
-                                className="fs-xs fw-400 black varient_btn ms-3 ps-1"
-                                type="radio"
-                                id="lightGreen"
-                                value="lightGreen"
-                                checked={color.includes('lightGreen')}
-                              />
-                            </div>
+                          <div className=" d-flex align-items-center mt-3 pt-1 me-5 gap-3 flex-wrap">
+                            {storeColors.map((items, index) => {
+                              return (
+                                <div
+                                  key={index}
+                                  className="d-flex align-items-center gap-3 color_add_input">
+                                  <p className="m-0">{items}</p>
+                                  <img
+                                    onClick={() => handelColorDelete(index)}
+                                    className="cursor_pointer"
+                                    src={closeRed}
+                                    alt="closeRed"
+                                  />
+                                </div>
+                              );
+                            })}
+                            {colorInput ? (
+                              <div className="color_add_input d-flex align-items-center">
+                                <input
+                                  onChange={(e) => setColor(e.target.value)}
+                                  className="fs-xs fw-400 black me-2"
+                                  type="text"
+                                  value={color}
+                                />
+                                <img
+                                  onClick={handelStoreColor}
+                                  className="cursor_pointer"
+                                  src={checkGreen}
+                                  alt="checkGreen"
+                                />
+                              </div>
+                            ) : null}
+                            <button
+                              onClick={() => setColorInput(true)}
+                              type="button"
+                              className="add_color_btn fs-xs fw-400 fade_grey">
+                              + Add Color
+                            </button>
                           </div>
                         </div>
                       ) : null}
@@ -730,55 +710,32 @@ const AddProduct = () => {
                     <h2 className="fw-400 fs-2sm black mb-0">
                       Status <span className="red ms-1 fs-sm">*</span>
                     </h2>
-                    <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
-                      <label className="check fw-400 fs-sm black mb-0">
-                        Published
-                        <input
-                          onChange={() => setStatus('published')}
-                          type="radio"
-                          checked={status === 'published'}
-                        />
-                        <span className="checkmark"></span>
-                      </label>
-                    </div>
-                    <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3 pb-3">
-                      <label className="check fw-400 fs-sm black mb-0">
-                        Hidden
-                        <input
-                          onChange={() => setStatus('hidden')}
-                          type="radio"
-                          checked={status === 'hidden'}
-                        />
-                        <span className="checkmark"></span>
-                      </label>
+                    <div className="d-flex align-items-center pb-3">
+                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
+                        <label className="check fw-400 fs-sm black mb-0">
+                          Published
+                          <input
+                            onChange={() => setStatus('published')}
+                            type="radio"
+                            checked={status === 'published'}
+                          />
+                          <span className="checkmark"></span>
+                        </label>
+                      </div>
+                      <div className="mt-3 ms-5 py-1 d-flex align-items-center gap-3">
+                        <label className="check fw-400 fs-sm black mb-0">
+                          Hidden
+                          <input
+                            onChange={() => setStatus('hidden')}
+                            type="radio"
+                            checked={status === 'hidden'}
+                          />
+                          <span className="checkmark"></span>
+                        </label>
+                      </div>
                     </div>
                   </div>
                   <div>
-                    <h2 className="fw-400 fs-2sm black mb-0 pt-3">Free Delivery</h2>
-                    <div className="d-flex align-items-center">
-                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3 w-50">
-                        <label className="check fw-400 fs-sm black mb-0">
-                          Yes
-                          <input
-                            onChange={() => setFreeDelivery(true)}
-                            type="radio"
-                            checked={Freedelivery === true}
-                          />
-                          <span className="checkmark"></span>
-                        </label>
-                      </div>
-                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3 w-50">
-                        <label className="check fw-400 fs-sm black mb-0">
-                          No
-                          <input
-                            onChange={() => setFreeDelivery(false)}
-                            type="radio"
-                            checked={Freedelivery === false}
-                          />
-                          <span className="checkmark"></span>
-                        </label>
-                      </div>
-                    </div>
                     <label htmlFor="deliveryCharge" className="fs-xs fw-400 mt-3 black pt-1">
                       Delivery Charge
                     </label>
@@ -807,7 +764,6 @@ const AddProduct = () => {
                         id="serviceCharge"
                         value={ServiceCharge}
                         onChange={(e) => setServiceCharge(e.target.value)}
-
                       />
                     </div>
                     <label htmlFor="salesMan" className="fs-xs fw-400 mt-3 black">
@@ -911,7 +867,7 @@ const AddProduct = () => {
                         disabled
                         id="total"
                         value={totalStock}
-                      />{' '}
+                      />
                       <img onClick={() => setStockpopup(true)} src={addIcon} alt="addIcon" />
                     </div>
                     {stockpopup === true ? (
@@ -1002,10 +958,11 @@ const AddProduct = () => {
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                    ? 'selected'
-                                    : ''
-                                    }`}
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (
