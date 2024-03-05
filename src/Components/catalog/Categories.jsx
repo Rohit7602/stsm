@@ -26,6 +26,7 @@ import { useSubCategories, useMainCategories } from '../../context/categoriesGet
 import Deletepopup from '../popups/Deletepopup';
 import Updatepopup from '../popups/Updatepopup';
 import Loader from '../Loader';
+import { increment } from 'firebase/firestore';
 
 
 const Categories = () => {
@@ -37,6 +38,7 @@ const Categories = () => {
   const [perName, setPerName] = useState('');
   const [searchvalue, setSearchvalue] = useState('');
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(null);
+  const [selectedSubcategoryparentId, setselectedSubcategoryparentId] = useState(null);
   const [selectedSubcategoryImage, setSelectedSubcategoryImage] = useState(null);
   const [selectedSubcategoryStatus, setSelectedSubcategoryStatus] = useState(null);
   const handleModifyClicked = (index) => {
@@ -89,10 +91,10 @@ const Categories = () => {
   };
 
   /*  *******************************
-     Delete functionality start 
+      Delete functionality start 
    *********************************************   **/
 
-  async function handleDeleteCategory(id, image) {
+  async function handleDeleteCategory(id, image, parentId) {
     try {
       await deleteDoc(doc(db, 'sub_categories', id)).then(() => {
         if (image.length !== 0) {
@@ -102,6 +104,11 @@ const Categories = () => {
         }
         deleteData(id);
       });
+
+      await updateDoc(doc(db, 'categories', parentId), {
+        'noOfSubcateogry': increment(-1)
+      });
+
     } catch (error) {
       console.log(error);
     }
@@ -162,7 +169,7 @@ const Categories = () => {
       Edit  Image  functionality end 
    *********************************************   **/
 
-  
+
 
   /*  *******************************
       Edit  Category   functionality start 
@@ -188,7 +195,8 @@ const Categories = () => {
       const updateData = {
         title: editCatName,
         status: editStatus,
-        image: imageUrl
+        image: imageUrl,
+        updated_at: Date.now()
       };
 
       // Update the category ID only if a new category is selected
@@ -200,9 +208,6 @@ const Categories = () => {
 
       updateSubData({
         selectedSubcategoryId,
-
-
-        
         ...updateData
       });
 
@@ -452,6 +457,7 @@ const Categories = () => {
                                       <div
                                         className="d-flex align-items-center categorie_dropdown_options"
                                         onClick={() => {
+
                                           setSelectedSubcategoryId(value.id);
                                           setSelectedSubcategoryStatus(value.status);
                                           setStatusPopup(true);
@@ -470,6 +476,7 @@ const Categories = () => {
                                       <div
                                         className="d-flex align-items-center categorie_dropdown_options"
                                         onClick={() => {
+                                          setselectedSubcategoryparentId(value.cat_ID)
                                           setSelectedSubcategoryId(value.id);
                                           setSelectedSubcategoryImage(value.image);
                                           setDeletePopup(true);
@@ -495,7 +502,7 @@ const Categories = () => {
             <Deletepopup
               showPopup={setDeletePopup}
               handleDelete={() =>
-                handleDeleteCategory(selectedSubcategoryId, selectedSubcategoryImage)
+                handleDeleteCategory(selectedSubcategoryId, selectedSubcategoryImage, selectedSubcategoryparentId)
               }
               itemName="SubCategory"
             />

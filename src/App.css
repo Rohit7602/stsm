@@ -44,6 +44,7 @@ body {
   --fw-500: 500;
   --fw-700: 700;
 
+  --fs-xxxs: 9px;
   --fs-xxs: 12px;
   --fs-xs: 14px;
   --fs-sm: 16px;
@@ -117,6 +118,10 @@ body {
 }
 
 /*---------------------------- DEFINE-ALL = FONT-SIZES ---------------------------- */
+.fs-xxxs {
+  font-size: var(--fs-xxxs) !important;
+}
+
 .fs-xxs {
   font-size: var(--fs-xxs) !important;
 }
@@ -1346,6 +1351,12 @@ tbody::-webkit-scrollbar {
   background-color: #01bbbd !important;
   padding: 21px 10px;
   cursor: pointer;
+}
+.date_btn{
+  padding: 5.34px 10.67px 5.34px 10.67px;
+  border: 0.53px solid black;
+  background-color: transparent;
+  border-radius: 10px;
 }
 
 .next_btn {

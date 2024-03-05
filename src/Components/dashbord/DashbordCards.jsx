@@ -112,7 +112,6 @@ function DashbordCards() {
                 </div>
               </div>
             </div>
-
             <div className="    col-xl col-lg-4 col-md-6 mr-3">
               <div className=" bg-white   cards  flex-column d-flex justify-content-around px-3">
                 <div className="d-flex justify-content-between   bg-white">
@@ -128,7 +127,6 @@ function DashbordCards() {
                 </div>
               </div>
             </div>
-
             <div className="col-xl col-lg-4 col-md-6 mt-4 mt-lg-0">
               <div className="bg-white  cards  flex-column d-flex justify-content-around px-3">
                 <div className="d-flex justify-content-between bg-white">
