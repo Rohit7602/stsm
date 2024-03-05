@@ -6,6 +6,8 @@ import whiteSaveicon from '../../Images/svgs/white_saveicon.svg';
 import deleteicon from '../../Images/svgs/deleteicon.svg';
 import closeicon from '../../Images/svgs/closeicon.svg';
 import addIcon from '../../Images/svgs/addicon.svg';
+import checkGreen from '../../Images/svgs/check-green-btn.svg';
+import closeRed from '../../Images/svgs/close-red-icon.svg';
 import dropdownImg from '../../Images/svgs/dropdown_icon.svg';
 import { Col, DropdownButton, Row } from 'react-bootstrap';
 import { collection, addDoc } from 'firebase/firestore';
@@ -27,11 +29,12 @@ const AddProduct = (props) => {
   const [longDes, setLongDes] = useState('');
   const [varient, setVarient] = useState(false);
   const [colorVar, setColorVar] = useState(false);
-  const [color, setColor] = useState([]);
+  const [color, setColor] = useState('');
+  const [storeColors, setStoreColors] = useState([]);
+  const [colorInput, setColorInput] = useState(false);
   // context
   const { addData } = useProductsContext();
   const { data } = useSubCategories();
-  console.log(color);
   const [status, setStatus] = useState('published');
   const [Freedelivery, setFreeDelivery] = useState(true);
   const [sku, setSku] = useState('');
@@ -75,17 +78,6 @@ const AddProduct = (props) => {
     setDiscountType('Amount');
     setDiscount(0);
     setVariantsNAME('');
-  }
-
-  function checkboxHandler(e) {
-    const value = e.target.value;
-    const isChecked = e.target.checked;
-
-    if (isChecked) {
-      setColor([...color, value]);
-    } else {
-      setColor(color.filter((color) => color !== value));
-    }
   }
 
   // stock popup save functionality
@@ -266,7 +258,18 @@ const AddProduct = (props) => {
       });
     }
   }, []);
-
+  function handelStoreColor() {
+    if (color !== '') {
+      setStoreColors([...storeColors, color]);
+      setColor('');
+      setColorInput(false);
+    }
+  }
+  function handelColorDelete(index) {
+    const updatedColors = [...storeColors];
+    updatedColors.splice(index, 1);
+    setStoreColors(updatedColors);
+  }
   if (loaderstatus) {
     return (
       <>
@@ -590,59 +593,38 @@ const AddProduct = (props) => {
                       {colorVar === true ? (
                         <div>
                           <h2 className="fw-400 fs-2sm black mb-0">Colours Varient</h2>
-                          <div className=" d-flex align-items-center justify-content-between mt-3 pt-1 me-5">
-                            <div className="d-flex align-items-center">
-                              <label className="fs-xs fw-400 black" htmlFor="green">
-                                Green
-                              </label>
-                              <input type="color" />
-                              <input
-                                className="fs-xs fw-400 black varient_btn ms-3 ps-1"
-                                type="radio"
-                                id="green"
-                                value="green"
-                                checked={color.includes('green')}
-                              />
-                            </div>
-                            <div className="d-flex align-items-center">
-                              <label className="fs-xs fw-400 black" htmlFor="black">
-                                Black
-                              </label>
-                              <input
-                                onChange={checkboxHandler}
-                                className="fs-xs fw-400 black varient_btn ms-3 ps-1"
-                                type="radio"
-                                id="black"
-                                value="black"
-                                checked={color.includes('black')}
-                              />
-                            </div>
-                            <div className="d-flex align-items-center">
-                              <label className="fs-xs fw-400 black" htmlFor="purple">
-                                Purple
-                              </label>
-                              <input
-                                onChange={checkboxHandler}
-                                className="fs-xs fw-400 black varient_btn ms-3 ps-1"
-                                type="radio"
-                                id="purple"
-                                value="purple"
-                                checked={color.includes('purple')}
-                              />
-                            </div>
-                            <div className="d-flex align-items-center">
-                              <label className="fs-xs fw-400 black" htmlFor="lightGreen">
-                                Light Green
-                              </label>
-                              <input
-                                onChange={checkboxHandler}
-                                className="fs-xs fw-400 black varient_btn ms-3 ps-1"
-                                type="radio"
-                                id="lightGreen"
-                                value="lightGreen"
-                                checked={color.includes('lightGreen')}
-                              />
-                            </div>
+                          <div className=" d-flex align-items-center mt-3 pt-1 me-5 gap-3 flex-wrap">
+                            {storeColors.map((items, index) => {
+                              return (
+                                <div
+                                  key={index}
+                                  className="d-flex align-items-center gap-3 color_add_input">
+                                  <p className="m-0">{items}</p>
+                                  <img
+                                    onClick={() => handelColorDelete(index)}
+                                    src={closeRed}
+                                    alt="closeRed"
+                                  />
+                                </div>
+                              );
+                            })}
+                            {colorInput ? (
+                              <div className="color_add_input d-flex align-items-center">
+                                <input
+                                  onChange={(e) => setColor(e.target.value)}
+                                  className="fs-xs fw-400 black me-2"
+                                  type="text"
+                                  value={color}
+                                />
+                                <img onClick={handelStoreColor} src={checkGreen} alt="checkGreen" />
+                              </div>
+                            ) : null}
+                            <button
+                              onClick={() => setColorInput(true)}
+                              type="button"
+                              className="add_color_btn fs-xs fw-400 fade_grey">
+                              + Add Color
+                            </button>
                           </div>
                         </div>
                       ) : null}
@@ -875,7 +857,7 @@ const AddProduct = (props) => {
                         disabled
                         id="total"
                         value={totalStock}
-                      />{' '}
+                      />
                       <img onClick={() => setStockpopup(true)} src={addIcon} alt="addIcon" />
                     </div>
                     {stockpopup === true ? (

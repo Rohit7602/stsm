@@ -125,7 +125,7 @@ function App() {
                         </Route>
                         <Route path="customer">
                           <Route index element={<Customers />} />
-                          <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
+                                <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
                         </Route>
                         <Route path="orders">
                           <Route index element={<OrdersList />} />
