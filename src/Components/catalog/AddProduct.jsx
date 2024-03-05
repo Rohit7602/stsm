@@ -66,7 +66,7 @@ const AddProduct = () => {
   };
 
 
-  
+
   const [variants, setVariants] = useState([]);
   const [discount, setDiscount] = useState(0);
   const [originalPrice, setOriginalPrice] = useState('');
@@ -87,6 +87,12 @@ const AddProduct = () => {
     setDiscountType('Amount');
     setDiscount(0);
     setVariantsNAME('');
+  }
+
+  function handleDeleteVariant(index) {
+    setVariants((prevVariants) =>
+      prevVariants.filter((_, i) => i !== index)
+    );
   }
 
   // stock popup save functionality
@@ -127,9 +133,6 @@ const AddProduct = () => {
     setDeliveryCharges(0);
     setSalesmanComssion(0);
     setServiceCharge(0);
-
-    pubref.current.checked = false;
-    hidref.current.checked = false;
     // setSearchdata([]);
   }
 
@@ -176,20 +179,21 @@ const AddProduct = () => {
           ServiceCharge,
           DeliveryCharge,
           unitType,
+          colors: storeColors,
           isMultipleVariant: varient === true,
           ...(varient === false
             ? {
-                varients: [
-                  {
-                    originalPrice: originalPrice,
-                    discountType: discountType,
-                    discount: discount,
-                  },
-                ],
-              }
+              varients: [
+                {
+                  originalPrice: originalPrice,
+                  discountType: discountType,
+                  discount: discount,
+                },
+              ],
+            }
             : {
-                varients: variants,
-              }), // Include the actual list of variants if varient is true
+              varients: variants,
+            }), // Include the actual list of variants if varient is true
         });
         setSearchdata([]);
         setLoaderstatus(false);
@@ -257,27 +261,25 @@ const AddProduct = () => {
         setServiceCharge(items.ServiceCharge);
         setSalesmanComssion(items.SalesmanCommission);
         setUnitType(items.unitType);
+        const allVariants = [];
         items.varients.map((itm) => {
-          setVariants((prevVariants) => [
-            ...prevVariants,
-            {
-              VarientName: VarintName,
-              originalPrice: originalPrice,
-              discountType: discountType,
-              discount: discount,
-            },
-          ]);
-
-          setOriginalPrice(itm.originalPrice);
-          setVariantsNAME(itm.VarientName);
-          setDiscount(itm.discount);
-          setDiscountType(itm.discountType);
+          allVariants.push({
+            VarientName: itm.VarientName,
+            originalPrice: itm.originalPrice,
+            discountType: itm.discountType,
+            discount: itm.discount,
+          });
         });
 
-        console.log(items);
+        // Set the state with all the variants
+        setVariants(allVariants);
+        console.log(allVariants)
       });
     }
   }, []);
+
+  console.log(variants)
+
   function handelStoreColor() {
     if (color !== '') {
       setStoreColors([...storeColors, color]);
@@ -285,7 +287,7 @@ const AddProduct = () => {
       setColor('');
     }
   }
-  console.log(storeColors);
+
   function handelColorDelete(index) {
     let updaedColor = [...storeColors];
     updaedColor.splice(index, 1);
@@ -435,7 +437,7 @@ const AddProduct = () => {
                                   )
                                 }
                               />
-                              <img src={deleteicon} alt="deleteicon" />
+                              <img className='cursor_pointer' onClick={() => handleDeleteVariant(index)} src={deleteicon} alt="deleteicon" />
                             </div>
                             <div className="d-flex flex-column flex-sm-row gap-3">
                               <div className="width_33 w_xsm_100">
@@ -472,12 +474,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                              ...v,
-                                              discountType: selectedDiscountType,
-                                              // Reset discount value when changing the discount type to "Amount"
-                                              discount:
-                                                selectedDiscountType === 'Amount' ? 0 : v.discount,
-                                            }
+                                            ...v,
+                                            discountType: selectedDiscountType,
+                                            // Reset discount value when changing the discount type to "Amount"
+                                            discount:
+                                              selectedDiscountType === 'Amount' ? 0 : v.discount,
+                                          }
                                           : v
                                       )
                                     );
@@ -526,7 +528,7 @@ const AddProduct = () => {
                                 className="mt-2 product_input fade_grey fw-400"
                                 placeholder="₹ 0.00"
                                 id="origi"
-                                value={originalPrice}
+                                value={variants.length == 0 ? originalPrice : variants[0].originalPrice}
                                 onChange={(e) => setOriginalPrice(e.target.value)}
                               />
                             </div>
@@ -538,7 +540,7 @@ const AddProduct = () => {
                               <select
                                 className="mt-2 product_input  fade_grey fw-400"
                                 id="Discount"
-                                value={discountType}
+                                value={variants.length == 0 ? discountType : variants[0].discountType}
                                 onChange={(e) => {
                                   setDiscountType(e.target.value);
                                 }}>
@@ -565,7 +567,7 @@ const AddProduct = () => {
                                 className="mt-2 product_input fade_grey fw-400"
                                 placeholder={discountType !== 'Percentage' ? '₹ 0.00' : '%'}
                                 id="ddisc"
-                                value={discount}
+                                value={variants.length == 0 ? discount : variants[0].discount}
                                 onChange={(e) => {
                                   if (discountType === 'Percentage') {
                                     if (e.target.value < 101 && e.target.value >= 0) {
@@ -958,11 +960,10 @@ const AddProduct = () => {
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${
-                                    selectedCategory && selectedCategory.id === category.id
-                                      ? 'selected'
-                                      : ''
-                                  }`}
+                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
+                                    ? 'selected'
+                                    : ''
+                                    }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (
