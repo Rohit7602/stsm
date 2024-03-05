@@ -16,9 +16,11 @@
   font-family: 'Outfit', sans-serif;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
+  /* text-decoration: none !important; */
+}
+a {
   text-decoration: none !important;
 }
-
 body {
   scroll-behavior: smooth !important;
 }
@@ -1382,6 +1384,24 @@ tbody::-webkit-scrollbar {
 }
 .steps::-webkit-scrollbar {
   height: 5px;
+}.ql-toolbar.ql-snow {
+  border: transparent !important;
+
+}
+
+.ql-container.ql-snow {
+  border: transparent !important;
+}
+.no-scroll{
+  overflow: hidden !important;
+}
+.ql-editor {
+  height: 200px !important; /* Adjust the value to your desired fixed height */
+  overflow-y: auto;  /* Adjust the value to your desired height */
+}
+.custom-underline {
+  text-decoration: underline !important;
+  /* Add any additional custom properties here */
 }
 .add_color_btn {
   background-color: transparent;
