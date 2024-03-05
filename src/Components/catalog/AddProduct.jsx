@@ -66,14 +66,7 @@ const AddProduct = () => {
   };
 
 
-
-
-
-
-
-
-
-
+  
   const [variants, setVariants] = useState([]);
   const [discount, setDiscount] = useState(0);
   const [originalPrice, setOriginalPrice] = useState('');
@@ -224,9 +217,6 @@ const AddProduct = () => {
         });
         handleReset();
         addData(docRef);
-
-
-
       } catch (e) {
         toast.error(e, {
           position: toast.POSITION.TOP_RIGHT,
