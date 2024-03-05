@@ -23,8 +23,6 @@ import { useSubCategories } from '../../context/categoriesGetter';
 import { useParams } from 'react-router-dom';
 import { increment } from 'firebase/firestore';
 
-
-
 const AddProduct = () => {
   const { productData } = useProductsContext();
   const productId = useParams();
@@ -41,7 +39,6 @@ const AddProduct = () => {
   const { data } = useSubCategories();
   // console.log(color);
   const [status, setStatus] = useState('published');
-  const [Freedelivery, setFreeDelivery] = useState(true);
   const [sku, setSku] = useState('');
   const [totalStock, setTotalStock] = useState('');
   const [StockCount, setStockCount] = useState('');
@@ -57,7 +54,6 @@ const AddProduct = () => {
   const [ServiceCharge, setServiceCharge] = useState(0);
   const [SalesmanCommission, setSalesmanComssion] = useState(0);
 
-
   //  search functionaltiy in categories and selected categories
   const [searchvalue, setSearchvalue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -68,15 +64,6 @@ const AddProduct = () => {
     setSelectedCategory(category);
     setSelectedCategoryId(category.id);
   };
-
-
-
-
-
-
-
-
-
 
   const [variants, setVariants] = useState([]);
   const [discount, setDiscount] = useState(0);
@@ -130,21 +117,19 @@ const AddProduct = () => {
     setVariants([]);
     setCategories();
     setStatus('published');
-    setFreeDelivery(true);
     setSku();
     setTotalStock();
     setImageUpload22([]);
     setSelectedCategory(null);
     setStockPrice('');
-    setDeliveryCharges(0)
-    setSalesmanComssion(0)
-    setServiceCharge(0)
+    setDeliveryCharges(0);
+    setSalesmanComssion(0);
+    setServiceCharge(0);
 
     pubref.current.checked = false;
     hidref.current.checked = false;
     // setSearchdata([]);
   }
-
 
   async function handlesave(e) {
     e.preventDefault();
@@ -175,7 +160,6 @@ const AddProduct = () => {
           longDescription: longDes,
           status: status,
           sku: sku,
-          Freedelivery: Freedelivery,
           totalStock: totalStock,
           stockAlert: StockCount,
           categories: {
@@ -193,23 +177,23 @@ const AddProduct = () => {
           isMultipleVariant: varient === true,
           ...(varient === false
             ? {
-              varients: [
-                {
-                  originalPrice: originalPrice,
-                  discountType: discountType,
-                  discount: discount,
-                },
-              ],
-            }
+                varients: [
+                  {
+                    originalPrice: originalPrice,
+                    discountType: discountType,
+                    discount: discount,
+                  },
+                ],
+              }
             : {
-              varients: variants,
-            }), // Include the actual list of variants if varient is true
+                varients: variants,
+              }), // Include the actual list of variants if varient is true
         });
         setSearchdata([]);
         setLoaderstatus(false);
 
         await updateDoc(doc(db, 'sub_categories', selectedCategoryId), {
-          'noOfProducts': increment(1)
+          noOfProducts: increment(1),
         });
 
         toast.success('Product added Successfully !', {
@@ -217,9 +201,6 @@ const AddProduct = () => {
         });
         handleReset();
         addData(docRef);
-
-
-
       } catch (e) {
         toast.error(e, {
           position: toast.POSITION.TOP_RIGHT,
@@ -264,14 +245,16 @@ const AddProduct = () => {
         setShortDes(items.shortDescription);
         setLongDes(items.longDescription);
         setStatus(items.status);
-        setFreeDelivery(items.Freedelivery);
         setTotalStock(items.totalStock);
         setSku(items.sku);
         setVarient(items.isMultipleVariant);
         setVariantsNAME(items.varients.VarientName);
         setSelectedCategory(items.categories.name);
         setImageUpload22(items.productImages);
-
+        setDeliveryCharges(items.DeliveryCharge);
+        setServiceCharge(items.ServiceCharge);
+        setSalesmanComssion(items.SalesmanCommission);
+        setUnitType(items.unitType);
         items.varients.map((itm) => {
           setVariants((prevVariants) => [
             ...prevVariants,
@@ -287,15 +270,25 @@ const AddProduct = () => {
           setVariantsNAME(itm.VarientName);
           setDiscount(itm.discount);
           setDiscountType(itm.discountType);
-
-          console.log(itm.VarientName);
         });
 
         console.log(items);
-        console.log(items.varients);
       });
     }
   }, []);
+  function handelStoreColor() {
+    if (color !== '') {
+      setStoreColors([...storeColors, color]);
+      setColorInput(false);
+      setColor('');
+    }
+  }
+  console.log(storeColors);
+  function handelColorDelete(index) {
+    let updaedColor = [...storeColors];
+    updaedColor.splice(index, 1);
+    setStoreColors(updaedColor);
+  }
 
   if (loaderstatus) {
     return (
@@ -477,12 +470,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                            ...v,
-                                            discountType: selectedDiscountType,
-                                            // Reset discount value when changing the discount type to "Amount"
-                                            discount:
-                                              selectedDiscountType === 'Amount' ? 0 : v.discount,
-                                          }
+                                              ...v,
+                                              discountType: selectedDiscountType,
+                                              // Reset discount value when changing the discount type to "Amount"
+                                              discount:
+                                                selectedDiscountType === 'Amount' ? 0 : v.discount,
+                                            }
                                           : v
                                       )
                                     );
@@ -628,6 +621,7 @@ const AddProduct = () => {
                                   <p className="m-0">{items}</p>
                                   <img
                                     onClick={() => handelColorDelete(index)}
+                                    className="cursor_pointer"
                                     src={closeRed}
                                     alt="closeRed"
                                   />
@@ -642,7 +636,12 @@ const AddProduct = () => {
                                   type="text"
                                   value={color}
                                 />
-                                <img onClick={handelStoreColor} src={checkGreen} alt="checkGreen" />
+                                <img
+                                  onClick={handelStoreColor}
+                                  className="cursor_pointer"
+                                  src={checkGreen}
+                                  alt="checkGreen"
+                                />
                               </div>
                             ) : null}
                             <button
@@ -709,55 +708,32 @@ const AddProduct = () => {
                     <h2 className="fw-400 fs-2sm black mb-0">
                       Status <span className="red ms-1 fs-sm">*</span>
                     </h2>
-                    <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
-                      <label className="check fw-400 fs-sm black mb-0">
-                        Published
-                        <input
-                          onChange={() => setStatus('published')}
-                          type="radio"
-                          checked={status === 'published'}
-                        />
-                        <span className="checkmark"></span>
-                      </label>
-                    </div>
-                    <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3 pb-3">
-                      <label className="check fw-400 fs-sm black mb-0">
-                        Hidden
-                        <input
-                          onChange={() => setStatus('hidden')}
-                          type="radio"
-                          checked={status === 'hidden'}
-                        />
-                        <span className="checkmark"></span>
-                      </label>
+                    <div className="d-flex align-items-center pb-3">
+                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
+                        <label className="check fw-400 fs-sm black mb-0">
+                          Published
+                          <input
+                            onChange={() => setStatus('published')}
+                            type="radio"
+                            checked={status === 'published'}
+                          />
+                          <span className="checkmark"></span>
+                        </label>
+                      </div>
+                      <div className="mt-3 ms-5 py-1 d-flex align-items-center gap-3">
+                        <label className="check fw-400 fs-sm black mb-0">
+                          Hidden
+                          <input
+                            onChange={() => setStatus('hidden')}
+                            type="radio"
+                            checked={status === 'hidden'}
+                          />
+                          <span className="checkmark"></span>
+                        </label>
+                      </div>
                     </div>
                   </div>
                   <div>
-                    <h2 className="fw-400 fs-2sm black mb-0 pt-3">Free Delivery</h2>
-                    <div className="d-flex align-items-center">
-                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3 w-50">
-                        <label className="check fw-400 fs-sm black mb-0">
-                          Yes
-                          <input
-                            onChange={() => setFreeDelivery(true)}
-                            type="radio"
-                            checked={Freedelivery === true}
-                          />
-                          <span className="checkmark"></span>
-                        </label>
-                      </div>
-                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3 w-50">
-                        <label className="check fw-400 fs-sm black mb-0">
-                          No
-                          <input
-                            onChange={() => setFreeDelivery(false)}
-                            type="radio"
-                            checked={Freedelivery === false}
-                          />
-                          <span className="checkmark"></span>
-                        </label>
-                      </div>
-                    </div>
                     <label htmlFor="deliveryCharge" className="fs-xs fw-400 mt-3 black pt-1">
                       Delivery Charge
                     </label>
@@ -786,7 +762,6 @@ const AddProduct = () => {
                         id="serviceCharge"
                         value={ServiceCharge}
                         onChange={(e) => setServiceCharge(e.target.value)}
-
                       />
                     </div>
                     <label htmlFor="salesMan" className="fs-xs fw-400 mt-3 black">
@@ -981,10 +956,11 @@ const AddProduct = () => {
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                    ? 'selected'
-                                    : ''
-                                    }`}
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (
