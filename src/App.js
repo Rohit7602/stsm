@@ -24,7 +24,7 @@ import CheckConnection from './Components/CheckConnection';
 
 import { permissionHandler } from './firebase';
 import DeliveryManList from './Components/deliveryman/DeliveryManList';
-import PrivacyPolicy from './Components/Security/PrivacyPolicy';
+import PrivacyPolicy from './Components/PrivacyPolicy/PrivacyPolicy';
 import TermConditions from './Components/Security/TermConditions/TermConditions';
 import Faqs from './Components/faqs/Faqs';
 
