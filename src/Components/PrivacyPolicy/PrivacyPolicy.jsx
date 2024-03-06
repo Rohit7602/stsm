@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Link } from "react-router-dom";
-const TermConditions = () => {
+const PrivacyPolicy = () => {
   return (
     <div className="main_panel_wrapper bg_light_grey w-100">
       <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
         <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
           <div className="d-flex">
-            <h1 className="fw-500   black fs-lg mb-0">Terms and Conditions</h1>
+            <h1 className="fw-500   black fs-lg mb-0">Privacy Policy</h1>
           </div>
           <Link className="addnewproduct_btn black  fs-sm px-sm-3 px-2 py-2 fw-400 ">
             Update
@@ -18,9 +18,9 @@ const TermConditions = () => {
           <ReactQuill
             style={{ height: "400px" }}
             className="rounded-lg border w-full mt-[30px] p-[10px] border-[#D9D9D9] border-solid outline-none h-100"
-            modules={TermConditions.modules}
+            modules={PrivacyPolicy.modules}
             onChange={(content) => console.log("content", content)}
-            formats={TermConditions.formats}
+            formats={PrivacyPolicy.formats}
             placeholder="Write something..."
           />
         </div>
@@ -29,7 +29,7 @@ const TermConditions = () => {
   );
 };
 
-TermConditions.modules = {
+PrivacyPolicy.modules = {
   toolbar: [
     [{ header: "1" }, { header: "2" }, { font: [] }],
     [{ size: [] }],
@@ -47,7 +47,7 @@ TermConditions.modules = {
     matchVisual: true,
   },
 };
-TermConditions.formats = [
+PrivacyPolicy.formats = [
   "header",
   "font",
   "size",
@@ -64,4 +64,5 @@ TermConditions.formats = [
   "video",
 ];
 
-export default TermConditions;
+
+export default PrivacyPolicy;

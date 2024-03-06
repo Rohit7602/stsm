@@ -27,7 +27,7 @@ import { UseServiceContext } from "../../context/ServiceAreasGetter";
 import Deletepopup from "../popups/Deletepopup";
 import Updatepopup from "../popups/Updatepopup";
 
-const ServiceArea = () => {
+const DeliveryManList = () => {
   const { ServiceData, addServiceData, deleteServiceData, updateServiceData } =
     UseServiceContext();
   const [addsServicePopup, setAddsServicePopup] = useState(false);
@@ -71,11 +71,6 @@ const ServiceArea = () => {
     // Update the data using the updateData function from your context
     updateServiceData(sortedData);
   };
-
-
-
- 
-
   const [selectAll, setSelectAll] = useState(false);
 
   useEffect(() => {
@@ -94,7 +89,12 @@ const ServiceArea = () => {
     updateServiceData(updatedData);
     setSelectAll(!selectAll);
   };
- 
+  // Datacheckboxes functionality strat from here
+  const handleCheckboxChange = (index) => {
+    const updatedData = [...ServiceData];
+    updatedData[index].checked = !ServiceData[index].checked;
+    updateServiceData(updatedData);
+  }
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
@@ -165,12 +165,12 @@ const ServiceArea = () => {
                           </p>
                         </div>
                       </th>
-                      <th className="mx_100 px-2">
+                      <th className="mx_160 px-2">
                         <h3 className="fs-sm fw-400 black mb-0">Work type</h3>
                       </th>
-                      <th className="mw-200 ps-3">
+                      <th className="mx_160 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">
-                          Total delivery
+                        Total Order’s
                         </h3>
                       </th>
                       <th
@@ -189,15 +189,15 @@ const ServiceArea = () => {
                           </span>
                         </p>
                       </th>
-                      <th className="mw-200 ps-3">
+                      <th className="mx_160 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">
                           Service area
                         </h3>
                       </th>
-                      <th className="mw-200 ps-3">
+                      <th className="mx_160 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Contact</h3>
                       </th>
-                      <th className="mw-90 p-3 me-1 text-center">
+                      <th className="mx_160 p-3 me-1 text-center">
                         <h3 className="fs-sm fw-400 black mb-0">Action</h3>
                       </th>
                     </tr>
@@ -209,9 +209,45 @@ const ServiceArea = () => {
                         : data.AreaName.toLowerCase().includes(searchvalue);
                     }).map((data, index) => {
                       return (
-                        <tr className="product_borderbottom">
-                       
-                      
+                          <tr className="product_borderbottom">
+                          <td className="py-3 ps-3  mx_160">
+                            <div className="d-flex align-items-center gap-3 ">
+                              <label class="check1 fw-400 fs-sm black mb-0">
+                                <input
+                                  type="checkbox"
+                                  checked={data.checked || false}
+                                  onChange={() => handleCheckboxChange(index)}
+                                />
+                                <span class="checkmark"></span>
+                              </label>
+                              <div className="">
+                                <p className="fw-400 fs-sm black mb-0 ms-2">John Doe</p>
+                                <p className="fw-400 fs-xs black mb-0 ms-2">ID 53663</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-2 mx_160">
+                            <h3 className="fs-sm fw-400 black mb-0">Full time</h3>
+                          </td>
+                          <td className="mx_160 ps-3">
+                        <h3 className="fs-sm fw-400 black mb-0">
+                        Total Order’s
+                        </h3>
+                      </td>
+                           <td className="px-2 mx_160">
+                            <h3 className="fs-sm fw-400 black mb-0">Full time</h3>
+                          </td>
+                          <td className="ps-4 mw-200">
+                            <h3 className="fs-sm fw-400 black mb-0">{data.ExpectedDelivery}</h3>
+                          </td>
+                          <td className="mx_140">
+                            <h3 className="fs-sm fw-400 black mb-0 color_green ms-5">
+                              {data.ServiceStatus}
+                            </h3>
+                          </td>
+                          <td className="text-center mw-90">
+                           fghjkn
+                          </td>
                         </tr>
                       );
                     })}
@@ -229,4 +265,4 @@ const ServiceArea = () => {
   }
 };
 
-export default ServiceArea;
+export default DeliveryManList;
