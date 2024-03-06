@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import closeIcon from '../../Images/svgs/closeicon.svg';
 
 export default function Deletepopup(props) {
-  const { showPopup, handleDelete, itemName } = props;
+  const { handleDelete, itemName } = props;
   let showdelPopup = props.showPopup;
   function handehidePopup() {
     showdelPopup(false);
