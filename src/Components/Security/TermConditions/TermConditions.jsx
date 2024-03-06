@@ -57,21 +57,27 @@ const TermConditions = () => {
 
   } else {
     return (
-      <div >
-        <button onClick={handleUpdateData} className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">Update Data </button>
-
-        <div className="rich-text-editor">
-          <ReactQuill style={{ height: "400px" }}
-            className="rounded-lg border w-full mt-[30px] p-[10px] border-[#D9D9D9] border-solid outline-none h-100"
-            modules={TermConditions.modules}
-            value={value}
-            onChange={handleChange}
-            formats={TermConditions.formats}
-            preserveWhitespace
-            placeholder="Write something..."
-          />
+      <div className="main_panel_wrapper bg_light_grey w-100">
+        <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
+          <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
+            <div className="d-flex">
+              <h1 className="fw-500   black fs-lg mb-0">Terms and Conditions</h1>
+            </div>
+            <Link className="addnewproduct_btn black  fs-sm px-sm-3 px-2 py-2 fw-400 ">
+              Update
+            </Link>
+          </div>
+          <div className="rich-text-editor mt-5">
+            <ReactQuill
+              style={{ height: "400px" }}
+              className="rounded-lg border w-full mt-[30px] p-[10px] border-[#D9D9D9] border-solid outline-none h-100"
+              modules={TermConditions.modules}
+              onChange = {handleChange }
+              formats={TermConditions.formats}
+              placeholder="Write something..."
+            />
+          </div>
         </div>
-        <ToastContainer></ToastContainer>
       </div>
     );
   };
