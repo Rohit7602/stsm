@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import faqIcon from '../../Images/svgs/ques-icon.svg';
 import dropdownDots from '../../Images/svgs/dots2.svg';
 import deleteIcon from '../../Images/svgs/black-delete.svg';
@@ -32,6 +32,8 @@ export default function Faqs() {
         let docref = addDoc(collection(db, 'FAQ'), {
           question: quse,
           answer: ans,
+          created_at: Date.now(),
+          updated_at: Date.now()
         });
         addfaq(docref);
         setloading(false);
@@ -62,6 +64,42 @@ export default function Faqs() {
   }
 
 
+  function handleCancelEditpopup() {
+    setAddQusPopup(false);
+    setEditQusPopup(false);
+  }
+
+  async function handleUpdateQuestion(id) {
+    setloading(true)
+    try {
+      const updatedData = {
+        question: quse,
+        answer: ans,
+      }
+
+      await updateDoc(doc(db, 'FAQ', id), updatedData)
+
+      updatefAqData(
+        {
+          id,
+          ...updatedData
+        }
+      )
+
+      setloading(false)
+      handleCancelEditpopup()
+
+      toast.success('Question updated Successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+    } catch (error) {
+      setloading(false)
+      console.log("error in updating FAQ ", error)
+    }
+  }
+
+
   async function handleDeleteQuestion(id) {
 
     try {
@@ -78,7 +116,7 @@ export default function Faqs() {
   }
 
 
-  
+
 
 
 
@@ -133,8 +171,8 @@ export default function Faqs() {
             ) : null}
             {editQusPopup ? (
               <div className="d-flex align-items-center justify-content-end gap-2 mt-3 pt-1">
-                <button className="fs-sm fw-400 black qes_reset_btn">Cancel</button>
-                <button className="fs-sm fw-400 black qes_save_btn">Update</button>
+                <button onClick={handleCancelEditpopup} className="fs-sm fw-400 black qes_reset_btn">Cancel</button>
+                <button onClick={() => handleUpdateQuestion(questionId)} className="fs-sm fw-400 black qes_save_btn">Update</button>
               </div>
             ) : null}
           </div>
@@ -205,7 +243,11 @@ export default function Faqs() {
                         </li>
                         <li>
                           <div
-                            onClick={() => handelEditQus(index)}
+                            onClick={() => {
+                              handelEditQus(index)
+                              setQuestionId(item.id)
+                            }
+                            }
                             class="dropdown-item d-flex align-items-center cursor_pointer">
                             <img src={editIcon} alt="editIcon" />
                             <p className="m-0 ms-2">Edit Quction</p>

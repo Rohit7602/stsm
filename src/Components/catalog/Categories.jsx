@@ -24,7 +24,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ref, uploadBytes, getDownloadURL, getStorage, deleteObject } from 'firebase/storage';
 import { storage, db } from '../../firebase';
 import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
-import Deletepopup from '../popups/Deletepopup';
+
 import Updatepopup from '../popups/Updatepopup';
 import Loader from '../Loader';
 import { increment } from 'firebase/firestore';
@@ -42,6 +42,9 @@ const Categories = () => {
   const [selectedSubcategoryparentId, setselectedSubcategoryparentId] = useState(null);
   const [selectedSubcategoryImage, setSelectedSubcategoryImage] = useState(null);
   const [selectedSubcategoryStatus, setSelectedSubcategoryStatus] = useState(null);
+  const [cat_id, setCat_ID] = useState('')
+
+
   const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);
   };
@@ -91,33 +94,7 @@ const Categories = () => {
     updateSubData(sortedData);
   };
 
-  /*  *******************************
-      Delete functionality start 
-   *********************************************   **/
 
-  async function handleDeleteCategory(id, image, parentId) {
-    try {
-      await deleteDoc(doc(db, 'sub_categories', id)).then(() => {
-        if (image.length !== 0) {
-          var st = getStorage();
-          var reference = ref(st, image);
-          deleteObject(reference);
-        }
-        deleteData(id);
-      });
-
-      await updateDoc(doc(db, 'categories', parentId), {
-        'noOfSubcateogry': increment(-1)
-      });
-
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  /*  *******************************
-      Delete functionality end 
-    *********************************************   **/
 
   /*  *******************************
       Change status functionality start 
@@ -197,12 +174,26 @@ const Categories = () => {
         title: editCatName,
         status: editStatus,
         image: imageUrl,
-        updated_at: Date.now()
+        updated_at: Date.now(),
+        cat_ID: cat_id
       };
 
       // Update the category ID only if a new category is selected
       if (selectedCategory && selectedCategory.id) {
         updateData.cat_ID = selectedCategory.id;
+
+        let afterchange = selectedCategory.id
+
+
+        await updateDoc(doc(db, 'categories', cat_id), {
+          'noOfSubcateogry': increment(-1)
+        });
+
+
+        await updateDoc(doc(db, 'categories', afterchange), {
+          'noOfSubcateogry': increment(1)
+        })
+
       }
 
       await updateDoc(doc(db, 'sub_categories', selectedSubcategoryId), updateData);
@@ -217,6 +208,7 @@ const Categories = () => {
       toast.success('Category updated Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
+
     } catch (error) {
       console.log(error);
       toast.error(error, {
@@ -446,6 +438,7 @@ const Categories = () => {
                                           setEditCatImg(value.image);
                                           setSelectedCategory(getParentCategoryName(value.cat_ID));
                                           setEditStatus(value.status);
+                                          setCat_ID(value.cat_ID)
                                         }}
                                         className="d-flex align-items-center categorie_dropdown_options">
                                         <img src={pencil_icon} alt="" />
@@ -472,21 +465,6 @@ const Categories = () => {
                                       </div>
                                     </div>
                                   </li>
-                                  <li>
-                                    <div class="dropdown-item" href="#">
-                                      <div
-                                        className="d-flex align-items-center categorie_dropdown_options"
-                                        onClick={() => {
-                                          setselectedSubcategoryparentId(value.cat_ID)
-                                          setSelectedSubcategoryId(value.id);
-                                          setSelectedSubcategoryImage(value.image);
-                                          setDeletePopup(true);
-                                        }}>
-                                        <img src={delete_icon} alt="" />
-                                        <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
-                                      </div>
-                                    </div>
-                                  </li>
                                 </ul>
                               </div>
                             </td>
@@ -499,15 +477,6 @@ const Categories = () => {
               </div>
             </div>
           </div>
-          {deletepopup ? (
-            <Deletepopup
-              showPopup={setDeletePopup}
-              handleDelete={() =>
-                handleDeleteCategory(selectedSubcategoryId, selectedSubcategoryImage, selectedSubcategoryparentId)
-              }
-              itemName="SubCategory"
-            />
-          ) : null}
           {statusPopup ? (
             <Updatepopup
               statusPopup={setStatusPopup}

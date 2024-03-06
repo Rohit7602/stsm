@@ -75,17 +75,9 @@ export const SubCategoriesProvider = ({ children }) => {
         }
     };
 
-    // Function to delete data
-    const deleteData = async (categoriesId) => {
-        try {
-            setData(prevData => prevData.filter(categories => categories.id !== categoriesId));
-        } catch (error) {
-            console.error(error);
-        }
-    };
 
     return (
-        <SubCategoriesContext.Provider value={{ data: memodata, deleteData, updateSubData,addData }}>
+        <SubCategoriesContext.Provider value={{ data: memodata, updateSubData,addData }}>
             {children}
         </SubCategoriesContext.Provider>
     ); 

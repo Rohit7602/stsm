@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Link } from "react-router-dom";
 import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 import { addDoc, collection, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase";
-import { doc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { ToastContainer, toast } from 'react-toastify';
 import Loader from "../../Loader";
-
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -18,11 +17,33 @@ const TermConditions = () => {
   const [loading, setloading] = useState(false)
 
 
+
+  useEffect(() => {
+    setloading(true)
+    const fetchData = async () => {
+      try {
+        const docRef = doc(db, "configs", "Bm71yYK1ZFSjJ9TpFbCm");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setValue(docSnap.data().value || "");
+        }
+      } catch (error) {
+        console.log("Error fetching data:", error);
+      }
+      setloading(false);
+    };
+    fetchData();
+  }, []);
+
+
+
   const handleChange = (content, delta, source, editor) => {
     const deltaOps = editor.getContents().ops;
     const deltaHtml = convertDeltaToHtml(deltaOps);
     setValue(deltaHtml);
   };
+
+
   const convertDeltaToHtml = deltaOps => {
     const converter = new QuillDeltaToHtmlConverter(deltaOps, {});
     return converter.convert();
@@ -63,17 +84,18 @@ const TermConditions = () => {
             <div className="d-flex">
               <h1 className="fw-500   black fs-lg mb-0">Terms and Conditions</h1>
             </div>
-            <Link className="addnewproduct_btn black  fs-sm px-sm-3 px-2 py-2 fw-400 ">
+            <button onClick={(e) => handleUpdateData(e)} className="addnewproduct_btn black  fs-sm px-sm-3 px-2 py-2 fw-400 ">
               Update
-            </Link>
+            </button>
           </div>
           <div className="rich-text-editor mt-5">
             <ReactQuill
               style={{ height: "400px" }}
               className="rounded-lg border w-full mt-[30px] p-[10px] border-[#D9D9D9] border-solid outline-none h-100"
               modules={TermConditions.modules}
-              onChange = {handleChange }
+              onChange={handleChange}
               formats={TermConditions.formats}
+              value={value}
               placeholder="Write something..."
             />
           </div>
