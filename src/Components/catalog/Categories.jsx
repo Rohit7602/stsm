@@ -14,6 +14,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import savegreenicon from '../../Images/svgs/save_green_icon.svg';
 import shortIcon from '../../Images/svgs/short-icon.svg';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
+
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useRef } from 'react';
@@ -23,9 +24,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ref, uploadBytes, getDownloadURL, getStorage, deleteObject } from 'firebase/storage';
 import { storage, db } from '../../firebase';
 import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
-import Deletepopup from '../popups/Deletepopup';
+
 import Updatepopup from '../popups/Updatepopup';
 import Loader from '../Loader';
+import { increment } from 'firebase/firestore';
 
 
 const Categories = () => {
@@ -37,8 +39,12 @@ const Categories = () => {
   const [perName, setPerName] = useState('');
   const [searchvalue, setSearchvalue] = useState('');
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(null);
+  const [selectedSubcategoryparentId, setselectedSubcategoryparentId] = useState(null);
   const [selectedSubcategoryImage, setSelectedSubcategoryImage] = useState(null);
   const [selectedSubcategoryStatus, setSelectedSubcategoryStatus] = useState(null);
+  const [cat_id, setCat_ID] = useState('')
+
+
   const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);
   };
@@ -88,28 +94,7 @@ const Categories = () => {
     updateSubData(sortedData);
   };
 
-  /*  *******************************
-     Delete functionality start 
-   *********************************************   **/
 
-  async function handleDeleteCategory(id, image) {
-    try {
-      await deleteDoc(doc(db, 'sub_categories', id)).then(() => {
-        if (image.length !== 0) {
-          var st = getStorage();
-          var reference = ref(st, image);
-          deleteObject(reference);
-        }
-        deleteData(id);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  /*  *******************************
-      Delete functionality end 
-    *********************************************   **/
 
   /*  *******************************
       Change status functionality start 
@@ -162,7 +147,7 @@ const Categories = () => {
       Edit  Image  functionality end 
    *********************************************   **/
 
-  
+
 
   /*  *******************************
       Edit  Category   functionality start 
@@ -188,21 +173,33 @@ const Categories = () => {
       const updateData = {
         title: editCatName,
         status: editStatus,
-        image: imageUrl
+        image: imageUrl,
+        updated_at: Date.now(),
+        cat_ID: cat_id
       };
 
       // Update the category ID only if a new category is selected
       if (selectedCategory && selectedCategory.id) {
         updateData.cat_ID = selectedCategory.id;
+
+        let afterchange = selectedCategory.id
+
+
+        await updateDoc(doc(db, 'categories', cat_id), {
+          'noOfSubcateogry': increment(-1)
+        });
+
+
+        await updateDoc(doc(db, 'categories', afterchange), {
+          'noOfSubcateogry': increment(1)
+        })
+
       }
 
       await updateDoc(doc(db, 'sub_categories', selectedSubcategoryId), updateData);
 
       updateSubData({
         selectedSubcategoryId,
-
-
-        
         ...updateData
       });
 
@@ -211,6 +208,7 @@ const Categories = () => {
       toast.success('Category updated Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
+
     } catch (error) {
       console.log(error);
       toast.error(error, {
@@ -440,6 +438,7 @@ const Categories = () => {
                                           setEditCatImg(value.image);
                                           setSelectedCategory(getParentCategoryName(value.cat_ID));
                                           setEditStatus(value.status);
+                                          setCat_ID(value.cat_ID)
                                         }}
                                         className="d-flex align-items-center categorie_dropdown_options">
                                         <img src={pencil_icon} alt="" />
@@ -452,6 +451,7 @@ const Categories = () => {
                                       <div
                                         className="d-flex align-items-center categorie_dropdown_options"
                                         onClick={() => {
+
                                           setSelectedSubcategoryId(value.id);
                                           setSelectedSubcategoryStatus(value.status);
                                           setStatusPopup(true);
@@ -462,20 +462,6 @@ const Categories = () => {
                                             ? 'change to  publish'
                                             : 'Change to hidden'}
                                         </p>
-                                      </div>
-                                    </div>
-                                  </li>
-                                  <li>
-                                    <div class="dropdown-item" href="#">
-                                      <div
-                                        className="d-flex align-items-center categorie_dropdown_options"
-                                        onClick={() => {
-                                          setSelectedSubcategoryId(value.id);
-                                          setSelectedSubcategoryImage(value.image);
-                                          setDeletePopup(true);
-                                        }}>
-                                        <img src={delete_icon} alt="" />
-                                        <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
                                       </div>
                                     </div>
                                   </li>
@@ -491,15 +477,6 @@ const Categories = () => {
               </div>
             </div>
           </div>
-          {deletepopup ? (
-            <Deletepopup
-              showPopup={setDeletePopup}
-              handleDelete={() =>
-                handleDeleteCategory(selectedSubcategoryId, selectedSubcategoryImage)
-              }
-              itemName="SubCategory"
-            />
-          ) : null}
           {statusPopup ? (
             <Updatepopup
               statusPopup={setStatusPopup}
@@ -656,20 +633,6 @@ const Categories = () => {
                                   </div>
                                 </Dropdown.Item>
                               ))}
-                            {/* {editsearchvalue &&
-                            !categoreis.some((category) =>
-                              category.title.toLowerCase().includes(editsearchvalue.toLowerCase())
-                            ) && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setPerName(editsearchvalue);
-                                }}
-                                className="addnew_category_btn fs-xs green">
-                                +Add <span className="black">"{editsearchvalue}"</span> in Parent
-                                Category
-                              </button>
-                            )} */}
                           </div>
                         </div>
                       </Dropdown.Menu>

@@ -129,3 +129,17 @@
 //     OrderPrice: '₹ 1,290.00',
 //   },
 // ];
+
+
+export const Units = [
+    'Pcs',
+    'Gram',
+    'KG',
+    'Liter',
+    'BAG',
+    'PACKET',
+    'PETI',
+    'BOX',
+    'TIN',
+    'SET'
+]

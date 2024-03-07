@@ -141,7 +141,7 @@ const DeliveryManList = () => {
                     <tr className="product_borderbottom">
                       <th
                         onClick={() => sorting("AreaName")}
-                        className="py-3 ps-3  cursor_pointer mx_160"
+                        className="py-3 ps-3 text-center cursor_pointer mx_160"
                       >
                         <div className="d-flex align-items-center gap-3 ">
                           <label class="check1 fw-400 fs-sm black mb-0">
@@ -152,7 +152,7 @@ const DeliveryManList = () => {
                             />
                             <span class="checkmark"></span>
                           </label>
-                          <p className="fw-400  fs-sm black mb-0 ms-2">
+                          <p className="fw-400 text-center   fs-sm black mb-0 ms-2">
                             Name
                             <span>
                               <img
@@ -165,19 +165,19 @@ const DeliveryManList = () => {
                           </p>
                         </div>
                       </th>
-                      <th className="mx_160 px-2">
+                      <th className="mx_160 text-center  px-2">
                         <h3 className="fs-sm fw-400 black mb-0">Work type</h3>
                       </th>
-                      <th className="mx_160 px-2">
+                      <th className="mx_160 px-2 text-center ">
                         <h3 className="fs-sm fw-400 black mb-0">
                           Total Order’s
                         </h3>
                       </th>
                       <th
                         onClick={() => sorting("ServiceStatus")}
-                        className="mx_140 px-2 cursor_pointer"
+                        className="mx_140 text-center  px-2 cursor_pointer"
                       >
-                        <p className="fw-400 fs-sm black mb-0 ">
+                        <p className="fw-400 text-center  fs-sm black mb-0 ">
                           Status
                           <span>
                             <img
@@ -189,16 +189,16 @@ const DeliveryManList = () => {
                           </span>
                         </p>
                       </th>
-                      <th className="mx_160 px-2">
+                      <th className="mx_160 text-center  px-2">
                         <h3 className="fs-sm fw-400 black mb-0">
                           Service area
                         </h3>
                       </th>
-                      <th className="mx_160 px-2">
+                      <th className="mx_160 text-center  px-2">
                         <h3 className="fs-sm fw-400 black mb-0">Contact</h3>
                       </th>
                       <th className="mx_160 px-2 me-1 text-center">
-                        <h3 className="fs-sm fw-400 black mb-0">Action</h3>
+                        <h3 className="fs-sm fw-400  black mb-0">Action</h3>
                       </th>
                     </tr>
                   </thead>
@@ -210,7 +210,7 @@ const DeliveryManList = () => {
                     }).map((data, index) => {
                       return (
                         <tr className="product_borderbottom">
-                          <td className="py-3 ps-3  mx_160">
+                          <td className="py-3 px-3 text-center  mx_160">
                             <div className="d-flex align-items-center gap-3 ">
                               <label class="check1 fw-400 fs-sm black mb-0">
                                 <input
@@ -220,40 +220,40 @@ const DeliveryManList = () => {
                                 />
                                 <span class="checkmark"></span>
                               </label>
-                              <div className="">
-                                <p className="fw-400 fs-sm black mb-0 ms-2">
+                              <div className="text-center ">
+                                <p className="fw-400 fs-sm black mb-0  ">
                                   John Doe
                                 </p>
-                                <p className="fw-400 fs-xs black mb-0 ms-2">
+                                <p className="fw-400 fs-xs black mb-0  ">
                                   ID 53663
                                 </p>
                               </div>
                             </div>
                           </td>
-                          <td className="mx_160 px-2">
+                          <td className="mx_160 text-center  px-3">
                             <h3 className="fs-sm fw-400 black mb-0">
                               Full time
                             </h3>
                           </td>
-                          <td className="mx_160 px-2">
+                          <td className="mx_160 px-3 text-center ">
                             <h3 className="fs-sm fw-400 green mb-0">10</h3>
                           </td>
-                          <td className="px-2 mx_160">
+                          <td className="px-3 text-center  mx_140">
                             <h3 className="fs-sm fw-400 black mb-0 py-1 px-2 bg_green d-inline-block rounded-1">
                               Online
                             </h3>
                           </td>
-                          <td className="px-2 mx_160">
+                          <td className="px-3 text-center  mx_160">
                             <h3 className="fs-sm fw-400 black mb-0">
                               9 11 sector
                             </h3>
                           </td>
-                          <td className="px-2 mx_160">
+                          <td className="px-3 text-center  mx_160">
                             <h3 className="fs-sm fw-400 black mb-0">
                               +91 849858590
                             </h3>
                           </td>
-                          <td className="text-center mw-90">
+                          <td className="text-center mw-90 px-3">
                             <svg
                               width="25"
                               height="25"

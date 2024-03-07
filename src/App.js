@@ -27,18 +27,15 @@ import DeliveryManList from './Components/deliveryman/DeliveryManList';
 import PrivacyPolicy from './Components/PrivacyPolicy/PrivacyPolicy';
 import TermConditions from './Components/Security/TermConditions/TermConditions';
 import AddDeliveryMan from './Components/deliveryman/AddDeliveryMan';
+import Faqs from './Components/faqs/Faqs';
+
+
 function App() {
   const [user, setUser] = useState(true);
   const [authchecked, setauthchecked] = useState(false);
   const [loading, setloading] = useState(false);
   const location = useLocation();
-  const params = useParams();
-
-  console.log('params id is ', params.id);
-
-  // const [productId, setProductId] = useState('');
-
-  console.log(location.pathname);
+  const params = new URLSearchParams(location.search);
 
   useEffect(() => {
     permissionHandler();
@@ -131,10 +128,7 @@ function App() {
                           <Route path="newcategory" element={<NewCategory />} />
                           <Route path="parentcategories" element={<ParentCategories />} />
                           <Route path="productlist" element={<ProductList />} />
-                          <Route
-                            path={`${params.id ? 'addproduct/:id' : 'addproduct'}`}
-                            element={<AddProduct />}
-                          />
+                          <Route path="/catalog/addproduct/:id?" element={<AddProduct />} />
 
                           <Route path="serviceareas" element={<ServiceAreas />} />
                         </Route>
@@ -155,7 +149,7 @@ function App() {
                         </Route>
                         <Route path="privacypolicy" element={<PrivacyPolicy />} />
                         <Route path="term" element={<TermConditions />} />
-                        
+                        <Route path='FAQ' element={<Faqs></Faqs>} />
                       </Routes>
                     </div>
                   </div>

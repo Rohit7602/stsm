@@ -16,6 +16,8 @@ import { BannerDataProvider } from './context/BannerGetters';
 import { OrderContextProvider } from './context/OrderGetter';
 import { CustomersProvider } from './context/Customergetters';
 import { ServiceContextProvider } from './context/ServiceAreasGetter';
+import { FaqProvider } from './context/Faq';
+
 
 // Put any other imports below so that CSS from your
 // components takes precedence over default styles.
@@ -32,7 +34,9 @@ root.render(
                 <OrderContextProvider>
                   <CustomersProvider>
                     <ServiceContextProvider>
-                      <App />
+                      <FaqProvider>
+                        <App />
+                      </FaqProvider>
                     </ServiceContextProvider>
                   </CustomersProvider>
                 </OrderContextProvider>

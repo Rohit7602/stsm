@@ -1,119 +1,39 @@
-import React, { useState, useEffect, useContext } from "react";
-import saveicon from "../../Images/svgs/saveicon.svg";
-import savegreenicon from "../../Images/svgs/save_green_icon.svg";
-import SearchIcon from "../../Images/svgs/search.svg";
-import whiteSaveicon from "../../Images/svgs/white_saveicon.svg";
-import deleteicon from "../../Images/svgs/deleteicon.svg";
-import closeicon from "../../Images/svgs/closeicon.svg";
-import addIcon from "../../Images/svgs/addicon.svg";
+import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import addicon from "../../Images/svgs/addicon.svg";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "../../firebase";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import Dropdown from "react-bootstrap/Dropdown";
-import { storage } from "../../firebase";
 import { useRef } from "react";
 import { useProductsContext } from "../../context/productgetter";
 import { useSubCategories } from "../../context/categoriesGetter";
 import { useParams } from "react-router-dom";
 const AddDeliveryMan = () => {
-  const { productData } = useProductsContext();
-  const productId = useParams();
-  console.log("product id is ", productId);
   const [name, setName] = useState("");
   const [address, setaddress] = useState("");
+  const [emergencycontact, setEmergencycontact] = useState("");
+  const [phnno, setPhnno] = useState("");
+  const [freeDelivery, setFreeDelivery] = useState(true);
+  const [govt, setGovt] = useState("");
+  const [social, setSocial] = useState("");
+  const [date, setDate] = useState("");
+  const [vechileno, setVechileno] = useState("");
+  const [insurance, setInsurance] = useState("");
+  const [relationship, setRelationship] = useState("");
   const [bankname, setBankname] = useState("");
   const [routingno, setRoutingno] = useState("");
   const [DOB, setDOB] = useState("");
   const [mobile, setMobile] = useState("");
   const [accountname, setAccountname] = useState("");
   const [accountno, setAccountno] = useState("");
-  const [varient, setVarient] = useState(false);
-
-  // context
-  const { addData } = useProductsContext();
-  const { data } = useSubCategories();
-
-  const [status, setStatus] = useState("published");
-  const [Freedelivery, setFreeDelivery] = useState(true);
   const [payment, setPayment] = useState(null);
-  const [sku, setSku] = useState("");
-  const [totalStock, setTotalStock] = useState("");
-  const [StockCount, setStockCount] = useState("");
-  const [stockPrice, setStockPrice] = useState("");
-  const [categories, setCategories] = useState("");
-  const [imageUpload22, setImageUpload22] = useState([]);
-  // const [categoriesdata, setSubcategoriesData] = useState([]);
-  const [searchdata, setSearchdata] = useState([]);
+  const [employmentstatus, setEmploymentstatus] = useState(null);
+  const [vechiletype, setVechiletype] = useState(null);
+
   const [loaderstatus, setLoaderstatus] = useState(false);
-  const [stockpopup, setStockpopup] = useState(false);
-
-  //  search functionaltiy in categories and selected categories
-  const [searchvalue, setSearchvalue] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(null);
-
-  const handleSelectCategory = (category) => {
-    setSearchvalue("");
-    setSelectedCategory(category);
-  };
-
-  const [variants, setVariants] = useState([]);
-  const [discount, setDiscount] = useState("");
-  const [originalPrice, setOriginalPrice] = useState("");
-  const [VarintName, setVariantsNAME] = useState("");
-  const [discountType, setDiscountType] = useState("Amount");
- 
-
-  // stock popup save functionality
-
-  // get total amount functionality
-  function handleTotalQunatity(e) {
-    let value = e.target.value;
-    return setTotalStock(value);
-  }
-
-  function handleSetTotalPrice(e) {
-    let value = e.target.value;
-    return setStockPrice(value);
-  }
-
-  function HandleStockPopUpSave() {
-    setStockpopup(false);
-  }
-
   const pubref = useRef();
   const hidref = useRef();
 
-  function handleReset() {
-    setName();
-    setaddress();
-    setBankname();
-    setRoutingno();
-    setDOB();
-    setMobile();
-    setAccountname();
-    setAccountno();
-    setOriginalPrice(0);
-    setDiscountType("Amount");
-    setDiscount(0);
-    setVariants([]);
-    setCategories();
-    setStatus("published");
-    setFreeDelivery(true);
-    setPayment(true);
-    setSku();
-    setTotalStock();
-    setImageUpload22([]);
-    setSelectedCategory(null);
-    setStockPrice("");
-
-    pubref.current.checked = false;
-    hidref.current.checked = false;
-    // setSearchdata([]);
-  }
+ 
   async function handlesave(e) {
     e.preventDefault();
   }
@@ -319,11 +239,59 @@ const AddDeliveryMan = () => {
                         </div>
                       </div>
                     </div>
-                    <div class="product_shadow bg_white p-3 pb-5 mt-3  ">
+                    <div class="product_shadow bg_white p-4  mt-3  ">
                       <h2 className="fw-400 fs-2sm black mb-0">
-                      Emergency Contact Information
+                        Emergency Contact Information
                       </h2>
-                      </div>
+                      <label
+                        htmlFor="short"
+                        className="fs-xs fw-400 mt-3  black"
+                      >
+                        Name of Emergency Contact
+                      </label>
+                      <br />
+                      <input
+                        type="text"
+                        required
+                        className="mt-2 product_input fade_grey fw-400"
+                        placeholder="name"
+                        id="emergencycontact"
+                        value={emergencycontact}
+                        onChange={(e) => setEmergencycontact(e.target.value)}
+                      />
+                      <label
+                        htmlFor="short"
+                        className="fs-xs fw-400 mt-3  black"
+                      >
+                        Relationship to Employee
+                      </label>
+                      <br />
+                      <input
+                        type="text"
+                        required
+                        className="mt-2 product_input fade_grey fw-400"
+                        placeholder="cousion, mom,dad & other’s"
+                        id="relationship"
+                        value={relationship}
+                        onChange={(e) => setRelationship(e.target.value)}
+                      />
+                      <label
+                        htmlFor="short"
+                        className="fs-xs fw-400 mt-3  black"
+                      >
+                        Contact Phone Number
+                      </label>
+                      <br />
+                      <input
+                        type="text"
+                        required
+                        className="mt-2 product_input fade_grey fw-400"
+                        placeholder="+92 XXXXXXXXX"
+                        id="phnno"
+                        value={phnno}
+                        onChange={(e) => setPhnno(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
               </Col>
@@ -331,242 +299,206 @@ const AddDeliveryMan = () => {
               <Col xxl={4}>
                 {/* Status */}
                 <div className="product_shadow bg_white p-3 mt-3 mt-xxl-0">
-                  <div className="product_borderbottom">
-                    <h2 className="fw-400 fs-2sm black mb-0">
-                      Status <span className="red ms-1 fs-sm">*</span>
-                    </h2>
-                    <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
-                      <label className="check fw-400 fs-sm black mb-0">
-                        Published
-                        <input
-                          onChange={() => setStatus("published")}
-                          type="radio"
-                          checked={status === "published"}
-                        />
-                        <span className="checkmark"></span>
-                      </label>
-                    </div>
-                    <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3 pb-3">
-                      <label className="check fw-400 fs-sm black mb-0">
-                        Hidden
-                        <input
-                          onChange={() => setStatus("hidden")}
-                          type="radio"
-                          checked={status === "hidden"}
-                        />
-                        <span className="checkmark"></span>
-                      </label>
-                    </div>
-                  </div>
                   <div>
-                    <h2 className="fw-400 fs-2sm black mb-0 pt-3">
-                      Free Delivery
+                    <h2 className="fw-400 fs-2sm black mb-0">
+                      Job Title ( Delivery Man )
                     </h2>
-                    <div className="d-flex align-items-center">
-                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3 w-50">
-                        <label className="check fw-400 fs-sm black mb-0">
-                          Yes
-                          <input
-                            onChange={() => setFreeDelivery(true)}
-                            type="radio"
-                            checked={Freedelivery === true}
-                          />
-                          <span className="checkmark"></span>
-                        </label>
-                      </div>
-                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3 w-50">
-                        <label className="check fw-400 fs-sm black mb-0">
-                          No
-                          <input
-                            onChange={() => setFreeDelivery(false)}
-                            type="radio"
-                            checked={Freedelivery === false}
-                          />
-                          <span className="checkmark"></span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* invertory */}
-                <div className="mt-4 product_shadow bg_white p-3">
-                  <h2 className="fw-400 fs-2sm black mb-0">
-                    Inventory <span className="red ms-1 fs-sm">*</span>
-                  </h2>
-                  {/* ist input */}
-                  <label htmlFor="sku" className="fs-xs fw-400 mt-3 black">
-                    SKU
-                  </label>
-                  <br />
-                  <div className="d-flex align-items-center justify-content-between product_input mt-2">
-                    <input
-                      required
-                      type="text"
-                      className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
-                      placeholder="6HK3I5"
-                      value={sku}
-                      id="sku"
-                      onChange={(e) => setSku(e.target.value)}
-                    />
-                  </div>
-                  {/* 2nd input */}
-                  <label htmlFor="total" className="fs-xs fw-400 mt-3 black">
-                    Total Stock{" "}
-                    <span className="fade_grey ms-2">{`Purchase Value : ₹${stockPrice}`}</span>
-                  </label>{" "}
-                  <br />
-                  <div className="position-relative">
-                    <div className="product_input d-flex align-items-center justify-content-between mt-2">
-                      <input
-                        required
-                        type="text"
-                        className="black fw-400 border-0 outline_none bg-white"
-                        placeholder="50"
-                        disabled
-                        id="total"
-                        value={totalStock}
-                      />{" "}
-                      <img
-                        onClick={() => setStockpopup(true)}
-                        src={addIcon}
-                        alt="addIcon"
-                      />
-                    </div>
-                    {stockpopup === true ? (
-                      <div className="stock_popup">
-                        <div
-                          onClick={() => setStockpopup(false)}
-                          className="text-end"
-                        >
-                          <img src={closeicon} alt="closeicon" />
-                        </div>
-                        <div className="d-flex flex-column mt-2">
-                          <label className="fs-xs fw-400 black">
-                            Date of Purchase
-                          </label>
-                          <input
-                            className="product_input fade_grey fw-400 mt-2"
-                            type="date"
-                          />
-                        </div>
-                        <div className="d-flex flex-column mt-2">
-                          <label className="fs-xs fw-400 black">
-                            Total Quantity
-                          </label>
-                          <input
-                            className="product_input fade_grey fw-400 mt-2"
-                            type="number"
-                            placeholder="0.00"
-                            value={totalStock}
-                            onChange={handleTotalQunatity}
-                          />
-                        </div>
-                        <div className="d-flex flex-column mt-2">
-                          <label className="fs-xs fw-400 black">
-                            Total Purchase Price
-                          </label>
-                          <input
-                            className="product_input fade_grey fw-400 mt-2"
-                            type="number"
-                            placeholder="₹ 0.00"
-                            value={stockPrice}
-                            onChange={handleSetTotalPrice}
-                          />
-                        </div>
-                        <button
-                          className="stock_save_btn d-flex align-items-center"
-                          onClick={HandleStockPopUpSave}
-                        >
-                          <img src={whiteSaveicon} alt="whiteSaveicon" />
-                          <p className="fs-sm fw-400 white ms-2 mb-0">Save</p>
-                        </button>
-                      </div>
-                    ) : null}
-                    <label htmlFor="sku" className="fs-xs fw-400 mt-3 black">
-                      Stock Alert Count
+                    <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
+                      Start Date
                     </label>
                     <br />
                     <input
+                      type="date"
                       required
-                      type="number"
                       className="mt-2 product_input fade_grey fw-400"
-                      placeholder="2"
-                      onChange={(e) => setStockCount(e.target.value)}
-                    />{" "}
+                      placeholder="22 /02/24"
+                      id="date"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                    />
                   </div>
-                  <br />
-                </div>
-                {/* Categories */}
-                <div className="mt-4 product_shadow bg_white p-3">
-                  <lable className="fw-400 fs-2sm black mb-0">
-                    Categories <span className="red ms-1 fs-sm">*</span>
-                  </lable>
-                  <Dropdown className="category_dropdown">
-                    <Dropdown.Toggle
-                      id="dropdown-basic"
-                      className="dropdown_input_btn"
-                    >
-                      <div className="product_input">
-                        <p
-                          className="fade_grey fw-400 w-100 mb-0 text-start"
-                          required
-                        >
-                          {selectedCategory
-                            ? selectedCategory.title || selectedCategory
-                            : "Select Category"}
-                        </p>
-                      </div>
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu className="w-100">
-                      <div className="d-flex flex-column">
-                        <div className="d-flex align-items-center product_input position-sticky top-0">
-                          <img src={SearchIcon} alt="SearchIcon" />
+                  <div>
+                    <h2 className="fw-400 fs-2sm black mb-0 pt-3 mt-3">
+                      Identifaction
+                    </h2>
+                    <div className="d-flex align-items-center">
+                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-5 w-50">
+                        <label className="check fw-400 fs-sm black mb-0">
+                          Govt ID
                           <input
-                            onChange={(e) => setSearchvalue(e.target.value)}
-                            placeholder="search for category"
-                            className="fade_grey fw-400 border-0 outline_none ms-2 w-100"
-                            type="text"
+                            type="radio"
+                            checked={!freeDelivery}
+                            onChange={() => setFreeDelivery(false)}
                           />
+                          <span className="checkmark"></span>
+                        </label>
+                      </div>
+                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-5 w-50">
+                        <label className="check fw-400 fs-sm black mb-0">
+                          Social Security
+                          <input
+                            type="radio"
+                            checked={freeDelivery}
+                            onChange={() => setFreeDelivery(true)}
+                          />
+                          <span className="checkmark"></span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {freeDelivery ? (
+                      <div>
+                        <label
+                          htmlFor="social"
+                          className="fs-xs fw-400 mt-4 black"
+                        >
+                          Fill your Social Security Identity
+                        </label>
+                        <br />
+                        <input
+                          type="text"
+                          required
+                          className="mt-2 product_input fade_grey fw-400"
+                          placeholder="Rashan card ( XXXXXXXXXXX )"
+                          id="social"
+                          value={social}
+                          onChange={(e) => setSocial(e.target.value)}
+                        />
+                      </div>
+                    ) : (
+                      <div>
+                        <label
+                          htmlFor="govt"
+                          className="fs-xs fw-400 mt-4 black"
+                        >
+                          Fill your any government ID
+                        </label>
+                        <br />
+                        <input
+                          type="text"
+                          required
+                          className="mt-2 product_input fade_grey fw-400"
+                          placeholder="XXXXXXXXXXX"
+                          id="govt"
+                          value={govt}
+                          onChange={(e) => setGovt(e.target.value)}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <h2 className="fw-400 fs-2sm black mb-0 pt-3">
+                      Employment Status
+                    </h2>
+                    <div className="d-flex align-items-center mt-3">
+                      <div className="mt-3 mx-2 py-1 d-flex align-items-center gap-3">
+                        <label className="check fw-400 fs-sm black mb-0">
+                          PartTime
+                          <input
+                            onChange={() => setEmploymentstatus("parttime")}
+                            type="radio"
+                            checked={employmentstatus === "parttime"}
+                          />
+                          <span className="checkmark"></span>
+                        </label>
+                      </div>
+                      <div className="mt-3 mx-2 py-1 d-flex align-items-center gap-3">
+                        <label className="check fw-400 fs-sm black mb-0">
+                          FullTime
+                          <input
+                            onChange={() => setEmploymentstatus("fulltime")}
+                            type="radio"
+                            checked={employmentstatus === "fulltime"}
+                          />
+                          <span className="checkmark"></span>
+                        </label>
+                      </div>
+                      <div className="mt-3 mx-2 py-1 d-flex align-items-center gap-3">
+                        <label className="check fw-400 fs-sm black mb-0">
+                          Contract
+                          <input
+                            onChange={() => setEmploymentstatus("Contract")}
+                            type="radio"
+                            checked={employmentstatus === "Contract"}
+                          />
+                          <span className="checkmark"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="product_shadow bg_white p-3 mt-3 ">
+                  <div>
+                    <h2 className="fw-400 fs-2sm black mb-0">
+                      Vechile Information
+                    </h2>
+                    <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
+                      Vehicle Regerstration Number
+                    </label>
+                    <br />
+                    <input
+                      type="text"
+                      required
+                      className="mt-2 product_input fade_grey fw-400"
+                      placeholder="xxxxxxxxxxxx"
+                      id="vechileno"
+                      value={vechileno}
+                      onChange={(e) => setVechileno(e.target.value)}
+                    />
+                    <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
+                      Insurance detail
+                    </label>
+                    <br />
+                    <input
+                      type="text"
+                      required
+                      className="mt-2 product_input fade_grey fw-400"
+                      placeholder="xxxxxxxxxxxx"
+                      id="insurance"
+                      value={insurance}
+                      onChange={(e) => setInsurance(e.target.value)}
+                    />
+                    <div>
+                      <h2 className="fw-400 fs-2sm black mb-0 pt-3 mt-3">
+                        Type of Vehicle
+                      </h2>
+                      <div className="d-flex align-items-center mt-3">
+                        <div className="mt-3 mx-2 py-1 d-flex align-items-center gap-3">
+                          <label className="check fw-400 fs-sm black mb-0">
+                            Car
+                            <input
+                              onChange={() => setVechiletype("Car")}
+                              type="radio"
+                              checked={vechiletype === "Car"}
+                            />
+                            <span className="checkmark"></span>
+                          </label>
                         </div>
-                        <div>
-                          {data
-                            .filter((items) => {
-                              return searchvalue.toLowerCase() === ""
-                                ? items
-                                : items.title
-                                    .toLowerCase()
-                                    .includes(searchvalue);
-                            })
-                            .map((category) => (
-                              <Dropdown.Item>
-                                <div
-                                  className={`d-flex justify-content-between ${
-                                    selectedCategory &&
-                                    selectedCategory.id === category.id
-                                      ? "selected"
-                                      : ""
-                                  }`}
-                                  onClick={() => handleSelectCategory(category)}
-                                >
-                                  <p className="fs-xs fw-400 black mb-0">
-                                    {category.title}
-                                  </p>
-                                  {selectedCategory &&
-                                    selectedCategory.id === category.id && (
-                                      <img
-                                        src={savegreenicon}
-                                        alt="savegreenicon"
-                                      />
-                                    )}
-                                </div>
-                              </Dropdown.Item>
-                            ))}
+                        <div className="mt-3 mx-2 py-1 d-flex align-items-center gap-3">
+                          <label className="check fw-400 fs-sm black mb-0">
+                            Motor cycle
+                            <input
+                              onChange={() => setVechiletype("motorcycle")}
+                              type="radio"
+                              checked={vechiletype === "motorcycle"}
+                            />
+                            <span className="checkmark"></span>
+                          </label>
+                        </div>
+                        <div className="mt-3 mx-2 py-1 d-flex align-items-center gap-3">
+                          <label className="check fw-400 fs-sm black mb-0">
+                            Bicycle
+                            <input
+                              onChange={() => setVechiletype("Bicycle")}
+                              type="radio"
+                              checked={vechiletype === "ContraBicyclect"}
+                            />
+                            <span className="checkmark"></span>
+                          </label>
                         </div>
                       </div>
-                    </Dropdown.Menu>
-                  </Dropdown>
+                    </div>
+                  </div>
                 </div>
               </Col>
             </Row>

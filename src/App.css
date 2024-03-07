@@ -401,7 +401,13 @@ body {
     linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
   );
 }
-
+.unit_type_input {
+  padding: 0 !important;
+  background-color: var(--color-white) !important;
+  border: 0;
+  width: 100% !important;
+  max-height: 46px !important;
+}
 /* my btn */
 /*reset_btn*/
 .reset_btn {
@@ -543,7 +549,7 @@ body {
   margin-left: auto;
 }
 
-.para2{
+.para2 {
   font-size: 10px;
   margin-left: auto;
 }
@@ -1257,6 +1263,10 @@ body {
   stroke: var(--color-brown);
   fill: transparent !important;
 }
+.min_160{
+  min-width: 160px;
+  width: 160px;
+}
 .categories_xl_overflow_X {
   min-width: 1000px;
 }
@@ -1266,6 +1276,9 @@ body {
 }
 tbody::-webkit-scrollbar {
   width: 2px;
+}
+div.rich-text-editor .ql-editor {
+  height: calc(100vh - 250px) !important;
 }
 .table_body {
   display: block !important;
@@ -1358,7 +1371,7 @@ tbody::-webkit-scrollbar {
   padding: 21px 10px;
   cursor: pointer;
 }
-.date_btn{
+.date_btn {
   padding: 5.34px 10.67px 5.34px 10.67px;
   border: 0.53px solid black;
   background-color: transparent;
@@ -1382,9 +1395,9 @@ tbody::-webkit-scrollbar {
 }
 .steps::-webkit-scrollbar {
   height: 5px;
-}.ql-toolbar.ql-snow {
+}
+.ql-toolbar.ql-snow {
   border: transparent !important;
-
 }
 .bg_green{
   background-color: #DEF2D0;
@@ -1392,16 +1405,75 @@ tbody::-webkit-scrollbar {
 .ql-container.ql-snow {
   border: transparent !important;
 }
-.no-scroll{
+.no-scroll {
   overflow: hidden !important;
 }
 .ql-editor {
   height: 200px !important; /* Adjust the value to your desired fixed height */
-  overflow-y: auto;  /* Adjust the value to your desired height */
+  overflow-y: auto; /* Adjust the value to your desired height */
 }
 .custom-underline {
   text-decoration: underline !important;
   /* Add any additional custom properties here */
+}
+.add_color_btn {
+  background-color: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.194);
+  padding: 12px 20px;
+  border-radius: 50px;
+}
+.color_add_input {
+  border: 1px solid rgba(0, 0, 0, 0.194);
+  padding: 0px 20px;
+  border-radius: 50px;
+  height: 47px;
+}
+.color_add_input input {
+  border: 0;
+  outline: 0;
+  padding: 0;
+  background-color: transparent;
+  width: 60px;
+}
+.faqs_dropdown .dropdown-item {
+  padding: 10px;
+}
+.addqus_popup {
+  padding: 20px;
+  background-color: var(--color-white);
+  max-width: 416px;
+  width: 100%;
+  border-radius: 20px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+.ques_input {
+  border: 0.5px solid #0000004d;
+  padding: 5px 10px;
+  width: 100%;
+  resize: none;
+  margin-left: 10px;
+  max-width: 301px;
+}
+.qes_reset_btn {
+  border: 1px solid #000000;
+  padding: 10px 15px;
+  border-radius: 10px;
+}
+.qes_save_btn {
+  border: 1px solid #000000;
+  padding: 10px 15px;
+  border-radius: 10px;
+  background-color: transparent;
+}
+.qes_reset_btn {
+  background-color: var(--color-brown);
+  padding: 11px 20px;
+  border-radius: 10px;
+  border: 0;
 }
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
