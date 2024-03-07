@@ -884,6 +884,10 @@ body {
   max-width: 160px;
   width: 160px;
 }
+.mx_170 {
+  max-width: 170px;
+  width: 170px;
+}
 
 .mx_100 {
   max-width: 100px;
@@ -1382,7 +1386,9 @@ tbody::-webkit-scrollbar {
   border: transparent !important;
 
 }
-
+.bg_green{
+  background-color: #DEF2D0;
+}
 .ql-container.ql-snow {
   border: transparent !important;
 }

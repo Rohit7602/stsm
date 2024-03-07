@@ -26,6 +26,7 @@ import { permissionHandler } from './firebase';
 import DeliveryManList from './Components/deliveryman/DeliveryManList';
 import PrivacyPolicy from './Components/PrivacyPolicy/PrivacyPolicy';
 import TermConditions from './Components/Security/TermConditions/TermConditions';
+import AddDeliveryMan from './Components/deliveryman/AddDeliveryMan';
 function App() {
   const [user, setUser] = useState(true);
   const [authchecked, setauthchecked] = useState(false);
@@ -147,6 +148,7 @@ function App() {
                         </Route>
                         <Route path="deliveryman">
                           <Route index element={<DeliveryManList />} />
+                          <Route path="addnewdeliveryman" element={<AddDeliveryMan/>}/>
                         </Route>
                         <Route path="marketing">
                           <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
