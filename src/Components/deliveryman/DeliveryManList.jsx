@@ -211,7 +211,7 @@ const DeliveryManList = () => {
                       return (
                         <tr className="product_borderbottom">
                           <td className="py-3 px-3 text-center  mx_160">
-                            <div className="d-flex align-items-center gap-3 ">
+                          <Link to="/deliveryman/deliverymanprofile" className="d-flex align-items-center gap-3 ">
                               <label class="check1 fw-400 fs-sm black mb-0">
                                 <input
                                   type="checkbox"
@@ -228,7 +228,7 @@ const DeliveryManList = () => {
                                   ID 53663
                                 </p>
                               </div>
-                            </div>
+                            </Link>
                           </td>
                           <td className="mx_160 text-center  px-3">
                             <h3 className="fs-sm fw-400 black mb-0">

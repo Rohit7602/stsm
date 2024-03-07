@@ -408,6 +408,9 @@ body {
   width: 100% !important;
   max-height: 46px !important;
 }
+.transition_04{
+transition:  all ease-in-out 300ms;
+}
 /* my btn */
 /*reset_btn*/
 .reset_btn {
