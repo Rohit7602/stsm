@@ -40,7 +40,7 @@ export const ProductsProvider = ({ children }) => {
 
     const memoizedData = useMemo(() => data, [data]);
 
-    const updateData = (updatedProduct) => {
+    const updateProductData = (updatedProduct) => {
         if (typeof updatedProduct === 'object' && updatedProduct.id) {
             setData(prevData => {
                 const existingProductIndex = prevData.findIndex(product => product.id === updatedProduct.id);
@@ -63,7 +63,7 @@ export const ProductsProvider = ({ children }) => {
     // Function to add new data
     const addData = async (newProduct) => {
         try {
-            updateData(newProduct);
+            updateProductData(newProduct);
         } catch (error) {
             console.error(error);
         }
@@ -79,7 +79,7 @@ export const ProductsProvider = ({ children }) => {
     };
 
     return (
-        <productsContext.Provider value={{ productData: memoizedData, updateData, addData, deleteData }}>
+        <productsContext.Provider value={{ productData: memoizedData, updateProductData, addData, deleteData }}>
             {children}
         </productsContext.Provider>
     );

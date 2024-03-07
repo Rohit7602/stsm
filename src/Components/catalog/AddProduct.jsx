@@ -20,13 +20,24 @@ import { storage } from "../../firebase";
 import { useRef } from "react";
 import { useProductsContext } from "../../context/productgetter";
 import { useSubCategories } from "../../context/categoriesGetter";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { increment } from "firebase/firestore";
 import Loader from "../Loader";
 import { Units } from "../../Common/Helper";
+
+
+
+
+
 const AddProduct = () => {
-  const { productData } = useProductsContext();
+
+  const navigate = useNavigate()
+
+  const { productData, updateProductData } = useProductsContext();
   const productId = useParams();
+
+  let ProductsID = productId.id;
+
   const [name, setName] = useState("");
   const [shortDes, setShortDes] = useState("");
   const [longDes, setLongDes] = useState("");
@@ -59,12 +70,15 @@ const AddProduct = () => {
   const [searchvalue, setSearchvalue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [previousCategoryId, setPreviousCategoryId] = useState(null);
 
   const handleSelectCategory = (category) => {
     setSearchvalue("");
     setSelectedCategory(category);
     setSelectedCategoryId(category.id);
   };
+
+
 
   const [variants, setVariants] = useState([]);
   const [discount, setDiscount] = useState(0);
@@ -180,18 +194,18 @@ const AddProduct = () => {
           isMultipleVariant: varient === true,
           ...(varient === false
             ? {
-                varients: [
-                  {
-                    originalPrice: originalPrice,
-                    discountType: discountType,
-                    discount: discount,
-                    unitType,
-                  },
-                ],
-              }
+              varients: [
+                {
+                  originalPrice: originalPrice,
+                  discountType: discountType,
+                  discount: discount,
+                  unitType,
+                },
+              ],
+            }
             : {
-                varients: variants,
-              }), // Include the actual list of variants if varient is true
+              varients: variants,
+            }), // Include the actual list of variants if varient is true
         });
         setSearchdata([]);
         setLoaderstatus(false);
@@ -260,6 +274,8 @@ const AddProduct = () => {
         setSalesmanComssion(items.SalesmanCommission);
         setStockCount(items.stockAlert);
         setStoreColors(items.colors);
+        setPreviousCategoryId(items.categories.id);
+
         const allVariants = [];
         items.varients.map((itm) => {
           allVariants.push({
@@ -276,13 +292,19 @@ const AddProduct = () => {
         console.log(allVariants);
       });
     }
-    if (storeColors && storeColors.length > 0) {
-      console.log("if working ")
-    setColorVar(true);
-  }
   }, []);
 
-  console.log(filterdata);
+  useEffect(() => {
+    if (storeColors && storeColors.length > 0) {
+      console.log("if working ");
+      setColorVar(true);
+    } else {
+      setColorVar(false); // Uncheck the "Yes" checkbox if there are no colors
+    }
+  }, [storeColors]);
+
+
+
 
   function handelStoreColor() {
     if (color !== "") {
@@ -292,11 +314,119 @@ const AddProduct = () => {
     }
   }
 
+
+  console.log("colors is ", storeColors)
+
   function handelColorDelete(index) {
     let updaedColor = [...storeColors];
     updaedColor.splice(index, 1);
     setStoreColors(updaedColor);
   }
+
+
+  //  update Product Functionality start from here
+
+  function CancelUpdate(e) {
+    e.preventDefault()
+    navigate('/catalog/productlist')
+  }
+
+
+
+
+  async function UpdateProductDatas(e) {
+    e.preventDefault();
+    setLoaderstatus(true);
+    try {
+      const imagelinksupdate = [];
+      for await (const file of imageUpload22) {
+        let imageUrl = null;
+        if (file instanceof File) {
+          const filename = Math.floor(Date.now() / 1000) + "-" + file.name;
+          const storageRef = ref(storage, `/products/${filename}`);
+          await uploadBytes(storageRef, file);
+          imageUrl = await getDownloadURL(storageRef);
+        } else if (typeof file === 'string' && file.startsWith('http')) {
+          imageUrl = file;
+        }
+        if (imageUrl) {
+          imagelinksupdate.push(imageUrl);
+        }
+      }
+
+      console.log("selectedCategoryId", previousCategoryId)
+
+      const updateDatas = {
+        name: name,
+        shortDescription: shortDes,
+        longDescription: longDes,
+        status: status,
+        sku: sku,
+        totalStock: totalStock,
+        stockAlert: StockCount,
+        categories: {
+          parent_id: selectedCategory.cat_ID,
+          id: selectedCategory.id,
+          name: selectedCategory.title,
+        },
+        productImages: imagelinksupdate,
+        updated_at: Date.now(),
+        SalesmanCommission,
+        ServiceCharge,
+        DeliveryCharge,
+        colors: storeColors,
+        isMultipleVariant: varient === true,
+        ...(varient === false
+          ? {
+            varients: [
+              {
+                originalPrice: originalPrice,
+                discountType: discountType,
+                discount: discount,
+                unitType,
+              },
+            ],
+          }
+          : {
+            varients: variants,
+          }),
+      };
+
+      // Check if the selected category is different from the existing category
+      if (selectedCategory.id !== previousCategoryId) {
+        console.log("update if working here ");
+        updateDatas.categories = {
+          parent_id: selectedCategory.cat_ID,
+          id: selectedCategory.id,
+          name: selectedCategory.title,
+        };
+        let existingCategoryId = updateDatas.categories.id; // Update existingCategoryId
+        console.log("existing id ", existingCategoryId);
+
+        await updateDoc(doc(db, 'sub_categories', previousCategoryId), {
+          'noOfProducts': increment(-1)
+        });
+
+        await updateDoc(doc(db, 'sub_categories', existingCategoryId), {
+          'noOfProducts': increment(1)
+        });
+      }
+
+      await updateDoc(doc(db, 'products', ProductsID), updateDatas);
+      updateProductData({
+        ProductsID,
+        ...updateDatas
+      });
+      setLoaderstatus(false);
+      toast.success("Product updated Successfully !", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      console.log("Error in update Product", error);
+    }
+  }
+
+
 
   if (loaderstatus) {
     return (
@@ -334,11 +464,11 @@ const AddProduct = () => {
               ) : (
                 <div className="d-flex align-itmes-center gap-3">
                   <button className="reset_border">
-                    <button className="fs-sm reset_btn  border-0 fw-400 ">
+                    <button onClick={(e) => CancelUpdate(e)} className="fs-sm reset_btn  border-0 fw-400 ">
                       Cancel
                     </button>
                   </button>
-                  <button
+                  <button onClick={(e) => UpdateProductDatas(e)}
                     className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
                     type="submit"
                   >
@@ -550,9 +680,9 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                              ...v,
-                                              originalPrice: e.target.value,
-                                            }
+                                            ...v,
+                                            originalPrice: e.target.value,
+                                          }
                                           : v
                                       )
                                     )
@@ -576,16 +706,16 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                              ...v,
-                                              discountType:
-                                                selectedDiscountType,
-                                              // Reset discount value when changing the discount type to "Amount"
-                                              discount:
-                                                selectedDiscountType ===
+                                            ...v,
+                                            discountType:
+                                              selectedDiscountType,
+                                            // Reset discount value when changing the discount type to "Amount"
+                                            discount:
+                                              selectedDiscountType ===
                                                 "Amount"
-                                                  ? 0
-                                                  : v.discount,
-                                            }
+                                                ? 0
+                                                : v.discount,
+                                          }
                                           : v
                                       )
                                     );
@@ -818,23 +948,23 @@ const AddProduct = () => {
                           <div className=" d-flex align-items-center mt-3 pt-1 me-5 gap-3 flex-wrap">
                             {storeColors && storeColors.length !== 0
                               ? storeColors.map((items, index) => {
-                                  return (
-                                    <div
-                                      key={index}
-                                      className="d-flex align-items-center gap-3 color_add_input"
-                                    >
-                                      <p className="m-0">{items}</p>
-                                      <img
-                                        onClick={() => handelColorDelete(index)}
-                                        className="cursor_pointer"
-                                        src={closeRed}
-                                        alt="closeRed"
-                                      />
-                                    </div>
-                                  );
-                                })
+                                return (
+                                  <div
+                                    key={index}
+                                    className="d-flex align-items-center gap-3 color_add_input"
+                                  >
+                                    <p className="m-0">{items}</p>
+                                    <img
+                                      onClick={() => handelColorDelete(index)}
+                                      className="cursor_pointer"
+                                      src={closeRed}
+                                      alt="closeRed"
+                                    />
+                                  </div>
+                                );
+                              })
                               : null}
-                              
+
                             {colorInput ? (
                               <div className="color_add_input d-flex align-items-center">
                                 <input
@@ -884,8 +1014,8 @@ const AddProduct = () => {
                                 className="mobile_image object-fit-cover"
                                 src={
                                   img &&
-                                  typeof img === "string" &&
-                                  img.startsWith("http")
+                                    typeof img === "string" &&
+                                    img.startsWith("http")
                                     ? img
                                     : URL.createObjectURL(img)
                                 }
@@ -1150,18 +1280,17 @@ const AddProduct = () => {
                               return searchvalue.toLowerCase() === ""
                                 ? items
                                 : items.title
-                                    .toLowerCase()
-                                    .includes(searchvalue);
+                                  .toLowerCase()
+                                  .includes(searchvalue);
                             })
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${
-                                    selectedCategory &&
+                                  className={`d-flex justify-content-between ${selectedCategory &&
                                     selectedCategory.id === category.id
-                                      ? "selected"
-                                      : ""
-                                  }`}
+                                    ? "selected"
+                                    : ""
+                                    }`}
                                   onClick={() => handleSelectCategory(category)}
                                 >
                                   <p className="fs-xs fw-400 black mb-0">
