@@ -890,6 +890,10 @@ body {
   max-width: 160px;
   width: 160px;
 }
+.mx_170 {
+  max-width: 170px;
+  width: 170px;
+}
 
 .mx_100 {
   max-width: 100px;
@@ -1259,6 +1263,10 @@ body {
   stroke: var(--color-brown);
   fill: transparent !important;
 }
+.min_160{
+  min-width: 160px;
+  width: 160px;
+}
 .categories_xl_overflow_X {
   min-width: 1000px;
 }
@@ -1268,6 +1276,9 @@ body {
 }
 tbody::-webkit-scrollbar {
   width: 2px;
+}
+div.rich-text-editor .ql-editor {
+  height: calc(100vh - 250px) !important;
 }
 .table_body {
   display: block !important;
@@ -1388,7 +1399,9 @@ tbody::-webkit-scrollbar {
 .ql-toolbar.ql-snow {
   border: transparent !important;
 }
-
+.bg_green{
+  background-color: #DEF2D0;
+}
 .ql-container.ql-snow {
   border: transparent !important;
 }
