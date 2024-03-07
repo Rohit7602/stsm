@@ -258,7 +258,8 @@ const AddProduct = () => {
         setDeliveryCharges(items.DeliveryCharge);
         setServiceCharge(items.ServiceCharge);
         setSalesmanComssion(items.SalesmanCommission);
-        setUnitType(items.unitType);
+        setStockCount(items.stockAlert);
+        setStoreColors(items.colors);
         const allVariants = [];
         items.varients.map((itm) => {
           allVariants.push({
@@ -275,9 +276,13 @@ const AddProduct = () => {
         console.log(allVariants);
       });
     }
+    if (storeColors && storeColors.length > 0) {
+      console.log("if working ")
+    setColorVar(true);
+  }
   }, []);
 
-  console.log(variants);
+  console.log(filterdata);
 
   function handelStoreColor() {
     if (color !== "") {
@@ -308,23 +313,40 @@ const AddProduct = () => {
               <div className="d-flex">
                 <h1 className="fw-500  mb-0 black fs-lg">New Product</h1>
               </div>
-              <div className="d-flex align-itmes-center gap-3">
-                <button className="reset_border">
-                  <button
-                    onClick={handleReset}
-                    className="fs-sm reset_btn  border-0 fw-400 "
-                  >
-                    Reset
+              {!productId.id ? (
+                <div className="d-flex align-itmes-center gap-3">
+                  <button className="reset_border">
+                    <button
+                      onClick={handleReset}
+                      className="fs-sm reset_btn  border-0 fw-400 "
+                    >
+                      Reset
+                    </button>
                   </button>
-                </button>
-                <button
-                  className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
-                  type="submit"
-                >
-                  <img src={saveicon} alt="saveicon" />
-                  Save
-                </button>
-              </div>
+                  <button
+                    className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
+                    type="submit"
+                  >
+                    <img src={saveicon} alt="saveicon" />
+                    Save
+                  </button>
+                </div>
+              ) : (
+                <div className="d-flex align-itmes-center gap-3">
+                  <button className="reset_border">
+                    <button className="fs-sm reset_btn  border-0 fw-400 ">
+                      Cancel
+                    </button>
+                  </button>
+                  <button
+                    className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
+                    type="submit"
+                  >
+                    <img src={saveicon} alt="saveicon" />
+                    Update
+                  </button>
+                </div>
+              )}
             </div>
             <Row className="mt-3">
               <Col xxl={8}>
@@ -794,22 +816,25 @@ const AddProduct = () => {
                             Colours Varient
                           </h2>
                           <div className=" d-flex align-items-center mt-3 pt-1 me-5 gap-3 flex-wrap">
-                            {storeColors.map((items, index) => {
-                              return (
-                                <div
-                                  key={index}
-                                  className="d-flex align-items-center gap-3 color_add_input"
-                                >
-                                  <p className="m-0">{items}</p>
-                                  <img
-                                    onClick={() => handelColorDelete(index)}
-                                    className="cursor_pointer"
-                                    src={closeRed}
-                                    alt="closeRed"
-                                  />
-                                </div>
-                              );
-                            })}
+                            {storeColors && storeColors.length !== 0
+                              ? storeColors.map((items, index) => {
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="d-flex align-items-center gap-3 color_add_input"
+                                    >
+                                      <p className="m-0">{items}</p>
+                                      <img
+                                        onClick={() => handelColorDelete(index)}
+                                        className="cursor_pointer"
+                                        src={closeRed}
+                                        alt="closeRed"
+                                      />
+                                    </div>
+                                  );
+                                })
+                              : null}
+                              
                             {colorInput ? (
                               <div className="color_add_input d-flex align-items-center">
                                 <input
@@ -1080,6 +1105,7 @@ const AddProduct = () => {
                       type="number"
                       className="mt-2 product_input fade_grey fw-400"
                       placeholder="Enter alert count "
+                      value={StockCount}
                       onChange={(e) => setStockCount(e.target.value)}
                     />{" "}
                   </div>
