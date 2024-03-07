@@ -22,8 +22,8 @@ import { useProductsContext } from '../../context/productgetter';
 import { useSubCategories } from '../../context/categoriesGetter';
 import { useParams } from 'react-router-dom';
 import { increment } from 'firebase/firestore';
-import Loader from '../Loader'
-import { Units } from '../../Common/Helper'
+import Loader from '../Loader';
+import { Units } from '../../Common/Helper';
 const AddProduct = () => {
   const { productData } = useProductsContext();
   const productId = useParams();
@@ -66,8 +66,6 @@ const AddProduct = () => {
     setSelectedCategoryId(category.id);
   };
 
-
-
   const [variants, setVariants] = useState([]);
   const [discount, setDiscount] = useState(0);
   const [originalPrice, setOriginalPrice] = useState('');
@@ -92,9 +90,7 @@ const AddProduct = () => {
   }
 
   function handleDeleteVariant(index) {
-    setVariants((prevVariants) =>
-      prevVariants.filter((_, i) => i !== index)
-    );
+    setVariants((prevVariants) => prevVariants.filter((_, i) => i !== index));
   }
 
   // stock popup save functionality
@@ -184,18 +180,18 @@ const AddProduct = () => {
           isMultipleVariant: varient === true,
           ...(varient === false
             ? {
-              varients: [
-                {
-                  originalPrice: originalPrice,
-                  discountType: discountType,
-                  discount: discount,
-                  unitType,
-                },
-              ],
-            }
+                varients: [
+                  {
+                    originalPrice: originalPrice,
+                    discountType: discountType,
+                    discount: discount,
+                    unitType,
+                  },
+                ],
+              }
             : {
-              varients: variants,
-            }), // Include the actual list of variants if varient is true
+                varients: variants,
+              }), // Include the actual list of variants if varient is true
         });
         setSearchdata([]);
         setLoaderstatus(false);
@@ -262,7 +258,7 @@ const AddProduct = () => {
         setDeliveryCharges(items.DeliveryCharge);
         setServiceCharge(items.ServiceCharge);
         setSalesmanComssion(items.SalesmanCommission);
-        setUnitType(items.unitType);
+        setStockCount(items.stockAlert);
         const allVariants = [];
         items.varients.map((itm) => {
           allVariants.push({
@@ -270,18 +266,18 @@ const AddProduct = () => {
             originalPrice: itm.originalPrice,
             discountType: itm.discountType,
             discount: itm.discount,
-            unitType: itm.unitType
+            unitType: itm.unitType,
           });
         });
 
         // Set the state with all the variants
         setVariants(allVariants);
-        console.log(allVariants)
+        console.log(allVariants);
       });
     }
   }, []);
 
-  console.log(variants)
+  console.log(filterdata);
 
   function handelStoreColor() {
     if (color !== '') {
@@ -312,19 +308,33 @@ const AddProduct = () => {
               <div className="d-flex">
                 <h1 className="fw-500  mb-0 black fs-lg">New Product</h1>
               </div>
-              <div className="d-flex align-itmes-center gap-3">
-                <button className="reset_border">
-                  <button onClick={handleReset} className="fs-sm reset_btn  border-0 fw-400 ">
-                    Reset
+              {!productId.id ? (
+                <div className="d-flex align-itmes-center gap-3">
+                  <button className="reset_border">
+                    <button onClick={handleReset} className="fs-sm reset_btn  border-0 fw-400 ">
+                      Reset
+                    </button>
                   </button>
-                </button>
-                <button
-                  className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
-                  type="submit">
-                  <img src={saveicon} alt="saveicon" />
-                  Save
-                </button>
-              </div>
+                  <button
+                    className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
+                    type="submit">
+                    <img src={saveicon} alt="saveicon" />
+                    Save
+                  </button>
+                </div>
+              ) : (
+                <div className="d-flex align-itmes-center gap-3">
+                  <button className="reset_border">
+                    <button className="fs-sm reset_btn  border-0 fw-400 ">Cancel</button>
+                  </button>
+                  <button
+                    className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
+                    type="submit">
+                    <img src={saveicon} alt="saveicon" />
+                    Update
+                  </button>
+                </div>
+              )}
             </div>
             <Row className="mt-3">
               <Col xxl={8}>
@@ -438,7 +448,12 @@ const AddProduct = () => {
                                   )
                                 }
                               />
-                              <img className='cursor_pointer' onClick={() => handleDeleteVariant(index)} src={deleteicon} alt="deleteicon" />
+                              <img
+                                className="cursor_pointer"
+                                onClick={() => handleDeleteVariant(index)}
+                                src={deleteicon}
+                                alt="deleteicon"
+                              />
                             </div>
                             <div className="d-flex flex-column flex-sm-row gap-3">
                               <div className="w-100">
@@ -471,7 +486,7 @@ const AddProduct = () => {
                                                   <img src={savegreenicon} alt="savegreenicon" />
                                                 ) : null}
                                               </div>
-                                            )
+                                            );
                                           })}
                                         </Dropdown.Item>
                                       </div>
@@ -513,12 +528,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                            ...v,
-                                            discountType: selectedDiscountType,
-                                            // Reset discount value when changing the discount type to "Amount"
-                                            discount:
-                                              selectedDiscountType === 'Amount' ? 0 : v.discount,
-                                          }
+                                              ...v,
+                                              discountType: selectedDiscountType,
+                                              // Reset discount value when changing the discount type to "Amount"
+                                              discount:
+                                                selectedDiscountType === 'Amount' ? 0 : v.discount,
+                                            }
                                           : v
                                       )
                                     );
@@ -549,7 +564,6 @@ const AddProduct = () => {
                                   }
                                 />
                               </div>
-                              
                             </div>
                           </div>
                         ))
@@ -557,47 +571,44 @@ const AddProduct = () => {
                         <div>
                           <h2 className="fw-400 fs-2sm black mb-0">Pricing</h2>
                           <div className="d-flex flex-column flex-sm-row gap-3">
-
-                              <div className="w-100">
-                                <label htmlFor="salesMan" className="fs-xs fw-400 mt-3 black">
-                                  Unit type
-                                </label>
-                                <br />
-                                <div className="d-flex align-items-center justify-content-between">
-                                  <Dropdown className="category_dropdown z-1 w-100">
-                                    <Dropdown.Toggle
-                                      id="dropdown-basic"
-                                      className="mt-2 unit_type_input border-0">
-                                      <div className="product_input d-flex align-items-center justify-content-between">
-                                        <p className="fade_grey fw-400 w-100 mb-0 text-start">
-                                          {unitType == '' ? 'Unit type' : unitType}
-                                        </p>
-                                        <img src={dropdownImg} alt="" />
-                                      </div>
-                                    </Dropdown.Toggle>
-                                    <Dropdown.Menu className="w-100 p-0">
-                                      <div>
-                                        <Dropdown.Item>
-                                          {Units.map((item) => {
-                                            return (
-                                              <div
-                                                onClick={() => setUnitType(item)}
-                                                className="d-flex justify-content-between">
-                                                <p className="fs-xs fw-400 black mb-0">{item}</p>
-                                                {unitType == item ? (
-                                                  <img src={savegreenicon} alt="savegreenicon" />
-                                                ) : null}
-                                              </div>
-                                            )
-                                          })}
-
-                                        </Dropdown.Item>
-                                      </div>
-                                    </Dropdown.Menu>
-                                  </Dropdown>
-                                </div>
+                            <div className="w-100">
+                              <label htmlFor="salesMan" className="fs-xs fw-400 mt-3 black">
+                                Unit type
+                              </label>
+                              <br />
+                              <div className="d-flex align-items-center justify-content-between">
+                                <Dropdown className="category_dropdown z-1 w-100">
+                                  <Dropdown.Toggle
+                                    id="dropdown-basic"
+                                    className="mt-2 unit_type_input border-0">
+                                    <div className="product_input d-flex align-items-center justify-content-between">
+                                      <p className="fade_grey fw-400 w-100 mb-0 text-start">
+                                        {unitType == '' ? 'Unit type' : unitType}
+                                      </p>
+                                      <img src={dropdownImg} alt="" />
+                                    </div>
+                                  </Dropdown.Toggle>
+                                  <Dropdown.Menu className="w-100 p-0">
+                                    <div>
+                                      <Dropdown.Item>
+                                        {Units.map((item) => {
+                                          return (
+                                            <div
+                                              onClick={() => setUnitType(item)}
+                                              className="d-flex justify-content-between">
+                                              <p className="fs-xs fw-400 black mb-0">{item}</p>
+                                              {unitType == item ? (
+                                                <img src={savegreenicon} alt="savegreenicon" />
+                                              ) : null}
+                                            </div>
+                                          );
+                                        })}
+                                      </Dropdown.Item>
+                                    </div>
+                                  </Dropdown.Menu>
+                                </Dropdown>
                               </div>
-
+                            </div>
 
                             {/* ist input */}
                             <div className="w-100">
@@ -610,7 +621,9 @@ const AddProduct = () => {
                                 className="mt-2 product_input fade_grey fw-400"
                                 placeholder="₹ 0.00"
                                 id="origi"
-                                value={variants.length == 0 ? originalPrice : variants[0].originalPrice}
+                                value={
+                                  variants.length == 0 ? originalPrice : variants[0].originalPrice
+                                }
                                 onChange={(e) => setOriginalPrice(e.target.value)}
                               />
                             </div>
@@ -622,7 +635,9 @@ const AddProduct = () => {
                               <select
                                 className="mt-2 product_input  fade_grey fw-400"
                                 id="Discount"
-                                value={variants.length == 0 ? discountType : variants[0].discountType}
+                                value={
+                                  variants.length == 0 ? discountType : variants[0].discountType
+                                }
                                 onChange={(e) => {
                                   setDiscountType(e.target.value);
                                 }}>
@@ -661,7 +676,6 @@ const AddProduct = () => {
                                 }}
                               />
                             </div>
-                            
                           </div>
                         </div>
                       )}
@@ -997,10 +1011,11 @@ const AddProduct = () => {
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                    ? 'selected'
-                                    : ''
-                                    }`}
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (

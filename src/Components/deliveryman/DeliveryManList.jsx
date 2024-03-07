@@ -1,55 +1,45 @@
-import React, { useState, useEffect } from "react";
-import addicon from "../../Images/svgs/addicon.svg";
-import search from "../../Images/svgs/search.svg";
-import dropdown from "../../Images/svgs/dropdown_icon.svg";
-import dropdownDots from "../../Images/svgs/dots2.svg";
-import eye_icon from "../../Images/svgs/eye.svg";
-import pencil_icon from "../../Images/svgs/pencil.svg";
-import deleteicon from "../../Images/svgs/deleteicon.svg";
-import delete_icon from "../../Images/svgs/delte.svg";
-import updown_icon from "../../Images/svgs/arross.svg";
-import shortIcon from "../../Images/svgs/short-icon.svg";
-import closeicon from "../../Images/svgs/closeicon.svg";
-import saveicon from "../../Images/svgs/saveicon.svg";
-import {
-  doc,
-  deleteDoc,
-  updateDoc,
-  addDoc,
-  collection,
-} from "firebase/firestore";
-import { db } from "../../firebase";
-import { Link } from "react-router-dom";
-import { useRef } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { UseServiceContext } from "../../context/ServiceAreasGetter";
-import Deletepopup from "../popups/Deletepopup";
-import Updatepopup from "../popups/Updatepopup";
+import React, { useState, useEffect } from 'react';
+import addicon from '../../Images/svgs/addicon.svg';
+import search from '../../Images/svgs/search.svg';
+import dropdown from '../../Images/svgs/dropdown_icon.svg';
+import dropdownDots from '../../Images/svgs/dots2.svg';
+import eye_icon from '../../Images/svgs/eye.svg';
+import pencil_icon from '../../Images/svgs/pencil.svg';
+import deleteicon from '../../Images/svgs/deleteicon.svg';
+import delete_icon from '../../Images/svgs/delte.svg';
+import updown_icon from '../../Images/svgs/arross.svg';
+import shortIcon from '../../Images/svgs/short-icon.svg';
+import closeicon from '../../Images/svgs/closeicon.svg';
+import saveicon from '../../Images/svgs/saveicon.svg';
+import { doc, deleteDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
+import { db } from '../../firebase';
+import { Link } from 'react-router-dom';
+import { useRef } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { UseServiceContext } from '../../context/ServiceAreasGetter';
+import Deletepopup from '../popups/Deletepopup';
+import Updatepopup from '../popups/Updatepopup';
 
 const DeliveryManList = () => {
-  const { ServiceData, addServiceData, deleteServiceData, updateServiceData } =
-    UseServiceContext();
+  const { ServiceData, addServiceData, deleteServiceData, updateServiceData } = UseServiceContext();
   const [addsServicePopup, setAddsServicePopup] = useState(false);
   const [loaderstatus, setLoaderstatus] = useState(false);
-  const [AreaName, SetAreaName] = useState("");
+  const [AreaName, SetAreaName] = useState('');
   const [postalCode, SetPostalCode] = useState();
   const [status, setStatus] = useState();
   const pubref = useRef();
   const hideref = useRef();
 
-  const [selectedValue, setSelectedValue] = useState("1 Day");
-  const [searchvalue, setSearchvalue] = useState("");
+  const [selectedValue, setSelectedValue] = useState('1 Day');
+  const [searchvalue, setSearchvalue] = useState('');
 
-  
- 
-
-  const [order, setorder] = useState("ASC");
+  const [order, setorder] = useState('ASC');
   const sorting = (col) => {
     // Create a copy of the data array
     const sortedData = [...ServiceData];
 
-    if (order === "ASC") {
+    if (order === 'ASC') {
       sortedData.sort((a, b) => {
         const valueA = a[col].toLowerCase();
         const valueB = b[col].toLowerCase();
@@ -65,7 +55,7 @@ const DeliveryManList = () => {
     }
 
     // Update the order state
-    const newOrder = order === "ASC" ? "DESC" : "ASC";
+    const newOrder = order === 'ASC' ? 'DESC' : 'ASC';
     setorder(newOrder);
 
     // Update the data using the updateData function from your context
@@ -94,7 +84,7 @@ const DeliveryManList = () => {
     const updatedData = [...ServiceData];
     updatedData[index].checked = !ServiceData[index].checked;
     updateServiceData(updatedData);
-  }
+  };
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
@@ -112,9 +102,7 @@ const DeliveryManList = () => {
         <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
           <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
             <div className="d-flex">
-              <h1 className="fw-500   black fs-lg mb-0">
-                List of Delivery Mans
-              </h1>
+              <h1 className="fw-500   black fs-lg mb-0">List of Delivery Mans</h1>
             </div>
             <div className="d-flex align-itmes-center justify-content-center justify-content-md-between  gap-3">
               <div className="d-flex px-2 gap-2 align-items-center w_xsm_35 w_sm_50 input_wrapper">
@@ -140,9 +128,8 @@ const DeliveryManList = () => {
                   <thead className="w-100 table_head">
                     <tr className="product_borderbottom">
                       <th
-                        onClick={() => sorting("AreaName")}
-                        className="py-3 ps-3  cursor_pointer mx_160"
-                      >
+                        onClick={() => sorting('AreaName')}
+                        className="py-3 ps-3  cursor_pointer mw-300">
                         <div className="d-flex align-items-center gap-3 ">
                           <label class="check1 fw-400 fs-sm black mb-0">
                             <input
@@ -169,14 +156,11 @@ const DeliveryManList = () => {
                         <h3 className="fs-sm fw-400 black mb-0">Work type</h3>
                       </th>
                       <th className="mx_160 ps-3">
-                        <h3 className="fs-sm fw-400 black mb-0">
-                        Total Order’s
-                        </h3>
+                        <h3 className="fs-sm fw-400 black mb-0">Total Order’s</h3>
                       </th>
                       <th
-                        onClick={() => sorting("ServiceStatus")}
-                        className="mx_140 cursor_pointer"
-                      >
+                        onClick={() => sorting('ServiceStatus')}
+                        className="mx_140 cursor_pointer">
                         <p className="fw-400 fs-sm black mb-0 ms-2">
                           Status
                           <span>
@@ -190,27 +174,25 @@ const DeliveryManList = () => {
                         </p>
                       </th>
                       <th className="mx_160 ps-3">
-                        <h3 className="fs-sm fw-400 black mb-0">
-                          Service area
-                        </h3>
+                        <h3 className="fs-sm fw-400 black mb-0">Service area</h3>
                       </th>
-                      <th className="mx_160 ps-3">
+                      <th className="mx_100 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Contact</h3>
                       </th>
-                      <th className="mx_160 p-3 me-1 text-center">
+                      <th className="mx_100 p-3 me-1 text-center">
                         <h3 className="fs-sm fw-400 black mb-0">Action</h3>
                       </th>
                     </tr>
                   </thead>
                   <tbody className="table_body">
                     {ServiceData.filter((data) => {
-                      return searchvalue.toLowerCase() === ""
+                      return searchvalue.toLowerCase() === ''
                         ? data
                         : data.AreaName.toLowerCase().includes(searchvalue);
                     }).map((data, index) => {
                       return (
-                          <tr className="product_borderbottom">
-                          <td className="py-3 ps-3  mx_160">
+                        <tr className="product_borderbottom">
+                          <td className="py-3 ps-3  mw-300">
                             <div className="d-flex align-items-center gap-3 ">
                               <label class="check1 fw-400 fs-sm black mb-0">
                                 <input
@@ -230,23 +212,21 @@ const DeliveryManList = () => {
                             <h3 className="fs-sm fw-400 black mb-0">Full time</h3>
                           </td>
                           <td className="mx_160 ps-3">
-                        <h3 className="fs-sm fw-400 black mb-0">
-                        Total Order’s
-                        </h3>
-                      </td>
-                           <td className="px-2 mx_160">
+                            <h3 className="fs-sm fw-400 black mb-0">Total Order’s</h3>
+                          </td>
+                          <td className="px-2 mx_140">
                             <h3 className="fs-sm fw-400 black mb-0">Full time</h3>
                           </td>
-                          <td className="ps-4 mw-200">
+                          <td className="ps-3 mx_160">
                             <h3 className="fs-sm fw-400 black mb-0">{data.ExpectedDelivery}</h3>
                           </td>
-                          <td className="mx_140">
-                            <h3 className="fs-sm fw-400 black mb-0 color_green ms-5">
+                          <td className=" mx_100 ps-3">
+                            <h3 className="fs-sm fw-400 black mb-0 color_green">
                               {data.ServiceStatus}
                             </h3>
                           </td>
-                          <td className="text-center mw-90">
-                           fghjkn
+                          <td className="text-center mx_100">
+                            <img src={dropdownDots} alt="dropdownDots" />
                           </td>
                         </tr>
                       );
@@ -256,7 +236,6 @@ const DeliveryManList = () => {
                 <ToastContainer />
                 {/* <div className=""></div> */}
               </div>
-             
             </div>
           </div>
         </div>
