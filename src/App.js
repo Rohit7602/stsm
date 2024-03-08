@@ -48,6 +48,8 @@ function App() {
     }, 3000);
   }, []);
 
+  
+
   const handleLogout = async () => {
     try {
       // Sign out the user from Firebase Authentication

@@ -1754,3 +1754,8 @@ div.rich-text-editor .ql-editor {
 .pt_3 {
   padding-top: 3px;
 }
+
+.py-6px{
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
