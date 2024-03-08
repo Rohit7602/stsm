@@ -41,7 +41,7 @@ const AddProduct = () => {
   const [name, setName] = useState("");
   const [shortDes, setShortDes] = useState("");
   const [longDes, setLongDes] = useState("");
-  const [varient, setVarient] = useState(false);
+  const [isvarient, setisVarient] = useState(false);
   const [colorVar, setColorVar] = useState(false);
   const [color, setColor] = useState("");
   const [storeColors, setStoreColors] = useState([]);
@@ -61,7 +61,7 @@ const AddProduct = () => {
   const [searchdata, setSearchdata] = useState([]);
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [stockpopup, setStockpopup] = useState(false);
-  const [unitType, setUnitType] = useState("");
+  const [unitType, setUnitType] = useState("KG");
   const [DeliveryCharge, setDeliveryCharges] = useState();
   const [ServiceCharge, setServiceCharge] = useState();
   const [SalesmanCommission, setSalesmanComssion] = useState();
@@ -70,13 +70,17 @@ const AddProduct = () => {
   const [searchvalue, setSearchvalue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-  const [previousCategoryId, setPreviousCategoryId] = useState(null);
+  const [previousCategoryId, setPreviousCategoryId] = useState(null)
+  const [previousCategoryname, setpreviousCategoryname] = useState(null)
+  const [previousCategoryParentId, setpreviousCategoryParentId] = useState(null)
 
   const handleSelectCategory = (category) => {
     setSearchvalue("");
     setSelectedCategory(category);
     setSelectedCategoryId(category.id);
   };
+
+  console.log(selectedCategory)
 
 
 
@@ -191,8 +195,8 @@ const AddProduct = () => {
           ServiceCharge,
           DeliveryCharge,
           colors: storeColors,
-          isMultipleVariant: varient === true,
-          ...(varient === false
+          isMultipleVariant: isvarient === true,
+          ...(isvarient === false
             ? {
               varients: [
                 {
@@ -265,7 +269,8 @@ const AddProduct = () => {
         setStatus(items.status);
         setTotalStock(items.totalStock);
         setSku(items.sku);
-        setVarient(items.isMultipleVariant);
+        // console.log(items.categories)
+        setisVarient(items.isMultipleVariant);
         setVariantsNAME(items.varients.VarientName);
         setSelectedCategory(items.categories.name);
         setImageUpload22(items.productImages);
@@ -275,6 +280,8 @@ const AddProduct = () => {
         setStockCount(items.stockAlert);
         setStoreColors(items.colors);
         setPreviousCategoryId(items.categories.id);
+        setpreviousCategoryParentId(items.categories.parent_id)
+        setpreviousCategoryname(items.categories.name)
 
         const allVariants = [];
         items.varients.map((itm) => {
@@ -354,7 +361,7 @@ const AddProduct = () => {
         }
       }
 
-      console.log("selectedCategoryId", previousCategoryId)
+      console.log("previoisdCategoryId", previousCategoryId)
 
       const updateDatas = {
         name: name,
@@ -365,9 +372,9 @@ const AddProduct = () => {
         totalStock: totalStock,
         stockAlert: StockCount,
         categories: {
-          parent_id: selectedCategory.cat_ID,
-          id: selectedCategory.id,
-          name: selectedCategory.title,
+          parent_id: previousCategoryParentId,
+          id: previousCategoryId,
+          name: previousCategoryname,
         },
         productImages: imagelinksupdate,
         updated_at: Date.now(),
@@ -375,26 +382,28 @@ const AddProduct = () => {
         ServiceCharge,
         DeliveryCharge,
         colors: storeColors,
-        isMultipleVariant: varient === true,
-        ...(varient === false
+        isMultipleVariant: isvarient === true,
+        ...(isvarient === false
           ? {
             varients: [
               {
-                originalPrice: originalPrice,
-                discountType: discountType,
-                discount: discount,
-                unitType,
+                originalPrice:  variants[0].originalPrice,
+                discountType: variants[0].discountType,
+                discount: variants[0].discount,
+                unitType: variants[0].unitType,
               },
             ],
           }
           : {
-            varients: variants,
+            varients:variants,
           }),
       };
 
       // Check if the selected category is different from the existing category
-      if (selectedCategory.id !== previousCategoryId) {
-        console.log("update if working here ");
+      if (selectedCategoryId === null) {
+
+      } else {
+        console.log("update if working here ", selectedCategoryId);
         updateDatas.categories = {
           parent_id: selectedCategory.cat_ID,
           id: selectedCategory.id,
@@ -550,11 +559,11 @@ const AddProduct = () => {
                             Yes
                           </label>
                           <input
-                            onChange={() => setVarient(true)}
+                            onChange={() => setisVarient(true)}
                             className="fs-xs fw-400 black varient_btn"
                             type="radio"
                             id="varient_yes"
-                            checked={varient === true}
+                            checked={isvarient === true}
                           />
                         </div>
                         <div className="d-flex align-items-center">
@@ -562,15 +571,15 @@ const AddProduct = () => {
                             No
                           </label>
                           <input
-                            onChange={() => setVarient(false)}
+                            onChange={() => setisVarient(false)}
                             className="fs-xs fw-400 black varient_btn"
                             type="radio"
                             id="varient_no"
-                            checked={varient === false}
+                            checked={isvarient === false}
                           />
                         </div>
                       </div>
-                      {varient === true ? (
+                      {isvarient === true ? (
                         <div className="text-end">
                           <button
                             onClick={HandleAddVarients}
@@ -581,7 +590,7 @@ const AddProduct = () => {
                           </button>
                         </div>
                       ) : null}
-                      {varient === true ? (
+                      {isvarient === true ? (
                         variants.map((variant, index) => (
                           <div key={index} className="varient_form_border">
                             <div className="d-flex align-items-center justify-content-between">
@@ -625,9 +634,9 @@ const AddProduct = () => {
                                     >
                                       <div className="product_input d-flex align-items-center justify-content-between">
                                         <p className="fade_grey fw-400 w-100 mb-0 text-start">
-                                          {unitType == ""
-                                            ? "Unit type"
-                                            : unitType}
+                                          {unitType == "KG"
+                                            ? "KG"
+                                            : variant.unitType}
                                         </p>
                                         <img src={dropdownImg} alt="" />
                                       </div>
@@ -777,9 +786,9 @@ const AddProduct = () => {
                                   >
                                     <div className="product_input d-flex align-items-center justify-content-between">
                                       <p className="fade_grey fw-400 w-100 mb-0 text-start">
-                                        {unitType == ""
-                                          ? "Unit type"
-                                          : unitType}
+                                        {unitType == "KG"
+                                          ? "KG"
+                                            : unitType}
                                       </p>
                                       <img src={dropdownImg} alt="" />
                                     </div>
@@ -831,9 +840,24 @@ const AddProduct = () => {
                                     ? originalPrice
                                     : variants[0].originalPrice
                                 }
-                                onChange={(e) =>
-                                  setOriginalPrice(e.target.value)
-                                }
+                                  onChange={(e) => {
+                                    if (variants.length === 0) {
+                                      // Set originalPrice directly if variants array is empty
+                                      setOriginalPrice(e.target.value);
+                                    } else {
+                                      // Update originalPrice for the specific variant
+                                      setVariants((prevVariants) =>
+                                        prevVariants.map((v, i) =>
+                                          i === 0
+                                            ? {
+                                              ...v,
+                                              originalPrice: e.target.value,
+                                            }
+                                            : v
+                                        )
+                                      );
+                                    }
+                                  }}
                               />
                             </div>
                             {/* 2nd input */}
@@ -852,9 +876,28 @@ const AddProduct = () => {
                                     ? discountType
                                     : variants[0].discountType
                                 }
-                                onChange={(e) => {
-                                  setDiscountType(e.target.value);
-                                }}
+                                  onChange={(e) => {
+                                    if (variants.length === 0) {
+                                      // Set discountType directly if variants array is empty
+                                      setDiscountType(e.target.value);
+                                      // Reset discount value when changing the discount type to "Amount"
+                                      setDiscount(e.target.value === "Amount" ? 0 : discount);
+                                    } else {
+                                      // Update discountType for the specific variant
+                                      setVariants((prevVariants) =>
+                                        prevVariants.map((v, i) =>
+                                          i === 0
+                                            ? {
+                                              ...v,
+                                              discountType: e.target.value,
+                                              // Reset discount value when changing the discount type to "Amount"
+                                              discount: e.target.value === "Amount" ? 0 : v.discount,
+                                            }
+                                            : v
+                                        )
+                                      );
+                                    }
+                                  }}
                               >
                                 <option
                                   className="mt-2 product_input fade_grey fw-400"
@@ -891,18 +934,29 @@ const AddProduct = () => {
                                     ? discount
                                     : variants[0].discount
                                 }
-                                onChange={(e) => {
-                                  if (discountType === "Percentage") {
-                                    if (
-                                      e.target.value < 101 &&
-                                      e.target.value >= 0
-                                    ) {
+                                  onChange={(e) => {
+                                    if (variants.length === 0) {
+                                      // Set discount directly if variants array is empty
                                       setDiscount(e.target.value);
+                                    } else {
+                                      // Update discount for the specific variant
+                                      setVariants((prevVariants) =>
+                                        prevVariants.map((v, i) =>
+                                          i === 0
+                                            ? {
+                                              ...v,
+                                              discount:
+                                                discountType === "Percentage"
+                                                  ? (e.target.value < 101 && e.target.value >= 0)
+                                                    ? e.target.value
+                                                    : v.discount
+                                                  : e.target.value,
+                                            }
+                                            : v
+                                        )
+                                      );
                                     }
-                                  } else {
-                                    setDiscount(e.target.value);
-                                  }
-                                }}
+                                  }}
                               />
                             </div>
                           </div>

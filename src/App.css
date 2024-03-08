@@ -204,7 +204,20 @@ body {
 .content {
   width: calc(100% - 270px);
 }
-
+.status_btn_green{
+  background-color: #DEF2D0;
+  color: #245900;
+  padding: 5px 10px;
+  display: inline-block;
+  border-radius: 5px;
+}
+.status_btn_red{
+  background-color: #FFDCDC;
+  color: #990000;
+  padding: 5px 10px;
+  display: inline-block;
+  border-radius: 5px;
+}
 .top_bar {
   position: sticky;
   top: 0;
@@ -407,7 +420,9 @@ body {
   width: 100% !important;
   max-height: 46px !important;
 }
-
+.transition_04{
+transition:  all ease-in-out 300ms;
+}
 /* my btn */
 /*reset_btn*/
 .reset_btn {
@@ -1009,9 +1024,15 @@ body {
   max-width: 160px;
   width: 160px;
 }
-
+.mw_220 {
+  max-width: 210px;
+  width: 210px;
+}
 .min_width_1350 {
   min-width: 1450px;
+}
+.min_width_1120 {
+  min-width: 1120px;
 }
 
 .stock_bg {
@@ -1302,7 +1323,10 @@ body {
   min-width: 300px !important;
   width: 300px !important;
 }
-
+.min_width_200 {
+  min-width: 200px !important;
+  width: 200px !important;
+}
 tbody::-webkit-scrollbar {
   width: 2px;
 }

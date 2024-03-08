@@ -27,8 +27,8 @@ import PrivacyPolicy from './Components/PrivacyPolicy/PrivacyPolicy';
 import TermConditions from './Components/Security/TermConditions/TermConditions';
 import AddDeliveryMan from './Components/deliveryman/AddDeliveryMan';
 import Faqs from './Components/faqs/Faqs';
-
-
+import DeliverymanProfile from './Components/deliveryman/DeliverymanProfile';
+import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList';
 function App() {
   const [user, setUser] = useState(true);
   const [authchecked, setauthchecked] = useState(false);
@@ -142,6 +142,8 @@ function App() {
                         <Route path="deliveryman">
                           <Route index element={<DeliveryManList />} />
                           <Route path="addnewdeliveryman" element={<AddDeliveryMan/>}/>
+                          <Route path="deliverymanprofile" element={<DeliverymanProfile/>}/>
+                          <Route path="deliveryorderlist" element={<DeliveryOrderList/>}/>
                         </Route>
                         <Route path="marketing">
                           <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
