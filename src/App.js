@@ -23,18 +23,16 @@ import CheckConnection from './Components/CheckConnection';
 
 import { permissionHandler } from './firebase';
 import DeliveryManList from './Components/deliveryman/DeliveryManList';
+
+
 import PrivacyPolicy from './Components/PrivacyPolicy/PrivacyPolicy';
 import TermConditions from './Components/Security/TermConditions/TermConditions';
 import AddDeliveryMan from './Components/deliveryman/AddDeliveryMan';
 import Faqs from './Components/faqs/Faqs';
-<<<<<<< HEAD
-import DeliverymanProfile from './Components/deliveryman/DeliverymanProfile';
-import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList';
-=======
 import Logout from './Components/login/Logout';
+import DeliverymanProfile from './Components/deliveryman/DeliverymanProfile';
+import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList'
 
-
->>>>>>> 922a1b1dd07e98f9269c26189a4706cb6134460b
 function App() {
   const [user, setUser] = useState(true);
   const [authchecked, setauthchecked] = useState(false);
@@ -88,7 +86,7 @@ function App() {
 
   return (
     <div>
-      <Logout  logout={handleLogout} setDeletPopup={setDeletPopup} deletPopup={deletPopup} />
+      {/* <Logout  logout={handleLogout} setDeletPopup={setDeletPopup} deletPopup={deletPopup} /> */}
       {loading ? (
         <div
           style={{
