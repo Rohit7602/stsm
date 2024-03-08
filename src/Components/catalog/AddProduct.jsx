@@ -277,9 +277,9 @@ const AddProduct = () => {
       });
     }
     if (storeColors && storeColors.length > 0) {
-      console.log("if working ")
-    setColorVar(true);
-  }
+      console.log("if working ");
+      setColorVar(true);
+    }
   }, []);
 
   console.log(filterdata);
@@ -834,7 +834,7 @@ const AddProduct = () => {
                                   );
                                 })
                               : null}
-                              
+
                             {colorInput ? (
                               <div className="color_add_input d-flex align-items-center">
                                 <input
