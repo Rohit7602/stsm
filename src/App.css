@@ -1200,6 +1200,11 @@ body {
   border-bottom: 1px solid #00000095;
   padding: 10px 0;
 }
+.login-form .input {
+  border: 0;
+  border-bottom: 1px solid #00000095;
+  padding: 10px 0;
+}
 
 .login-form input:focus {
   outline: 0;
