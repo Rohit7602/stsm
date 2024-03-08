@@ -1563,6 +1563,20 @@ div.rich-text-editor .ql-editor {
   border-radius: 10px;
   border: 0;
 }
+<<<<<<< HEAD
+=======
+.Logout_popup{
+  position: fixed;
+  width: 500px;
+  background-color: #ffffff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px 20px 20px 20px;
+  border-radius: 8px;
+  z-index: 10;
+}
+>>>>>>> 922a1b1dd07e98f9269c26189a4706cb6134460b
 
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {

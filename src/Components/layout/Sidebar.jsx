@@ -483,7 +483,7 @@ function Sidebar(props) {
                 </NavLink>
               </li>
               <li>
-                <NavLink onClick={props.logout} to="/Logout" className="w-100">
+                <div onClick={()=>props.setDeletPopup(true)} className="w-100 cursor_pointer">
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg
@@ -501,7 +501,7 @@ function Sidebar(props) {
                       <h3 className="fs-xs fw-400  white mb-0">Logout</h3>
                     </div>
                   </div>
-                </NavLink>
+                </div>
               </li>
             </ul>
           </div>

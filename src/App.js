@@ -27,15 +27,21 @@ import PrivacyPolicy from './Components/PrivacyPolicy/PrivacyPolicy';
 import TermConditions from './Components/Security/TermConditions/TermConditions';
 import AddDeliveryMan from './Components/deliveryman/AddDeliveryMan';
 import Faqs from './Components/faqs/Faqs';
+<<<<<<< HEAD
 import DeliverymanProfile from './Components/deliveryman/DeliverymanProfile';
 import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList';
+=======
+import Logout from './Components/login/Logout';
+
+
+>>>>>>> 922a1b1dd07e98f9269c26189a4706cb6134460b
 function App() {
   const [user, setUser] = useState(true);
   const [authchecked, setauthchecked] = useState(false);
   const [loading, setloading] = useState(false);
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-
+  const [deletPopup, setDeletPopup] = useState(true);
   useEffect(() => {
     permissionHandler();
     setloading(true);
@@ -82,6 +88,7 @@ function App() {
 
   return (
     <div>
+      <Logout  logout={handleLogout} setDeletPopup={setDeletPopup} deletPopup={deletPopup} />
       {loading ? (
         <div
           style={{
@@ -106,6 +113,7 @@ function App() {
         </div>
       ) : (
         <div>
+          
           {location.pathname === '/deleteAcount' ? (
             <Routes>
               <Route path="/deleteAcount" element={<AccountDelete />} />
@@ -116,7 +124,7 @@ function App() {
                 <Login login={handleLogin} />
               ) : (
                 <div className="d-flex">
-                  <Sidebar logout={handleLogout} />
+                  <Sidebar  setDeletPopup={setDeletPopup}npm star/>
                   <div className="content d-flex flex-column  position-relative">
                     <Topbar />
                     <div className="h-100 px-3 bg_light_grey">
