@@ -427,7 +427,6 @@ const AddProduct = () => {
   }
 
 
-
   if (loaderstatus) {
     return (
       <>

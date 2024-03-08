@@ -27,6 +27,7 @@ import PrivacyPolicy from './Components/PrivacyPolicy/PrivacyPolicy';
 import TermConditions from './Components/Security/TermConditions/TermConditions';
 import AddDeliveryMan from './Components/deliveryman/AddDeliveryMan';
 import Faqs from './Components/faqs/Faqs';
+import Logout from './Components/login/Logout';
 
 
 function App() {
@@ -35,7 +36,7 @@ function App() {
   const [loading, setloading] = useState(false);
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-
+  const [deletPopup, setDeletPopup] = useState(true);
   useEffect(() => {
     permissionHandler();
     setloading(true);
@@ -82,6 +83,7 @@ function App() {
 
   return (
     <div>
+      <Logout  logout={handleLogout} setDeletPopup={setDeletPopup} deletPopup={deletPopup} />
       {loading ? (
         <div
           style={{
@@ -106,6 +108,7 @@ function App() {
         </div>
       ) : (
         <div>
+          
           {location.pathname === '/deleteAcount' ? (
             <Routes>
               <Route path="/deleteAcount" element={<AccountDelete />} />
@@ -116,7 +119,7 @@ function App() {
                 <Login login={handleLogin} />
               ) : (
                 <div className="d-flex">
-                  <Sidebar logout={handleLogout} />
+                  <Sidebar  setDeletPopup={setDeletPopup}npm star/>
                   <div className="content d-flex flex-column  position-relative">
                     <Topbar />
                     <div className="h-100 px-3 bg_light_grey">
