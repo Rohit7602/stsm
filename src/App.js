@@ -3,7 +3,6 @@ import CategoriesView from './Components/catalog/Categories';
 import { Route, Routes, useLocation, useParams } from 'react-router-dom';
 import Sidebar from './Components/layout/Sidebar';
 import DashbordCards from './Components/dashbord/DashbordCards';
-
 import ProductList from './Components/catalog/ProductList';
 import NewCategory from './Components/catalog/NewCategory';
 import AddProduct from './Components/catalog/AddProduct';
@@ -29,6 +28,7 @@ import TermConditions from './Components/Security/TermConditions/TermConditions'
 import AddDeliveryMan from './Components/deliveryman/AddDeliveryMan';
 import Faqs from './Components/faqs/Faqs';
 import DeliverymanProfile from './Components/deliveryman/DeliverymanProfile';
+import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList';
 function App() {
   const [user, setUser] = useState(true);
   const [authchecked, setauthchecked] = useState(false);
@@ -143,6 +143,7 @@ function App() {
                           <Route index element={<DeliveryManList />} />
                           <Route path="addnewdeliveryman" element={<AddDeliveryMan/>}/>
                           <Route path="deliverymanprofile" element={<DeliverymanProfile/>}/>
+                          <Route path="deliveryorderlist" element={<DeliveryOrderList/>}/>
                         </Route>
                         <Route path="marketing">
                           <Route path="bannersadvertisement" element={<BannersAdvertisement />} />

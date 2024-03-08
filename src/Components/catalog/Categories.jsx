@@ -170,6 +170,11 @@ const Categories = () => {
         imageUrl = editCatImg;
       }
 
+
+
+
+      
+
       const updateData = {
         title: editCatName,
         status: editStatus,
@@ -189,11 +194,9 @@ const Categories = () => {
           'noOfSubcateogry': increment(-1)
         });
 
-
         await updateDoc(doc(db, 'categories', afterchange), {
           'noOfSubcateogry': increment(1)
         })
-
       }
 
       await updateDoc(doc(db, 'sub_categories', selectedSubcategoryId), updateData);

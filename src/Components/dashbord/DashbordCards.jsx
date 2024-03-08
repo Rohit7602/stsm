@@ -238,7 +238,7 @@ function DashbordCards() {
                         </td>
                       </tr>
                     ) : (
-                      ordersOneWeekAgo.map((data, index) => {
+                        ordersOneWeekAgo.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map((data, index) => {
                         return (
                           <tr key={data.created_at} className="product_borderbottom">
                             <td className="py-2 px-3">
