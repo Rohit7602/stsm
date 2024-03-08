@@ -170,6 +170,11 @@ const Categories = () => {
         imageUrl = editCatImg;
       }
 
+
+
+
+      
+
       const updateData = {
         title: editCatName,
         status: editStatus,
