@@ -36,7 +36,7 @@ function App() {
   const [loading, setloading] = useState(false);
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const [deletPopup, setDeletPopup] = useState(true);
+  const [deletPopup, setDeletPopup] = useState(false);
   useEffect(() => {
     permissionHandler();
     setloading(true);
