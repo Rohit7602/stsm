@@ -18,9 +18,11 @@
   box-sizing: border-box;
   /* text-decoration: none !important; */
 }
+
 a {
   text-decoration: none !important;
 }
+
 body {
   scroll-behavior: smooth !important;
 }
@@ -389,18 +391,15 @@ body {
 /*export_btn*/
 .export_btn {
   border-radius: 10px;
-  background: var(
-    --red_gradient,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
-  );
+  background: var(--red_gradient,
+      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
 }
 
 .export_btn:hover {
-  background: var(
-    --red_gradient,
-    linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
-  );
+  background: var(--red_gradient,
+      linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
 }
+
 .unit_type_input {
   padding: 0 !important;
   background-color: var(--color-white) !important;
@@ -408,16 +407,15 @@ body {
   width: 100% !important;
   max-height: 46px !important;
 }
+
 /* my btn */
 /*reset_btn*/
 .reset_btn {
   padding: 12px 15px;
   transition: 0.5s ease-in-out;
   background-color: transparent;
-  background: var(
-    --red_gradient,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
-  );
+  background: var(--red_gradient,
+      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -558,15 +556,19 @@ body {
 .active.list_icons path {
   fill: var(--color-brown);
 }
+
 .active h3 {
   color: var(--color-brown) !important;
 }
+
 .cursor_pointer {
   cursor: pointer;
 }
+
 .line_scroll {
   overflow: auto;
 }
+
 /* webkit scrool */
 
 .line_scroll::-webkit-scrollbar {
@@ -654,11 +656,11 @@ body {
 } */
 
 /* When the checkbox is checked, add a blue background */
-.check input:checked ~ .checkmark {
+.check input:checked~.checkmark {
   background-color: #000000;
 }
 
-.check1 input:checked ~ .checkmark {
+.check1 input:checked~.checkmark {
   background-color: transparent;
 }
 
@@ -670,11 +672,11 @@ body {
 }
 
 /* Show the checkmark when checked */
-.check input:checked ~ .checkmark:after {
+.check input:checked~.checkmark:after {
   display: block;
 }
 
-.check1 input:checked ~ .checkmark:after {
+.check1 input:checked~.checkmark:after {
   display: block;
 }
 
@@ -749,9 +751,11 @@ body {
 .product_borderbottom {
   border-bottom: 1px solid #dfdfdfcd;
 }
+
 .fs-3sm {
   font-size: 24px;
 }
+
 /* product overflow  on x axis */
 .product_overflow_X {
   width: 1900px;
@@ -890,6 +894,7 @@ body {
   max-width: 160px;
   width: 160px;
 }
+
 .mx_170 {
   max-width: 170px;
   width: 170px;
@@ -960,8 +965,8 @@ body {
   cursor: pointer;
 }
 
-.btn-check:checked + .btn,
-:not(.btn-check) + .btn:active,
+.btn-check:checked+.btn,
+:not(.btn-check)+.btn:active,
 .btn:first-child:active,
 .btn.active,
 .btn.show {
@@ -1204,6 +1209,7 @@ body {
   border-bottom: 1px solid #00000095;
   padding: 10px 0;
 }
+
 .login-form .input {
   border: 0;
   border-bottom: 1px solid #00000095;
@@ -1213,49 +1219,62 @@ body {
 .login-form input:focus {
   outline: 0;
 }
+
 .mx_500 {
   max-width: 600px;
   width: 600px;
 }
+
 .manicon {
   height: 40px;
   width: 40px;
   border-radius: 5px;
 }
+
 .mt-0 {
   margin-top: 0 !important;
 }
+
 .raido-black {
   accent-color: black;
 }
+
 .active h3 {
   color: var(--color-brown);
 }
+
 .dash_links {
   padding: 12px 20px;
   border-radius: 50px 0px 0px 50px !important;
 }
+
 .dash_links_inner {
   border-radius: 50px 0px 0px 50px !important;
   padding: 12px 40px;
   display: inline-block;
   width: 100%;
 }
+
 .dash_links_inner:hover {
   background-color: #26313a;
 }
+
 .dash_links_inner:hover h3 {
   color: var(--color-brown);
 }
+
 .active .dash_links svg path {
   fill: var(--color-brown);
 }
+
 .active .stroke {
   stroke: var(--color-brown);
 }
+
 .active .dash_links {
   background-color: #26313a;
 }
+
 .active .dash_links2 svg path {
   stroke: var(--color-brown);
   fill: transparent !important;
@@ -1264,33 +1283,41 @@ body {
 .dash_links:hover svg path {
   fill: var(--color-brown);
 }
+
 .dash_links2:hover svg path {
   stroke: var(--color-brown);
   fill: transparent !important;
 }
-.min_160{
+
+.min_160 {
   min-width: 160px;
   width: 160px;
 }
+
 .categories_xl_overflow_X {
   min-width: 1000px;
 }
+
 .min_width_300 {
   min-width: 300px !important;
   width: 300px !important;
 }
+
 tbody::-webkit-scrollbar {
   width: 2px;
 }
+
 div.rich-text-editor .ql-editor {
   height: calc(100vh - 250px) !important;
 }
+
 .table_body {
   display: block !important;
   height: calc(100vh - 265px) !important;
   height: 100%;
   overflow: auto !important;
 }
+
 .table_head,
 .table_body tr {
   display: table !important;
@@ -1310,18 +1337,22 @@ div.rich-text-editor .ql-editor {
   padding: 20px;
   z-index: 10;
 }
+
 .popup_input {
   border: 0.5px solid #0000004d !important;
   padding: 10px 15px;
   outline: 0;
   margin-top: 10px;
 }
+
 .border_top_gray {
   border-top: 0.5px solid #0000004d;
 }
+
 .dropdown_btn_text {
   color: #00000080 !important;
 }
+
 .delete_popup {
   position: fixed;
   width: 500px;
@@ -1333,12 +1364,14 @@ div.rich-text-editor .ql-editor {
   border-radius: 8px;
   z-index: 10;
 }
+
 .cancel_btn {
   padding: 8px 25px;
   background-color: white;
   border: 1px solid var(--color-brown);
   border-radius: 8px;
 }
+
 .delete_btn {
   padding: 9px 25px;
   background-color: var(--color-brown);
@@ -1346,12 +1379,14 @@ div.rich-text-editor .ql-editor {
   border-radius: 8px;
   color: white;
 }
+
 .no_btn {
   padding: 8px 25px;
   background-color: var(--color-brown);
   border: 1px solid #000000;
   border-radius: 8px;
 }
+
 .new_cat_popup {
   position: fixed;
   z-index: 10;
@@ -1363,19 +1398,23 @@ div.rich-text-editor .ql-editor {
   padding: 20px;
   border-radius: 8px;
 }
+
 .bg_green_yellow {
   background: linear-gradient(90deg, #01bbbd -1.4%, #ffae00 100%);
 }
+
 .step_bg {
   background-color: #33495f;
   padding: 21px 10px;
   cursor: pointer;
 }
+
 .active_step_bg {
   background-color: #01bbbd !important;
   padding: 21px 10px;
   cursor: pointer;
 }
+
 .date_btn {
   padding: 5.34px 10.67px 5.34px 10.67px;
   border: 0.53px solid black;
@@ -1391,48 +1430,62 @@ div.rich-text-editor .ql-editor {
   border: 0;
   outline: 0;
 }
+
 .steps_data {
   padding: 20px;
   background-color: #f0f4f7;
 }
+
 .min_width_700 {
   min-width: 700px;
 }
+
 .steps::-webkit-scrollbar {
   height: 5px;
 }
+
 .ql-toolbar.ql-snow {
   border: transparent !important;
 }
-.bg_green{
+
+.bg_green {
   background-color: #DEF2D0;
 }
+
 .ql-container.ql-snow {
   border: transparent !important;
 }
+
 .no-scroll {
   overflow: hidden !important;
 }
+
 .ql-editor {
-  height: 200px !important; /* Adjust the value to your desired fixed height */
-  overflow-y: auto; /* Adjust the value to your desired height */
+  height: 200px !important;
+  /* Adjust the value to your desired fixed height */
+  overflow-y: auto;
+  /* Adjust the value to your desired height */
 }
+
 .custom-underline {
   text-decoration: underline !important;
   /* Add any additional custom properties here */
 }
+
 .add_color_btn {
   background-color: transparent;
   border: 1px solid rgba(0, 0, 0, 0.194);
   padding: 12px 20px;
   border-radius: 50px;
 }
+
 .color_add_input {
   border: 1px solid rgba(0, 0, 0, 0.194);
   padding: 0px 20px;
   border-radius: 50px;
   height: 47px;
 }
+
 .color_add_input input {
   border: 0;
   outline: 0;
@@ -1440,9 +1493,11 @@ div.rich-text-editor .ql-editor {
   background-color: transparent;
   width: 60px;
 }
+
 .faqs_dropdown .dropdown-item {
   padding: 10px;
 }
+
 .addqus_popup {
   padding: 20px;
   background-color: var(--color-white);
@@ -1455,6 +1510,7 @@ div.rich-text-editor .ql-editor {
   transform: translate(-50%, -50%);
   z-index: 3;
 }
+
 .ques_input {
   border: 0.5px solid #0000004d;
   padding: 5px 10px;
@@ -1463,23 +1519,27 @@ div.rich-text-editor .ql-editor {
   margin-left: 10px;
   max-width: 301px;
 }
+
 .qes_reset_btn {
   border: 1px solid #000000;
   padding: 10px 15px;
   border-radius: 10px;
 }
+
 .qes_save_btn {
   border: 1px solid #000000;
   padding: 10px 15px;
   border-radius: 10px;
   background-color: transparent;
 }
+
 .qes_reset_btn {
   background-color: var(--color-brown);
   padding: 11px 20px;
   border-radius: 10px;
   border: 0;
 }
+
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
   :root {
@@ -1501,12 +1561,15 @@ div.rich-text-editor .ql-editor {
   .Customers_overflow_X {
     width: 1020px;
   }
+
   .recent_order_table {
     overflow-x: scroll;
   }
+
   .recent_order_table::-webkit-scrollbar {
     height: 4px;
   }
+
   .recent_order_table table {
     min-width: 613px;
   }
@@ -1639,4 +1702,8 @@ div.rich-text-editor .ql-editor {
   height: 60px;
   object-fit: cover;
   width: 60px;
+}
+
+.pt_3 {
+  padding-top: 3px;
 }

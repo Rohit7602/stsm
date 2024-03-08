@@ -1,4 +1,5 @@
-import Logo from '../../Images/svgs/logo.svg';
+// import Logo from '../../Images/svgs/logo.svg';
+import stsm_logo from '../../Images/svgs/stsm_logo.svg'
 import dropDown from '../../Images/svgs/dropdown-white-icon.svg';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useState } from 'react';
@@ -14,9 +15,9 @@ function Sidebar(props) {
     <>
       <aside className="sidebar">
         <div className="sidebar_position d-flex flex-column">
-          <div className="logo_bar bg_brown d-flex justify-content-center p-2 position-sticky top-0 z-1 align-items-center">
-            <img className="mx-2" src={Logo} alt="Logo" />
-            <button className="admin_btn fs-xxs p-2 py-1 fw-400 border-0">ADMIN</button>
+          <div className="logo_bar bg_white d-flex justify-content-center pt_3 position-sticky top-0 z-1 align-items-center">
+            <img className="mx-2" src={stsm_logo} alt="Logo" />
+            <button className="admin_btn  p-2 py-1 fw-400 fs-lg bg-transparent  border-0 color_brown">STSM</button>
           </div>
           <div className="drops_wrap">
             <ul className="px-0 drop_list">
@@ -44,15 +45,14 @@ function Sidebar(props) {
               <li>
                 <div
                   onClick={() => toggleDropdown('catalog')}
-                  className={`w-100 m-0 cursor_pointer ${
-                    path.pathname === '/catalog' ||
-                    path.pathname === '/catalog/productlist' ||
-                    path.pathname === '/catalog/serviceareas' ||
-                    path.pathname === '/catalog/newcategory' ||
-                    path.pathname === '/catalog/addproduct'
+                  className={`w-100 m-0 cursor_pointer ${path.pathname === '/catalog' ||
+                      path.pathname === '/catalog/productlist' ||
+                      path.pathname === '/catalog/serviceareas' ||
+                      path.pathname === '/catalog/newcategory' ||
+                      path.pathname === '/catalog/addproduct'
                       ? 'active'
                       : null
-                  }`}>
+                    }`}>
                   <div className="d-flex align-items-center w-100 dash_links ps-3 ">
                     <div className="d-flex align-items-center w-100">
                       <svg
@@ -82,18 +82,16 @@ function Sidebar(props) {
                       <NavLink
                         to="catalog"
                         end
-                        className={`dash_links_inner ${
-                          path.pathname === '/catalog/newcategory' ? 'active' : null
-                        }`}>
+                        className={`dash_links_inner ${path.pathname === '/catalog/newcategory' ? 'active' : null
+                          }`}>
                         <h3 className="fs-xs fw-400  white mb-0">Category List</h3>
                       </NavLink>
                     </li>
 
                     <li>
                       <NavLink
-                        className={`dash_links_inner ${
-                          path.pathname === '/catalog/addproduct' ? 'active' : null
-                        }`}
+                        className={`dash_links_inner ${path.pathname === '/catalog/addproduct' ? 'active' : null
+                          }`}
                         to="catalog/productlist">
                         <h3 className="fs-xs fw-400  white mb-0">Product List</h3>
                       </NavLink>
@@ -288,12 +286,11 @@ function Sidebar(props) {
                 <div
                   onClick={() => toggleDropdown('marketing')}
                   to="marketing"
-                  className={`w-100 cursor_pointer ${
-                    path.pathname === '/marketing/coupans' ||
-                    path.pathname === '/marketing/bannersadvertisement'
+                  className={`w-100 cursor_pointer ${path.pathname === '/marketing/coupans' ||
+                      path.pathname === '/marketing/bannersadvertisement'
                       ? 'active'
                       : null
-                  }`}>
+                    }`}>
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg
