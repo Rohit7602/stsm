@@ -34,21 +34,26 @@ import DeliverymanProfile from './Components/deliveryman/DeliverymanProfile';
 import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList'
 
 function App() {
-  const [user, setUser] = useState(true);
+  const [user, setUser] = useState(null);
   const [authchecked, setauthchecked] = useState(false);
-  const [loading, setloading] = useState(false);
+  const [loading, setloading] = useState(true);
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const [deletPopup, setDeletPopup] = useState(false);
   useEffect(() => {
     permissionHandler();
-    setloading(true);
-    setTimeout(() => {
-      setloading(false);
-    }, 3000);
+    window.addEventListener('load', () => {
+      setloading(false); // Set loading to false when the page has finished loading
+    });
+
+    return () => {
+      window.removeEventListener('load', () => {
+        setloading(false);
+      });
+    };
   }, []);
 
-  
+
 
   const handleLogout = async () => {
     try {
@@ -80,6 +85,7 @@ function App() {
         // User is signed out
         setUser(true);
       }
+      setloading(false)
     });
 
     // Cleanup function to unsubscribe when the component unmounts
@@ -88,7 +94,7 @@ function App() {
 
   return (
     <div>
-      <Logout  logout={handleLogout} setDeletPopup={setDeletPopup} deletPopup={deletPopup} />
+      <Logout logout={handleLogout} setDeletPopup={setDeletPopup} deletPopup={deletPopup} />
       {loading ? (
         <div
           style={{
@@ -113,18 +119,15 @@ function App() {
         </div>
       ) : (
         <div>
-          
           {location.pathname === '/deleteAcount' ? (
             <Routes>
               <Route path="/deleteAcount" element={<AccountDelete />} />
             </Routes>
           ) : (
             <>
-              {user ? (
-                <Login login={handleLogin} />
-              ) : (
+              {!user ? (
                 <div className="d-flex">
-                  <Sidebar  setDeletPopup={setDeletPopup}npm star/>
+                  <Sidebar setDeletPopup={setDeletPopup} npm star />
                   <div className="content d-flex flex-column  position-relative">
                     <Topbar />
                     <div className="h-100 px-3 bg_light_grey">
@@ -149,9 +152,9 @@ function App() {
                         </Route>
                         <Route path="deliveryman">
                           <Route index element={<DeliveryManList />} />
-                          <Route path="addnewdeliveryman" element={<AddDeliveryMan/>}/>
-                          <Route path="deliverymanprofile" element={<DeliverymanProfile/>}/>
-                          <Route path="deliveryorderlist" element={<DeliveryOrderList/>}/>
+                          <Route path="addnewdeliveryman" element={<AddDeliveryMan />} />
+                          <Route path="deliverymanprofile" element={<DeliverymanProfile />} />
+                          <Route path="deliveryorderlist" element={<DeliveryOrderList />} />
                         </Route>
                         <Route path="marketing">
                           <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
@@ -163,6 +166,8 @@ function App() {
                     </div>
                   </div>
                 </div>
+              ) : (
+                <Login login={handleLogin} />
               )}
             </>
           )}
