@@ -771,7 +771,13 @@ const AddProduct = () => {
                                     setVariants((prevVariants) =>
                                       prevVariants.map((v, i) =>
                                         i === index
-                                          ? { ...v, discount: e.target.value }
+                                          ? {
+                                            ...v,
+                                            discount:
+                                              v.discountType === "Percentage"
+                                                ? Math.min(e.target.value, 100)
+                                                : e.target.value,
+                                          }
                                           : v
                                       )
                                     )
@@ -959,10 +965,8 @@ const AddProduct = () => {
                                           ? {
                                             ...v,
                                             discount:
-                                              discountType === "Percentage"
-                                                ? (e.target.value < 101 && e.target.value >= 0)
-                                                  ? e.target.value
-                                                  : v.discount
+                                              v.discountType === "Percentage"
+                                                ? Math.min(e.target.value, 100)
                                                 : e.target.value,
                                           }
                                           : v
