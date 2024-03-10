@@ -85,7 +85,7 @@ const AddProduct = () => {
 
 
   const [variants, setVariants] = useState([]);
-  const [discount, setDiscount] = useState(0);
+  const [discount, setDiscount] = useState(null);
   const [originalPrice, setOriginalPrice] = useState("");
   const [VarintName, setVariantsNAME] = useState("");
   const [discountType, setDiscountType] = useState("Amount");
@@ -137,7 +137,7 @@ const AddProduct = () => {
     setLongDes();
     setOriginalPrice(0);
     setDiscountType("Amount");
-    setDiscount(0);
+    setDiscount(null);
     setVariants([]);
     setCategories();
     setStatus("published");
@@ -955,8 +955,7 @@ const AddProduct = () => {
                                 }
                                 onChange={(e) => {
                                   if (variants.length === 0) {
-                                    // Set discount directly if variants array is empty
-                                    setDiscount(e.target.value);
+                                    discountType === "Percentage" ? setDiscount(Math.min(e.target.value, 100)) : setDiscount(e.target.value)
                                   } else {
                                     // Update discount for the specific variant
                                     setVariants((prevVariants) =>
