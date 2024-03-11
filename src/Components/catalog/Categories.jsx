@@ -173,7 +173,7 @@ const Categories = () => {
 
 
 
-      
+
 
       const updateData = {
         title: editCatName,
@@ -405,7 +405,7 @@ const Categories = () => {
                               </h3>
                             </td>
                             <td className="ps-4 mw_160">
-                              <h3 className="fs-sm fw-400 black mb-0 width_10 ">10</h3>
+                              <h3 className="fs-sm fw-400 black mb-0 width_10 ">{value.noOfProducts}</h3>
                             </td>
                             <td className="mx_160">
                               <h3 className="fs-sm fw-400 black mb-0 color_green">{value.status}</h3>
