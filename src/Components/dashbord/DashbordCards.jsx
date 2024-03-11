@@ -248,7 +248,7 @@ function DashbordCards() {
                               <h4 className="fw-400 black mb-0  fs-xs"> {data.status}</h4>
                             </td>
                             <td className="py-2 px-3">
-                              <h4 className="fw-400 black mb-0  fs-xs">city</h4>
+                              <h4 className="fw-400 black mb-0  fs-xs">{data.shipping.city }</h4>
                             </td>
                             <td className="py-2 px-3">
                               <h4 className="fw-400 black mb-0 fs-xs">{data.customer.name}</h4>
