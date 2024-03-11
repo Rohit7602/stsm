@@ -169,7 +169,7 @@ const ViewCustomerDetails = () => {
                               <th className="py-3">
                                 <h2 className="fw-400 fs-sm black mb-0"> Items </h2>
                               </th>
-                              
+
                               <th className="mx_140 ps-3">
                                 <h2 className="fw-400 fs-sm black mb-0">Billed Amount</h2>
                               </th>
