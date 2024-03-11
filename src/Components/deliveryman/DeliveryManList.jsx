@@ -20,6 +20,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { UseServiceContext } from '../../context/ServiceAreasGetter';
 import Deletepopup from '../popups/Deletepopup';
 import Updatepopup from '../popups/Updatepopup';
+import { ActionIcon } from '../../Common/Icon';
 
 const DeliveryManList = () => {
   const { ServiceData, addServiceData, deleteServiceData, updateServiceData } = UseServiceContext();
@@ -114,7 +115,7 @@ const DeliveryManList = () => {
                   onChange={(e) => setSearchvalue(e.target.value)}
                 />
               </div>
-              <Link className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
+              <Link to="/deliveryman/addnewdeliveryman" className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
                 <img className="me-1" width={20} src={addicon} alt="add-icon" />
                 Add New Delivery Man
               </Link>
@@ -176,7 +177,7 @@ const DeliveryManList = () => {
                       <th className="mx_160 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Service area</h3>
                       </th>
-                      <th className="mx_100 ps-3">
+                      <th className="mx_160 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Contact</h3>
                       </th>
                       <th className="mx_100 p-3 me-1 text-center">
@@ -193,7 +194,7 @@ const DeliveryManList = () => {
                       return (
                         <tr className="product_borderbottom">
                           <td className="py-3 ps-3  mw-300">
-                            <div className="d-flex align-items-center gap-3 ">
+                          <div className="d-flex align-items-center gap-3 ">
                               <label class="check1 fw-400 fs-sm black mb-0">
                                 <input
                                   type="checkbox"
@@ -202,31 +203,32 @@ const DeliveryManList = () => {
                                 />
                                 <span class="checkmark"></span>
                               </label>
-                              <div className="">
+                              <Link to="/deliveryman/deliverymanprofile">
                                 <p className="fw-400 fs-sm black mb-0 ms-2">John Doe</p>
                                 <p className="fw-400 fs-xs black mb-0 ms-2">ID 53663</p>
-                              </div>
+                              </Link>
                             </div>
                           </td>
                           <td className="px-2 mx_160">
                             <h3 className="fs-sm fw-400 black mb-0">Full time</h3>
                           </td>
                           <td className="mx_160 ps-3">
-                            <h3 className="fs-sm fw-400 black mb-0">Total Order’s</h3>
+                            <Link to="/deliveryman/deliveryorderlist" className="fs-sm fw-400 black mb-0">10</Link>
                           </td>
                           <td className="px-2 mx_140">
-                            <h3 className="fs-sm fw-400 black mb-0">Full time</h3>
+                            <h3 className="fs-sm fw-400 status_btn_green mb-0">online</h3>
+                            {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">online</h3> */}
                           </td>
                           <td className="ps-3 mx_160">
-                            <h3 className="fs-sm fw-400 black mb-0">{data.ExpectedDelivery}</h3>
+                            <h3 className="fs-sm fw-400 black mb-0">9 11 sector</h3>
                           </td>
-                          <td className=" mx_100 ps-3">
-                            <h3 className="fs-sm fw-400 black mb-0 color_green">
-                              {data.ServiceStatus}
+                          <td className=" mx_160 ps-3">
+                            <h3 className="fs-sm fw-400 black mb-0 ">
+                            +91 849858590
                             </h3>
                           </td>
                           <td className="text-center mx_100">
-                            <img src={dropdownDots} alt="dropdownDots" />
+                           <ActionIcon />
                           </td>
                         </tr>
                       );

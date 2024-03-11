@@ -23,7 +23,7 @@ export default function NewOrder() {
 
   const calculateSubtotal = () => {
     return filterData[0].items.reduce(
-      (acc, item) => acc + item.varient_price * item.quantity - item.varient_discount,
+      (acc, item) => acc + item.varient_price * item.quantity - (item.varient_discount * item.quantity),
       0
     );
   };
@@ -58,15 +58,14 @@ export default function NewOrder() {
             <div className="d-flex align-items-center">
               <h1 className="fs-lg fw-500 black mb-0 me-1">{item.id}</h1>
               <p
-                className={`d-inline-block ms-3 ${
-                  item.status.toString().toLowerCase() === 'new'
+                className={`d-inline-block ms-3 ${item.status.toString().toLowerCase() === 'new'
                     ? 'fs-sm fw-400 red mb-0 new_order'
                     : item.status.toString().toLowerCase() === 'processing'
-                    ? 'fs-sm fw-400 mb-0 processing_skyblue'
-                    : item.status.toString().toLowerCase() === 'delivered'
-                    ? 'fs-sm fw-400 mb-0 green stock_bg'
-                    : 'fs-sm fw-400 mb-0 black cancel_gray'
-                }`}>
+                      ? 'fs-sm fw-400 mb-0 processing_skyblue'
+                      : item.status.toString().toLowerCase() === 'delivered'
+                        ? 'fs-sm fw-400 mb-0 green stock_bg'
+                        : 'fs-sm fw-400 mb-0 black cancel_gray'
+                  }`}>
                 {item.status}
               </p>
             </div>
@@ -140,10 +139,15 @@ export default function NewOrder() {
                             <img src={products.image} alt="mobileicon" className="items_images" />
                           </div>
                           <div className="ps-3">
-                            <p className="fs-sm fw-400 black mb-0">{products.title}</p>
+                            <p className="fs-sm fw-400 black mb-0">{products.title}  {products.varient_name.toString().toLowerCase() !== "not found" && (
+                              <span className='fs-sm fw-400 black mb-0 ms-3'>{products.varient_name}</span>)}</p>
                             <p className="fs-xxs fw-400 fade_grey mb-0">
                               ID :{products.product_id}
                             </p>
+                            {products.color.toString().toLowerCase() != "" && (<p className="fs-xxs fw-400 fade_grey mb-0">
+                              color :{products.color}
+                            </p>)}
+
                           </div>
                         </div>
                         <div className="d-flex align-items-center p-3">
@@ -154,11 +158,11 @@ export default function NewOrder() {
                             {products.quantity}
                           </p>
                           <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">
-                            (-) ₹ {products.varient_discount}
+                            (-) ₹ {products.varient_discount * products.quantity}
                           </p>
                         </div>
                         <p className="fs-sm fw-400 black mb-0 p-3">
-                          ₹ {products.varient_price * products.quantity - products.varient_discount}
+                          ₹ {products.varient_price * products.quantity - (products.varient_discount * products.quantity)}
                         </p>
                       </div>
                     </>

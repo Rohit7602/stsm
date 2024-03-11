@@ -137,7 +137,7 @@ const ViewCustomerDetails = () => {
                     )}
                     <h2 className="fw-400 fs-2sm black mb-0 mt-3  ">Average Order Value</h2>
                     <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1  ">
-                      {AvergaeOrderValue.toFixed(2)}
+                      {isNaN(AvergaeOrderValue) ? 0 : AvergaeOrderValue.toFixed(2)}
                     </h2>
                     <h2 className="fw-400 fs-2sm black mb-0 mt-3 ">Registration</h2>
                     <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1 ">
@@ -169,7 +169,7 @@ const ViewCustomerDetails = () => {
                               <th className="py-3">
                                 <h2 className="fw-400 fs-sm black mb-0"> Items </h2>
                               </th>
-                              
+
                               <th className="mx_140 ps-3">
                                 <h2 className="fw-400 fs-sm black mb-0">Billed Amount</h2>
                               </th>

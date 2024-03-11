@@ -224,7 +224,6 @@ const NewCategory = () => {
         <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
           {/* NEW PRODUCT DETAILSS  */}
           <form>
-            {' '}
             <div className="d-flex justify-content-between align-items-center">
               <h1 className="fw-500  mb-0 black fs-lg">New Category</h1>
               <div className="d-flex justify-content-center">
@@ -267,7 +266,7 @@ const NewCategory = () => {
                   {/* 2nd input */}
                   <label htmlFor="des" className="fs-xs fw-400 mt-3 black">
                     Category Image
-                  </label>{' '}
+                  </label>
                   <br />
                   <div className="d-flex flex-wrap  gap-4 mt-3 align-items-center">
                     {!imageupload ? (

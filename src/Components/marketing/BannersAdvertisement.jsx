@@ -192,7 +192,7 @@ const BannersAdvertisement = () => {
   async function handleSaveLargeBanner() {
     setLoaderstatus(true)
     try {
-      if (selectedImagesLargeBanner.every(Boolean)) {
+      if (selectedImagesLargeBanner.some(Boolean)) {
         const newImageData = [];
 
         // Fetch existing data
@@ -263,8 +263,8 @@ const BannersAdvertisement = () => {
 
               SetBannerData([...BannerData, { id: docRef.id, title: 'LargeBanner', data: updatedData }]);
 
-
             } else {
+              console.log("else is working here ")
               // Document doesn't exist, create a new one with new images
               const docRef = await addDoc(collection(db, 'Banner'), {
                 title: 'LargeBanner',
@@ -376,9 +376,8 @@ const BannersAdvertisement = () => {
   async function handleSaveSmallPattiBanner() {
     setLoaderstatus(true)
     try {
-      if (selectedImagesSmallPatii.every(Boolean)) {
+      if (selectedImagesSmallPatii.some(Boolean)) {
         const newImageData = [];
-
         // Fetch existing data
         const querySnapshot = await getDocs(
           query(collection(db, 'Banner'), where('title', '==', 'SmallPattBanner'))
@@ -387,6 +386,7 @@ const BannersAdvertisement = () => {
         // Collect existing image URLs
         const existingImageUrls = [];
         if (querySnapshot.size > 0) {
+          console.log("if working size ")
           const existingData = querySnapshot.docs[0].data().data || [];
           existingData.forEach((item) => {
             const existingUrls = (item.imagelinks || []).map((img) => img.imgUrl);
@@ -426,6 +426,7 @@ const BannersAdvertisement = () => {
             );
 
             if (querySnapshot.size > 0) {
+              console.log("query snapshot size if working here ")
               // Document already exists, get existing data
               const docRef = querySnapshot.docs[0];
               const existingData = docRef.data().data || [];
@@ -448,6 +449,7 @@ const BannersAdvertisement = () => {
               SetBannerData([...BannerData, { id: docRef.id, title: 'SmallPattBanner', data: updatedData }]);
 
             } else {
+              console.log("Else is working here ")
               // Document doesn't exist, create a new one with new images
               const docRef = await addDoc(collection(db, 'Banner'), {
                 title: 'SmallPattBanner',
@@ -870,34 +872,32 @@ const BannersAdvertisement = () => {
   Categoroies  Banner functionaltiy start 
   */
 
-  const [CategoryImage, setCategoryImage] = useState(Array(categoreis.length).fill(''));
+  const [CategoryImage, setCategoryImage] = useState(Array(categoreis.length).fill([]));
 
   async function handleCategoryImages(e, index) {
-    console.log("index is ", index)
-    let file = e.target.files[0];
-    console.log("file is ", file);
-
+    console.log("index is ", index);
+    let files = e.target.files;
+    console.log("files are ", files);
     try {
       // Define desired aspect ratio and dimensions for large banner
       const desiredAspectRatio = 16 / 9;
       const desiredWidth = 1280;
       const desiredHeight = 720;
 
-      // Validate the image using the context function
-      const validatedImage = await validateImage(
-        file,
-        desiredAspectRatio,
-        desiredWidth,
-        desiredHeight
-      );
+      // Validate each image and update the state
+      const validatedImages = await Promise.all(Array.from(files).map(async (file) => {
+        return await validateImage(file, desiredAspectRatio, desiredWidth, desiredHeight);
+      }));
 
       // Update the state at the specified index
       setCategoryImage(prevCategoryImages => {
         const newCategoryImages = [...prevCategoryImages];
-        newCategoryImages[index] = validatedImage;
+        // Ensure that newCategoryImages[index] is always an array
+        newCategoryImages[index] = Array.isArray(newCategoryImages[index])
+          ? [...newCategoryImages[index], ...validatedImages]
+          : [...validatedImages];
         return newCategoryImages;
       });
-
       console.log("Updated CategoryImage:", CategoryImage);
     } catch (error) {
       // Handle the validation error (e.g., show an error message)
@@ -907,32 +907,26 @@ const BannersAdvertisement = () => {
     }
   }
 
+  useEffect(() => {
+    console.log("Updated CategoryImage:", CategoryImage);
+  }, [CategoryImage]);
 
 
 
-  async function handleCategoryImagesDelete(index, imageUrlToDelete) {
-    setLoaderstatus(true)
-    console.log("idex sd ", CategoryImage[index])
-    console.log("urel ia ", imageUrlToDelete)
-    console.log("delee function working ")
 
+  async function handleCategoryImagesDelete(index, innerIndex, data) {
+    console.log(data)
     try {
-      if (
-        imageUrlToDelete &&
-        typeof imageUrlToDelete === 'string' &&
-        imageUrlToDelete.startsWith('http')
-      ) {
-        console.log("if working ")
-        const imageURL = imageUrlToDelete.split("$$$$")[0]
-        const id = imageUrlToDelete.split('$$$$')[1];
+      console.log("true o sprklmg ")
+      const imageURLToDelete = URL.createObjectURL(CategoryImage[index][innerIndex]);
+      // Additional logic for deleting image from storage and Firestore if needed
+      if (findImageSourceByTitle(data,index)) {
+        console.log("if working here ")
+        const id = findImageSourceByTitle(data).split('$$$$')[1];
         const storageRef = getStorage();
-        const reference = ref(storageRef, imageUrlToDelete);
-
-        // Delete the image from storage
+        const reference = ref(storageRef, findImageSourceByTitle(data));
         await deleteObject(reference);
-        deleteObjectByImageUrl(imageURL);
 
-        // After successful deletion, update Firestore data
         const docRef = doc(db, 'Banner', id);
         const docSnapshot = await getDoc(docRef);
 
@@ -942,22 +936,28 @@ const BannersAdvertisement = () => {
           // Check if 'data' is an array with at least one item
           if (Array.isArray(existingData.data) && existingData.data.length > 0) {
             // Filter out the item at the specified index
-            const filteredData = existingData.data.filter((item, i) => i !== index);
+            const filteredData = existingData.data.filter((item, i) => i !== innerIndex);
 
             // Update the document in Firestore with the modified 'data' array
             await updateDoc(docRef, { data: filteredData });
           }
         }
-        setLoaderstatus(false)
       }
 
-      // Update the state to remove the deleted image
-      const newCategoryImages = [...CategoryImage];
-      newCategoryImages[index] = ''; // Set the image for the specified index to an empty string
-      setCategoryImage(newCategoryImages);
-      setLoaderstatus(false)
+      // Remove the image from the state
+      setCategoryImage(prevCategoryImages => {
+        const newCategoryImages = [...prevCategoryImages];
+        // Ensure that newCategoryImages[index] is always an array
+        if (!Array.isArray(newCategoryImages[index])) {
+          newCategoryImages[index] = [];
+        }
+        newCategoryImages[index] = newCategoryImages[index].filter((image, i) => i !== innerIndex);
+        return newCategoryImages;
+      });
+
+      console.log("Deleted image:", imageURLToDelete);
     } catch (error) {
-      console.error("Error deleting from storage or updating Firestore:", error);
+      console.error("Error deleting image:", error);
       // Handle error as needed
     }
   }
@@ -965,9 +965,10 @@ const BannersAdvertisement = () => {
 
 
 
+
+
   async function handleUpdateCategoryBanner() {
     setLoaderstatus(true);
-
     try {
       if (CategoryImage.every(Boolean) && categoreis.every(Boolean)) {
         const newImageData = [];
@@ -1085,7 +1086,8 @@ const BannersAdvertisement = () => {
 
 
   const findImageSourceByTitle = (title, index) => {
-    const matchingImage = CategoryImage.find((image) => {
+    console.log(CategoryImage[index])
+    const matchingImages = CategoryImage[index].filter((image) => {
       if (typeof image === 'string') {
         const parts = image.split('$$$$');
         if (parts.length >= 3) {
@@ -1097,18 +1099,14 @@ const BannersAdvertisement = () => {
       return false;
     });
 
-    if (matchingImage) {
-      return matchingImage;
-    }
-
-    // If image not found and a new image exists at the specified index, create a URL for it
-    if (CategoryImage[index]) {
-      return URL.createObjectURL(CategoryImage[index]);
+    if (matchingImages.length > 0) {
+      return matchingImages;
     }
 
     // If no image found, return null to display file input for adding a new image
     return null;
   };
+
 
 
 
@@ -1277,7 +1275,6 @@ const BannersAdvertisement = () => {
                             </button>
                           </div>
                         )}
-
                         {BannerSaleImg.map((offerbanner, index) => (
                           <div key={index} className="position-relative imagemedia_btn">
                             <img
@@ -1554,52 +1551,38 @@ const BannersAdvertisement = () => {
                       <div className="bg_white">
                         <input
                           type="file"
-                          id={`categoreis_${index}`}
+                          id={`category_images_${index}`}
                           onChange={(e) => handleCategoryImages(e, index)}
+                          multiple // Allow multiple file selection
                           hidden
                         />
-                        {CategoryImage[index] && CategoryImage[index] instanceof File ? (
-                          // Display selected image
-                          <div className="position-relative imagemedia_btn">
-                            <img
-                              className="w-100 h-100 object-fit-cover"
-                              src={URL.createObjectURL(CategoryImage[index])}
-                              alt=""
-                            />
-                            <img
-                              onClick={() => handleCategoryImagesDelete(index)}
-                              className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
-                              src={deleteicon}
-                              alt="deleteicon"
-                            />
-                          </div>
-                        ) : (
-                          // Display existing image or "Add Media" label if no existing image
-                          findImageSourceByTitle(data) ? (
-                            <div className="position-relative imagemedia_btn">
+                        <div className="d-flex gap-3 flex-wrap">
+                          {Array.isArray(CategoryImage[index]) && CategoryImage[index].map((image, innerIndex) => (
+                            <div key={innerIndex} className="position-relative imagemedia_btn">
                               <img
                                 className="w-100 h-100 object-fit-cover"
-                                src={findImageSourceByTitle(data).split('$$$$')[0]}
+                                src={URL.createObjectURL(image)}
                                 alt=""
                               />
                               <img
-                                onClick={() => handleCategoryImagesDelete(index, findImageSourceByTitle(data))}
+                                onClick={() => handleCategoryImagesDelete(index, innerIndex, data)}
                                 className="position-absolute top-0 end-0 mt-2 me-2 cursor_pointer"
                                 src={deleteicon}
                                 alt="deleteicon"
                               />
                             </div>
-                          ) : (
-                            <label
-                              htmlFor={`categoreis_${index}`}
-                              className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center"
-                            >
-                              + Add Media
-                            </label>
-                          )
-                        )}
+                          ))}
+                          {/* Display "Add Media" label */}
+                          <label
+                            htmlFor={`category_images_${index}`}
+                            className="color_green cursor_pointer fs-sm addmedium_btn d-flex justify-content-center align-items-center"
+                          >
+                            + Add Media
+                          </label>
+                        </div>
                       </div>
                     </div>
+
                   </Accordion.Body>
                 </Accordion.Item>
               ))}

@@ -192,7 +192,7 @@ function DashbordCards() {
             <div className="col-xl-9 col-lg-7 col-12 h-100 mt-4 mt-lg-0">
               <div className="  h-100 chart_box px-2 py-3  chart_content_wrapper bg-white">
                 <div className="d-flex justify-content-between   bg-white">
-                  <h3 className="fw-400 black fs-xs">Income Statistics</h3>
+                  <h3 className="fw-400 black fs-xs">Order Statistics</h3>
                 </div>
                 <ApexBarChart className="w-100" orderData={orders} />
               </div>
@@ -248,7 +248,7 @@ function DashbordCards() {
                               <h4 className="fw-400 black mb-0  fs-xs"> {data.status}</h4>
                             </td>
                             <td className="py-2 px-3">
-                              <h4 className="fw-400 black mb-0  fs-xs">city</h4>
+                              <h4 className="fw-400 black mb-0  fs-xs">{data.shipping.city }</h4>
                             </td>
                             <td className="py-2 px-3">
                               <h4 className="fw-400 black mb-0 fs-xs">{data.customer.name}</h4>
