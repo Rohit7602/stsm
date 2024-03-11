@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Col, Row } from "react-bootstrap";
+import { Col, Dropdown, Row } from "react-bootstrap";
 import addicon from "../../Images/svgs/addicon.svg";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,16 +16,18 @@ const AddDeliveryMan = () => {
   const [govt, setGovt] = useState("");
   const [social, setSocial] = useState("");
   const [date, setDate] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
   const [vechileno, setVechileno] = useState("");
   const [insurance, setInsurance] = useState("");
   const [relationship, setRelationship] = useState("");
   const [bankname, setBankname] = useState("");
-  const [routingno, setRoutingno] = useState("");
+  const [ifsc, setIfsc] = useState("");
+  const [nameaccount, setNameaccount] = useState("");
   const [DOB, setDOB] = useState("");
   const [mobile, setMobile] = useState("");
-  const [accountname, setAccountname] = useState("");
+  const [confirmaccountno, setConfirmaccountno] = useState("");
   const [accountno, setAccountno] = useState("");
-  const [payment, setPayment] = useState(null);
   const [employmentstatus, setEmploymentstatus] = useState(null);
   const [vechiletype, setVechiletype] = useState(null);
 
@@ -33,7 +35,11 @@ const AddDeliveryMan = () => {
   const pubref = useRef();
   const hidref = useRef();
 
- 
+  const [selectedOption, setSelectedOption] = useState("");
+
+  const handleOptionChange = (e) => {
+    setSelectedOption(e.target.value);
+  };
   async function handlesave(e) {
     e.preventDefault();
   }
@@ -66,10 +72,10 @@ const AddDeliveryMan = () => {
             <Row className="mt-3">
               <Col xxl={8}>
                 {/* Basic Information */}
-                <div className="  ">
+                <div>
                   <div>
                     {/* Ist-box  */}
-                    <div class="product_shadow bg_white p-3 pb-5  ">
+                    <div class="product_shadow bg_white p-3 pb-0 ">
                       <h2 className="fw-400 fs-2sm black mb-0">
                         Basic Information
                       </h2>
@@ -137,24 +143,43 @@ const AddDeliveryMan = () => {
                         value={address}
                         onChange={(e) => setaddress(e.target.value)}
                       />
+                      <div className="row">
+                        <div className="col-6">
+                          <label className="fs-xs fw-400 mt-3 black">
+                            City
+                          </label>
+                          <br />
+                          <input
+                            type="text"
+                            required
+                            className="mt-2 product_input fade_grey fw-400"
+                            placeholder="Select City"
+                            id="City"
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                          />
+                        </div>
+                        <div className="col-6">
+                          <label className="fs-xs fw-400 mt-3 black">
+                            State
+                          </label>
+                          <br />
+                          <input
+                            type="text"
+                            required
+                            className="mt-2 product_input fade_grey fw-400"
+                            placeholder="Select State"
+                            id="state"
+                            value={state}
+                            onChange={(e) => setState(e.target.value)}
+                          />
+                        </div>
+                      </div>
                       <h2 className="fw-400 fs-2sm black mb-0 mt-3">
                         Bank Detail’s
                       </h2>
                       <label className="fs-xs fw-400 mt-3  black">
-                        Bank name
-                      </label>
-                      <br />
-                      <input
-                        type="text"
-                        required
-                        className="mt-2 product_input fade_grey fw-400"
-                        placeholder="bank na..."
-                        id="bankname"
-                        value={bankname}
-                        onChange={(e) => setBankname(e.target.value)}
-                      />
-                      <label className="fs-xs fw-400 mt-3  black">
-                        Routing Number ( if Applicable )
+                        Name in Bank Account
                       </label>
                       <br />
                       <input
@@ -162,26 +187,44 @@ const AddDeliveryMan = () => {
                         required
                         className="mt-2 product_input fade_grey fw-400"
                         placeholder="***000"
-                        id="routingno"
-                        value={routingno}
-                        onChange={(e) => setRoutingno(e.target.value)}
+                        id="nameaccount"
+                        value={nameaccount}
+                        onChange={(e) => setNameaccount(e.target.value)}
                       />
-                      <div className="row align-items-center pb-5">
+                      <div className="row">
                         <div className="col-6">
-                          <label className="fs-xs fw-400 mt-3 black">
-                            Account Holder’s Name
+                          <label className="fs-xs fw-400 mt-3  black">
+                            Bank name
                           </label>
                           <br />
                           <input
                             type="text"
                             required
                             className="mt-2 product_input fade_grey fw-400"
-                            placeholder="name"
-                            id="accountname"
-                            value={accountname}
-                            onChange={(e) => setAccountname(e.target.value)}
+                            placeholder="Enter Bank Name"
+                            id="bankname"
+                            value={bankname}
+                            onChange={(e) => setBankname(e.target.value)}
                           />
                         </div>
+                        <div className="col-6">
+                          {" "}
+                          <label className="fs-xs fw-400 mt-3  black">
+                            IFSC Code
+                          </label>
+                          <br />
+                          <input
+                            type="text"
+                            required
+                            className="mt-2 product_input fade_grey fw-400"
+                            placeholder="Enter IFSC"
+                            id="ifsc"
+                            value={ifsc}
+                            onChange={(e) => setIfsc(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <div className="row align-items-center pb-4">
                         <div className="col-6">
                           <label className="fs-xs fw-400 mt-3 black">
                             Account Number
@@ -191,51 +234,28 @@ const AddDeliveryMan = () => {
                             type="text"
                             required
                             className="mt-2 product_input fade_grey fw-400"
-                            placeholder="xxxxxx/"
+                            placeholder="xxxx xxxx xxxx xxxx"
                             id="accountno"
                             value={accountno}
                             onChange={(e) => setAccountno(e.target.value)}
                           />
                         </div>
-                        <div>
-                          <h2 className="fw-400 fs-2sm black mb-0 pt-3">
-                            Payment Method
-                          </h2>
-                          <div className="d-flex align-items-center mt-3">
-                            <div className="mt-3 mx-4 py-1 d-flex align-items-center gap-5">
-                              <label className="check fw-400 fs-sm black mb-0">
-                                Deposite
-                                <input
-                                  onChange={() => setPayment("deposit")}
-                                  type="radio"
-                                  checked={payment === "deposit"}
-                                />
-                                <span className="checkmark"></span>
-                              </label>
-                            </div>
-                            <div className="mt-3 mx-4 py-1 d-flex align-items-center gap-5">
-                              <label className="check fw-400 fs-sm black mb-0">
-                                Direct
-                                <input
-                                  onChange={() => setPayment("direct")}
-                                  type="radio"
-                                  checked={payment === "direct"}
-                                />
-                                <span className="checkmark"></span>
-                              </label>
-                            </div>
-                            <div className="mt-3 mx-4 py-1 d-flex align-items-center gap-5">
-                              <label className="check fw-400 fs-sm black mb-0">
-                                Check
-                                <input
-                                  onChange={() => setPayment("check")}
-                                  type="radio"
-                                  checked={payment === "check"}
-                                />
-                                <span className="checkmark"></span>
-                              </label>
-                            </div>
-                          </div>
+                        <div className="col-6">
+                          <label className="fs-xs fw-400 mt-3 black">
+                            Confirm Account Number
+                          </label>
+                          <br />
+                          <input
+                            type="text"
+                            required
+                            className="mt-2 product_input fade_grey fw-400"
+                            placeholder="xxxx xxxx xxxx xxxx"
+                            id="confirmaccountno"
+                            value={confirmaccountno}
+                            onChange={(e) =>
+                              setConfirmaccountno(e.target.value)
+                            }
+                          />
                         </div>
                       </div>
                     </div>
@@ -304,7 +324,7 @@ const AddDeliveryMan = () => {
                       Job Title ( Delivery Man )
                     </h2>
                     <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
-                      Start Date
+                    Joining Date
                     </label>
                     <br />
                     <input
@@ -317,80 +337,22 @@ const AddDeliveryMan = () => {
                       onChange={(e) => setDate(e.target.value)}
                     />
                   </div>
-                  <div>
-                    <h2 className="fw-400 fs-2sm black mb-0 pt-3 mt-3">
-                      Identifaction
-                    </h2>
-                    <div className="d-flex align-items-center">
-                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-5 w-50">
-                        <label className="check fw-400 fs-sm black mb-0">
-                          Govt ID
-                          <input
-                            type="radio"
-                            checked={!freeDelivery}
-                            onChange={() => setFreeDelivery(false)}
-                          />
-                          <span className="checkmark"></span>
-                        </label>
-                      </div>
-                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-5 w-50">
-                        <label className="check fw-400 fs-sm black mb-0">
-                          Social Security
-                          <input
-                            type="radio"
-                            checked={freeDelivery}
-                            onChange={() => setFreeDelivery(true)}
-                          />
-                          <span className="checkmark"></span>
-                        </label>
-                      </div>
-                    </div>
 
-                    {freeDelivery ? (
-                      <div>
-                        <label
-                          htmlFor="social"
-                          className="fs-xs fw-400 mt-4 black"
-                        >
-                          Fill your Social Security Identity
-                        </label>
-                        <br />
-                        <input
-                          type="text"
-                          required
-                          className="mt-2 product_input fade_grey fw-400"
-                          placeholder="Rashan card ( XXXXXXXXXXX )"
-                          id="social"
-                          value={social}
-                          onChange={(e) => setSocial(e.target.value)}
-                        />
-                      </div>
-                    ) : (
-                      <div>
-                        <label
-                          htmlFor="govt"
-                          className="fs-xs fw-400 mt-4 black"
-                        >
-                          Fill your any government ID
-                        </label>
-                        <br />
-                        <input
-                          type="text"
-                          required
-                          className="mt-2 product_input fade_grey fw-400"
-                          placeholder="XXXXXXXXXXX"
-                          id="govt"
-                          value={govt}
-                          onChange={(e) => setGovt(e.target.value)}
-                        />
-                      </div>
-                    )}
-                  </div>
                   <div>
                     <h2 className="fw-400 fs-2sm black mb-0 pt-3">
-                      Employment Status
+                      Employment Type
                     </h2>
-                    <div className="d-flex align-items-center mt-3">
+                  
+                    <select
+                      value={selectedOption}
+                      onChange={handleOptionChange}
+                      className="mt-2 product_input fade_grey fw-400"
+                    >
+                      <option className="option-commission" value="commission">Commission</option>
+                      <option className="option-salaried" value="salaried">Salaried</option>
+                    </select>
+
+                    <div className="d-flex align-items-center mt-3 justify-content-between">
                       <div className="mt-3 mx-2 py-1 d-flex align-items-center gap-3">
                         <label className="check fw-400 fs-sm black mb-0">
                           PartTime
@@ -413,17 +375,77 @@ const AddDeliveryMan = () => {
                           <span className="checkmark"></span>
                         </label>
                       </div>
-                      <div className="mt-3 mx-2 py-1 d-flex align-items-center gap-3">
-                        <label className="check fw-400 fs-sm black mb-0">
-                          Contract
-                          <input
-                            onChange={() => setEmploymentstatus("Contract")}
-                            type="radio"
-                            checked={employmentstatus === "Contract"}
-                          />
-                          <span className="checkmark"></span>
-                        </label>
+                    </div>
+                  </div>
+                </div>
+                <div className="product_shadow bg_white p-3 mt-3 ">
+                  <div>
+                    <h2 className="fw-400 fs-2sm black mb-0">KYC Documents</h2>
+                    <div>
+                      <div className="d-flex align-items-center">
+                        <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-5 w-50">
+                          <label className="check fw-400 fs-sm black mb-0">
+                            Aadhar Card
+                            <input
+                              type="radio"
+                              checked={!freeDelivery}
+                              onChange={() => setFreeDelivery(false)}
+                            />
+                            <span className="checkmark"></span>
+                          </label>
+                        </div>
+                        <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-5 w-50">
+                          <label className="check fw-400 fs-sm black mb-0">
+                            Votor Card
+                            <input
+                              type="radio"
+                              checked={freeDelivery}
+                              onChange={() => setFreeDelivery(true)}
+                            />
+                            <span className="checkmark"></span>
+                          </label>
+                        </div>
                       </div>
+
+                      {freeDelivery ? (
+                        <div>
+                          <label
+                            htmlFor="social"
+                            className="fs-xs fw-400 mt-4 black"
+                          >
+                            Fill your Social Security Identity
+                          </label>
+                          <br />
+                          <input
+                            type="text"
+                            required
+                            className="mt-2 product_input fade_grey fw-400"
+                            placeholder=" votercard ( XXXXXXXXXXX )"
+                            id="social"
+                            value={social}
+                            onChange={(e) => setSocial(e.target.value)}
+                          />
+                        </div>
+                      ) : (
+                        <div>
+                          <label
+                            htmlFor="govt"
+                            className="fs-xs fw-400 mt-4 black"
+                          >
+                            Fill your any government ID
+                          </label>
+                          <br />
+                          <input
+                            type="text"
+                            required
+                            className="mt-2 product_input fade_grey fw-400"
+                            placeholder="aadhar card ( XXXXXXXXXXX )"
+                            id="govt"
+                            value={govt}
+                            onChange={(e) => setGovt(e.target.value)}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -432,6 +454,20 @@ const AddDeliveryMan = () => {
                     <h2 className="fw-400 fs-2sm black mb-0">
                       Vechile Information
                     </h2>
+
+                    <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
+                      Driving License Number
+                    </label>
+                    <br />
+                    <input
+                      type="text"
+                      required
+                      className="mt-2 product_input fade_grey fw-400"
+                      placeholder="xxxxxxxxxxxx"
+                      id="insurance"
+                      value={insurance}
+                      onChange={(e) => setInsurance(e.target.value)}
+                    />
                     <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
                       Vehicle Regerstration Number
                     </label>
@@ -445,27 +481,14 @@ const AddDeliveryMan = () => {
                       value={vechileno}
                       onChange={(e) => setVechileno(e.target.value)}
                     />
-                    <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
-                      Insurance detail
-                    </label>
-                    <br />
-                    <input
-                      type="text"
-                      required
-                      className="mt-2 product_input fade_grey fw-400"
-                      placeholder="xxxxxxxxxxxx"
-                      id="insurance"
-                      value={insurance}
-                      onChange={(e) => setInsurance(e.target.value)}
-                    />
                     <div>
                       <h2 className="fw-400 fs-2sm black mb-0 pt-3 mt-3">
                         Type of Vehicle
                       </h2>
-                      <div className="d-flex align-items-center mt-3">
+                      <div className="d-flex align-items-center justify-content-between mt-3">
                         <div className="mt-3 mx-2 py-1 d-flex align-items-center gap-3">
                           <label className="check fw-400 fs-sm black mb-0">
-                            Car
+                            4 Wheeler
                             <input
                               onChange={() => setVechiletype("Car")}
                               type="radio"
@@ -476,22 +499,11 @@ const AddDeliveryMan = () => {
                         </div>
                         <div className="mt-3 mx-2 py-1 d-flex align-items-center gap-3">
                           <label className="check fw-400 fs-sm black mb-0">
-                            Motor cycle
+                            2 Wheeler
                             <input
                               onChange={() => setVechiletype("motorcycle")}
                               type="radio"
                               checked={vechiletype === "motorcycle"}
-                            />
-                            <span className="checkmark"></span>
-                          </label>
-                        </div>
-                        <div className="mt-3 mx-2 py-1 d-flex align-items-center gap-3">
-                          <label className="check fw-400 fs-sm black mb-0">
-                            Bicycle
-                            <input
-                              onChange={() => setVechiletype("Bicycle")}
-                              type="radio"
-                              checked={vechiletype === "ContraBicyclect"}
                             />
                             <span className="checkmark"></span>
                           </label>
