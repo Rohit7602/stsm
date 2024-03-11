@@ -57,14 +57,22 @@ const BannersAdvertisement = () => {
   const updateSelectedImages = (data) => {
     if (data) {
       const selectedImages = {};
+      let categoryimages = Array.from({ length: categoreis.length }, () => []);
       data.forEach((item) => {
         // console.log(item)
         const title = item.title.toLowerCase();
         const imagelinks = item.data;
         if (imagelinks) {
+          console.log("image", imagelinks)
           if (title === "categorybanners") {
-            // Modify imagelinks by adding item.id + item.name to each element
-            selectedImages[title] = imagelinks.map((itemurl) => itemurl.imgUrl + '$$$$' + item.id + '$$$$' + itemurl.categoryTitle);
+
+            imagelinks.forEach((banner) => {
+              const index = categoreis.findIndex((cat) => cat.id === banner.categoryId);
+              if (index !== -1) {
+                categoryimages[index].push(...banner.imgUrls.map((url) => url + '$$$$' + item.id));
+              }
+            });
+            setCategoryImage(categoryimages);
           } else {
             // If title is not "categorybanner", use the original imagelinks
             selectedImages[title] = imagelinks.map((itemurl) => itemurl.imgUrl + '$$$$' + item.id);
@@ -82,13 +90,6 @@ const BannersAdvertisement = () => {
       // Example: Accessing images for smallpatti
       if (selectedImages['smallpattbanner']) {
         setselectedImagesSmallPatii(selectedImages['smallpattbanner']);
-      }
-
-      // Example: Accessing images for categories
-
-      if (selectedImages['categorybanners']) {
-        setCategoryImage(selectedImages['categorybanners']);
-        console.log("categoreis banner is ", selectedImages['categorybanners'])
       }
 
       if (selectedImages['salesoffers']) {
@@ -157,6 +158,8 @@ const BannersAdvertisement = () => {
 
       const imageURL = selectedImagesLargeBanner[index].split('$$$$')[0]
       const id = selectedImagesLargeBanner[index].split('$$$$')[1];
+      console.log("id large", id)
+
       const storageRef = getStorage();
       const reference = ref(storageRef, selectedImagesLargeBanner[index]);
       await deleteObject(reference);
@@ -533,6 +536,8 @@ const BannersAdvertisement = () => {
     ) {
       const imageURL = imageUrlToDelete.split("$$$$")[0]
       const id = imageUrlToDelete.split('$$$$')[1];
+
+      console.log("id si ", id)
       const storageRef = getStorage();
       const reference = ref(storageRef, imageUrlToDelete);
 
@@ -872,7 +877,8 @@ const BannersAdvertisement = () => {
   Categoroies  Banner functionaltiy start 
   */
 
-  const [CategoryImage, setCategoryImage] = useState(Array(categoreis.length).fill([]));
+  const [CategoryImage, setCategoryImage] = useState(categoreis.map(() => []));
+
 
   async function handleCategoryImages(e, index) {
     console.log("index is ", index);
@@ -893,9 +899,10 @@ const BannersAdvertisement = () => {
       setCategoryImage(prevCategoryImages => {
         const newCategoryImages = [...prevCategoryImages];
         // Ensure that newCategoryImages[index] is always an array
-        newCategoryImages[index] = Array.isArray(newCategoryImages[index])
-          ? [...newCategoryImages[index], ...validatedImages]
-          : [...validatedImages];
+        if (!Array.isArray(newCategoryImages[index])) {
+          newCategoryImages[index] = [];
+        }
+        newCategoryImages[index] = newCategoryImages[index].concat(validatedImages);
         return newCategoryImages;
       });
       console.log("Updated CategoryImage:", CategoryImage);
@@ -915,50 +922,49 @@ const BannersAdvertisement = () => {
 
 
   async function handleCategoryImagesDelete(index, innerIndex, data) {
-    console.log(data)
+    setLoaderstatus(true)
     try {
-      console.log("true o sprklmg ")
-      const imageURLToDelete = URL.createObjectURL(CategoryImage[index][innerIndex]);
-      // Additional logic for deleting image from storage and Firestore if needed
-      if (findImageSourceByTitle(data,index)) {
-        console.log("if working here ")
-        const id = findImageSourceByTitle(data).split('$$$$')[1];
-        const storageRef = getStorage();
-        const reference = ref(storageRef, findImageSourceByTitle(data));
-        await deleteObject(reference);
+      const imageURLToDelete = CategoryImage[index][innerIndex];
+      console.log("Deleting image URL:", imageURLToDelete);
 
-        const docRef = doc(db, 'Banner', id);
+      if (typeof imageURLToDelete === "string" && imageURLToDelete.startsWith('http')) {
+        const imgurl = imageURLToDelete.split('$$$$')[0];
+        const docId = imageURLToDelete.split('$$$$')[1];
+        const storageRef = ref(storage, imgurl);
+        await deleteObject(storageRef);
+
+        const docRef = doc(db, 'Banner', docId);
         const docSnapshot = await getDoc(docRef);
 
         if (docSnapshot.exists()) {
           const existingData = docSnapshot.data();
+          const newData = existingData.data.map(item => {
+            if (item.imgUrls) {
+              item.imgUrls = item.imgUrls.filter(url => url !== imgurl);
+            }
+            return item;
+          });
 
-          // Check if 'data' is an array with at least one item
-          if (Array.isArray(existingData.data) && existingData.data.length > 0) {
-            // Filter out the item at the specified index
-            const filteredData = existingData.data.filter((item, i) => i !== innerIndex);
-
-            // Update the document in Firestore with the modified 'data' array
-            await updateDoc(docRef, { data: filteredData });
-          }
+          await updateDoc(docRef, { data: newData });
+          console.log('Document updated successfully');
         }
       }
 
       // Remove the image from the state
       setCategoryImage(prevCategoryImages => {
         const newCategoryImages = [...prevCategoryImages];
-        // Ensure that newCategoryImages[index] is always an array
         if (!Array.isArray(newCategoryImages[index])) {
           newCategoryImages[index] = [];
         }
-        newCategoryImages[index] = newCategoryImages[index].filter((image, i) => i !== innerIndex);
+        newCategoryImages[index] = newCategoryImages[index].filter((image) => image !== imageURLToDelete);
         return newCategoryImages;
       });
 
-      console.log("Deleted image:", imageURLToDelete);
+      setLoaderstatus(false)
+
     } catch (error) {
+      setLoaderstatus(false)
       console.error("Error deleting image:", error);
-      // Handle error as needed
     }
   }
 
@@ -967,117 +973,128 @@ const BannersAdvertisement = () => {
 
 
 
-  async function handleUpdateCategoryBanner() {
-    setLoaderstatus(true);
+
+  async function handleUpdateCategoryBanner(e) {
+    setLoaderstatus(true)
+    console.log("working")
+    e.preventDefault();
     try {
-      if (CategoryImage.every(Boolean) && categoreis.every(Boolean)) {
+      console.log("try  working")
+      if (CategoryImage.some(files => Array.isArray(files) && files.length > 0) && categoreis.some(Boolean)) {
         const newImageData = [];
-        // Fetch existing data
+        const existingImageUrls = [];
+
+        // Fetch existing data from Firestore
         const querySnapshot = await getDocs(
           query(collection(db, 'Banner'), where('title', '==', 'CategoryBanners'))
         );
-        // Collect existing image URLs
-        const existingImageUrls = [];
+
         if (querySnapshot.size > 0) {
-          const existingData = querySnapshot.docs[0].data().data || [];
-          existingData.forEach((item) => {
-            const existingUrls = item.imgUrls || [];
-            existingImageUrls.push(...existingUrls);
-          });
+          const existingData = querySnapshot.docs[0].data().data;
+          if (existingData) {
+            existingData.forEach((item) => {
+              const existingUrls = item.imgUrls || [];
+              existingImageUrls.push(...existingUrls);
+            });
+          }
         }
 
+        // Iterate over each category
         for (let index = 0; index < CategoryImage.length; index++) {
-          const file = CategoryImage[index];
+          const files = CategoryImage[index];
+          console.log("files is ", files)
           const categoryId = categoreis[index].id;
           const categoryTitle = categoreis[index].title;
 
-          let imageUrl = null;
+          // Handle file uploads for each category
+          const uploadedUrls = [];
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            let imageUrl;
+            if (file instanceof File) {
+              const name = Math.floor(Date.now() / 1000) + '-' + file.name;
+              const storageRef = ref(storage, `banner/${name}`);
+              await uploadBytes(storageRef, file);
+              imageUrl = await getDownloadURL(storageRef);
+            } else {
+              imageUrl = file; // Assume file is a URL
+            }
 
-          if (file instanceof File) {
-            // Handle file upload
-            const name = Math.floor(Date.now() / 1000) + '-' + file.name;
-            const storageRef = ref(storage, `banner/${name}`);
-            await uploadBytes(storageRef, file);
-            imageUrl = await getDownloadURL(storageRef);
-          } else if (typeof file === 'string') {
-            // Handle image URL
-            imageUrl = file.split('$$$$')[0];
+            // Check if the URL already exists in existingImageUrls or newImageData
+            if (
+              imageUrl &&
+              !existingImageUrls.includes(imageUrl) &&
+              !newImageData.some(obj => obj.imgUrls.includes(imageUrl))
+            ) {
+              uploadedUrls.push(imageUrl);
+            }
           }
 
-          // Only add new image URL (not in existingImageUrls and not in newImageData)
-          if (
-            imageUrl &&
-            !existingImageUrls.includes(imageUrl) &&
-            !newImageData.some((obj) => obj.imgUrl === imageUrl)
-          ) {
+          if (uploadedUrls.length > 0) {
+            // Add new image URLs
             newImageData.push({
               categoryId,
               categoryTitle,
-              imgUrl: imageUrl,
+              imgUrls: uploadedUrls,
             });
           }
         }
 
         if (newImageData.length > 0) {
-          try {
-            // Check if the document already exists
-            const querySnapshot = await getDocs(
-              query(collection(db, 'Banner'), where('title', '==', 'CategoryBanners'))
-            );
+          // Check if the document already exists
+          const querySnapshot = await getDocs(
+            query(collection(db, 'Banner'), where('title', '==', 'CategoryBanners'))
+          );
 
-            if (querySnapshot.size > 0) {
-              // Document already exists, get existing data
-              const docRef = querySnapshot.docs[0];
-              const existingData = docRef.data().data || [];
+          if (querySnapshot.size > 0) {
+            // Document already exists, update existing data
+            const docRef = querySnapshot.docs[0].ref; // Use the first document reference
+            const existingData = querySnapshot.docs[0].data().data || [];
 
-              // Combine existing and new image URLs in the same data array
-              const filteredNewImageData = newImageData.filter(
-                (newObj) =>
-                  !existingData.some((existingObj) => existingObj.imgUrl === newObj.imgUrl)
-              );
+            newImageData.forEach((newObj) => {
+              const existingIndex = existingData.findIndex((existingObj) => existingObj.categoryId === newObj.categoryId);
+              if (existingIndex === -1) {
+                existingData.push(newObj);
+              } else {
+                existingData[existingIndex].imgUrls = existingData[existingIndex].imgUrls.concat(newObj.imgUrls);
+              }
+            });
 
-              const updatedData = existingData.concat(filteredNewImageData);
-
-              // Set the document with the updated data
-              await setDoc(docRef.ref, {
-                title: 'CategoryBanners',
-                data: updatedData,
-              });
-
-
-              SetBannerData([...BannerData, { id: docRef.id, title: 'CategoryBanners', data: updatedData }]);
-
-
-            } else {
-              // Document doesn't exist, create a new one with new images
-              const docRef = await addDoc(collection(db, 'Banner'), {
-                title: 'CategoryBanners',
-                data: [...newImageData],
-              });
-
-              SetBannerData([...BannerData, { id: docRef.id, title: 'CategoryBanners', data: [...newImageData] }]);
-            }
-          } catch (error) {
-            setLoaderstatus(false);
-            console.log(error);
+            await updateDoc(docRef, { data: existingData });
+            SetBannerData([...BannerData, { id: docRef.id, title: 'CategoryBanners', data: existingData }]);
+          } else {
+            // Document doesn't exist, create a new one with new images
+            const docRef = await addDoc(collection(db, 'Banner'), {
+              title: 'CategoryBanners',
+              data: newImageData,
+            });
+            SetBannerData([...BannerData, { id: docRef.id, title: 'CategoryBanners', data: newImageData }]);
           }
         } else {
-          setLoaderstatus(false);
+          setLoaderstatus(false)
           console.log('No new images uploaded');
         }
       } else {
-        setLoaderstatus(false);
+        setLoaderstatus(false)
         console.log('Select images and categories before uploading');
       }
-      setLoaderstatus(false);
       toast.success('Category Banners Updated Successfully!', {
         position: toast.POSITION.TOP_RIGHT,
       });
+      setLoaderstatus(false)
+
     } catch (error) {
-      setLoaderstatus(false);
+      setLoaderstatus(false)
       console.error(error);
     }
   }
+
+
+
+
+
+
+
 
 
   /*
@@ -1561,7 +1578,11 @@ const BannersAdvertisement = () => {
                             <div key={innerIndex} className="position-relative imagemedia_btn">
                               <img
                                 className="w-100 h-100 object-fit-cover"
-                                src={URL.createObjectURL(image)}
+                                src={image &&
+                                  typeof image === 'string' &&
+                                  image.startsWith('http')
+                                  ? image
+                                  : URL.createObjectURL(image)}
                                 alt=""
                               />
                               <img
