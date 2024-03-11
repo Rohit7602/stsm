@@ -192,7 +192,7 @@ const BannersAdvertisement = () => {
   async function handleSaveLargeBanner() {
     setLoaderstatus(true)
     try {
-      if (selectedImagesLargeBanner.every(Boolean)) {
+      if (selectedImagesLargeBanner.some(Boolean)) {
         const newImageData = [];
 
         // Fetch existing data
@@ -263,8 +263,8 @@ const BannersAdvertisement = () => {
 
               SetBannerData([...BannerData, { id: docRef.id, title: 'LargeBanner', data: updatedData }]);
 
-
             } else {
+              console.log("else is working here ")
               // Document doesn't exist, create a new one with new images
               const docRef = await addDoc(collection(db, 'Banner'), {
                 title: 'LargeBanner',
@@ -376,9 +376,8 @@ const BannersAdvertisement = () => {
   async function handleSaveSmallPattiBanner() {
     setLoaderstatus(true)
     try {
-      if (selectedImagesSmallPatii.every(Boolean)) {
+      if (selectedImagesSmallPatii.some(Boolean)) {
         const newImageData = [];
-
         // Fetch existing data
         const querySnapshot = await getDocs(
           query(collection(db, 'Banner'), where('title', '==', 'SmallPattBanner'))
@@ -387,6 +386,7 @@ const BannersAdvertisement = () => {
         // Collect existing image URLs
         const existingImageUrls = [];
         if (querySnapshot.size > 0) {
+          console.log("if working size ")
           const existingData = querySnapshot.docs[0].data().data || [];
           existingData.forEach((item) => {
             const existingUrls = (item.imagelinks || []).map((img) => img.imgUrl);
@@ -426,6 +426,7 @@ const BannersAdvertisement = () => {
             );
 
             if (querySnapshot.size > 0) {
+              console.log("query snapshot size if working here ")
               // Document already exists, get existing data
               const docRef = querySnapshot.docs[0];
               const existingData = docRef.data().data || [];
@@ -448,6 +449,7 @@ const BannersAdvertisement = () => {
               SetBannerData([...BannerData, { id: docRef.id, title: 'SmallPattBanner', data: updatedData }]);
 
             } else {
+              console.log("Else is working here ")
               // Document doesn't exist, create a new one with new images
               const docRef = await addDoc(collection(db, 'Banner'), {
                 title: 'SmallPattBanner',

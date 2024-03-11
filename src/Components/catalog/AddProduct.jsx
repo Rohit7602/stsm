@@ -128,21 +128,21 @@ const AddProduct = () => {
     setStockpopup(false);
   }
 
-  const pubref = useRef();
-  const hidref = useRef();
+  // const pubref = useRef();
+  // const hidref = useRef();
 
   function handleReset() {
-    setName();
-    setShortDes();
-    setLongDes();
+    setName('');
+    setShortDes('');
+    setLongDes('');
     setOriginalPrice(0);
     setDiscountType("Amount");
     setDiscount(null);
     setVariants([]);
     setCategories();
     setStatus("published");
-    setSku();
-    setTotalStock();
+    setSku('');
+    setTotalStock('');
     setImageUpload22([]);
     setSelectedCategory(null);
     setStockPrice("");
