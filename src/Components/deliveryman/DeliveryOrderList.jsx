@@ -161,7 +161,7 @@ const DeliveryOrderList = () => {
                   </tr>
                 </thead>
                 <tbody className="table_body">
-                  {orders
+                  {/* {orders
                     .filter((items) => {
                       return (
                         searchvalue.toLowerCase() === '' ||
@@ -169,21 +169,22 @@ const DeliveryOrderList = () => {
                       );
                     })
                     .map((orderTableData, index) => {
-                      return (
+                      return ( */}
                         <tr>
                           <td className="p-3 w-100">
                             <div className="min_width_300  d-flex align-items-center">
                               <label className="check1 fw-400 fs-sm black mb-0">
                                 <input
                                   type="checkbox"
-                                  checked={orderTableData.checked || false}
-                                  onChange={() => handleCheckboxChange(index)}
+                                  // checked={orderTableData.checked || false}
+                                  // onChange={() => handleCheckboxChange(index)}
                                 />
                                 <span className="checkmark"></span>
                               </label>
-                              <Link
+                              <Link to="/deliveryman/inventory"
                                 className="fw-400 fs-sm black ms-2"
-                                to={`orderdetails/${orderTableData.id}`}>
+                                // to={`orderdetails/${orderTableData.id}`}
+                                >
                                John Doe
                               </Link>
                             </div>
@@ -194,7 +195,9 @@ const DeliveryOrderList = () => {
                             </h3>
                           </td>
                           <td className="p-3 mw_140">
-                            <Link to={`/customer/viewcustomerdetails/${orderTableData.uid}`}>
+                            <Link 
+                            // to={`/customer/viewcustomerdetails/${orderTableData.uid}`}
+                            >
                               <h3 className="fs-sm fw-400 black mb-0">
                               26/02/24
                               </h3>
@@ -226,8 +229,8 @@ const DeliveryOrderList = () => {
                           ₹ 700.00
                           </td>
                         </tr>
-                      );
-                    })}
+                      {/* );
+                    })} */}
                 </tbody>
               </table>
             </div>

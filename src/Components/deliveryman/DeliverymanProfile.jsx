@@ -65,7 +65,7 @@ const DeliverymanProfile = () => {
           <div className="p-3 bg-white product_shadow">
             <div className="d-flex align-items-center justify-content-between mt-3">
               <div className="d-flex align-items-center mw-300 p-2">
-                <div style={{}}>
+                <div>
                   <img
                     src={profile_image}
                     alt="mobileicon"

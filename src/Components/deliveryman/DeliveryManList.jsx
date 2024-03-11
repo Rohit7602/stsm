@@ -186,20 +186,20 @@ const DeliveryManList = () => {
                     </tr>
                   </thead>
                   <tbody className="table_body">
-                    {ServiceData.filter((data) => {
+                    {/* {ServiceData.filter((data) => {
                       return searchvalue.toLowerCase() === ''
                         ? data
                         : data.AreaName.toLowerCase().includes(searchvalue);
                     }).map((data, index) => {
-                      return (
+                      return ( */}
                         <tr className="product_borderbottom">
                           <td className="py-3 ps-3  mw-300">
                           <div className="d-flex align-items-center gap-3 ">
                               <label class="check1 fw-400 fs-sm black mb-0">
                                 <input
                                   type="checkbox"
-                                  checked={data.checked || false}
-                                  onChange={() => handleCheckboxChange(index)}
+                                  // checked={data.checked || false}
+                                  // onChange={() => handleCheckboxChange(index)}
                                 />
                                 <span class="checkmark"></span>
                               </label>
@@ -212,8 +212,8 @@ const DeliveryManList = () => {
                           <td className="px-2 mx_160">
                             <h3 className="fs-sm fw-400 black mb-0">Full time</h3>
                           </td>
-                          <td className="mx_160 ps-3">
-                            <Link to="/deliveryman/deliveryorderlist" className="fs-sm fw-400 black mb-0">10</Link>
+                          <td className="mx_160 ps-5">
+                            <Link to="/deliveryman/deliveryorderlist" className="fs-sm fw-400 black ">10</Link>
                           </td>
                           <td className="px-2 mx_140">
                             <h3 className="fs-sm fw-400 status_btn_green mb-0">online</h3>
@@ -231,8 +231,8 @@ const DeliveryManList = () => {
                            <ActionIcon />
                           </td>
                         </tr>
-                      );
-                    })}
+                      {/* );
+                    })} */}
                   </tbody>
                 </table>
                 <ToastContainer />

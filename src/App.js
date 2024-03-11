@@ -29,6 +29,7 @@ import AddDeliveryMan from './Components/deliveryman/AddDeliveryMan';
 import Faqs from './Components/faqs/Faqs';
 import DeliverymanProfile from './Components/deliveryman/DeliverymanProfile';
 import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList';
+import DeliveryBoyInventory from './Components/deliveryman/DeliveryBoyInventory';
 function App() {
   const [user, setUser] = useState(true);
   const [authchecked, setauthchecked] = useState(false);
@@ -144,6 +145,7 @@ function App() {
                           <Route path="addnewdeliveryman" element={<AddDeliveryMan/>}/>
                           <Route path="deliverymanprofile" element={<DeliverymanProfile/>}/>
                           <Route path="deliveryorderlist" element={<DeliveryOrderList/>}/>
+                          <Route path="inventory" element={<DeliveryBoyInventory/>}/>
                         </Route>
                         <Route path="marketing">
                           <Route path="bannersadvertisement" element={<BannersAdvertisement />} />

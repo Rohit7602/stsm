@@ -929,6 +929,11 @@ transition:  all ease-in-out 300ms;
 .outline_none {
   outline: none;
 }
+.quantity_bg{
+  background-color: #F4F4F4;
+  padding: 10px 15px 10px 15px;
+  border-radius: 50px;
+}
 
 .add_varient_btn {
   border: none;
@@ -1030,7 +1035,24 @@ transition:  all ease-in-out 300ms;
 .min_width_1120 {
   min-width: 1120px;
 }
+/* CSS */
+.custom-select:hover {
+  color: grey !important; /* Change color as desired */
+}
 
+.option-commission {
+  color: grey; /* Change color as desired */
+  margin: 2px !important;
+}
+
+.option-salaried {
+  color: grey; /* Change color as desired */
+}
+.update_entry{
+  background-color: #54B435;
+  padding: 10px 15px 10px 15px;
+  border-radius: 10px;
+}
 .stock_bg {
   background-color: #54b43533;
   padding: 5px 10px;
