@@ -224,6 +224,7 @@ const DeliveryManList = () => {
                           </td>
                           <td className="ps-3 mx_140">
                           <h3 className="fs-sm fw-400 status_btn_green mb-0">Approved</h3>
+                                {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">Rejected</h3> */}
                           </td>
                           <td className="ps-3 mx_140">
                             <h3 className="fs-sm fw-400 black mb-0">9 11 sector</h3>
