@@ -1017,7 +1017,8 @@ const BannersAdvertisement = () => {
               await uploadBytes(storageRef, file);
               imageUrl = await getDownloadURL(storageRef);
             } else {
-              imageUrl = file; // Assume file is a URL
+              imageUrl = file.split('$$$$')[0];
+              console.log("image url is ", imageUrl)// Assume file is a URL
             }
 
             // Check if the URL already exists in existingImageUrls or newImageData
