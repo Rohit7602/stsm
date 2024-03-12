@@ -2,11 +2,13 @@ import React, { createContext, useEffect, useState, useContext } from 'react';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { getDocs, collection, query, where } from 'firebase/firestore';
+import  Loader from '../Components/Loader'
 
 const AuthContext = createContext();
 
 export function UserAuthContextProvider({ children }) {
     const [userData, setUserData] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -17,12 +19,11 @@ export function UserAuthContextProvider({ children }) {
             } else {
                 setUserData(null);
             }
+            setLoading(false); // Set loading to false after initial user data is set or user is logged out
         });
 
         return unsubscribe;
     }, []);
-
-    console.log(userData)
 
     function loginUser(email, password) {
         return signInWithEmailAndPassword(auth, email, password);
@@ -30,6 +31,12 @@ export function UserAuthContextProvider({ children }) {
 
     function logoutUser() {
         return signOut(auth);
+    }
+
+    if (loading) {
+        return (
+            <Loader></Loader>
+        ); // Display a loading indicator while user data is being fetched
     }
 
     return (
