@@ -130,7 +130,7 @@ const DeliveryManList = () => {
                     <tr className="product_borderbottom">
                       <th
                         onClick={() => sorting('AreaName')}
-                        className="py-3 ps-3  cursor_pointer mw-300">
+                        className="py-3 ps-3  cursor_pointer mw_220">
                         <div className="d-flex align-items-center gap-3 ">
                           <label class="check1 fw-400 fs-sm black mb-0">
                             <input
@@ -153,10 +153,10 @@ const DeliveryManList = () => {
                           </p>
                         </div>
                       </th>
-                      <th className="mx_160 px-2">
+                      <th className="mx_140 px-2">
                         <h3 className="fs-sm fw-400 black mb-0">Work type</h3>
                       </th>
-                      <th className="mx_160 ps-3">
+                      <th className="mx_140 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Total Order’s</h3>
                       </th>
                       <th
@@ -174,10 +174,13 @@ const DeliveryManList = () => {
                           </span>
                         </p>
                       </th>
-                      <th className="mx_160 ps-3">
+                      <th className="mx_140 ps-3">
+                        <h3 className="fs-sm fw-400 black mb-0">Verification</h3>
+                      </th>
+                      <th className="mx_140 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Service area</h3>
                       </th>
-                      <th className="mx_160 ps-3">
+                      <th className="mx_140 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Contact</h3>
                       </th>
                       <th className="mx_100 p-3 me-1 text-center">
@@ -193,7 +196,7 @@ const DeliveryManList = () => {
                     }).map((data, index) => {
                       return ( */}
                         <tr className="product_borderbottom">
-                          <td className="py-3 ps-3  mw-300">
+                          <td className="py-3 ps-3  mw_220">
                           <div className="d-flex align-items-center gap-3 ">
                               <label class="check1 fw-400 fs-sm black mb-0">
                                 <input
@@ -209,20 +212,23 @@ const DeliveryManList = () => {
                               </Link>
                             </div>
                           </td>
-                          <td className="px-2 mx_160">
+                          <td className="px-2 mx_140">
                             <h3 className="fs-sm fw-400 black mb-0">Full time</h3>
                           </td>
-                          <td className="mx_160 ps-5">
+                          <td className="mx_140 ps-5">
                             <Link to="/deliveryman/deliveryorderlist" className="fs-sm fw-400 black ">10</Link>
                           </td>
                           <td className="px-2 mx_140">
                             <h3 className="fs-sm fw-400 status_btn_green mb-0">online</h3>
                             {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">online</h3> */}
                           </td>
-                          <td className="ps-3 mx_160">
+                          <td className="ps-3 mx_140">
+                          <h3 className="fs-sm fw-400 status_btn_green mb-0">Approved</h3>
+                          </td>
+                          <td className="ps-3 mx_140">
                             <h3 className="fs-sm fw-400 black mb-0">9 11 sector</h3>
                           </td>
-                          <td className=" mx_160 ps-3">
+                          <td className=" mx_140 ps-3">
                             <h3 className="fs-sm fw-400 black mb-0 ">
                             +91 849858590
                             </h3>
