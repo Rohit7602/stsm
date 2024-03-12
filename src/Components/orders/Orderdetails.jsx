@@ -13,10 +13,17 @@ import manimage from "../../Images/Png/manimage.jpg";
 import { Col, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { useOrdercontext } from "../../context/OrderGetter";
-import { doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { doc, deleteDoc, updateDoc, addDoc, collection } from "firebase/firestore";
 import { db } from "../../firebase";
 
+import { useUserAuth } from "../../context/Authcontext";
+
 export default function NewOrder() {
+
+  const { userData } = useUserAuth()
+  let AdminId = userData.uuid
+  console.log("Asmin ", AdminId)
+
   const { id } = useParams();
   const { orders, updateData } = useOrdercontext();
   let filterData = orders.filter((item) => item.id === id);
@@ -50,16 +57,58 @@ export default function NewOrder() {
   const handleAcceptOrder = async (id) => {
     try {
       // Toggle the status between 'publish' and 'hidden'
-      const newStatus = "PROCESSING";
+      const newStatus = "CONFIRMED";
 
       await updateDoc(doc(db, "order", id), {
         status: newStatus,
       });
+
+      // Add a new log entry to the logs collection
+      const logData = {
+        name: "Admin",
+        status: newStatus,
+        updated_at: new Date().toISOString(),
+        updated_by: AdminId
+      };
+
+      await addDoc(collection(db, `order/${id}/logs`), logData);
+
+
+      const AssignDeliver = {
+        name: "Admin",
+        status: "PROCESSING",
+        updated_at: new Date().toISOString(),
+        updated_by: AdminId
+      }
+      await addDoc(collection(db, `order/${id}/logs`), AssignDeliver);
       updateData({ id, status: newStatus });
     } catch (error) {
       console.log(error);
     }
   };
+
+  const handleRejectOrder = async (id) => {
+    try {
+      // Toggle the status between 'publish' and 'hidden'
+      const newStatus = "REJECTED";
+      await updateDoc(doc(db, "order", id), {
+        status: newStatus,
+      });
+      // Add a new log entry to the logs collection
+      const logData = {
+        name: "Admin",
+        status: newStatus,
+        updated_at: new Date().toISOString(),
+        updated_by: AdminId
+      };
+      await addDoc(collection(db, "logs"), logData);
+
+      updateData({ id, status: newStatus });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
 
   return (
     <>
@@ -72,15 +121,14 @@ export default function NewOrder() {
             <div className="d-flex align-items-center">
               <h1 className="fs-lg fw-500 black mb-0 me-1">{item.id}</h1>
               <p
-                className={`d-inline-block ms-3 ${
-                  item.status.toString().toLowerCase() === "new"
-                    ? "fs-sm fw-400 red mb-0 new_order"
-                    : item.status.toString().toLowerCase() === "processing"
+                className={`d-inline-block ms-3 ${item.status.toString().toLowerCase() === "new"
+                  ? "fs-sm fw-400 red mb-0 new_order"
+                  : item.status.toString().toLowerCase() === "confirmed"
                     ? "fs-sm fw-400 mb-0 processing_skyblue"
                     : item.status.toString().toLowerCase() === "delivered"
-                    ? "fs-sm fw-400 mb-0 green stock_bg"
-                    : "fs-sm fw-400 mb-0 black cancel_gray"
-                }`}
+                      ? "fs-sm fw-400 mb-0 green stock_bg"
+                      : "fs-sm fw-400 mb-0 black cancel_gray"
+                  }`}
               >
                 {item.status}
               </p>
@@ -89,7 +137,7 @@ export default function NewOrder() {
               <div className="d-flex align-items-center">
                 <div className="d-flex align-itmes-center gap-3">
                   <button className="reset_border">
-                    <button className="fs-sm reset_btn  border-0 fw-400">
+                    <button onClick={() => handleRejectOrder(item.id)} className="fs-sm reset_btn  border-0 fw-400">
                       Reject Order
                     </button>
                   </button>
@@ -117,14 +165,10 @@ export default function NewOrder() {
               <div></div>
             ) : item.status === "DISPATCHED" ? (
               <div></div>
-            ) : item.status === "PROCESSING" ? (
+            ) : item.status === "CONFIRMED" ? (
               <div className="d-flex align-items-center">
                 <div className="d-flex align-itmes-center gap-3">
-                  <button className="reset_border">
-                    <button className="fs-sm reset_btn  border-0 fw-400">
-                      Reject Order
-                    </button>
-                  </button>
+
                   <button
                     className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 green_btn fw-400 white"
                     type="submit"
@@ -175,10 +219,10 @@ export default function NewOrder() {
                               {products.varient_name
                                 .toString()
                                 .toLowerCase() !== "not found" && (
-                                <span className="fs-sm fw-400 black mb-0 ms-3">
-                                  {products.varient_name}
-                                </span>
-                              )}
+                                  <span className="fs-sm fw-400 black mb-0 ms-3">
+                                    {products.varient_name}
+                                  </span>
+                                )}
                             </p>
                             <p className="fs-xxs fw-400 fade_grey mb-0">
                               ID :{products.product_id}
@@ -294,7 +338,7 @@ export default function NewOrder() {
                       <img src={orderReject} className="bg-white" alt="orderReject" />
                       <div className=" ps-3 ms-1">
                         <p className="fs-sm fw-400 black mb-0">
-                        Order Rejected
+                          Order Rejected
                         </p>
                         <p className="fs-xxs fw-400 black mb-0">By : Admin</p>
                       </div>
@@ -313,7 +357,7 @@ export default function NewOrder() {
                         alt="orderDeliveryAssign"
                       />
                       <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">
-                      Assigned for Delivery
+                        Assigned for Delivery
                       </p>
                     </div>
                     <div>
@@ -328,7 +372,7 @@ export default function NewOrder() {
                       <img className="bg-white" src={orderDelevered} alt="orderDelevered" />
                       <div className=" ps-3 ms-1">
                         <p className="fs-sm fw-400 black mb-0">
-                        Order Delivered
+                          Order Delivered
                         </p>
                         <p className="fs-xxs fw-400 black mb-0">By : Ramesh Kumar (Delivery Man)</p>
                       </div>

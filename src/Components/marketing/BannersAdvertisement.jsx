@@ -41,6 +41,8 @@ const BannersAdvertisement = () => {
 
   // context
   const { BannerData, deleteObjectByImageUrl, SetBannerData } = UseBannerData();
+
+  console.log("Banner Data is ", BannerData)
   const { ImageisValidOrNot } = useImageHandleContext();
   const { validateImage } = useImageValidation();
   const { categoreis } = useMainCategories();
@@ -975,11 +977,9 @@ const BannersAdvertisement = () => {
 
 
   async function handleUpdateCategoryBanner(e) {
-    setLoaderstatus(true)
-    console.log("working")
+    setLoaderstatus(true);
     e.preventDefault();
     try {
-      console.log("try  working")
       if (CategoryImage.some(files => Array.isArray(files) && files.length > 0) && categoreis.some(Boolean)) {
         const newImageData = [];
         const existingImageUrls = [];
@@ -991,18 +991,15 @@ const BannersAdvertisement = () => {
 
         if (querySnapshot.size > 0) {
           const existingData = querySnapshot.docs[0].data().data;
-          if (existingData) {
-            existingData.forEach((item) => {
-              const existingUrls = item.imgUrls || [];
-              existingImageUrls.push(...existingUrls);
-            });
-          }
+          existingData.forEach((item) => {
+            const existingUrls = item.imgUrls || [];
+            existingImageUrls.push(...existingUrls);
+          });
         }
 
         // Iterate over each category
         for (let index = 0; index < CategoryImage.length; index++) {
           const files = CategoryImage[index];
-          console.log("files is ", files)
           const categoryId = categoreis[index].id;
           const categoryTitle = categoreis[index].title;
 
@@ -1018,15 +1015,10 @@ const BannersAdvertisement = () => {
               imageUrl = await getDownloadURL(storageRef);
             } else {
               imageUrl = file.split('$$$$')[0];
-              console.log("image url is ", imageUrl)// Assume file is a URL
+              console.log("image url is ", imageUrl); // Assume file is a URL
             }
-
-            // Check if the URL already exists in existingImageUrls or newImageData
-            if (
-              imageUrl &&
-              !existingImageUrls.includes(imageUrl) &&
-              !newImageData.some(obj => obj.imgUrls.includes(imageUrl))
-            ) {
+            // Check if the URL already exists in existingImageUrls
+            if (imageUrl && !existingImageUrls.includes(imageUrl) && !uploadedUrls.includes(imageUrl)) {
               uploadedUrls.push(imageUrl);
             }
           }
@@ -1050,7 +1042,10 @@ const BannersAdvertisement = () => {
           if (querySnapshot.size > 0) {
             // Document already exists, update existing data
             const docRef = querySnapshot.docs[0].ref; // Use the first document reference
+            console.log("docref", querySnapshot.docs)
             const existingData = querySnapshot.docs[0].data().data || [];
+
+            const filteredData = BannerData.filter((item) => item.title !== 'CategoryBanners');
 
             newImageData.forEach((newObj) => {
               const existingIndex = existingData.findIndex((existingObj) => existingObj.categoryId === newObj.categoryId);
@@ -1060,9 +1055,8 @@ const BannersAdvertisement = () => {
                 existingData[existingIndex].imgUrls = existingData[existingIndex].imgUrls.concat(newObj.imgUrls);
               }
             });
-
             await updateDoc(docRef, { data: existingData });
-            SetBannerData([...BannerData, { id: docRef.id, title: 'CategoryBanners', data: existingData }]);
+            SetBannerData([...filteredData, { id: docRef.id, title: 'CategoryBanners', data: existingData }]);
           } else {
             // Document doesn't exist, create a new one with new images
             const docRef = await addDoc(collection(db, 'Banner'), {
@@ -1072,23 +1066,24 @@ const BannersAdvertisement = () => {
             SetBannerData([...BannerData, { id: docRef.id, title: 'CategoryBanners', data: newImageData }]);
           }
         } else {
-          setLoaderstatus(false)
+          setLoaderstatus(false);
           console.log('No new images uploaded');
         }
       } else {
-        setLoaderstatus(false)
+        setLoaderstatus(false);
         console.log('Select images and categories before uploading');
       }
       toast.success('Category Banners Updated Successfully!', {
         position: toast.POSITION.TOP_RIGHT,
       });
-      setLoaderstatus(false)
+      setLoaderstatus(false);
 
     } catch (error) {
-      setLoaderstatus(false)
+      setLoaderstatus(false);
       console.error(error);
     }
   }
+
 
 
 
