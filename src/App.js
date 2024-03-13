@@ -32,6 +32,7 @@ import Faqs from './Components/faqs/Faqs';
 import Logout from './Components/login/Logout';
 import DeliverymanProfile from './Components/deliveryman/DeliverymanProfile';
 import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList'
+import Invoices from './Components/invoices/Invoices';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -161,7 +162,8 @@ function App() {
                         </Route>
                         <Route path="privacypolicy" element={<PrivacyPolicy />} />
                         <Route path="term" element={<TermConditions />} />
-                        <Route path='FAQ' element={<Faqs></Faqs>} />
+                        <Route path='FAQ' element={<Faqs/>} />
+                        <Route path='invoices' element={<Invoices/>} />
                       </Routes>
                     </div>
                   </div>
