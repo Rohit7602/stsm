@@ -124,7 +124,7 @@ export default function NewOrder() {
       });
       // Add a new log entry to the logs collection
       const logData = {
-        name: "Admin",
+        name: "Store",
         status: newStatus,
         updated_at: new Date().toISOString(),
         updated_by: AdminId
@@ -374,9 +374,10 @@ export default function NewOrder() {
                       </div> */}
                       <div className="d-flex align-items-center">
                         {renderLogIcon(log.data.status)}
-                        <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">
-                          {log.data.status === "PROCESSING" ? "Assign To Delivery " : log.data.status}
-                        </p>
+                        <div className="ps-2 ms-1">
+                          <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">   {log.data.status === "PROCESSING" ? "ASSIGN TO DELIVERY " :  log.data.status === "NEW" ? "ORDER PLACED" : log.data.status} </p>
+                          <p className="fs-xxs fw-400 black ps-3 ms-1 mb-0">{log.data.name}</p>
+                        </div>
                       </div>
                       <div>
                         <p className="fs-xs fw-400 black mb-0">
@@ -385,7 +386,6 @@ export default function NewOrder() {
                       </div>
                     </div>
                   ))}
-
                 </div>
                 {/* <div className="d-flex align-items-center justify-content-between mt-3">
                     <div className="d-flex align-items-center">

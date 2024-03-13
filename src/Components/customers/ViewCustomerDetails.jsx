@@ -11,6 +11,7 @@ import { db } from '../../firebase';
 import { useCustomerContext } from '../../context/Customergetters';
 import { add, formatDistanceToNow } from 'date-fns';
 import { useOrdercontext } from '../../context/OrderGetter';
+import { Link } from 'react-router-dom';
 
 const ViewCustomerDetails = () => {
   const { orders } = useOrdercontext();
@@ -183,7 +184,9 @@ const ViewCustomerDetails = () => {
                                 <>
                                   <tr className="product_borderbottom">
                                     <td className="p-3">
-                                      <h2 className="fw-400 fs-sm black mb-0"> {data.id}. </h2>
+                                      <Link to={`/orders/orderdetails/${data.id}`}>
+                                        <h2 className="fw-400 fs-sm black mb-0"> {data.id}. </h2>
+                                      </Link>
                                     </td>
                                     <td className="py-3">
                                       <h2 className="fw-400 fs-sm black mb-0">
