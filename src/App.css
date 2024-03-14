@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;500;600;700;800;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;500;600;700;800;900&display=swap");
 
 .App {
   text-align: center;
@@ -13,7 +13,7 @@
   padding: 0;
   margin: 0;
   list-style: none;
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   /* text-decoration: none !important; */
@@ -41,7 +41,7 @@ body {
   --light-blue: #01bbbd;
   --color-green: #54b435;
   --color-blue: #0019ff;
-  --ff-outfit: 'Outfit', sans-serif;
+  --ff-outfit: "Outfit", sans-serif;
 
   --fw-300: 300;
   --fw-400: 400;
@@ -206,7 +206,7 @@ body {
 }
 
 .status_btn_green {
-  background-color: #DEF2D0;
+  background-color: #def2d0;
   color: #245900;
   padding: 5px 10px;
   display: inline-block;
@@ -214,7 +214,7 @@ body {
 }
 
 .status_btn_red {
-  background-color: #FFDCDC;
+  background-color: #ffdcdc;
   color: #990000;
   padding: 5px 10px;
   display: inline-block;
@@ -333,7 +333,7 @@ body {
 }
 
 .accordion-button::after {
-  background-image: url('./Images/svgs/arrow.svg') !important;
+  background-image: url("./Images/svgs/arrow.svg") !important;
 }
 
 .accordion-header:hover {
@@ -396,7 +396,7 @@ body {
 }
 
 .banner_advertisement .accordion-button::after {
-  background-image: url('./Images/svgs/dropdown_icon.svg') !important;
+  background-image: url("./Images/svgs/dropdown_icon.svg") !important;
   background-position: right center;
 }
 
@@ -407,13 +407,17 @@ body {
 /*export_btn*/
 .export_btn {
   border-radius: 10px;
-  background: var(--red_gradient,
-      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
 }
 
 .export_btn:hover {
-  background: var(--red_gradient,
-      linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
 }
 
 .unit_type_input {
@@ -434,15 +438,20 @@ body {
   padding: 12px 15px;
   transition: 0.5s ease-in-out;
   background-color: transparent;
-  background: var(--red_gradient,
-      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .reset_btn:hover {
-  background: var(--red_gradient, linear-gradient(90deg, #fff 0%, #fff 49.43%, #fff 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(90deg, #fff 0%, #fff 49.43%, #fff 105.44%)
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -453,12 +462,20 @@ body {
   border-radius: 10px;
   border: 1.5px solid transparent;
   background: linear-gradient(#f5f7fa, #f5f7fa) padding-box,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%) border-box;
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+      border-box;
 }
 
 .reset_border:hover {
-  background: linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%) padding-box,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%) border-box;
+  background: linear-gradient(
+        90deg,
+        #8a2387 0%,
+        #e94057 49.43%,
+        #f27121 105.44%
+      )
+      padding-box,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+      border-box;
 }
 
 /*save_btn*/
@@ -676,27 +693,27 @@ body {
 } */
 
 /* When the checkbox is checked, add a blue background */
-.check input:checked~.checkmark {
+.check input:checked ~ .checkmark {
   background-color: #000000;
 }
 
-.check1 input:checked~.checkmark {
+.check1 input:checked ~ .checkmark {
   background-color: transparent;
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */
 .checkmark:after {
-  content: '';
+  content: "";
   position: absolute;
   display: none;
 }
 
 /* Show the checkmark when checked */
-.check input:checked~.checkmark:after {
+.check input:checked ~ .checkmark:after {
   display: block;
 }
 
-.check1 input:checked~.checkmark:after {
+.check1 input:checked ~ .checkmark:after {
   display: block;
 }
 
@@ -938,8 +955,8 @@ body {
 .outline_none {
   outline: none;
 }
-.quantity_bg{
-  background-color: #F4F4F4;
+.quantity_bg {
+  background-color: #f4f4f4;
   padding: 10px 15px 10px 15px;
   border-radius: 50px;
 }
@@ -990,8 +1007,8 @@ body {
   cursor: pointer;
 }
 
-.btn-check:checked+.btn,
-:not(.btn-check)+.btn:active,
+.btn-check:checked + .btn,
+:not(.btn-check) + .btn:active,
 .btn:first-child:active,
 .btn.active,
 .btn.show {
@@ -1060,8 +1077,8 @@ body {
 .option-salaried {
   color: grey; /* Change color as desired */
 }
-.update_entry{
-  background-color: #54B435;
+.update_entry {
+  background-color: #54b435;
   padding: 10px 15px 10px 15px;
   border-radius: 10px;
 }
@@ -1167,10 +1184,10 @@ body {
 .white_space_nowrap {
   white-space: nowrap;
 }
-.order_logs_line{
+.order_logs_line {
   position: relative;
 }
-.order_logs_line::after{
+.order_logs_line::after {
   content: "";
   position: absolute;
   height: 100%;
@@ -1192,28 +1209,28 @@ body {
   border-radius: 5px;
 }
 
-.mx_150{
+.mx_150 {
   min-width: 150px;
   width: 150px;
 }
-.mx_180{
+.mx_180 {
   min-width: 180px;
   width: 180px;
 }
-.mx_220{
+.mx_220 {
   min-width: 220px;
   width: 220px;
 }
-.unpiad{
+.unpiad {
   display: inline-block;
-  background-color:#BD011A33;
-  color: #BD011A;
+  background-color: #bd011a33;
+  color: #bd011a;
   padding: 7.5px 15px;
   border-radius: 5px;
 }
-.paid_invoice{
+.paid_invoice {
   display: inline-block;
-  background-color:#50B84833;
+  background-color: #50b84833;
   color: var(--color-green);
   padding: 7.5px 15px;
   border-radius: 5px;
@@ -1274,7 +1291,7 @@ body {
 }
 
 .login-side-bg {
-  background-image: url('../src/Images/Png/login-side-img.png');
+  background-image: url("../src/Images/Png/login-side-img.png");
   min-height: 100vh;
   background-repeat: no-repeat;
   object-fit: cover;
@@ -1544,7 +1561,7 @@ div.rich-text-editor .ql-editor {
 }
 
 .bg_green {
-  background-color: #DEF2D0;
+  background-color: #def2d0;
 }
 
 .ql-container.ql-snow {
@@ -1647,7 +1664,96 @@ div.rich-text-editor .ql-editor {
   z-index: 10;
 }
 
+.side_invoice_view {
+  position: absolute;
+  background-color: white;
+  right: 0;
+  width: 538px;
+  height: 433px;
+  padding: 20px 15px;
+  z-index: 2;
+}
+.side_invoice_view::after {
+  content: "";
+  background-color: #f5f7fa;
+  position: absolute;
+  width: 20px;
+  height: 100%;
+  left: -20px;
+  top: 0;
+  z-index: 1;
+}
+.view_pdf_btn {
+  padding: 12px 10px;
+  border-radius: 5px;
+  background-color: #f4f4f4;
+  border: 0;
+  outline: 0;
+}
+.view_pdf_btn img{
+  padding-left: 10px;
+}
+.large_banner{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  z-index: 2;
+  padding: 20px;
+  border-radius: 10px;
+  width: 340px;
+}
 
+.large_banner .dropdown-menu.show {
+  transform: translate3d(0px, 50px, 0px) !important;
+  width: 100% !important;
+  max-height: 150px;
+  overflow-y: scroll;
+  background-color: white;
+}
+.large_banner .dropdown-menu.show::-webkit-scrollbar{
+  width: 4px;
+}
+.large_banner .dropdown-menu.show::-webkit-scrollbar-track{
+ background-color: white !important;
+}
+
+.banner_search_input{
+  background-color: #EBEDF0;
+  border-radius: 5px;
+  height: 46px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.banner_search_input input{
+  border: none;
+  outline: none;
+  background-color: transparent;
+}
+.priority{
+  width: 59px;
+  padding: 15px 10px;
+  border-radius: 5px;
+  background-color: #EBEDF0;
+  border: none;
+  outline: none;
+}
+.exit_baner_popup{
+  border: 1px solid black;
+  padding: 4px 20px;
+  border-radius: 5px;
+  background-color: transparent;
+}
+.save_baner_popup{
+  border: 0;
+  background-color: var(--color-brown);
+  padding: 5px 20px;
+  border-radius: 5px;
+}
+.brs_50{
+  border-radius: 50%;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
   :root {
@@ -1816,7 +1922,7 @@ div.rich-text-editor .ql-editor {
   padding-top: 3px;
 }
 
-.py-6px{
+.py-6px {
   padding-top: 6px;
   padding-bottom: 6px;
 }

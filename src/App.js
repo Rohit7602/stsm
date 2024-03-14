@@ -34,6 +34,7 @@ import DeliverymanProfile from './Components/deliveryman/DeliverymanProfile';
 import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList';
 import DeliveryBoyInventory from './Components/deliveryman/DeliveryBoyInventory';
 import { useUserAuth } from './context/Authcontext';
+import Invoices from './Components/invoices/Invoices';
 function App() {
 
   const { logoutUser } = useUserAuth()
