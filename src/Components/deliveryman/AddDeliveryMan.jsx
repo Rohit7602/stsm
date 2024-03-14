@@ -8,15 +8,34 @@ import { useProductsContext } from "../../context/productgetter";
 import { useSubCategories } from "../../context/categoriesGetter";
 import { useParams } from "react-router-dom";
 import { db } from "../../firebase";
-import { addDoc, collection } from "firebase/firestore";
-
+import { addDoc, collection, setDoc, doc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, getAuth, signOut } from "firebase/auth";
 
 const AddDeliveryMan = () => {
+
+  function RandomPasswordGenerator() {
+    var chars = "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var passwordLength = 8;
+    var password = "";
+    for (var i = 0; i <= passwordLength; i++) {
+      var randomNumber = Math.floor(Math.random() * chars.length);
+      password += chars.substring(randomNumber, randomNumber + 1);
+    }
+
+    return password
+  }
+
+
+
+
+  const auth = getAuth();
+
+
   const [name, setName] = useState("");
   const [address, setaddress] = useState("");
   const [emergencycontact, setEmergencycontact] = useState("");
   const [phnno, setPhnno] = useState("");
-  const [kycType, setKycType] = useState("AadharCard");
+  const [kycType, setKycType] = useState("AADHARCARD");
   const [govt, setGovt] = useState("");
   const [social, setSocial] = useState("");
   const [date, setDate] = useState("");
@@ -32,8 +51,8 @@ const AddDeliveryMan = () => {
   const [mobile, setMobile] = useState("");
   const [confirmaccountno, setConfirmaccountno] = useState("");
   const [accountno, setAccountno] = useState("");
-  const [employmentstatus, setEmploymentstatus] = useState("fullTime");
-  const [vechiletype, setVechiletype] = useState("4 Wheeler");
+  const [employmentstatus, setEmploymentstatus] = useState("FULLTIME");
+  const [vechiletype, setVechiletype] = useState("4 WHEELER");
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [email, setEmail] = useState('')
   const [selectedOption, setSelectedOption] = useState("");
@@ -83,28 +102,63 @@ const AddDeliveryMan = () => {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       isVerified: true,
+      signInMethod: "email",
+      status: "online",
     }
 
-    try {
+    // try {
+    //   let userUuid
 
-      await addDoc(collection(db, 'Delivery'), DeliveryManData);
-      setLoaderstatus(false)
-      toast.success("DeliverMan added Successfully !", {
+
+    //   // create delivery man  in authentication 
+    //   createUserWithEmailAndPassword(auth, email, RandomPasswordGenerator())
+    //     .then((userCredential) => {
+
+    //       const user = userCredential.user;
+    //       console.log("user is ", user)
+    //       userUuid = user.uid;
+    //       // ...
+    //     })
+    //     .catch((error) => {
+    //       const errorCode = error.code;
+    //       const errorMessage = error.message;
+    //       console.log("Error in create user ", errorMessage)
+    //     });
+
+    //   let deliveryRef = doc(db, 'Delivery', userUuid)
+    //   await setDoc(deliveryRef, DeliveryManData);
+    //   setLoaderstatus(false)
+    //   toast.success("DeliverMan added Successfully !", {
+    //     position: toast.POSITION.TOP_RIGHT,
+    //   });
+
+
+    // } catch (error) {
+    //   setLoaderstatus(false)
+    //   console.log("Error in Delivery man added ", error)
+    // }
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, RandomPasswordGenerator());
+      const user = userCredential.user;
+      console.log("user is ", user);
+      DeliveryManData.uid = user.uid;
+
+      let deliveryRef = doc(db, 'Delivery', user.uid);
+      await setDoc(deliveryRef, DeliveryManData);
+      setLoaderstatus(false);
+      toast.success("DeliveryMan added Successfully !", {
         position: toast.POSITION.TOP_RIGHT,
       });
-
-
+      // await signOut(auth)
     } catch (error) {
-      setLoaderstatus(false)
-      console.log("Error in Delivery man added ", error)
+      setLoaderstatus(false);
+      console.log("Error in Delivery man added ", error);
     }
     handleReset()
-
-
   }
 
   function handleReset() {
-    setKycType("AadharCard")
+    setKycType("AADHARCARD")
     setPhnno("")
     setEmergencycontact("")
     setaddress("")
@@ -122,8 +176,8 @@ const AddDeliveryMan = () => {
     setDOB("")
     setNameaccount("")
     setIfsc("")
-    setVechiletype("4 Wheeler")
-    setEmploymentstatus("fullTime")
+    setVechiletype("4 WhEELER")
+    setEmploymentstatus("FULLTIME")
     setAccountno("")
     setConfirmaccountno("")
     setMobile("")
@@ -181,8 +235,8 @@ const AddDeliveryMan = () => {
                         onChange={(e) => setName(e.target.value)}
                       />
                       <br />
-                      <div className="row">
-                        <div className="col-6">
+                      <div className="row ">
+                        <div className="col-3">
                           <label className="fs-xs fw-400 mt-3 black">
                             Date of Birth
                           </label>
@@ -197,21 +251,37 @@ const AddDeliveryMan = () => {
                             onChange={(e) => setDOB(e.target.value)}
                           />
                         </div>
-                        <div className="col-6">
+                        <div className="col-4">
                           <label className="fs-xs fw-400 mt-3 black">
-                            Contact Info
+                            Phone
                           </label>
                           <br />
                           <input
-                            type="text"
+                            type="number"
                             required
                             className="mt-2 product_input fade_grey fw-400"
-                            placeholder="mobile"
+                            placeholder="+91 XXXXXXXXX"
                             id="mobile"
                             value={mobile}
                             onChange={(e) => setMobile(e.target.value)}
                           />
                         </div>
+                        <div className="col-5">
+                          <label className="fs-xs fw-400 mt-3 black">
+                            Email
+                          </label>
+                          <br />
+                          <input
+                            type="email"
+                            required
+                            className="mt-2 product_input fade_grey fw-400"
+                            placeholder="email@gmail.com"
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                          />
+                        </div>
+
                       </div>
                       {/* 2nd input */}
                       <label
@@ -273,7 +343,7 @@ const AddDeliveryMan = () => {
                         type="text"
                         required
                         className="mt-2 product_input fade_grey fw-400"
-                        placeholder="***000"
+                        placeholder="Enter Account Holder Name "
                         id="nameaccount"
                         value={nameaccount}
                         onChange={(e) => setNameaccount(e.target.value)}
@@ -435,8 +505,8 @@ const AddDeliveryMan = () => {
                       onChange={handleOptionChange}
                       className="mt-2 product_input fade_grey fw-400"
                     >
-                      <option className="option-commission" value="commission">Commission</option>
-                      <option className="option-salaried" value="salaried">Salaried</option>
+                      <option className="option-commission" value="COMMISSION">Commission</option>
+                      <option className="option-salaried" value="SALARIED">Salaried</option>
                     </select>
 
                     <div className="d-flex align-items-center mt-3 justify-content-between">
@@ -444,9 +514,9 @@ const AddDeliveryMan = () => {
                         <label className="check fw-400 fs-sm black mb-0">
                           PartTime
                           <input
-                            onChange={() => setEmploymentstatus("partTime")}
+                            onChange={() => setEmploymentstatus("PARTTIME")}
                             type="radio"
-                            checked={employmentstatus === "partTime"}
+                            checked={employmentstatus === "PARTTIME"}
                           />
                           <span className="checkmark"></span>
                         </label>
@@ -455,9 +525,9 @@ const AddDeliveryMan = () => {
                         <label className="check fw-400 fs-sm black mb-0">
                           FullTime
                           <input
-                            onChange={() => setEmploymentstatus("fullTime")}
+                            onChange={() => setEmploymentstatus("FULLTIME")}
                             type="radio"
-                            checked={employmentstatus === "fullTime"}
+                            checked={employmentstatus === "FULLTIME"}
                           />
                           <span className="checkmark"></span>
                         </label>
@@ -475,8 +545,8 @@ const AddDeliveryMan = () => {
                             Aadhar Card
                             <input
                               type="radio"
-                              checked={kycType === "AadharCard"}
-                              onChange={() => setKycType("AadharCard")}
+                              checked={kycType === "AADHARCARD"}
+                              onChange={() => setKycType("AADHARCARD")}
                             />
                             <span className="checkmark"></span>
                           </label>
@@ -486,15 +556,15 @@ const AddDeliveryMan = () => {
                             Votor Card
                             <input
                               type="radio"
-                              checked={kycType === "VoterIdCard"}
-                              onChange={() => setKycType("VoterIdCard")}
+                              checked={kycType === "VOTERIDCARD"}
+                              onChange={() => setKycType("VOTERIDCARD")}
                             />
                             <span className="checkmark"></span>
                           </label>
                         </div>
                       </div>
 
-                      {kycType === "VoterIdCard" ? (
+                      {kycType === "VOTERIDCARD" ? (
                         <div>
                           <label
                             htmlFor="social"
@@ -577,9 +647,9 @@ const AddDeliveryMan = () => {
                           <label className="check fw-400 fs-sm black mb-0">
                             4 Wheeler
                             <input
-                              onChange={() => setVechiletype("4 Wheeler")}
+                              onChange={() => setVechiletype("4 WHEELER")}
                               type="radio"
-                              checked={vechiletype === "4 Wheeler"}
+                              checked={vechiletype === "4 WHEELER"}
                             />
                             <span className="checkmark"></span>
                           </label>
@@ -588,9 +658,9 @@ const AddDeliveryMan = () => {
                           <label className="check fw-400 fs-sm black mb-0">
                             2 Wheeler
                             <input
-                              onChange={() => setVechiletype("2 Wheeler")}
+                              onChange={() => setVechiletype("2 WHEELER")}
                               type="radio"
-                              checked={vechiletype === "2 Wheeler"}
+                              checked={vechiletype === "2 WHEELER"}
                             />
                             <span className="checkmark"></span>
                           </label>
