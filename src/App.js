@@ -20,7 +20,7 @@ import { useEffect, useState } from 'react';
 import { auth, messaging } from './firebase';
 import HashLoader from 'react-spinners/HashLoader';
 import CheckConnection from './Components/CheckConnection';
-
+import Invoices from './Components/invoices/Invoices'
 import { permissionHandler } from './firebase';
 import DeliveryManList from './Components/deliveryman/DeliveryManList';
 
@@ -59,7 +59,7 @@ function App() {
   const handleLogout = async () => {
     try {
       // Sign out the user from Firebase Authentication
-      await  logoutUser()
+      await logoutUser()
       // Update the user state to trigger the rendering of the Login component
       localStorage.removeItem('isAdmin', 'true');
       setUser(true);
@@ -149,18 +149,18 @@ function App() {
                         </Route>
                         <Route path="deliveryman">
                           <Route index element={<DeliveryManList />} />
-                          <Route path="addnewdeliveryman" element={<AddDeliveryMan/>}/>
-                          <Route path="deliverymanprofile" element={<DeliverymanProfile/>}/>
-                          <Route path="deliveryorderlist" element={<DeliveryOrderList/>}/>
-                          <Route path="inventory" element={<DeliveryBoyInventory/>}/>
+                          <Route path="addnewdeliveryman" element={<AddDeliveryMan />} />
+                          <Route path="deliverymanprofile" element={<DeliverymanProfile />} />
+                          <Route path="deliveryorderlist" element={<DeliveryOrderList />} />
+                          <Route path="inventory" element={<DeliveryBoyInventory />} />
                         </Route>
                         <Route path="marketing">
                           <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
                         </Route>
                         <Route path="privacypolicy" element={<PrivacyPolicy />} />
                         <Route path="term" element={<TermConditions />} />
-                        <Route path='FAQ' element={<Faqs/>} />
-                        <Route path='invoices' element={<Invoices/>} />
+                        <Route path='FAQ' element={<Faqs />} />
+                        <Route path='invoices' element={<Invoices />} />
                       </Routes>
                     </div>
                   </div>

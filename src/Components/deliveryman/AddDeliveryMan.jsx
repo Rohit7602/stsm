@@ -35,34 +35,35 @@ const AddDeliveryMan = () => {
   const [employmentstatus, setEmploymentstatus] = useState("fullTime");
   const [vechiletype, setVechiletype] = useState("4 Wheeler");
   const [loaderstatus, setLoaderstatus] = useState(false);
-
+  const [email, setEmail] = useState('')
   const [selectedOption, setSelectedOption] = useState("");
 
   const handleOptionChange = (e) => {
-  
+
     setSelectedOption(e.target.value);
   };
   async function handlesave(e) {
     setLoaderstatus(true)
-    e.preventDefault(); 
+    e.preventDefault();
     let DeliveryManData = {
       basic_info: {
-        name:name,
-        dob: DOB ,
+        name: name,
+        dob: DOB,
         phone_no: mobile,
         address: address,
-        city:city,
-        state:state,
+        city: city,
+        state: state,
+        email: email,
         emergency_contact: {
           name: emergencycontact,
           relationship: relationship,
-          phone_no:phnno
+          phone_no: phnno
         }
       },
       bank: {
         account_no: accountno,
         bank_name: bankname,
-        ifsc_code:ifsc,
+        ifsc_code: ifsc,
         account_holder_name: nameaccount,
       },
       job_info: {
@@ -75,10 +76,13 @@ const AddDeliveryMan = () => {
         document_number: govt
       },
       vehicle: {
-        dl_number: dl_number ,
+        dl_number: dl_number,
         vehicle_number: vechileno,
         vehicle_type: vechiletype
-      }
+      },
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      isVerified: true,
     }
 
     try {
@@ -88,11 +92,11 @@ const AddDeliveryMan = () => {
       toast.success("DeliverMan added Successfully !", {
         position: toast.POSITION.TOP_RIGHT,
       });
-      
+
 
     } catch (error) {
       setLoaderstatus(false)
-      console.log("Error in Delivery man added ",error)
+      console.log("Error in Delivery man added ", error)
     }
     handleReset()
 
@@ -123,6 +127,7 @@ const AddDeliveryMan = () => {
     setAccountno("")
     setConfirmaccountno("")
     setMobile("")
+    setEmail('')
 
   }
 
@@ -406,7 +411,7 @@ const AddDeliveryMan = () => {
                       Job Title ( Delivery Man )
                     </h2>
                     <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
-                    Joining Date
+                      Joining Date
                     </label>
                     <br />
                     <input
@@ -424,7 +429,7 @@ const AddDeliveryMan = () => {
                     <h2 className="fw-400 fs-2sm black mb-0 pt-3">
                       Employment Type
                     </h2>
-                  
+
                     <select
                       value={selectedOption}
                       onChange={handleOptionChange}
