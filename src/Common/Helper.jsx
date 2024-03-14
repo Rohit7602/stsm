@@ -31,7 +31,6 @@
 //   },
 // ];
 
-
 // export const ProductList = [
 //   {
 //     Product: 'Vivo V3 Pro',
@@ -90,7 +89,6 @@
 //   },
 // ];
 
-
 // export const OrderTable = [
 //   {
 //     OrderNumber: '#1003',
@@ -130,16 +128,58 @@
 //   },
 // ];
 
-
 export const Units = [
-    'Pcs',
-    'Gram',
-    'KG',
-    'Liter',
-    'BAG',
-    'PACKET',
-    'PETI',
-    'BOX',
-    'TIN',
-    'SET'
-]
+  "Pcs",
+  "Gram",
+  "KG",
+  "Liter",
+  "BAG",
+  "PACKET",
+  "PETI",
+  "BOX",
+  "TIN",
+  "SET",
+];
+
+export const InvoicesList = [
+  {
+    Invoice: "G67R7G78H9",
+    Customer: "John Doe",
+    Date: "01-01-2024",
+    Amount: "₹ 1200.00",
+    TotalTax: "₹ 180.00",
+    PaymentStatus: "Unpaid",
+    PaymentMode: "COD",
+    PaidOn: "",
+  },
+  {
+    Invoice: "G67R7G78H9",
+    Customer: "John Doe",
+    Date: "01-01-2024",
+    Amount: "₹ 1200.00",
+    TotalTax: "₹ 180.00",
+    PaymentStatus: "Paid",
+    PaymentMode: "COD",
+    PaidOn: "01-01-2024",
+  },
+  {
+    Invoice: "G67R7G78H9",
+    Customer: "John Doe",
+    Date: "01-01-2024",
+    Amount: "₹ 1200.00",
+    TotalTax: "₹ 180.00",
+    PaymentStatus: "Paid",
+    PaymentMode: "COD",
+    PaidOn: "",
+  },
+  {
+    Invoice: "G67R7G78H9",
+    Customer: "John Doe",
+    Date: "01-01-2024",
+    Amount: "₹ 1200.00",
+    TotalTax: "₹ 180.00",
+    PaymentStatus: "Unpaid",
+    PaymentMode: "COD",
+    PaidOn: "01-01-2024",
+  },
+];

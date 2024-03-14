@@ -159,7 +159,8 @@ function App() {
                         </Route>
                         <Route path="privacypolicy" element={<PrivacyPolicy />} />
                         <Route path="term" element={<TermConditions />} />
-                        <Route path='FAQ' element={<Faqs></Faqs>} />
+                        <Route path='FAQ' element={<Faqs/>} />
+                        <Route path='invoices' element={<Invoices/>} />
                       </Routes>
                     </div>
                   </div>
