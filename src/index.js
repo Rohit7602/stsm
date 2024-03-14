@@ -16,6 +16,7 @@ import { BannerDataProvider } from './context/BannerGetters';
 import { OrderContextProvider } from './context/OrderGetter';
 import { CustomersProvider } from './context/Customergetters';
 import { ServiceContextProvider } from './context/ServiceAreasGetter';
+import { DeliverManContextProvider } from './context/DeliverymanGetter';
 import { FaqProvider } from './context/Faq';
 import { UserAuthContextProvider } from './context/Authcontext';
 
@@ -36,8 +37,10 @@ root.render(
                 <OrderContextProvider>
                   <CustomersProvider>
                     <ServiceContextProvider>
-                      <FaqProvider>
-                        <App />
+                        <FaqProvider>
+                          <DeliverManContextProvider>
+                            <App />
+                          </DeliverManContextProvider>
                       </FaqProvider>
                     </ServiceContextProvider>
                   </CustomersProvider>

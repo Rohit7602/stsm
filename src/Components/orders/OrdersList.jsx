@@ -277,7 +277,7 @@ const OrderList = () => {
                                       <Link to={`orderdetails/${orderTableData.id}`}>
                                         <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
                                       </Link>
-                                    </div>
+                                    </div> 
                                   </div>
                                 </li>
                                 <li>

@@ -1,25 +1,29 @@
 import React, { useState } from "react";
 import { Col, Dropdown, Row } from "react-bootstrap";
 import addicon from "../../Images/svgs/addicon.svg";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRef } from "react";
 import { useProductsContext } from "../../context/productgetter";
 import { useSubCategories } from "../../context/categoriesGetter";
 import { useParams } from "react-router-dom";
+import { db } from "../../firebase";
+import { addDoc, collection } from "firebase/firestore";
+
+
 const AddDeliveryMan = () => {
   const [name, setName] = useState("");
   const [address, setaddress] = useState("");
   const [emergencycontact, setEmergencycontact] = useState("");
   const [phnno, setPhnno] = useState("");
-  const [freeDelivery, setFreeDelivery] = useState(true);
+  const [kycType, setKycType] = useState("AadharCard");
   const [govt, setGovt] = useState("");
   const [social, setSocial] = useState("");
   const [date, setDate] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [vechileno, setVechileno] = useState("");
-  const [insurance, setInsurance] = useState("");
+  const [dl_number, setdl_number] = useState("");
   const [relationship, setRelationship] = useState("");
   const [bankname, setBankname] = useState("");
   const [ifsc, setIfsc] = useState("");
@@ -28,20 +32,98 @@ const AddDeliveryMan = () => {
   const [mobile, setMobile] = useState("");
   const [confirmaccountno, setConfirmaccountno] = useState("");
   const [accountno, setAccountno] = useState("");
-  const [employmentstatus, setEmploymentstatus] = useState(null);
-  const [vechiletype, setVechiletype] = useState(null);
-
+  const [employmentstatus, setEmploymentstatus] = useState("fullTime");
+  const [vechiletype, setVechiletype] = useState("4 Wheeler");
   const [loaderstatus, setLoaderstatus] = useState(false);
-  const pubref = useRef();
-  const hidref = useRef();
 
   const [selectedOption, setSelectedOption] = useState("");
 
   const handleOptionChange = (e) => {
+  
     setSelectedOption(e.target.value);
   };
   async function handlesave(e) {
-    e.preventDefault();
+    setLoaderstatus(true)
+    e.preventDefault(); 
+    let DeliveryManData = {
+      basic_info: {
+        name:name,
+        dob: DOB ,
+        phone_no: mobile,
+        address: address,
+        city:city,
+        state:state,
+        emergency_contact: {
+          name: emergencycontact,
+          relationship: relationship,
+          phone_no:phnno
+        }
+      },
+      bank: {
+        account_no: accountno,
+        bank_name: bankname,
+        ifsc_code:ifsc,
+        account_holder_name: nameaccount,
+      },
+      job_info: {
+        joining_date: date,
+        employement_type: selectedOption,
+        shift: employmentstatus
+      },
+      kyc: {
+        document_type: kycType,
+        document_number: govt
+      },
+      vehicle: {
+        dl_number: dl_number ,
+        vehicle_number: vechileno,
+        vehicle_type: vechiletype
+      }
+    }
+
+    try {
+
+      await addDoc(collection(db, 'Delivery'), DeliveryManData);
+      setLoaderstatus(false)
+      toast.success("DeliverMan added Successfully !", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      
+
+    } catch (error) {
+      setLoaderstatus(false)
+      console.log("Error in Delivery man added ",error)
+    }
+    handleReset()
+
+
+  }
+
+  function handleReset() {
+    setKycType("AadharCard")
+    setPhnno("")
+    setEmergencycontact("")
+    setaddress("")
+    setName("")
+    setCity("")
+    setDate("")
+    setSocial("")
+    setGovt("")
+    setBankname("")
+    setRelationship("")
+    setdl_number("")
+    setVechileno("")
+    setState("")
+    setMobile("")
+    setDOB("")
+    setNameaccount("")
+    setIfsc("")
+    setVechiletype("4 Wheeler")
+    setEmploymentstatus("fullTime")
+    setAccountno("")
+    setConfirmaccountno("")
+    setMobile("")
+
   }
 
   if (loaderstatus) {
@@ -101,7 +183,7 @@ const AddDeliveryMan = () => {
                           </label>
                           <br />
                           <input
-                            type="text"
+                            type="date"
                             required
                             className="mt-2 product_input fade_grey fw-400"
                             placeholder="DOB"
@@ -306,7 +388,7 @@ const AddDeliveryMan = () => {
                         type="text"
                         required
                         className="mt-2 product_input fade_grey fw-400"
-                        placeholder="+92 XXXXXXXXX"
+                        placeholder="+91 XXXXXXXXX"
                         id="phnno"
                         value={phnno}
                         onChange={(e) => setPhnno(e.target.value)}
@@ -357,9 +439,9 @@ const AddDeliveryMan = () => {
                         <label className="check fw-400 fs-sm black mb-0">
                           PartTime
                           <input
-                            onChange={() => setEmploymentstatus("parttime")}
+                            onChange={() => setEmploymentstatus("partTime")}
                             type="radio"
-                            checked={employmentstatus === "parttime"}
+                            checked={employmentstatus === "partTime"}
                           />
                           <span className="checkmark"></span>
                         </label>
@@ -368,9 +450,9 @@ const AddDeliveryMan = () => {
                         <label className="check fw-400 fs-sm black mb-0">
                           FullTime
                           <input
-                            onChange={() => setEmploymentstatus("fulltime")}
+                            onChange={() => setEmploymentstatus("fullTime")}
                             type="radio"
-                            checked={employmentstatus === "fulltime"}
+                            checked={employmentstatus === "fullTime"}
                           />
                           <span className="checkmark"></span>
                         </label>
@@ -388,8 +470,8 @@ const AddDeliveryMan = () => {
                             Aadhar Card
                             <input
                               type="radio"
-                              checked={!freeDelivery}
-                              onChange={() => setFreeDelivery(false)}
+                              checked={kycType === "AadharCard"}
+                              onChange={() => setKycType("AadharCard")}
                             />
                             <span className="checkmark"></span>
                           </label>
@@ -399,15 +481,15 @@ const AddDeliveryMan = () => {
                             Votor Card
                             <input
                               type="radio"
-                              checked={freeDelivery}
-                              onChange={() => setFreeDelivery(true)}
+                              checked={kycType === "VoterIdCard"}
+                              onChange={() => setKycType("VoterIdCard")}
                             />
                             <span className="checkmark"></span>
                           </label>
                         </div>
                       </div>
 
-                      {freeDelivery ? (
+                      {kycType === "VoterIdCard" ? (
                         <div>
                           <label
                             htmlFor="social"
@@ -422,8 +504,8 @@ const AddDeliveryMan = () => {
                             className="mt-2 product_input fade_grey fw-400"
                             placeholder=" votercard ( XXXXXXXXXXX )"
                             id="social"
-                            value={social}
-                            onChange={(e) => setSocial(e.target.value)}
+                            value={govt}
+                            onChange={(e) => setGovt(e.target.value)}
                           />
                         </div>
                       ) : (
@@ -465,8 +547,8 @@ const AddDeliveryMan = () => {
                       className="mt-2 product_input fade_grey fw-400"
                       placeholder="xxxxxxxxxxxx"
                       id="insurance"
-                      value={insurance}
-                      onChange={(e) => setInsurance(e.target.value)}
+                      value={dl_number}
+                      onChange={(e) => setdl_number(e.target.value)}
                     />
                     <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
                       Vehicle Regerstration Number
@@ -490,9 +572,9 @@ const AddDeliveryMan = () => {
                           <label className="check fw-400 fs-sm black mb-0">
                             4 Wheeler
                             <input
-                              onChange={() => setVechiletype("Car")}
+                              onChange={() => setVechiletype("4 Wheeler")}
                               type="radio"
-                              checked={vechiletype === "Car"}
+                              checked={vechiletype === "4 Wheeler"}
                             />
                             <span className="checkmark"></span>
                           </label>
@@ -501,9 +583,9 @@ const AddDeliveryMan = () => {
                           <label className="check fw-400 fs-sm black mb-0">
                             2 Wheeler
                             <input
-                              onChange={() => setVechiletype("motorcycle")}
+                              onChange={() => setVechiletype("2 Wheeler")}
                               type="radio"
-                              checked={vechiletype === "motorcycle"}
+                              checked={vechiletype === "2 Wheeler"}
                             />
                             <span className="checkmark"></span>
                           </label>

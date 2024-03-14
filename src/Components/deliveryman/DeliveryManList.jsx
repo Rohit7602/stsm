@@ -21,9 +21,9 @@ import { UseServiceContext } from '../../context/ServiceAreasGetter';
 import Deletepopup from '../popups/Deletepopup';
 import Updatepopup from '../popups/Updatepopup';
 import { ActionIcon } from '../../Common/Icon';
-
+import { UseDeliveryManContext } from '../../context/DeliverymanGetter'; 
 const DeliveryManList = () => {
-  const { ServiceData, addServiceData, deleteServiceData, updateServiceData } = UseServiceContext();
+  const { DeliveryManData, deleteDeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
   const [addsServicePopup, setAddsServicePopup] = useState(false);
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [AreaName, SetAreaName] = useState('');
@@ -38,7 +38,7 @@ const DeliveryManList = () => {
   const [order, setorder] = useState('ASC');
   const sorting = (col) => {
     // Create a copy of the data array
-    const sortedData = [...ServiceData];
+    const sortedData = [...DeliveryManData];
 
     if (order === 'ASC') {
       sortedData.sort((a, b) => {
@@ -60,31 +60,31 @@ const DeliveryManList = () => {
     setorder(newOrder);
 
     // Update the data using the updateData function from your context
-    updateServiceData(sortedData);
+    updateDeliveryManData(sortedData);
   };
   const [selectAll, setSelectAll] = useState(false);
 
   useEffect(() => {
     // Check if all checkboxes are checked
-    const allChecked = ServiceData.every((item) => item.checked);
+    const allChecked = DeliveryManData.every((item) => item.checked);
     setSelectAll(allChecked);
-  }, [ServiceData]);
+  }, [DeliveryManData]);
 
   // Main checkbox functionality start from here
 
   const handleMainCheckboxChange = () => {
-    const updatedData = ServiceData.map((item) => ({
+    const updatedData = DeliveryManData.map((item) => ({
       ...item,
       checked: !selectAll,
     }));
-    updateServiceData(updatedData);
+    updateDeliveryManData(updatedData);
     setSelectAll(!selectAll);
   };
   // Datacheckboxes functionality strat from here
   const handleCheckboxChange = (index) => {
-    const updatedData = [...ServiceData];
-    updatedData[index].checked = !ServiceData[index].checked;
-    updateServiceData(updatedData);
+    const updatedData = [...DeliveryManData];
+    updatedData[index].checked = !DeliveryManData[index].checked;
+    updateDeliveryManData(updatedData);
   };
   /*  *******************************
       Checbox  functionality end 
@@ -228,7 +228,7 @@ const DeliveryManList = () => {
                             </h3>
                           </td>
                           <td className="text-center mx_100">
-                           <ActionIcon />
+                          <ActionIcon />
                           </td>
                         </tr>
                       {/* );
