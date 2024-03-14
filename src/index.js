@@ -17,6 +17,7 @@ import { OrderContextProvider } from './context/OrderGetter';
 import { CustomersProvider } from './context/Customergetters';
 import { ServiceContextProvider } from './context/ServiceAreasGetter';
 import { FaqProvider } from './context/Faq';
+import { UserAuthContextProvider } from './context/Authcontext';
 
 
 // Put any other imports below so that CSS from your
@@ -25,6 +26,7 @@ import { FaqProvider } from './context/Faq';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
+    <UserAuthContextProvider>
     <ImageValidationProvider>
       <SubCategoriesProvider>
         <MainCategoriesProvider>
@@ -45,7 +47,8 @@ root.render(
           </ProductsProvider>
         </MainCategoriesProvider>
       </SubCategoriesProvider>
-    </ImageValidationProvider>
+      </ImageValidationProvider>
+    </UserAuthContextProvider>
   </BrowserRouter>
 );
 

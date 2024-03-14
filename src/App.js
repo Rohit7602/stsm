@@ -31,15 +31,15 @@ import AddDeliveryMan from './Components/deliveryman/AddDeliveryMan';
 import Faqs from './Components/faqs/Faqs';
 import Logout from './Components/login/Logout';
 import DeliverymanProfile from './Components/deliveryman/DeliverymanProfile';
-import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList'
-import Invoices from './Components/invoices/Invoices';
-
+import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList';
+import DeliveryBoyInventory from './Components/deliveryman/DeliveryBoyInventory';
+import { useUserAuth } from './context/Authcontext';
 function App() {
+
+  const { logoutUser } = useUserAuth()
   const [user, setUser] = useState(null);
-  const [authchecked, setauthchecked] = useState(false);
   const [loading, setloading] = useState(true);
   const location = useLocation();
-  const params = new URLSearchParams(location.search);
   const [deletPopup, setDeletPopup] = useState(false);
   useEffect(() => {
     permissionHandler();
@@ -59,13 +59,9 @@ function App() {
   const handleLogout = async () => {
     try {
       // Sign out the user from Firebase Authentication
-      await auth.signOut();
-
-      // Clear any user-related data from local storage or state
-      // (e.g., clear isAdmin from localStorage)
-      localStorage.removeItem('isAdmin');
-
+      await  logoutUser()
       // Update the user state to trigger the rendering of the Login component
+      localStorage.removeItem('isAdmin', 'true');
       setUser(true);
     } catch (error) {
       console.error('Error signing out:', error.message);
@@ -153,9 +149,10 @@ function App() {
                         </Route>
                         <Route path="deliveryman">
                           <Route index element={<DeliveryManList />} />
-                          <Route path="addnewdeliveryman" element={<AddDeliveryMan />} />
-                          <Route path="deliverymanprofile" element={<DeliverymanProfile />} />
-                          <Route path="deliveryorderlist" element={<DeliveryOrderList />} />
+                          <Route path="addnewdeliveryman" element={<AddDeliveryMan/>}/>
+                          <Route path="deliverymanprofile" element={<DeliverymanProfile/>}/>
+                          <Route path="deliveryorderlist" element={<DeliveryOrderList/>}/>
+                          <Route path="inventory" element={<DeliveryBoyInventory/>}/>
                         </Route>
                         <Route path="marketing">
                           <Route path="bannersadvertisement" element={<BannersAdvertisement />} />

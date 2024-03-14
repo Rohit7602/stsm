@@ -13,13 +13,23 @@ import manimage from "../../Images/Png/manimage.jpg";
 import { Col, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { useOrdercontext } from "../../context/OrderGetter";
-import { doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, getDocs, addDoc, collection, query } from "firebase/firestore";
 import { db } from "../../firebase";
+import { useState, useEffect } from "react";
+
+import { useUserAuth } from "../../context/Authcontext";
 
 export default function NewOrder() {
+
+  const { userData } = useUserAuth()
+  console.log("user data ", userData)
+  let AdminId = userData.uuid
+  console.log("Asmin ", AdminId)
+
   const { id } = useParams();
   const { orders, updateData } = useOrdercontext();
   let filterData = orders.filter((item) => item.id === id);
+
   function formatDate(dateString) {
     const options = { year: "numeric", month: "long", day: "numeric" };
     const formattedDate = new Date(dateString).toLocaleDateString(
@@ -50,16 +60,116 @@ export default function NewOrder() {
   const handleAcceptOrder = async (id) => {
     try {
       // Toggle the status between 'publish' and 'hidden'
-      const newStatus = "PROCESSING";
+      const newStatus = "CONFIRMED";
 
       await updateDoc(doc(db, "order", id), {
         status: newStatus,
       });
+
+      // Add a new log entry to the logs collection
+      const logData = {
+        name: "Admin",
+        status: newStatus,
+        updated_at: new Date().toISOString(),
+        updated_by: AdminId
+      };
+
+      await addDoc(collection(db, `order/${id}/logs`), logData);
+
+
+      const AssignDeliver = {
+        name: "Admin",
+        status: "PROCESSING",
+        updated_at: new Date().toISOString(),
+        updated_by: AdminId
+      }
+      await addDoc(collection(db, `order/${id}/logs`), AssignDeliver);
       updateData({ id, status: newStatus });
     } catch (error) {
       console.log(error);
     }
   };
+
+  const handleRejectOrder = async (id) => {
+    try {
+      // Toggle the status between 'publish' and 'hidden'
+      const newStatus = "REJECTED";
+      await updateDoc(doc(db, "order", id), {
+        status: newStatus,
+      });
+      // Add a new log entry to the logs collection
+      const logData = {
+        name: "Admin",
+        status: newStatus,
+        updated_at: new Date().toISOString(),
+        updated_by: AdminId
+      };
+      await addDoc(collection(db, `order/${id}/logs`), logData);
+
+      updateData({ id, status: newStatus });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+
+
+  async function handleMarkAsDelivered(id) {
+    try {
+      // Toggle the status between 'publish' and 'hidden'
+      const newStatus = "DELIVERED";
+      await updateDoc(doc(db, "order", id), {
+        status: newStatus,
+      });
+      // Add a new log entry to the logs collection
+      const logData = {
+        name: "Admin",
+        status: newStatus,
+        updated_at: new Date().toISOString(),
+        updated_by: AdminId
+      };
+      await addDoc(collection(db, `order/${id}/logs`), logData);
+      updateData({ id, status: newStatus });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  const [logs, setLogs] = useState([]);
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      const q = query(collection(db, `order/${id}/logs`));
+      const querySnapshot = await getDocs(q);
+      const logsData = querySnapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+      setLogs(logsData);
+    };
+
+    fetchLogs();
+  }, [id]);
+
+  console.log("logs are ", logs)
+
+
+  const renderLogIcon = (status) => {
+    switch (status) {
+      case 'NEW':
+        return <img src={orderPlaceed} alt="orderPlaced" />;
+      case 'CONFIRMED':
+        return <img src={orderAccepted} className="bg-white" alt="orderAccepted" />;
+      case 'REJECTED':
+        return <img src={orderReject} className="bg-white" alt="orderRejected" />;
+      case 'PROCESSING':
+        return <img className="bg-white" src={orderDeliveryAssign} alt="orderDeliveryAssign" />;
+      case 'DELIVERED':
+        return <img className="bg-white" src={orderDelevered} alt="orderDelivered" />;
+      default:
+        return null;
+    }
+  };
+
 
   return (
     <>
@@ -72,15 +182,14 @@ export default function NewOrder() {
             <div className="d-flex align-items-center">
               <h1 className="fs-lg fw-500 black mb-0 me-1">{item.id}</h1>
               <p
-                className={`d-inline-block ms-3 ${
-                  item.status.toString().toLowerCase() === "new"
-                    ? "fs-sm fw-400 red mb-0 new_order"
-                    : item.status.toString().toLowerCase() === "processing"
+                className={`d-inline-block ms-3 ${item.status.toString().toLowerCase() === "new"
+                  ? "fs-sm fw-400 red mb-0 new_order"
+                  : item.status.toString().toLowerCase() === "confirmed"
                     ? "fs-sm fw-400 mb-0 processing_skyblue"
                     : item.status.toString().toLowerCase() === "delivered"
-                    ? "fs-sm fw-400 mb-0 green stock_bg"
-                    : "fs-sm fw-400 mb-0 black cancel_gray"
-                }`}
+                      ? "fs-sm fw-400 mb-0 green stock_bg"
+                      : "fs-sm fw-400 mb-0 black cancel_gray"
+                  }`}
               >
                 {item.status}
               </p>
@@ -89,7 +198,7 @@ export default function NewOrder() {
               <div className="d-flex align-items-center">
                 <div className="d-flex align-itmes-center gap-3">
                   <button className="reset_border">
-                    <button className="fs-sm reset_btn  border-0 fw-400">
+                    <button onClick={() => handleRejectOrder(item.id)} className="fs-sm reset_btn  border-0 fw-400">
                       Reject Order
                     </button>
                   </button>
@@ -117,15 +226,11 @@ export default function NewOrder() {
               <div></div>
             ) : item.status === "DISPATCHED" ? (
               <div></div>
-            ) : item.status === "PROCESSING" ? (
+            ) : item.status === "CONFIRMED" ? (
               <div className="d-flex align-items-center">
                 <div className="d-flex align-itmes-center gap-3">
-                  <button className="reset_border">
-                    <button className="fs-sm reset_btn  border-0 fw-400">
-                      Reject Order
-                    </button>
-                  </button>
-                  <button
+
+                  <button onClick={() => handleMarkAsDelivered(item.id)}
                     className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 green_btn fw-400 white"
                     type="submit"
                   >
@@ -175,10 +280,10 @@ export default function NewOrder() {
                               {products.varient_name
                                 .toString()
                                 .toLowerCase() !== "not found" && (
-                                <span className="fs-sm fw-400 black mb-0 ms-3">
-                                  {products.varient_name}
-                                </span>
-                              )}
+                                  <span className="fs-sm fw-400 black mb-0 ms-3">
+                                    {products.varient_name}
+                                  </span>
+                                )}
                             </p>
                             <p className="fs-xxs fw-400 fade_grey mb-0">
                               ID :{products.product_id}
@@ -258,19 +363,38 @@ export default function NewOrder() {
               <div className="product_shadow bg-white mt-4 p-3 position-relative z-1">
                 <p className="fs-2sm fw-400 black mb-0">Order Logs</p>
                 <div className="order_logs_line">
-                  <div className="d-flex align-items-center justify-content-between mt-3">
+                  {logs.sort((a, b) => new Date(a.data.updated_at) - new Date(b.data.updated_at)).map((log, index) => (
+                    <div key={index} className="d-flex align-items-center justify-content-between mt-3">
+                      {/* <div className="d-flex align-items-center">
+                        {renderLogIcon(log.data.status)}
+                        <div className="ps-3 ms-1">
+                          <p className="fs-sm fw-400 black mb-0">{log.data.status}</p>
+                          <p className="fs-xxs fw-400 black mb-0">By: {log.data.by}</p>
+                        </div>
+                      </div> */}
+                      <div className="d-flex align-items-center">
+                        {renderLogIcon(log.data.status)}
+                        <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">
+                          {log.data.status === "PROCESSING" ? "Assign To Delivery " : log.data.status}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="fs-xs fw-400 black mb-0">
+                          {formatDate(log.data.updated_at)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+
+                </div>
+                {/* <div className="d-flex align-items-center justify-content-between mt-3">
                     <div className="d-flex align-items-center">
                       <img src={orderPlaceed} alt="orderPlaceed" />
                       <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">
                         Order Placed
                       </p>
                     </div>
-                    <div>
-                      <p className="fs-xs fw-400 black mb-0">
-                        01-01-2024 <br />
-                        10:00 AM
-                      </p>
-                    </div>
+                    
                   </div>
                   <div className="d-flex align-items-center justify-content-between mt-3">
                     <div className="d-flex align-items-center">
@@ -294,7 +418,7 @@ export default function NewOrder() {
                       <img src={orderReject} className="bg-white" alt="orderReject" />
                       <div className=" ps-3 ms-1">
                         <p className="fs-sm fw-400 black mb-0">
-                        Order Rejected
+                          Order Rejected
                         </p>
                         <p className="fs-xxs fw-400 black mb-0">By : Admin</p>
                       </div>
@@ -313,7 +437,7 @@ export default function NewOrder() {
                         alt="orderDeliveryAssign"
                       />
                       <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">
-                      Assigned for Delivery
+                        Assigned for Delivery
                       </p>
                     </div>
                     <div>
@@ -328,7 +452,7 @@ export default function NewOrder() {
                       <img className="bg-white" src={orderDelevered} alt="orderDelevered" />
                       <div className=" ps-3 ms-1">
                         <p className="fs-sm fw-400 black mb-0">
-                        Order Delivered
+                          Order Delivered
                         </p>
                         <p className="fs-xxs fw-400 black mb-0">By : Ramesh Kumar (Delivery Man)</p>
                       </div>
@@ -339,9 +463,9 @@ export default function NewOrder() {
                         10:00 AM
                       </p>
                     </div>
-                  </div>
-                </div>
+                  </div> */}
               </div>
+              {/* </div> */}
             </Col>
             <Col xxl={4}>
               <div className="p-3 bg-white product_shadow">
@@ -388,11 +512,18 @@ export default function NewOrder() {
                   <div className="p-2">
                     <p className="fs-sm fw-400 black mb-0">Mode of Payment</p>
                     <p className="fs-xxs fw-400 fade_grey mb-0">
-                      {item.transaction.mode} | tx :{" "}
-                      {item.transaction.tx_id === ""
-                        ? "N/A"
-                        : item.transaction.tx_id}{" "}
-                      | {formatDate(item.transaction.date)}
+                      {item.transaction.mode}
+                      {item.transaction.tx_id && (
+                        <>
+                          {" "}tx :{" "}
+                          {item.transaction.tx_id}{" "}
+                        </>
+                      )}
+                      {item.transaction.date && (
+                        <>
+                          {"  "}  | {formatDate(item.transaction.date)}
+                        </>
+                      )}
                     </p>
                   </div>
                   <p className="fs-sm fw-400 black mb-0 p-3 ps-0">
