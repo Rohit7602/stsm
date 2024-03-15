@@ -34,6 +34,7 @@ import DeliverymanProfile from './Components/deliveryman/DeliverymanProfile';
 import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList';
 import DeliveryBoyInventory from './Components/deliveryman/DeliveryBoyInventory';
 import { useUserAuth } from './context/Authcontext';
+import Coupons from './Components/marketing/Coupons';
 function App() {
 
   const { logoutUser } = useUserAuth()
@@ -156,6 +157,7 @@ function App() {
                         </Route>
                         <Route path="marketing">
                           <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
+                          <Route path="coupans" element={<Coupons />} />
                         </Route>
                         <Route path="privacypolicy" element={<PrivacyPolicy />} />
                         <Route path="term" element={<TermConditions />} />

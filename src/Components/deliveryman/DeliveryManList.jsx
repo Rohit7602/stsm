@@ -118,13 +118,13 @@ const DeliveryManList = () => {
           {/* categories details  */}
           <div className="p-3 mt-3 bg-white product_shadow mt-4">
             <div className="overflow_xl_scroll line_scroll">
-              <div className="categories_xl_overflow_X ">
+              <div className="  min_width_1350">
                 <table className="w-100">
                   <thead className="w-100 table_head">
                     <tr className="product_borderbottom">
                       <th
                         onClick={() => sorting('AreaName')}
-                        className="py-3 ps-3  cursor_pointer mw_220">
+                        className="py-3 ps-3  cursor_pointer ">
                         <div className="d-flex align-items-center gap-3 ">
                           <label class="check1 fw-400 fs-sm black mb-0">
                             <input
@@ -147,7 +147,7 @@ const DeliveryManList = () => {
                           </p>
                         </div>
                       </th>
-                      <th className="mx_140 px-2">
+                      <th className="mx_160 px-2">
                         <h3 className="fs-sm fw-400 black mb-0">Work type</h3>
                       </th>
                       <th className="mx_140 ps-3">
@@ -168,10 +168,10 @@ const DeliveryManList = () => {
                           </span>
                         </p>
                       </th>
-                      <th className="mx_140 ps-3">
+                      <th className="mx_160 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Verification</h3>
                       </th>
-                      <th className="mx_140 ps-3">
+                      <th className="mx_160 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Service area</h3>
                       </th>
                       <th className="mx_140 ps-3">
@@ -190,7 +190,7 @@ const DeliveryManList = () => {
                     }).map((data, index) => {
                       return (
                         <tr className="product_borderbottom">
-                          <td className="py-3 ps-3  mw_220">
+                          <td className="py-3 ps-3 ">
                             <div className="d-flex align-items-center gap-3 ">
                               <label class="check1 fw-400 fs-sm black mb-0">
                                 <input
@@ -206,7 +206,7 @@ const DeliveryManList = () => {
                               </Link>
                             </div>
                           </td>
-                          <td className="px-2 mx_140">
+                          <td className="px-2 mx_160">
                             <h3 className="fs-sm fw-400 black mb-0">{data.job_info.shift}</h3>
                           </td>
                           <td className="mx_140 ps-5">
@@ -216,11 +216,11 @@ const DeliveryManList = () => {
                             <h3 className={`fs-sm fw-400 ${data.status === "online" ? 'status_btn_green' : 'status_btn_red'} mb-0`}>{data.status}</h3>
                             {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">online</h3> */}
                           </td>
-                          <td className="ps-3 mx_140">
+                          <td className="ps-3 mx_160">
                             <h3 className={`fs-sm fw-400 status_btn_green mb-0  ${data.isVerified == true ? 'status_btn_green' : 'status_btn_red'} `}>{data.isVerified === true ? 'Approved' : "Rejected"}</h3>
                             {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">Rejected</h3> */}
                           </td>
-                          <td className="ps-3 mx_140">
+                          <td className="ps-3 mx_160">
                             <h3 className="fs-sm fw-400 black mb-0">9 11 sector</h3>
                           </td>
                           <td className=" mx_140 ps-3">
