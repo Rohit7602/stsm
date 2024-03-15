@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Col, Dropdown, Row } from "react-bootstrap";
 import addicon from "../../Images/svgs/addicon.svg";
 import { ToastContainer, toast } from "react-toastify";
@@ -9,9 +9,17 @@ import { useSubCategories } from "../../context/categoriesGetter";
 import { useParams } from "react-router-dom";
 import { db } from "../../firebase";
 import { addDoc, collection, setDoc, doc } from "firebase/firestore";
-import { createUserWithEmailAndPassword, getAuth, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
+
+import { useUserAuth } from "../../context/Authcontext";
 
 const AddDeliveryMan = () => {
+  const { userData } = useUserAuth()
+
+
+
+
+
 
   function RandomPasswordGenerator() {
     var chars = "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -29,6 +37,22 @@ const AddDeliveryMan = () => {
 
 
   const auth = getAuth();
+
+
+  const [oldUserEmail, setoldUserEmail] = useState('')
+  const [oldUserPassword, setoldUserPassword] = useState('')
+
+  useEffect(() => {
+    setoldUserEmail(userData.Email)
+    setoldUserPassword(userData.Password)
+
+  }, [])
+
+
+
+
+
+
 
 
   const [name, setName] = useState("");
@@ -145,11 +169,13 @@ const AddDeliveryMan = () => {
 
       let deliveryRef = doc(db, 'Delivery', user.uid);
       await setDoc(deliveryRef, DeliveryManData);
+
+
       setLoaderstatus(false);
       toast.success("DeliveryMan added Successfully !", {
         position: toast.POSITION.TOP_RIGHT,
       });
-      // await signOut(auth)
+      await signInWithEmailAndPassword(auth, oldUserEmail, oldUserPassword)
     } catch (error) {
       setLoaderstatus(false);
       console.log("Error in Delivery man added ", error);

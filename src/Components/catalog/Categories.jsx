@@ -44,6 +44,7 @@ const Categories = () => {
   const [selectedSubcategoryStatus, setSelectedSubcategoryStatus] = useState(null);
   const [cat_id, setCat_ID] = useState('')
 
+console.log(data, "Sub Categories data")
 
   const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);

@@ -34,6 +34,8 @@ import DeliverymanProfile from './Components/deliveryman/DeliverymanProfile';
 import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList';
 import DeliveryBoyInventory from './Components/deliveryman/DeliveryBoyInventory';
 import { useUserAuth } from './context/Authcontext';
+import AddBanner from './Components/marketing/AddBanner';
+// import Invoices from './Components/invoices/Invoices';
 function App() {
 
   const { logoutUser } = useUserAuth()
@@ -161,6 +163,7 @@ function App() {
                         <Route path="term" element={<TermConditions />} />
                         <Route path='FAQ' element={<Faqs />} />
                         <Route path='invoices' element={<Invoices />} />
+                        {/* <Route path='Addbanner' element={<AddBanner />} /> */}
                       </Routes>
                     </div>
                   </div>
