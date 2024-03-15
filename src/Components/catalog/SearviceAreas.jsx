@@ -277,7 +277,7 @@ const ServiceArea = () => {
                 />
               </div>
               <Link
-                onClick={() => setAddsServicePopup(!addsServicePopup)}
+              
                 className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
                 <img className="me-1" width={20} src={addicon} alt="add-icon" />
                 Add New Area

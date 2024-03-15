@@ -121,6 +121,11 @@ body {
   background-color: var(--color-grey-01) !important;
 }
 
+.bg_dark_grey {
+  color: var(--color-dark-grey) !important;
+}
+
+
 /*---------------------------- DEFINE-ALL = FONT-SIZES ---------------------------- */
 .fs-xxxs {
   font-size: var(--fs-xxxs) !important;
@@ -484,6 +489,10 @@ body {
   border: 1px solid transparent;
   border-radius: 10px;
   background: #b5b5b5;
+}
+
+.tablehead_bg {
+  background: #B5B5B5
 }
 
 .filter_btn:hover {
@@ -943,7 +952,8 @@ body {
   outline: none;
 }
 
-.quantity_bg {
+
+.quantity_bg  {
   background-color: #f4f4f4;
   padding: 10px 15px 10px 15px;
   border-radius: 50px;
@@ -1069,9 +1079,8 @@ body {
   color: grey;
   /* Change color as desired */
 }
-
-.update_entry {
-  background-color: #54b435;
+.update_entry{
+  background-color: #54B435;
   padding: 10px 15px 10px 15px;
   border-radius: 10px;
 }
@@ -1225,6 +1234,8 @@ body {
   display: inline-block;
   background-color: #bd011a33;
   color: #bd011a;
+  background-color: #BD011A33;
+  color: #BD011A;
   padding: 7.5px 15px;
   border-radius: 5px;
 }
@@ -1232,6 +1243,7 @@ body {
 .paid_invoice {
   display: inline-block;
   background-color: #50b84833;
+  background-color: #50B84833;
   color: var(--color-green);
   padding: 7.5px 15px;
   border-radius: 5px;
@@ -1451,11 +1463,32 @@ div.rich-text-editor .ql-editor {
   z-index: 10;
 }
 
+.add_coupon_popup {
+  position: fixed;
+  width: 480px;
+  background-color: #ffffff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-height: 500px;
+  border-radius: 30px;
+  padding: 20px;
+  z-index: 10;
+}
+
 .popup_input {
   border: 0.5px solid #0000004d !important;
   padding: 10px 15px;
   outline: 0;
   margin-top: 10px;
+}
+
+.popup_coupon_input {
+  padding: 15px 10px 15px 10px;
+  border-radius: 5px;
+  background: #EBEDF0;
+  outline: none;
+  border: 1px solid transparent;
 }
 
 .border_top_gray {
