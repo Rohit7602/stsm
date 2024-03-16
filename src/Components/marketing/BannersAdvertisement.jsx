@@ -1273,7 +1273,7 @@ const BannersAdvertisement = () => {
                   src={deleteicon}
                   alt="deleteicon"
                 />
-                <img src={editIcon} alt="editIcon" />
+                <img className="p-1 bg-white top-0 end-0 mt-2 me-5 cursor_pointer position-absolute brs_50" src={editIcon} alt="editIcon" />
               </div>
             )}
             <p className="fs-sm fw-400 black mt-2 pt-1">Related Category</p>

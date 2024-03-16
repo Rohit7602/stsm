@@ -35,6 +35,7 @@ import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList';
 import DeliveryBoyInventory from './Components/deliveryman/DeliveryBoyInventory';
 import { useUserAuth } from './context/Authcontext';
 import Invoices from './Components/invoices/Invoices';
+import InvoiceBill from './Components/invoices/InvoiceBill';
 function App() {
 
   const { logoutUser } = useUserAuth()
@@ -161,7 +162,7 @@ function App() {
                         <Route path="privacypolicy" element={<PrivacyPolicy />} />
                         <Route path="term" element={<TermConditions />} />
                         <Route path='FAQ' element={<Faqs/>} />
-                        <Route path='invoices' element={<Invoices/>} />
+                        <Route path='invoices' element={<InvoiceBill/>} />
                       </Routes>
                     </div>
                   </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { InvoicesList } from "../../Common/Helper";
 import rightDubbleArrow from "../../Images/svgs/dubble-arrow.svg";
@@ -6,56 +6,176 @@ import pdfIcon from "../../Images/svgs/pdf-icon.svg";
 import printIcon from "../../Images/svgs/print-icon2.svg";
 
 export default function Invoices() {
+  const [viewSideBill, setViewSideBIll] = useState(false);
   return (
     <div className="main_panel_wrapper bg_light_grey w-100">
       <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
         <div className="d-flex align-items-center justify-content-between">
           <h1 className="fw-500 black fs-lg mb-0">Invoices</h1>
-          <img src={rightDubbleArrow} alt="rightDubbleArrow" />
+          <img
+            onClick={() =>
+              setViewSideBIll(viewSideBill === true ? false : true)
+            }
+            className={`transform_rotate cursor_pointer ${viewSideBill===true?"transform_rotate_arrow":""}`}
+            src={rightDubbleArrow}
+            alt="rightDubbleArrow"
+          />
         </div>
 
         {/* categories details  */}
 
         <div className="px-3 pb-2 bg-white product_shadow mt-4 position-relative">
-          <div className="side_invoice_view">
-            <div className="d-flex align-items-center justify-content-end gap-3">
-              <button className="d-flex align-items-center view_pdf_btn">
-                <p className="fs-xxs fw-400 black mb-0">View PDF</p>
-                <img src={pdfIcon} alt="pdfIcon" />
-              </button>
-              <button className="d-flex align-items-center view_pdf_btn ms-1">
-                <p className="fs-xxs fw-400 black mb-0">PRINT</p>
-                <img src={printIcon} alt="printIcon" />
-              </button>
+          {viewSideBill === true ? (
+            <div className="side_invoice_view">
+              <div className="d-flex align-items-center justify-content-end gap-3">
+                <button className="d-flex align-items-center view_pdf_btn">
+                  <p className="fs-xxs fw-400 black mb-0">View PDF</p>
+                  <img src={pdfIcon} alt="pdfIcon" />
+                </button>
+                <button className="d-flex align-items-center view_pdf_btn ms-1">
+                  <p className="fs-xxs fw-400 black mb-0">PRINT</p>
+                  <img src={printIcon} alt="printIcon" />
+                </button>
+              </div>
+              <div className="mt-3">
+                <div className="d-flex align-items-center justify-content-between">
+                  <p className="fs-xs fw-700 black mb-0"># G67R7G78H9</p>
+                  <p className="fs-xxs fw-700 black mb-0">Bill To:</p>
+                </div>
+                <div className="d-flex align-items-center justify-content-between mt-1">
+                  <p className="fs-xs fw-700 black mb-0">
+                    Save Time Save Money
+                  </p>
+                  <p className="fs-xxs fw-700 black mb-0">John Doe</p>
+                </div>
+                <div className="d-flex align-items-center justify-content-between">
+                  <p className="fs-xs fw-400 black mb-0 mt-1">
+                    Street/ Area/ Landmark Name,
+                  </p>
+                  <p className="fs-xs fw-400 black mb-0 mt-1">
+                    Street/ Area/ Landmark Name,
+                  </p>
+                </div>
+                <div className="d-flex align-items-center justify-content-between">
+                  <p className="fs-xs fw-400 black mb-0 mt-1">
+                    City, State - Pin Code
+                  </p>
+                  <p className="fs-xs fw-400 black mb-0 mt-1"></p>
+                </div>
+                <p className="fs-xs fw-400 black mb-0 mt-1 text-end">
+                  Invoice Date : 01-01-2024
+                </p>
+                <table className="w-100 mt-3">
+                  <thead>
+                    <tr className="bg_dark_black">
+                      <th className="fs-xxs fw-400 white p_10">#</th>
+                      <th className="fs-xxs fw-400 white p_10">
+                        Item Description
+                      </th>
+                      <th className="fs-xxs fw-400 white p_10 text-center">
+                        Qty
+                      </th>
+                      <th className="fs-xxs fw-400 white p_10 text-end">
+                        Rate
+                      </th>
+                      <th className="fs-xxs fw-400 white p_10 text-center">
+                        Tax
+                      </th>
+                      <th className="fs-xxs fw-400 white p_10 text-end">
+                        Amount
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="fs-xxs fw-400 black p_5_10">1</td>
+                      <td className="p_5_10">
+                        <span>
+                          <p className="fs-xxs fw-400 black mb-0">
+                            Kamdhenu Khal
+                          </p>
+                          <span className="d-flex align-items-center gap-3 mt-1">
+                            <p className=" fs-xxxs fw-400 black mb-0">
+                              Variant : 49 KG
+                            </p>
+                            <p className="fs-xxxs fw-400 black mb-0">
+                              Color : Red
+                            </p>
+                          </span>
+                        </span>
+                      </td>
+                      <td className="fs-xxs fw-400 black p_5_10 text-center">
+                        2
+                      </td>
+                      <td className="fs-xxs fw-400 black p_5_10 text-end">
+                        1230.00
+                      </td>
+                      <td className="fs-xxs fw-400 black p_5_10 text-center">
+                        0%
+                      </td>
+                      <td className="fs-xxs fw-400 black p_5_10 text-end">
+                        2567.00
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="fs-xxs fw-400 black p_5_10">1</td>
+                      <td className="p_5_10">
+                        <span>
+                          <p className="fs-xxs fw-400 black mb-0">
+                            Kamdhenu Khal
+                          </p>
+                          <span className="d-flex align-items-center gap-3 mt-1">
+                            <p className=" fs-xxxs fw-400 black mb-0">
+                              Variant : 49 KG
+                            </p>
+                            <p className="fs-xxxs fw-400 black mb-0">
+                              Color : Red
+                            </p>
+                          </span>
+                        </span>
+                      </td>
+                      <td className="fs-xxs fw-400 black p_5_10 text-center">
+                        2
+                      </td>
+                      <td className="fs-xxs fw-400 black p_5_10 text-end">
+                        1230.00
+                      </td>
+                      <td className="fs-xxs fw-400 black p_5_10 text-center">
+                        0%
+                      </td>
+                      <td className="fs-xxs fw-400 black p_5_10 text-end">
+                        2567.00
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div className="d-flex align-items-center justify-content-between mt-3">
+                  <div className="w-75 text-end">
+                    <p className="fs_xxs fw-700 black mb-0">Sub Total</p>
+                    <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">Total</p>
+                    <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">
+                      Total Paid
+                    </p>
+                    <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">
+                      Amount Due
+                    </p>
+                  </div>
+                  <div className="text-end">
+                    <p className="fs_xxs fw-400 black mb-0">₹ 2567.00</p>
+                    <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
+                      ₹ 2567.00
+                    </p>
+                    <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
+                      ₹ 2567.00
+                    </p>
+                    <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
+                      ₹ 2567.00
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="mt-3">
-              <div className="d-flex align-items-center justify-content-between">
-                <p className="fs-xs fw-700 black mb-0"># G67R7G78H9</p>
-                <p className="fs-xxs fw-700 black mb-0">Bill To:</p>
-              </div>
-              <div className="d-flex align-items-center justify-content-between mt-1">
-                <p className="fs-xs fw-700 black mb-0">Save Time Save Money</p>
-                <p className="fs-xxs fw-700 black mb-0">John Doe</p>
-              </div>
-              <div className="d-flex align-items-center justify-content-between">
-                <p className="fs-xs fw-400 black mb-0 mt-1">
-                  Street/ Area/ Landmark Name,
-                </p>
-                <p className="fs-xs fw-400 black mb-0 mt-1">
-                  Street/ Area/ Landmark Name,
-                </p>
-              </div>
-              <div className="d-flex align-items-center justify-content-between">
-                <p className="fs-xs fw-400 black mb-0 mt-1">
-                  City, State - Pin Code
-                </p>
-                <p className="fs-xs fw-400 black mb-0 mt-1"></p>
-              </div>
-              <p className="fs-xs fw-400 black mb-0 mt-1 text-end">
-                Invoice Date : 01-01-2024
-              </p>
-            </div>
-          </div>
+          ) : null}
           <div className="overflow_xl_scroll line_scroll">
             <div className="categories_xl_overflow_X ">
               <table className="w-100">
