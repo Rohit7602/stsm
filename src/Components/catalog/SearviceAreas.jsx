@@ -88,8 +88,6 @@ const ServiceArea = () => {
     setSelectedValue('1 Day');
     SetPostalCode('');
     SetAreaName('');
-    pubref.current.checked = false;
-    hideref.current.checked = false;
   }
 
   /*  *******************************
@@ -277,7 +275,7 @@ const ServiceArea = () => {
                 />
               </div>
               <Link
-              
+                onClick={() => setAddsServicePopup(!addsServicePopup)}
                 className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
                 <img className="me-1" width={20} src={addicon} alt="add-icon" />
                 Add New Area
@@ -672,7 +670,7 @@ const ServiceArea = () => {
                                       className="d-flex align-items-center categorie_dropdown_options">
                                       <img src={pencil_icon} alt="" />
                                       <p className="fs-sm fw-400 black mb-0 ms-2">
-                                        Edit Service Area
+                                        Edit ServiceArea
                                       </p>
                                     </div>
                                   </div>

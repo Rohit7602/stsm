@@ -19,7 +19,7 @@ import { ServiceContextProvider } from './context/ServiceAreasGetter';
 import { DeliverManContextProvider } from './context/DeliverymanGetter';
 import { FaqProvider } from './context/Faq';
 import { UserAuthContextProvider } from './context/Authcontext';
-
+import { CouponContextProvider } from './context/CouponsGetter';
 
 // Put any other imports below so that CSS from your
 // components takes precedence over default styles.
@@ -39,7 +39,9 @@ root.render(
                     <ServiceContextProvider>
                         <FaqProvider>
                           <DeliverManContextProvider>
-                            <App />
+                            <CouponContextProvider>
+                              <App />
+                            </CouponContextProvider> 
                           </DeliverManContextProvider>
                       </FaqProvider>
                     </ServiceContextProvider>
