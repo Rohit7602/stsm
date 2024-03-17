@@ -184,8 +184,8 @@ const ViewCustomerDetails = () => {
                                 <>
                                   <tr className="product_borderbottom">
                                     <td className="p-3">
-                                      <Link to={`/orders/orderdetails/${data.id}`}>
-                                        <h2 className="fw-400 fs-sm black mb-0"> {data.id}. </h2>
+                                      <Link to={`/orders/orderdetails/${data.order_id}`}>
+                                        <h2 className="fw-400 fs-sm color_blue mb-0 "> {data.order_id}. </h2>
                                       </Link>
                                     </td>
                                     <td className="py-3">

@@ -34,8 +34,8 @@ export default function NewOrder() {
 
 
   useEffect(() => {
-      const orderData = orders.filter((item) => item.order_id === id);
-      setfilterData(orderData);
+    const orderData = orders.filter((item) => item.order_id === id);
+    setfilterData(orderData);
   }, [orders, id])
 
 
@@ -173,7 +173,7 @@ export default function NewOrder() {
   }
 
 
-  
+
 
 
 
@@ -530,7 +530,7 @@ export default function NewOrder() {
                   {item.shipping.contact_no}
                 </p>
               </div>
-              {item.transaction.mode === "Cash on Delivery" && item.transaction.status === "Completed" ? <div className="p-3 bg-white product_shadow mt-4">
+              {(item.transaction.mode === "Cash on Delivery" || item.transaction.mode === "UPI / Bank Transfer" || item.transaction.mode === "Pay Later / Credit") && item.transaction.status === "Paid" ? <div className="p-3 bg-white product_shadow mt-4">
                 <p className="fs-2sm fw-400 black mb-0">Transactions</p>
                 <div className="d-flex flex-column mt-3">
                   <div className="p-2">
