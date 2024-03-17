@@ -280,16 +280,6 @@ const OrderList = () => {
                                     </div> 
                                   </div>
                                 </li>
-                                <li>
-                                  <div class="dropdown-item" href="#">
-                                    <div className="d-flex align-items-center categorie_dropdown_options">
-                                      <img src={updown_icon} alt="" />
-                                      <p className="fs-sm fw-400 green mb-0 ms-2">
-                                        Change to Hidden
-                                      </p>
-                                    </div>
-                                  </div>
-                                </li>
                               </ul>
                             </div>
                           </td>

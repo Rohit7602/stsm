@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import filtericon from '../../Images/svgs/filtericon.svg';
-import manicon from '../../Images/svgs/manicon.svg';
-import threedot from '../../Images/svgs/threedot.svg';
-import search from '../../Images/svgs/search.svg';
-import eye_icon from '../../Images/svgs/eye.svg';
-import pencil_icon from '../../Images/svgs/pencil.svg';
-import delete_icon from '../../Images/svgs/delte.svg';
-import updown_icon from '../../Images/svgs/arross.svg';
-import manimage from '../../Images/Png/manimage.jpg';
-import shortIcon from '../../Images/svgs/short-icon.svg';
-import { Link } from 'react-router-dom';
-import { useCustomerContext } from '../../context/Customergetters';
-import { set } from 'date-fns';
-import { useOrdercontext } from '../../context/OrderGetter';
+import React, { useState } from "react";
+import filtericon from "../../Images/svgs/filtericon.svg";
+import manicon from "../../Images/svgs/manicon.svg";
+import threedot from "../../Images/svgs/threedot.svg";
+import search from "../../Images/svgs/search.svg";
+import eye_icon from "../../Images/svgs/eye.svg";
+import pencil_icon from "../../Images/svgs/pencil.svg";
+import delete_icon from "../../Images/svgs/delte.svg";
+import updown_icon from "../../Images/svgs/arross.svg";
+import manimage from "../../Images/Png/manimage.jpg";
+import shortIcon from "../../Images/svgs/short-icon.svg";
+import { Link } from "react-router-dom";
+import { useCustomerContext } from "../../context/Customergetters";
+import { set } from "date-fns";
+import { useOrdercontext } from "../../context/OrderGetter";
 
 const Customers = () => {
-  const [searchvalue, setSearchvalue] = useState('');
+  const [searchvalue, setSearchvalue] = useState("");
 
   const { orders } = useOrdercontext();
   const { customer } = useCustomerContext();
@@ -46,7 +46,12 @@ const Customers = () => {
               />
             </div>
             <button className="filter_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400  ">
-              <img className="me-1" width={24} src={filtericon} alt="filtericon" />
+              <img
+                className="me-1"
+                width={24}
+                src={filtericon}
+                alt="filtericon"
+              />
               Filter
             </button>
           </div>
@@ -97,7 +102,7 @@ const Customers = () => {
                 <tbody className="table_body">
                   {customer
                     .filter((data) => {
-                      return searchvalue.toLowerCase() === ''
+                      return searchvalue.toLowerCase() === ""
                         ? data
                         : data.name.toLowerCase().includes(searchvalue);
                     })
@@ -115,14 +120,14 @@ const Customers = () => {
                         created_at,
                       } = item;
                       const formatNumbers = function (num) {
-                        return num < 10 ? '0' + num : num;
+                        return num < 10 ? "0" + num : num;
                       };
                       const formatDate = function (date) {
                         let day = formatNumbers(date.getDate());
                         let month = formatNumbers(date.getMonth() + 1);
                         let year = date.getFullYear();
 
-                        return day + '-' + month + '-' + year;
+                        return day + "-" + month + "-" + year;
                       };
                       const newval = new Date(created_at);
                       const newDate = formatDate(newval);
@@ -143,18 +148,23 @@ const Customers = () => {
                                   />
                                   <div>
                                     <Link
-                                      className="d-flex py-1 color_black_02"
-                                      to={`viewcustomerdetails/${id}`}>
+                                      className="d-flex py-1 color_blue"
+                                      to={`viewcustomerdetails/${id}`}
+                                    >
                                       {name}
                                     </Link>
 
-                                    <h3 className="fs-xxs fw-400 fade_grey mt-1 mb-0">{email}</h3>
+                                    <h3 className="fs-xxs fw-400 fade_grey mt-1 mb-0">
+                                      {email}
+                                    </h3>
                                   </div>
                                 </div>
                               </div>
                             </td>
                             <td className="p-3 mw_160">
-                              <h3 className="fs-sm fw-400 black mb-0">{newDate}</h3>
+                              <h3 className="fs-sm fw-400 black mb-0">
+                                {newDate}
+                              </h3>
                             </td>
                             <td className="p-3 mw-300">
                               <h3 className="fs-sm fw-400 black mb-0">
@@ -162,7 +172,9 @@ const Customers = () => {
                               </h3>
                             </td>
                             <td className="p-3 mw_160">
-                              <h3 className="fs-sm fw-400 black mb-0">Public</h3>
+                              <h3 className="fs-sm fw-400 black mb-0">
+                                Public
+                              </h3>
                             </td>
                             <td className="p-3 mw-200">
                               <h3 className="fs-sm fw-400 black mb-0">
@@ -176,31 +188,21 @@ const Customers = () => {
                                   type="button"
                                   id="dropdownMenuButton3"
                                   data-bs-toggle="dropdown"
-                                  aria-expanded="false">
-                                  <img
-                                    // onClick={() => {
-                                    //  ;
-                                    // }}
-                                    src={threedot}
-                                    alt="dropdownDots"
-                                  />
+                                  aria-expanded="false"
+                                >
+                                  <img src={threedot} alt="dropdownDots" />
                                 </button>
                                 <ul
-                                  class="dropdown-menu categories_dropdown"
-                                  aria-labelledby="dropdownMenuButton3">
-                                  <li>
+                                  class="dropdown-menu categories_dropdown border-0"
+                                  aria-labelledby="dropdownMenuButton3"
+                                >
+                                  {/* <li>
                                     <div class="dropdown-item" href="#">
                                       <div className="d-flex align-items-center categorie_dropdown_options">
                                         <img src={eye_icon} alt="" />
-                                        <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
-                                      </div>
-                                    </div>
-                                  </li>
-                                  <li>
-                                    <div class="dropdown-item" href="#">
-                                      <div className="d-flex align-items-center categorie_dropdown_options">
-                                        <img src={pencil_icon} alt="" />
-                                        <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
+                                        <p className="fs-sm fw-400 black mb-0 ms-2">
+                                          View Details
+                                        </p>
                                       </div>
                                     </div>
                                   </li>
@@ -216,14 +218,14 @@ const Customers = () => {
                                   </li>
                                   <li>
                                     <div class="dropdown-item" href="#">
-                                      <div
-                                        // onClick={() => handleDelete(item.id)}
-                                        className="d-flex align-items-center categorie_dropdown_options">
+                                      <div className="d-flex align-items-center categorie_dropdown_options">
                                         <img src={delete_icon} alt="" />
-                                        <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
+                                        <p className="fs-sm fw-400 red mb-0 ms-2">
+                                          Delete
+                                        </p>
                                       </div>
                                     </div>
-                                  </li>
+                                  </li> */}
                                 </ul>
                               </div>
                             </td>

@@ -121,6 +121,10 @@ body {
   background-color: var(--color-grey-01) !important;
 }
 
+.bg_dark_grey {
+  color: var(--color-dark-grey) !important;
+}
+
 /*---------------------------- DEFINE-ALL = FONT-SIZES ---------------------------- */
 .fs-xxxs {
   font-size: var(--fs-xxxs) !important;
@@ -145,7 +149,7 @@ body {
 .fs-lg {
   font-size: var(--fs-lg) !important;
 }
-.fs_24{
+.fs_24 {
   font-size: 24px !important;
 }
 
@@ -499,6 +503,10 @@ body {
   transition: 0.5s ease-in-out;
   border: 1px solid transparent;
   border-radius: 10px;
+  background: #b5b5b5;
+}
+
+.tablehead_bg {
   background: #b5b5b5;
 }
 
@@ -958,6 +966,7 @@ body {
 .outline_none {
   outline: none;
 }
+
 .quantity_bg {
   background-color: #f4f4f4;
   padding: 10px 15px 10px 15px;
@@ -1067,24 +1076,29 @@ body {
 .min_width_1120 {
   min-width: 1120px;
 }
+
 /* CSS */
 .custom-select:hover {
-  color: grey !important; /* Change color as desired */
+  color: grey !important;
+  /* Change color as desired */
 }
 
 .option-commission {
-  color: grey; /* Change color as desired */
+  color: grey;
+  /* Change color as desired */
   margin: 2px !important;
 }
 
 .option-salaried {
-  color: grey; /* Change color as desired */
+  color: grey;
+  /* Change color as desired */
 }
 .update_entry {
   background-color: #54b435;
   padding: 10px 15px 10px 15px;
   border-radius: 10px;
 }
+
 .stock_bg {
   background-color: #54b43533;
   padding: 5px 10px;
@@ -1187,9 +1201,11 @@ body {
 .white_space_nowrap {
   white-space: nowrap;
 }
+
 .order_logs_line {
   position: relative;
 }
+
 .order_logs_line::after {
   content: "";
   position: absolute;
@@ -1200,6 +1216,7 @@ body {
   top: 0;
   z-index: -1;
 }
+
 .w_40 {
   width: 40px;
   height: 40px;
@@ -1216,23 +1233,30 @@ body {
   min-width: 150px;
   width: 150px;
 }
+
 .mx_180 {
   min-width: 180px;
   width: 180px;
 }
+
 .mx_220 {
   min-width: 220px;
   width: 220px;
 }
+
 .unpiad {
   display: inline-block;
+  background-color: #bd011a33;
+  color: #bd011a;
   background-color: #bd011a33;
   color: #bd011a;
   padding: 7.5px 15px;
   border-radius: 5px;
 }
+
 .paid_invoice {
   display: inline-block;
+  background-color: #50b84833;
   background-color: #50b84833;
   color: var(--color-green);
   padding: 7.5px 15px;
@@ -1430,7 +1454,7 @@ div.rich-text-editor .ql-editor {
   display: block !important;
   height: calc(100vh - 265px) !important;
   height: 100%;
-  overflow: auto !important;
+  overflow-y: scroll !important;
 }
 
 .table_head,
@@ -1453,11 +1477,32 @@ div.rich-text-editor .ql-editor {
   z-index: 10;
 }
 
+.add_coupon_popup {
+  position: fixed;
+  width: 480px;
+  background-color: #ffffff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-height: 500px;
+  border-radius: 30px;
+  padding: 20px;
+  z-index: 10;
+}
+
 .popup_input {
   border: 0.5px solid #0000004d !important;
   padding: 10px 15px;
   outline: 0;
   margin-top: 10px;
+}
+
+.popup_coupon_input {
+  padding: 15px 10px 15px 10px;
+  border-radius: 5px;
+  background: #ebedf0;
+  outline: none;
+  border: 1px solid transparent;
 }
 
 .border_top_gray {
@@ -1677,6 +1722,7 @@ div.rich-text-editor .ql-editor {
   border-bottom: 1px solid rgba(0, 0, 0, 0.103);
   border-left: 1px solid rgba(0, 0, 0, 0.205);
 }
+
 .side_invoice_view::after {
   content: "";
   background-color: #f5f7fa;
@@ -1687,6 +1733,7 @@ div.rich-text-editor .ql-editor {
   top: 0;
   z-index: 1;
 }
+
 .view_pdf_btn {
   padding: 12px 10px;
   border-radius: 5px;
@@ -1694,9 +1741,11 @@ div.rich-text-editor .ql-editor {
   border: 0;
   outline: 0;
 }
+
 .view_pdf_btn img {
   padding-left: 10px;
 }
+
 .large_banner {
   position: fixed;
   top: 50%;
@@ -1727,6 +1776,7 @@ div.rich-text-editor .ql-editor {
   overflow-y: scroll;
   background-color: white;
 }
+
 .samll_patti_banner .dropdown-menu.show {
   transform: translate3d(0px, 50px, 0px) !important;
   width: 100% !important;
@@ -1736,6 +1786,10 @@ div.rich-text-editor .ql-editor {
 }
 .samll_patti_banner .dropdown-menu.show::-webkit-scrollbar {
   width: 4px;
+}
+
+.large_banner .dropdown-menu.show::-webkit-scrollbar-track {
+  background-color: white !important;
 }
 .samll_patti_banner .dropdown-menu.show::-webkit-scrollbar-track {
   background-color: white !important;
@@ -1759,6 +1813,7 @@ div.rich-text-editor .ql-editor {
   outline: none;
   background-color: transparent;
 }
+
 .imagesmallmedia_btn_popup {
   width: 375px;
   height: 70px;
@@ -1789,6 +1844,7 @@ div.rich-text-editor .ql-editor {
 .brs_50 {
   border-radius: 50%;
 }
+
 .bg_dark_black {
   background-color: #26313a;
 }
@@ -1802,6 +1858,7 @@ div.rich-text-editor .ql-editor {
   width: 595px;
   padding: 20px 30px;
   background-color: var(--color-white);
+  min-height: calc(100vh - 56px );
 }
 .transform_rotate_arrow {
   transform: rotate(-180deg);
@@ -1809,12 +1866,18 @@ div.rich-text-editor .ql-editor {
 .transform_rotate {
   transition: 0.1s ease-out;
 }
-.bill_border{
+.bill_border {
   border-top: 1px solid #00000033;
   width: 100%;
 }
-.py_2{
+.py_2 {
   padding: 2px 0;
+}
+.invoice_data .table_body{
+  display: block !important;
+    height: calc(100vh - 237px) !important;
+    height: 100%;
+    overflow-y: scroll !important;
 }
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
@@ -1987,4 +2050,40 @@ div.rich-text-editor .ql-editor {
 .py-6px {
   padding-top: 6px;
   padding-bottom: 6px;
+}
+
+.imagesmallmedia_btn_popup {
+  width: 375px;
+  height: 70px;
+  border-radius: 5px;
+  border: 1px dashed var(--Other-Colors, #50b848);
+  background: rgba(80, 184, 72, 0.1);
+}
+
+.samll_patti_banner .dropdown-menu.show {
+  transform: translate3d(0px, 50px, 0px) !important;
+  width: 100% !important;
+  max-height: 150px;
+  overflow-y: scroll;
+  background-color: white;
+}
+
+.samll_patti_banner .dropdown-menu.show::-webkit-scrollbar {
+  width: 4px;
+}
+
+.samll_patti_banner .dropdown-menu.show::-webkit-scrollbar-track {
+  background-color: white !important;
+}
+
+.samll_patti_banner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  z-index: 2;
+  padding: 20px;
+  border-radius: 10px;
+  width: 416px;
 }

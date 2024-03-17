@@ -16,11 +16,11 @@ import ParentCategories from './Components/catalog/ParentCategories';
 import ServiceAreas from './Components/catalog/SearviceAreas';
 import Login from './Components/login/Login';
 import AccountDelete from './Components/AccountDelete';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { auth, messaging } from './firebase';
 import HashLoader from 'react-spinners/HashLoader';
 import CheckConnection from './Components/CheckConnection';
-
+import Invoices from './Components/invoices/Invoices'
 import { permissionHandler } from './firebase';
 import DeliveryManList from './Components/deliveryman/DeliveryManList';
 
@@ -34,7 +34,7 @@ import DeliverymanProfile from './Components/deliveryman/DeliverymanProfile';
 import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList';
 import DeliveryBoyInventory from './Components/deliveryman/DeliveryBoyInventory';
 import { useUserAuth } from './context/Authcontext';
-import Invoices from './Components/invoices/Invoices';
+import Coupons from './Components/marketing/Coupons';
 import InvoiceBill from './Components/invoices/InvoiceBill';
 function App() {
 
@@ -57,11 +57,15 @@ function App() {
   }, []);
 
 
-
+  if (location.pathname === "/invoices") {
+    document.body.classList.add("overflow-hidden");
+  } else {
+    document.body.classList.remove("overflow-hidden");
+  }
   const handleLogout = async () => {
     try {
       // Sign out the user from Firebase Authentication
-      await  logoutUser()
+      await logoutUser()
       // Update the user state to trigger the rendering of the Login component
       localStorage.removeItem('isAdmin', 'true');
       setUser(true);
@@ -90,7 +94,7 @@ function App() {
     // Cleanup function to unsubscribe when the component unmounts
     return () => unsubscribe();
   }, []);
-
+ 
   return (
     <div>
       <Logout logout={handleLogout} setDeletPopup={setDeletPopup} deletPopup={deletPopup} />
@@ -151,18 +155,21 @@ function App() {
                         </Route>
                         <Route path="deliveryman">
                           <Route index element={<DeliveryManList />} />
-                          <Route path="addnewdeliveryman" element={<AddDeliveryMan/>}/>
-                          <Route path="deliverymanprofile" element={<DeliverymanProfile/>}/>
-                          <Route path="deliveryorderlist" element={<DeliveryOrderList/>}/>
-                          <Route path="inventory" element={<DeliveryBoyInventory/>}/>
+                          <Route path="addnewdeliveryman" element={<AddDeliveryMan />} />
+                          <Route path="deliverymanprofile" element={<DeliverymanProfile />} />
+                          <Route path="deliveryorderlist" element={<DeliveryOrderList />} />
+                          <Route path="inventory" element={<DeliveryBoyInventory />} />
                         </Route>
                         <Route path="marketing">
                           <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
+                          <Route path="coupans" element={<Coupons />} />
                         </Route>
                         <Route path="privacypolicy" element={<PrivacyPolicy />} />
                         <Route path="term" element={<TermConditions />} />
-                        <Route path='FAQ' element={<Faqs/>} />
-                        <Route path='invoices' element={<InvoiceBill/>} />
+                        <Route path='FAQ' element={<Faqs />} />
+                        <Route path='invoices' element={<Invoices/>} />
+                        <Route path='invoicesbill' element={<InvoiceBill/>} />
+                        {/* <Route path='Addbanner' element={<AddBanner />} /> */}
                       </Routes>
                     </div>
                   </div>

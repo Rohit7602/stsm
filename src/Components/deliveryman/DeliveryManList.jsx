@@ -21,20 +21,14 @@ import { UseServiceContext } from '../../context/ServiceAreasGetter';
 import Deletepopup from '../popups/Deletepopup';
 import Updatepopup from '../popups/Updatepopup';
 import { ActionIcon } from '../../Common/Icon';
-import { UseDeliveryManContext } from '../../context/DeliverymanGetter'; 
+import { UseDeliveryManContext } from '../../context/DeliverymanGetter';
 const DeliveryManList = () => {
   const { DeliveryManData, deleteDeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
-  const [addsServicePopup, setAddsServicePopup] = useState(false);
   const [loaderstatus, setLoaderstatus] = useState(false);
-  const [AreaName, SetAreaName] = useState('');
-  const [postalCode, SetPostalCode] = useState();
-  const [status, setStatus] = useState();
-  const pubref = useRef();
-  const hideref = useRef();
 
   const [selectedValue, setSelectedValue] = useState('1 Day');
   const [searchvalue, setSearchvalue] = useState('');
-
+  console.log("delivery man data ", DeliveryManData)
   const [order, setorder] = useState('ASC');
   const sorting = (col) => {
     // Create a copy of the data array
@@ -124,13 +118,13 @@ const DeliveryManList = () => {
           {/* categories details  */}
           <div className="p-3 mt-3 bg-white product_shadow mt-4">
             <div className="overflow_xl_scroll line_scroll">
-              <div className="categories_xl_overflow_X ">
+              <div className="  min_width_1350">
                 <table className="w-100">
                   <thead className="w-100 table_head">
                     <tr className="product_borderbottom">
                       <th
                         onClick={() => sorting('AreaName')}
-                        className="py-3 ps-3  cursor_pointer mw-300">
+                        className="py-3 ps-3  cursor_pointer ">
                         <div className="d-flex align-items-center gap-3 ">
                           <label class="check1 fw-400 fs-sm black mb-0">
                             <input
@@ -156,7 +150,7 @@ const DeliveryManList = () => {
                       <th className="mx_160 px-2">
                         <h3 className="fs-sm fw-400 black mb-0">Work type</h3>
                       </th>
-                      <th className="mx_160 ps-3">
+                      <th className="mx_140 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Total Order’s</h3>
                       </th>
                       <th
@@ -175,9 +169,12 @@ const DeliveryManList = () => {
                         </p>
                       </th>
                       <th className="mx_160 ps-3">
-                        <h3 className="fs-sm fw-400 black mb-0">Service area</h3>
+                        <h3 className="fs-sm fw-400 black mb-0">Verification</h3>
                       </th>
                       <th className="mx_160 ps-3">
+                        <h3 className="fs-sm fw-400 black mb-0">Service area</h3>
+                      </th>
+                      <th className="mx_140 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Contact</h3>
                       </th>
                       <th className="mx_100 p-3 me-1 text-center">
@@ -186,53 +183,58 @@ const DeliveryManList = () => {
                     </tr>
                   </thead>
                   <tbody className="table_body">
-                    {/* {ServiceData.filter((data) => {
+                    {DeliveryManData.filter((data) => {
                       return searchvalue.toLowerCase() === ''
                         ? data
-                        : data.AreaName.toLowerCase().includes(searchvalue);
+                        : data.basic_info.name.toLowerCase().includes(searchvalue);
                     }).map((data, index) => {
-                      return ( */}
+                      return (
                         <tr className="product_borderbottom">
-                          <td className="py-3 ps-3  mw-300">
-                          <div className="d-flex align-items-center gap-3 ">
+                          <td className="py-3 ps-3 ">
+                            <div className="d-flex align-items-center gap-3 ">
                               <label class="check1 fw-400 fs-sm black mb-0">
                                 <input
                                   type="checkbox"
-                                  // checked={data.checked || false}
-                                  // onChange={() => handleCheckboxChange(index)}
+                                  checked={data.checked || false}
+                                  onChange={() => handleCheckboxChange(index)}
                                 />
                                 <span class="checkmark"></span>
                               </label>
                               <Link to="/deliveryman/deliverymanprofile">
-                                <p className="fw-400 fs-sm black mb-0 ms-2">John Doe</p>
-                                <p className="fw-400 fs-xs black mb-0 ms-2">ID 53663</p>
+                                <p className="fw-400 fs-sm black mb-0 ms-2">{data.basic_info.name}</p>
+                                <p className="fw-400 fs-xs black mb-0 ms-2">ID {data.uid}</p>
                               </Link>
                             </div>
                           </td>
                           <td className="px-2 mx_160">
-                            <h3 className="fs-sm fw-400 black mb-0">Full time</h3>
+                            <h3 className="fs-sm fw-400 black mb-0">{data.job_info.shift}</h3>
                           </td>
-                          <td className="mx_160 ps-5">
+                          <td className="mx_140 ps-5">
                             <Link to="/deliveryman/deliveryorderlist" className="fs-sm fw-400 black ">10</Link>
                           </td>
                           <td className="px-2 mx_140">
-                            <h3 className="fs-sm fw-400 status_btn_green mb-0">online</h3>
+                            <h3 className={`fs-sm fw-400 ${data.status === "online" ? 'status_btn_green' : 'status_btn_red'} mb-0`}>{data.status}</h3>
                             {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">online</h3> */}
+                          </td>
+                          <td className="ps-3 mx_160">
+                            <h3 className={`fs-sm fw-400 status_btn_green mb-0  ${data.isVerified == true ? 'status_btn_green' : 'status_btn_red'} `}>{data.isVerified === true ? 'Approved' : "Rejected"}</h3>
+                            {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">Rejected</h3> */}
                           </td>
                           <td className="ps-3 mx_160">
                             <h3 className="fs-sm fw-400 black mb-0">9 11 sector</h3>
                           </td>
-                          <td className=" mx_160 ps-3">
+                          <td className=" mx_140 ps-3">
                             <h3 className="fs-sm fw-400 black mb-0 ">
-                            +91 849858590
+                              +91 {data.basic_info.phone_no}
                             </h3>
                           </td>
                           <td className="text-center mx_100">
-                          <ActionIcon />
+                            <ActionIcon />
                           </td>
                         </tr>
-                      {/* );
-                    })} */}
+                      )
+                    })
+                    }
                   </tbody>
                 </table>
                 <ToastContainer />
