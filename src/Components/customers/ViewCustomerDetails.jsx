@@ -127,10 +127,10 @@ const ViewCustomerDetails = () => {
                               addSuffix: true,
                             })}
                           </h2>
-                          <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1 ">
+                          <Link to={`/orders/orderdetails/${mostRecentOrder.order_id}`} className="fw-400 fs-xs fade_grey mb-0 mt-1 color_blue ">
                             {' '}
-                            {mostRecentOrder.id}
-                          </h2>
+                            {mostRecentOrder.order_id}
+                          </Link>
                         </div>
                       </>
                     ) : (

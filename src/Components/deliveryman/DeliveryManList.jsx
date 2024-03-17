@@ -105,7 +105,7 @@ const DeliveryManList = () => {
                 <input
                   type="text"
                   className="fw-400 categorie_input  "
-                  placeholder="Search for ServiceAreas..."
+                  placeholder="Search in Delivery Mans..."
                   onChange={(e) => setSearchvalue(e.target.value)}
                 />
               </div>
@@ -201,8 +201,8 @@ const DeliveryManList = () => {
                                 <span class="checkmark"></span>
                               </label>
                               <Link to="/deliveryman/deliverymanprofile">
-                                <p className="fw-400 fs-sm black mb-0 ms-2">{data.basic_info.name}</p>
-                                <p className="fw-400 fs-xs black mb-0 ms-2">ID {data.uid}</p>
+                                <p className="fw-400 fs-sm black color_blue mb-0 ms-2">{data.basic_info.name}</p>
+                                <p className="fw-400 fs-xs black color_blue mb-0 ms-2">ID {data.uid}</p>
                               </Link>
                             </div>
                           </td>

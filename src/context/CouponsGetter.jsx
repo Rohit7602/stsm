@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { getDocs, collection } from 'firebase/firestore';
 import { db } from '../firebase';
+import { onSnapshot } from 'firebase/firestore';
 
 
 const CouponContext = createContext()
@@ -30,6 +31,19 @@ export const CouponContextProvider = ({ children }) => {
         if (!isdatafetched) {
             fetchCoupons();
         }
+
+        const unsubscribe = onSnapshot(collection(db, 'Coupons'), (querySnapshot) => {
+            const updatedCoupons = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setcoupons(updatedCoupons);
+        });
+
+        return () => unsubscribe();
+
+
+
+
+
+
     }, [isdatafetched])
 
     const memodata = useMemo(() => allcoupons, [allcoupons])
@@ -55,9 +69,28 @@ export const CouponContextProvider = ({ children }) => {
         }
     };
 
+    // Function to delete data
+    const deleteCouponData = async (couponsId) => {
+        try {
+            setcoupons(prevData => prevData.filter(Coupon => Coupon.id !== couponsId));
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const addCouponData = async (couponData) => {
+        try {
+            updateCouponData(couponData);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+
+
 
     return (
-        <CouponContext.Provider value={{ allcoupons: memodata, updateCouponData }}>
+        <CouponContext.Provider value={{ allcoupons: memodata, addCouponData, updateCouponData, deleteCouponData }}>
             {children}
         </CouponContext.Provider>
     )

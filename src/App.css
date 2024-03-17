@@ -48,7 +48,7 @@ body {
   --fw-500: 500;
   --fw-700: 700;
 
-  --fs-xxxs: 9px;
+  --fs-xxxs: 10px;
   --fs-xxs: 12px;
   --fs-xs: 14px;
   --fs-sm: 16px;
@@ -125,7 +125,6 @@ body {
   color: var(--color-dark-grey) !important;
 }
 
-
 /*---------------------------- DEFINE-ALL = FONT-SIZES ---------------------------- */
 .fs-xxxs {
   font-size: var(--fs-xxxs) !important;
@@ -149,6 +148,9 @@ body {
 
 .fs-lg {
   font-size: var(--fs-lg) !important;
+}
+.fs_24 {
+  font-size: 24px !important;
 }
 
 /*---------------------------- DEFINE-ALL = FONT-WEIGHT ---------------------------- */
@@ -412,13 +414,17 @@ body {
 /*export_btn*/
 .export_btn {
   border-radius: 10px;
-  background: var(--red_gradient,
-      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
 }
 
 .export_btn:hover {
-  background: var(--red_gradient,
-      linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
 }
 
 .unit_type_input {
@@ -439,16 +445,20 @@ body {
   padding: 12px 15px;
   transition: 0.5s ease-in-out;
   background-color: transparent;
-  background: var(--red_gradient,
-      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .reset_btn:hover {
-  background: var(--red_gradient,
-      linear-gradient(90deg, #fff 0%, #fff 49.43%, #fff 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(90deg, #fff 0%, #fff 49.43%, #fff 105.44%)
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -459,15 +469,20 @@ body {
   border-radius: 10px;
   border: 1.5px solid transparent;
   background: linear-gradient(#f5f7fa, #f5f7fa) padding-box,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%) border-box;
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+      border-box;
 }
 
 .reset_border:hover {
-  background: linear-gradient(90deg,
-      #8a2387 0%,
-      #e94057 49.43%,
-      #f27121 105.44%) padding-box,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%) border-box;
+  background: linear-gradient(
+        90deg,
+        #8a2387 0%,
+        #e94057 49.43%,
+        #f27121 105.44%
+      )
+      padding-box,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+      border-box;
 }
 
 /*save_btn*/
@@ -492,7 +507,7 @@ body {
 }
 
 .tablehead_bg {
-  background: #B5B5B5
+  background: #b5b5b5;
 }
 
 .filter_btn:hover {
@@ -689,11 +704,11 @@ body {
 } */
 
 /* When the checkbox is checked, add a blue background */
-.check input:checked~.checkmark {
+.check input:checked ~ .checkmark {
   background-color: #000000;
 }
 
-.check1 input:checked~.checkmark {
+.check1 input:checked ~ .checkmark {
   background-color: transparent;
 }
 
@@ -705,11 +720,11 @@ body {
 }
 
 /* Show the checkmark when checked */
-.check input:checked~.checkmark:after {
+.check input:checked ~ .checkmark:after {
   display: block;
 }
 
-.check1 input:checked~.checkmark:after {
+.check1 input:checked ~ .checkmark:after {
   display: block;
 }
 
@@ -952,8 +967,7 @@ body {
   outline: none;
 }
 
-
-.quantity_bg  {
+.quantity_bg {
   background-color: #f4f4f4;
   padding: 10px 15px 10px 15px;
   border-radius: 50px;
@@ -1005,8 +1019,8 @@ body {
   cursor: pointer;
 }
 
-.btn-check:checked+.btn,
-:not(.btn-check)+.btn:active,
+.btn-check:checked + .btn,
+:not(.btn-check) + .btn:active,
 .btn:first-child:active,
 .btn.active,
 .btn.show {
@@ -1079,8 +1093,8 @@ body {
   color: grey;
   /* Change color as desired */
 }
-.update_entry{
-  background-color: #54B435;
+.update_entry {
+  background-color: #54b435;
   padding: 10px 15px 10px 15px;
   border-radius: 10px;
 }
@@ -1234,8 +1248,8 @@ body {
   display: inline-block;
   background-color: #bd011a33;
   color: #bd011a;
-  background-color: #BD011A33;
-  color: #BD011A;
+  background-color: #bd011a33;
+  color: #bd011a;
   padding: 7.5px 15px;
   border-radius: 5px;
 }
@@ -1243,7 +1257,7 @@ body {
 .paid_invoice {
   display: inline-block;
   background-color: #50b84833;
-  background-color: #50B84833;
+  background-color: #50b84833;
   color: var(--color-green);
   padding: 7.5px 15px;
   border-radius: 5px;
@@ -1440,7 +1454,7 @@ div.rich-text-editor .ql-editor {
   display: block !important;
   height: calc(100vh - 265px) !important;
   height: 100%;
-  overflow: auto !important;
+  overflow-y: scroll !important;
 }
 
 .table_head,
@@ -1486,7 +1500,7 @@ div.rich-text-editor .ql-editor {
 .popup_coupon_input {
   padding: 15px 10px 15px 10px;
   border-radius: 5px;
-  background: #EBEDF0;
+  background: #ebedf0;
   outline: none;
   border: 1px solid transparent;
 }
@@ -1703,9 +1717,10 @@ div.rich-text-editor .ql-editor {
   background-color: white;
   right: 0;
   width: 538px;
-  height: 433px;
   padding: 20px 15px;
   z-index: 2;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.103);
+  border-left: 1px solid rgba(0, 0, 0, 0.205);
 }
 
 .side_invoice_view::after {
@@ -1713,7 +1728,7 @@ div.rich-text-editor .ql-editor {
   background-color: #f5f7fa;
   position: absolute;
   width: 20px;
-  height: 100%;
+  height: 100.19%;
   left: -20px;
   top: 0;
   z-index: 1;
@@ -1742,6 +1757,17 @@ div.rich-text-editor .ql-editor {
   border-radius: 10px;
   width: 340px;
 }
+.samll_patti_banner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  z-index: 2;
+  padding: 20px;
+  border-radius: 10px;
+  width: 416px;
+}
 
 .large_banner .dropdown-menu.show {
   transform: translate3d(0px, 50px, 0px) !important;
@@ -1751,55 +1777,108 @@ div.rich-text-editor .ql-editor {
   background-color: white;
 }
 
-.large_banner .dropdown-menu.show::-webkit-scrollbar {
+.samll_patti_banner .dropdown-menu.show {
+  transform: translate3d(0px, 50px, 0px) !important;
+  width: 100% !important;
+  max-height: 150px;
+  overflow-y: scroll;
+  background-color: white;
+}
+.samll_patti_banner .dropdown-menu.show::-webkit-scrollbar {
   width: 4px;
 }
 
 .large_banner .dropdown-menu.show::-webkit-scrollbar-track {
   background-color: white !important;
 }
+.samll_patti_banner .dropdown-menu.show::-webkit-scrollbar-track {
+  background-color: white !important;
+}
+.large_banner .dropdown-menu.show::-webkit-scrollbar {
+  width: 4px;
+}
+.large_banner .dropdown-menu.show::-webkit-scrollbar-track {
+  background-color: white !important;
+}
 
 .banner_search_input {
-  background-color: #EBEDF0;
+  background-color: #ebedf0;
   border-radius: 5px;
   height: 46px;
   padding: 10px;
   margin-bottom: 10px;
 }
-
 .banner_search_input input {
   border: none;
   outline: none;
   background-color: transparent;
 }
 
+.imagesmallmedia_btn_popup {
+  width: 375px;
+  height: 70px;
+  border-radius: 5px;
+  border: 1px dashed var(--Other-Colors, #50b848);
+  background: rgba(80, 184, 72, 0.1);
+}
 .priority {
   width: 59px;
   padding: 15px 10px;
   border-radius: 5px;
-  background-color: #EBEDF0;
+  background-color: #ebedf0;
   border: none;
   outline: none;
 }
-
 .exit_baner_popup {
   border: 1px solid black;
   padding: 4px 20px;
   border-radius: 5px;
   background-color: transparent;
 }
-
 .save_baner_popup {
   border: 0;
   background-color: var(--color-brown);
   padding: 5px 20px;
   border-radius: 5px;
 }
-
 .brs_50 {
   border-radius: 50%;
 }
 
+.bg_dark_black {
+  background-color: #26313a;
+}
+.p_10 {
+  padding: 10px;
+}
+.p_5_10 {
+  padding: 5px 10px;
+}
+.bill {
+  width: 595px;
+  padding: 20px 30px;
+  background-color: var(--color-white);
+  min-height: calc(100vh - 56px );
+}
+.transform_rotate_arrow {
+  transform: rotate(-180deg);
+}
+.transform_rotate {
+  transition: 0.1s ease-out;
+}
+.bill_border {
+  border-top: 1px solid #00000033;
+  width: 100%;
+}
+.py_2 {
+  padding: 2px 0;
+}
+.invoice_data .table_body{
+  display: block !important;
+    height: calc(100vh - 237px) !important;
+    height: 100%;
+    overflow-y: scroll !important;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
   :root {

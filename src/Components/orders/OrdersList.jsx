@@ -274,20 +274,10 @@ const OrderList = () => {
                                   <div class="dropdown-item" href="#">
                                     <div className="d-flex align-items-center categorie_dropdown_options">
                                       <img src={eye_icon} alt="" />
-                                      <Link to={`orderdetails/${orderTableData.id}`}>
+                                      <Link to={`orderdetails/${orderTableData.order_id}`}>
                                         <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
                                       </Link>
                                     </div> 
-                                  </div>
-                                </li>
-                                <li>
-                                  <div class="dropdown-item" href="#">
-                                    <div className="d-flex align-items-center categorie_dropdown_options">
-                                      <img src={updown_icon} alt="" />
-                                      <p className="fs-sm fw-400 green mb-0 ms-2">
-                                        Change to Hidden
-                                      </p>
-                                    </div>
                                   </div>
                                 </li>
                               </ul>
