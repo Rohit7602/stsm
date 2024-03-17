@@ -96,6 +96,9 @@ const Coupons = () => {
 
 
 
+
+
+
   async function handleUpdateCoupons(id) {
     setLoaderstatus(true)
 
@@ -138,6 +141,12 @@ const Coupons = () => {
 
   }
 
+  function handleClose() {
+    setAddsServicePopup(false)
+    handleReset();
+    setCouponId('')
+  }
+
 
   if (loaderstatus) {
     return (
@@ -177,7 +186,7 @@ const Coupons = () => {
                   </div>
                   <img
                     className="cursor_pointer position-absolute top-0 end-0 "
-                    onClick={() => setAddsServicePopup(!addsServicePopup)}
+                    onClick={() => handleClose()}
                     src={closeicon}
                     alt="closeicon"
                   />
