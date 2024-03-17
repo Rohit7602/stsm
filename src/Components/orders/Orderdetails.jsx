@@ -18,17 +18,53 @@ import { db } from "../../firebase";
 import { useState, useEffect } from "react";
 
 import { useUserAuth } from "../../context/Authcontext";
+import Loader from "../Loader";
 
 export default function NewOrder() {
 
   const { userData } = useUserAuth()
-  console.log("user data ", userData)
+  // console.log("user data ", userData)
   let AdminId = userData.uuid
-  console.log("Asmin ", AdminId)
+  // console.log("Asmin ", AdminId)
 
   const { id } = useParams();
   const { orders, updateData } = useOrdercontext();
-  let filterData = orders.filter((item) => item.id === id);
+  const [filterData, setfilterData] = useState([])
+
+
+
+  useEffect(() => {
+      const orderData = orders.filter((item) => item.order_id === id);
+      setfilterData(orderData);
+  }, [orders, id])
+
+
+  const [logs, setLogs] = useState([]);
+
+  useEffect(() => {
+    const order = orders.find((item) => item.order_id === id);
+    if (order) {
+      const fetchLogs = async () => {
+        const q = query(collection(db, `order/${order.id}/logs`));
+        const querySnapshot = await getDocs(q);
+        const logsData = querySnapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+        setLogs(logsData);
+      };
+
+      fetchLogs();
+    }
+  }, [id, orders]);
+
+
+  // let DocumentId  = filterData[0].id
+  if (!id || filterData.length === 0) {
+    return (
+      <Loader> </Loader>
+    )
+  }
+
+
+
 
   function formatDate(dateString) {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -137,20 +173,8 @@ export default function NewOrder() {
   }
 
 
-  const [logs, setLogs] = useState([]);
+  
 
-  useEffect(() => {
-    const fetchLogs = async () => {
-      const q = query(collection(db, `order/${id}/logs`));
-      const querySnapshot = await getDocs(q);
-      const logsData = querySnapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
-      setLogs(logsData);
-    };
-
-    fetchLogs();
-  }, [id]);
-
-  console.log("logs are ", logs)
 
 
   const renderLogIcon = (status) => {
@@ -180,7 +204,7 @@ export default function NewOrder() {
         >
           <div className="d-flex align-items-center justify-content-between py-3 my-1">
             <div className="d-flex align-items-center">
-              <h1 className="fs-lg fw-500 black mb-0 me-1">{item.id}</h1>
+              <h1 className="fs-lg fw-500 black mb-0 me-1">{item.order_id}</h1>
               <p
                 className={`d-inline-block ms-3 ${item.status.toString().toLowerCase() === "new"
                   ? "fs-sm fw-400 red mb-0 new_order"
@@ -375,7 +399,7 @@ export default function NewOrder() {
                       <div className="d-flex align-items-center">
                         {renderLogIcon(log.data.status)}
                         <div className="ps-2 ms-1">
-                          <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">   {log.data.status === "PROCESSING" ? "ASSIGN TO DELIVERY " :  log.data.status === "NEW" ? "ORDER PLACED" : log.data.status} </p>
+                          <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">   {log.data.status === "PROCESSING" ? "ASSIGN TO DELIVERY " : log.data.status === "NEW" ? "ORDER PLACED" : log.data.status} </p>
                           <p className="fs-xxs fw-400 black ps-3 ms-1 mb-0">{log.data.name}</p>
                         </div>
                       </div>
@@ -506,7 +530,7 @@ export default function NewOrder() {
                   {item.shipping.contact_no}
                 </p>
               </div>
-              <div className="p-3 bg-white product_shadow mt-4">
+              {item.transaction.mode === "Cash on Delivery" && item.transaction.status === "Completed" ? <div className="p-3 bg-white product_shadow mt-4">
                 <p className="fs-2sm fw-400 black mb-0">Transactions</p>
                 <div className="d-flex flex-column mt-3">
                   <div className="p-2">
@@ -530,7 +554,7 @@ export default function NewOrder() {
                     ₹ {calculateTotal().toFixed(2)}
                   </p>
                 </div>
-              </div>
+              </div> : null}
               {item.status != "NEW" ? (
                 <div className="d-flex justify-content-end">
                   <button

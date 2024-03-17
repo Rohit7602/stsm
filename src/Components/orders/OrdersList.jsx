@@ -199,8 +199,8 @@ const OrderList = () => {
                               </label>
                               <Link
                                 className="fw-400 fs-sm color-blue ms-2"
-                                to={`orderdetails/${orderTableData.id}`}>
-                                {orderTableData.id}
+                                to={`orderdetails/${orderTableData.order_id}`}>
+                                {orderTableData.order_id}
                               </Link>
                             </div>
                           </td>

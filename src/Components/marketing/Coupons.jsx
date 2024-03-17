@@ -3,67 +3,36 @@ import closeicon from "../../Images/svgs/closeicon.svg";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ActionIcon, DeleteIcon, EditIcon, TickIcon } from "../../Common/Icon";
-import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
+import { DeleteIcon, EditIcon, TickIcon } from "../../Common/Icon";
+import { addDoc, collection } from "firebase/firestore";
+import { useCouponcontext } from "../../context/CouponsGetter";
+import { db } from "../../firebase";
+import Loader from "../Loader";
 const Coupons = () => {
-  const { DeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
+
+  const { allcoupons } = useCouponcontext()
+
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [code, setCode] = useState("");
   const [maxdiscount, setMaxDiscount] = useState("");
   const [startdate, setStartDate] = useState("");
   const [enddate, setEndDate] = useState("");
   const [minorder, setMinOrder] = useState("");
-  const [discounttype, setDiscounttype] = useState("Fixed");
+  const [discounttype, setDiscounttype] = useState("FIXED");
   const [discount, setDiscount] = useState("");
   const [addsServicePopup, setAddsServicePopup] = useState(false);
-  console.log("delivery man data ", DeliveryManData);
-  const [order, setorder] = useState("ASC");
-  const sorting = (col) => {
-    // Create a copy of the data array
-    const sortedData = [...DeliveryManData];
 
-    if (order === "ASC") {
-      sortedData.sort((a, b) => {
-        const valueA = a[col].toLowerCase();
-        const valueB = b[col].toLowerCase();
-        return valueA.localeCompare(valueB);
-      });
-    } else {
-      // If the order is not ASC, assume it's DESC
-      sortedData.sort((a, b) => {
-        const valueA = a[col].toLowerCase();
-        const valueB = b[col].toLowerCase();
-        return valueB.localeCompare(valueA);
-      });
-    }
+  function formatDate(dateString) {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    const formattedDate = new Date(dateString).toLocaleDateString(
+      undefined,
+      options
+    );
+    return formattedDate;
+  }
 
-    // Update the order state
-    const newOrder = order === "ASC" ? "DESC" : "ASC";
-    setorder(newOrder);
 
-    // Update the data using the updateData function from your context
-    updateDeliveryManData(sortedData);
-  };
-  const [selectAll, setSelectAll] = useState(false);
-
-  useEffect(() => {
-    // Check if all checkboxes are checked
-    const allChecked = DeliveryManData.every((item) => item.checked);
-    setSelectAll(allChecked);
-  }, [DeliveryManData]);
-
-  // Main checkbox functionality start from here
-
-  const handleMainCheckboxChange = () => {
-    const updatedData = DeliveryManData.map((item) => ({
-      ...item,
-      checked: !selectAll,
-    }));
-    updateDeliveryManData(updatedData);
-    setSelectAll(!selectAll);
-  };
-
-  function addcoupons(e) {
+  async function addcoupons(e) {
     e.preventDefault();
     setCode("");
     setDiscount("");
@@ -71,23 +40,37 @@ const Coupons = () => {
     setMaxDiscount("");
     setStartDate("");
     setEndDate("");
+    setDiscounttype("FIXED")
+
+    let coupon_data = {
+      promo_code: code,
+      discount_type: discounttype,
+      discount_value: discount,
+      min_order: minorder,
+      max_discount: maxdiscount,
+      start_date: new Date(startdate).toISOString(),
+      end_date: new Date(enddate).toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+    try {
+      setLoaderstatus(true)
+      await addDoc(collection(db, 'Coupons'), coupon_data);
+      setLoaderstatus(false)
+      toast.success("Coupon added Successfully !", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      console.log("Error in Add coupon ", error)
+    }
   }
-  // Datacheckboxes functionality strat from here
-  const handleCheckboxChange = (index) => {
-    const updatedData = [...DeliveryManData];
-    updatedData[index].checked = !DeliveryManData[index].checked;
-    updateDeliveryManData(updatedData);
-  };
-  /*  *******************************
-      Checbox  functionality end 
-    *********************************************   **/
+
+
+
+
   if (loaderstatus) {
     return (
-      <>
-        <div className="loader">
-          <h3 className="heading">Uploading Data... Please Wait</h3>
-        </div>
-      </>
+      <Loader></Loader>
     );
   } else {
     return (
@@ -135,9 +118,9 @@ const Coupons = () => {
                         <label class="check fw-400 fs-sm black mb-0">
                           Percentage
                           <input
-                            onChange={() => setDiscounttype("Percentage")}
+                            onChange={() => setDiscounttype("PERCENTAGE")}
                             type="radio"
-                            checked={discounttype === "Percentage"}
+                            checked={discounttype === "PERCENTAGE"}
                           />
                           <span class="checkmark"></span>
                         </label>
@@ -148,9 +131,9 @@ const Coupons = () => {
                         <label class="check fw-400 fs-sm black mb-0">
                           Fixed
                           <input
-                            onChange={() => setDiscounttype(" Fixed")}
+                            onChange={() => setDiscounttype("FIXED")}
                             type="radio"
-                            checked={discounttype === " Fixed"}
+                            checked={discounttype === "FIXED"}
                           />
                           <span class="checkmark"></span>
                         </label>
@@ -165,7 +148,14 @@ const Coupons = () => {
                   required
                   id="discount"
                   value={discount}
-                  onChange={(e) => setDiscount(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (discounttype === "PERCENTAGE" && value > 100) {
+                      setDiscount(100)
+                    } else {
+                      setDiscount(value);
+                    }
+                  }}
                   placeholder="Enter Discount Value"
                 />
 
@@ -210,6 +200,7 @@ const Coupons = () => {
                         required
                         id="startdate"
                         value={startdate}
+                        min={new Date().toISOString().split('T')[0]}
                         onChange={(e) => setStartDate(e.target.value)}
                       />
                     </div>
@@ -274,33 +265,37 @@ const Coupons = () => {
                     </tr>
                   </thead>
                   <tbody className="table_body">
-                    <tr>
-                      <td className="py-3 ps-3 mx_70 cursor_pointer ">1</td>
-                      <td className="mx_160 px-2">
-                        <h3 className="fs-sm fw-400 black mb-0">SALE_50</h3>
-                      </td>
-                      <td className="mx_160 ps-3">
-                        <h3 className="fs-sm fw-400 black mb-0">50%</h3>
-                      </td>
-                      <td className="mx_140 cursor_pointer">
-                        <h3 className="fs-sm fw-400 black mb-0"> ₹ 250.00</h3>
-                      </td>
-                      <td className="mx_160 ps-3">
-                        <h3 className="fs-sm fw-400 black mb-0">₹ 600.00</h3>
-                      </td>
-                      <td className="mx_160 ps-3">
-                        <h3 className="fs-sm fw-400 black mb-0">01-01-2024</h3>
-                      </td>
-                      <td className="mx_160 ps-3">
-                        <h3 className="fs-sm fw-400 black mb-0">01-40-2024</h3>
-                      </td>
-                      <td className="mx_100 p-3 me-1">
-                        <div className="d-flex gap-3">
-                          <EditIcon />
-                          <DeleteIcon />
-                        </div>
-                      </td>
-                    </tr>
+                    {allcoupons.map((coupns,index) => {
+                      return (
+                        <tr>
+                          <td className="py-3 ps-3 mx_70 cursor_pointer ">{index}</td>
+                          <td className="mx_160 px-2">
+                            <h3 className="fs-sm fw-400 black mb-0">{coupns.promo_code}</h3>
+                          </td>
+                          <td className="mx_160 ps-3">
+                            <h3 className="fs-sm fw-400 black mb-0">{coupns.discount_type === "FIXED" ? `₹ ${coupns.discount_value}` : `${coupns.discount_value} %`  }</h3>
+                          </td>
+                          <td className="mx_140 cursor_pointer">
+                            <h3 className="fs-sm fw-400 black mb-0"> ₹{ coupns.max_discount}</h3>
+                          </td>
+                          <td className="mx_160 ps-3">
+                            <h3 className="fs-sm fw-400 black mb-0">₹ { coupns.min_order}</h3>
+                          </td>
+                          <td className="mx_160 ps-3">
+                            <h3 className="fs-sm fw-400 black mb-0">{ formatDate(coupns.start_date)}</h3>
+                          </td>
+                          <td className="mx_160 ps-3">
+                            <h3 className="fs-sm fw-400 black mb-0">{formatDate(coupns.end_date)}</h3>
+                          </td>
+                          <td className="mx_100 p-3 me-1">
+                            <div className="d-flex gap-3">
+                              <EditIcon />
+                              <DeleteIcon />
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
                 <ToastContainer />
