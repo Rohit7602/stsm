@@ -196,17 +196,18 @@ const Customers = () => {
                                   class="dropdown-menu categories_dropdown border-0"
                                   aria-labelledby="dropdownMenuButton3"
                                 >
-                                  {/* <li>
-                                    <div class="dropdown-item" href="#">
+                                  <li>
+                                    <Link to={`viewcustomerdetails/${id}`}>
                                       <div className="d-flex align-items-center categorie_dropdown_options">
                                         <img src={eye_icon} alt="" />
                                         <p className="fs-sm fw-400 black mb-0 ms-2">
                                           View Details
                                         </p>
                                       </div>
-                                    </div>
+                                    </Link>
                                   </li>
-                                  <li>
+                                  {/* <li> */}
+                                    {/*
                                     <div class="dropdown-item" href="#">
                                       <div className="d-flex align-items-center categorie_dropdown_options">
                                         <img src={updown_icon} alt="" />

@@ -204,7 +204,7 @@ export default function NewOrder() {
         >
           <div className="d-flex align-items-center justify-content-between py-3 my-1">
             <div className="d-flex align-items-center">
-              <h1 className="fs-lg fw-500 black mb-0 me-1">{item.order_id}</h1>
+              <h1 className="fs-lg fw-500 black mb-0 me-1">#{item.order_id}</h1>
               <p
                 className={`d-inline-block ms-3 ${item.status.toString().toLowerCase() === "new"
                   ? "fs-sm fw-400 red mb-0 new_order"
@@ -530,7 +530,7 @@ export default function NewOrder() {
                   {item.shipping.contact_no}
                 </p>
               </div>
-              {(item.transaction.mode === "Cash on Delivery" || item.transaction.mode === "UPI / Bank Transfer" || item.transaction.mode === "Pay Later / Credit") && item.transaction.status === "Paid" ? <div className="p-3 bg-white product_shadow mt-4">
+              {(item.transaction.mode === "Cash on Delivery" || item.transaction.mode === "UPI / Bank Transfer" || item.transaction.mode === "Pay Later / Credit") && (item.transaction.status === "Paid" || item.status === "DELIVERED") ? <div className="p-3 bg-white product_shadow mt-4">
                 <p className="fs-2sm fw-400 black mb-0">Transactions</p>
                 <div className="d-flex flex-column mt-3">
                   <div className="p-2">

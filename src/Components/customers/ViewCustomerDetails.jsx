@@ -185,7 +185,7 @@ const ViewCustomerDetails = () => {
                                   <tr className="product_borderbottom">
                                     <td className="p-3">
                                       <Link to={`/orders/orderdetails/${data.order_id}`}>
-                                        <h2 className="fw-400 fs-sm color_blue mb-0 "> {data.order_id}. </h2>
+                                        <h2 className="fw-400 fs-sm color_blue mb-0 "> # {data.order_id}. </h2>
                                       </Link>
                                     </td>
                                     <td className="py-3">
@@ -195,7 +195,17 @@ const ViewCustomerDetails = () => {
                                       </h2>
                                     </td>
                                     <td className="p-3">
-                                      <h2 className="fw-400 fs-sm black mb-0"> {data.status} </h2>
+                                      <h2
+                                        className={`d-inline-block ${data.status.toString().toLowerCase() === 'new'
+                                          ? 'fs-sm fw-400 red mb-0 new_order'
+                                          : data.status.toString().toLowerCase() === 'processing'
+                                            ? 'fs-sm fw-400 mb-0 processing_skyblue'
+                                            : data.status.toString().toLowerCase() === 'delivered'
+                                              ? 'fs-sm fw-400 mb-0 green stock_bg'
+                                              : 'fs-sm fw-400 mb-0 black cancel_gray'
+                                          }`}>
+                                        {data.status}
+                                      </h2>
                                     </td>
                                     <td className="py-3">
                                       <h2 className="fw-400 fs-sm black mb-0">
