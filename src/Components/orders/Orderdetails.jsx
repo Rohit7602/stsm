@@ -13,7 +13,14 @@ import manimage from "../../Images/Png/manimage.jpg";
 import { Col, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { useOrdercontext } from "../../context/OrderGetter";
-import { doc, updateDoc, getDocs, addDoc, collection, query } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  getDocs,
+  addDoc,
+  collection,
+  query,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 import { useState, useEffect } from "react";
 
@@ -21,23 +28,19 @@ import { useUserAuth } from "../../context/Authcontext";
 import Loader from "../Loader";
 
 export default function NewOrder() {
-
-  const { userData } = useUserAuth()
+  const { userData } = useUserAuth();
   // console.log("user data ", userData)
-  let AdminId = userData.uuid
+  let AdminId = userData.uuid;
   // console.log("Asmin ", AdminId)
 
   const { id } = useParams();
   const { orders, updateData } = useOrdercontext();
-  const [filterData, setfilterData] = useState([])
-
-
+  const [filterData, setfilterData] = useState([]);
 
   useEffect(() => {
     const orderData = orders.filter((item) => item.order_id === id);
     setfilterData(orderData);
-  }, [orders, id])
-
+  }, [orders, id]);
 
   const [logs, setLogs] = useState([]);
 
@@ -47,7 +50,10 @@ export default function NewOrder() {
       const fetchLogs = async () => {
         const q = query(collection(db, `order/${order.id}/logs`));
         const querySnapshot = await getDocs(q);
-        const logsData = querySnapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+        const logsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }));
         setLogs(logsData);
       };
 
@@ -55,16 +61,10 @@ export default function NewOrder() {
     }
   }, [id, orders]);
 
-
   // let DocumentId  = filterData[0].id
   if (!id || filterData.length === 0) {
-    return (
-      <Loader> </Loader>
-    )
+    return <Loader> </Loader>;
   }
-
-
-
 
   function formatDate(dateString) {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -107,18 +107,17 @@ export default function NewOrder() {
         name: "Admin",
         status: newStatus,
         updated_at: new Date().toISOString(),
-        updated_by: AdminId
+        updated_by: AdminId,
       };
 
       await addDoc(collection(db, `order/${id}/logs`), logData);
-
 
       const AssignDeliver = {
         name: "Admin",
         status: "PROCESSING",
         updated_at: new Date().toISOString(),
-        updated_by: AdminId
-      }
+        updated_by: AdminId,
+      };
       await addDoc(collection(db, `order/${id}/logs`), AssignDeliver);
       updateData({ id, status: newStatus });
     } catch (error) {
@@ -138,7 +137,7 @@ export default function NewOrder() {
         name: "Admin",
         status: newStatus,
         updated_at: new Date().toISOString(),
-        updated_by: AdminId
+        updated_by: AdminId,
       };
       await addDoc(collection(db, `order/${id}/logs`), logData);
 
@@ -147,9 +146,6 @@ export default function NewOrder() {
       console.log(error);
     }
   };
-
-
-
 
   async function handleMarkAsDelivered(id) {
     try {
@@ -163,7 +159,7 @@ export default function NewOrder() {
         name: "Store",
         status: newStatus,
         updated_at: new Date().toISOString(),
-        updated_by: AdminId
+        updated_by: AdminId,
       };
       await addDoc(collection(db, `order/${id}/logs`), logData);
       updateData({ id, status: newStatus });
@@ -172,28 +168,34 @@ export default function NewOrder() {
     }
   }
 
-
-
-
-
-
   const renderLogIcon = (status) => {
     switch (status) {
-      case 'NEW':
+      case "NEW":
         return <img src={orderPlaceed} alt="orderPlaced" />;
-      case 'CONFIRMED':
-        return <img src={orderAccepted} className="bg-white" alt="orderAccepted" />;
-      case 'REJECTED':
-        return <img src={orderReject} className="bg-white" alt="orderRejected" />;
-      case 'PROCESSING':
-        return <img className="bg-white" src={orderDeliveryAssign} alt="orderDeliveryAssign" />;
-      case 'DELIVERED':
-        return <img className="bg-white" src={orderDelevered} alt="orderDelivered" />;
+      case "CONFIRMED":
+        return (
+          <img src={orderAccepted} className="bg-white" alt="orderAccepted" />
+        );
+      case "REJECTED":
+        return (
+          <img src={orderReject} className="bg-white" alt="orderRejected" />
+        );
+      case "PROCESSING":
+        return (
+          <img
+            className="bg-white"
+            src={orderDeliveryAssign}
+            alt="orderDeliveryAssign"
+          />
+        );
+      case "DELIVERED":
+        return (
+          <img className="bg-white" src={orderDelevered} alt="orderDelivered" />
+        );
       default:
         return null;
     }
   };
-
 
   return (
     <>
@@ -206,14 +208,15 @@ export default function NewOrder() {
             <div className="d-flex align-items-center">
               <h1 className="fs-lg fw-500 black mb-0 me-1">{item.order_id}</h1>
               <p
-                className={`d-inline-block ms-3 ${item.status.toString().toLowerCase() === "new"
-                  ? "fs-sm fw-400 red mb-0 new_order"
-                  : item.status.toString().toLowerCase() === "confirmed"
+                className={`d-inline-block ms-3 ${
+                  item.status.toString().toLowerCase() === "new"
+                    ? "fs-sm fw-400 red mb-0 new_order"
+                    : item.status.toString().toLowerCase() === "confirmed"
                     ? "fs-sm fw-400 mb-0 processing_skyblue"
                     : item.status.toString().toLowerCase() === "delivered"
-                      ? "fs-sm fw-400 mb-0 green stock_bg"
-                      : "fs-sm fw-400 mb-0 black cancel_gray"
-                  }`}
+                    ? "fs-sm fw-400 mb-0 green stock_bg"
+                    : "fs-sm fw-400 mb-0 black cancel_gray"
+                }`}
               >
                 {item.status}
               </p>
@@ -222,7 +225,10 @@ export default function NewOrder() {
               <div className="d-flex align-items-center">
                 <div className="d-flex align-itmes-center gap-3">
                   <button className="reset_border">
-                    <button onClick={() => handleRejectOrder(item.id)} className="fs-sm reset_btn  border-0 fw-400">
+                    <button
+                      onClick={() => handleRejectOrder(item.id)}
+                      className="fs-sm reset_btn  border-0 fw-400"
+                    >
                       Reject Order
                     </button>
                   </button>
@@ -253,8 +259,8 @@ export default function NewOrder() {
             ) : item.status === "CONFIRMED" ? (
               <div className="d-flex align-items-center">
                 <div className="d-flex align-itmes-center gap-3">
-
-                  <button onClick={() => handleMarkAsDelivered(item.id)}
+                  <button
+                    onClick={() => handleMarkAsDelivered(item.id)}
                     className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 green_btn fw-400 white"
                     type="submit"
                   >
@@ -281,6 +287,15 @@ export default function NewOrder() {
             <p className="fs-xs fw-400 black mb-0 paid stock_bg">
               {item.transaction.status.toUpperCase()}
             </p>
+            {item.status != "NEW" ? (
+              <button
+                type="button"
+                className="d-flex align-items-center bill_generate mt-0"
+              >
+                <img src={billicon} alt="billicon" />
+                <p className="fs-sm fw-400 black mb-0 ms-2">Generate Bill</p>
+              </button>
+            ) : null}
           </div>
           <Row className="">
             <Col xxl={8}>
@@ -304,10 +319,10 @@ export default function NewOrder() {
                               {products.varient_name
                                 .toString()
                                 .toLowerCase() !== "not found" && (
-                                  <span className="fs-sm fw-400 black mb-0 ms-3">
-                                    {products.varient_name}
-                                  </span>
-                                )}
+                                <span className="fs-sm fw-400 black mb-0 ms-3">
+                                  {products.varient_name}
+                                </span>
+                              )}
                             </p>
                             <p className="fs-xxs fw-400 fade_grey mb-0">
                               ID :{products.product_id}
@@ -387,29 +402,47 @@ export default function NewOrder() {
               <div className="product_shadow bg-white mt-4 p-3 position-relative z-1">
                 <p className="fs-2sm fw-400 black mb-0">Order Logs</p>
                 <div className="order_logs_line">
-                  {logs.sort((a, b) => new Date(a.data.updated_at) - new Date(b.data.updated_at)).map((log, index) => (
-                    <div key={index} className="d-flex align-items-center justify-content-between mt-3">
-                      {/* <div className="d-flex align-items-center">
+                  {logs
+                    .sort(
+                      (a, b) =>
+                        new Date(a.data.updated_at) -
+                        new Date(b.data.updated_at)
+                    )
+                    .map((log, index) => (
+                      <div
+                        key={index}
+                        className="d-flex align-items-center justify-content-between mt-3"
+                      >
+                        {/* <div className="d-flex align-items-center">
                         {renderLogIcon(log.data.status)}
                         <div className="ps-3 ms-1">
                           <p className="fs-sm fw-400 black mb-0">{log.data.status}</p>
                           <p className="fs-xxs fw-400 black mb-0">By: {log.data.by}</p>
                         </div>
                       </div> */}
-                      <div className="d-flex align-items-center">
-                        {renderLogIcon(log.data.status)}
-                        <div className="ps-2 ms-1">
-                          <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">   {log.data.status === "PROCESSING" ? "ASSIGN TO DELIVERY " : log.data.status === "NEW" ? "ORDER PLACED" : log.data.status} </p>
-                          <p className="fs-xxs fw-400 black ps-3 ms-1 mb-0">{log.data.name}</p>
+                        <div className="d-flex align-items-center">
+                          {renderLogIcon(log.data.status)}
+                          <div className="ps-2 ms-1">
+                            <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">
+                              {" "}
+                              {log.data.status === "PROCESSING"
+                                ? "ASSIGN TO DELIVERY "
+                                : log.data.status === "NEW"
+                                ? "ORDER PLACED"
+                                : log.data.status}{" "}
+                            </p>
+                            <p className="fs-xxs fw-400 black ps-3 ms-1 mb-0">
+                              {log.data.name}
+                            </p>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="fs-xs fw-400 black mb-0">
+                            {formatDate(log.data.updated_at)}
+                          </p>
                         </div>
                       </div>
-                      <div>
-                        <p className="fs-xs fw-400 black mb-0">
-                          {formatDate(log.data.updated_at)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
                 {/* <div className="d-flex align-items-center justify-content-between mt-3">
                     <div className="d-flex align-items-center">
@@ -530,42 +563,31 @@ export default function NewOrder() {
                   {item.shipping.contact_no}
                 </p>
               </div>
-              {(item.transaction.mode === "Cash on Delivery" || item.transaction.mode === "UPI / Bank Transfer" || item.transaction.mode === "Pay Later / Credit") && item.transaction.status === "Paid" ? <div className="p-3 bg-white product_shadow mt-4">
-                <p className="fs-2sm fw-400 black mb-0">Transactions</p>
-                <div className="d-flex flex-column mt-3">
-                  <div className="p-2">
-                    <p className="fs-sm fw-400 black mb-0">Mode of Payment</p>
-                    <p className="fs-xxs fw-400 fade_grey mb-0">
-                      {item.transaction.mode}
-                      {item.transaction.tx_id && (
-                        <>
-                          {" "}tx :{" "}
-                          {item.transaction.tx_id}{" "}
-                        </>
-                      )}
-                      {item.transaction.date && (
-                        <>
-                          {"  "}  | {formatDate(item.transaction.date)}
-                        </>
-                      )}
+              {(item.transaction.mode === "Cash on Delivery" ||
+                item.transaction.mode === "UPI / Bank Transfer" ||
+                item.transaction.mode === "Pay Later / Credit") &&
+              item.transaction.status === "Paid" ? (
+                <div className="p-3 bg-white product_shadow mt-4">
+                  <p className="fs-2sm fw-400 black mb-0">Transactions</p>
+                  <div className="d-flex flex-column mt-3">
+                    <div className="p-2">
+                      <p className="fs-sm fw-400 black mb-0">Mode of Payment</p>
+                      <p className="fs-xxs fw-400 fade_grey mb-0">
+                        {item.transaction.mode}
+                        {item.transaction.tx_id && (
+                          <> tx : {item.transaction.tx_id} </>
+                        )}
+                        {item.transaction.date && (
+                          <>
+                            {"  "} | {formatDate(item.transaction.date)}
+                          </>
+                        )}
+                      </p>
+                    </div>
+                    <p className="fs-sm fw-400 black mb-0 p-3 ps-0">
+                      ₹ {calculateTotal().toFixed(2)}
                     </p>
                   </div>
-                  <p className="fs-sm fw-400 black mb-0 p-3 ps-0">
-                    ₹ {calculateTotal().toFixed(2)}
-                  </p>
-                </div>
-              </div> : null}
-              {item.status != "NEW" ? (
-                <div className="d-flex justify-content-end">
-                  <button
-                    type="button"
-                    className="d-flex align-items-center bill_generate"
-                  >
-                    <img src={billicon} alt="billicon" />
-                    <p className="fs-sm fw-400 black mb-0 ms-2">
-                      Generate Bill
-                    </p>
-                  </button>
                 </div>
               ) : null}
             </Col>
