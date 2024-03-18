@@ -588,19 +588,6 @@ export default function NewOrder() {
                   </p>
                 </div>
               </div> : null}
-              {item.status != "NEW" ? (
-                <div className="d-flex justify-content-end">
-                  <button
-                    type="button"
-                    className="d-flex align-items-center bill_generate"
-                  >
-                    <img src={billicon} alt="billicon" />
-                    <p className="fs-sm fw-400 black mb-0 ms-2">
-                      Generate Bill
-                    </p>
-                  </button>
-                </div>
-              ) : null}
             </Col>
           </Row>
         </div>
