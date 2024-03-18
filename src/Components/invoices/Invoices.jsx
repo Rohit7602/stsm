@@ -35,8 +35,7 @@ export default function Invoices() {
             <div
               className={`side_invoice_view ${
                 viewSideBill === true ? "showbill" : ""
-              }`}
-            >
+              }`}>
               <div className="d-flex align-items-center justify-content-end gap-3">
                 {/* <NavLink
                     to="/invoicesbill"
