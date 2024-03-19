@@ -29,12 +29,12 @@ import { increment } from 'firebase/firestore';
 const ParentCategories = () => {
   // const [data, setData] = useState([]);
   // const [mainCategory, setMainCategory] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedParentCategory, setSelectedParentCategory] = useState(null);
   const [name, setName] = useState();
   const [imageupload, setImageupload] = useState('');
   const [addCatPopup, setAddCatPopup] = useState(false);
   const [editPerCatPopup, setEditPerCatPopup] = useState(false);
-  const [editStatus, setEditStatus] = useState('');
+  const [editPerentCatStatus, seteditPerentCatStatus] = useState('');
   const [editName, setEditName] = useState('');
   const [editImg, setEditImg] = useState('');
   const [EditCatId, SetEditCatId] = useState('');
@@ -52,7 +52,7 @@ const ParentCategories = () => {
   const pubref = useRef();
   const hidref = useRef();
   const handleModifyClicked = (index) => {
-    setSelectedCategory(index === selectedCategory ? null : index);
+    setSelectedParentCategory(index === selectedParentCategory ? null : index);
   };
 
   // handle image upload functionality start from here
@@ -143,12 +143,12 @@ const ParentCategories = () => {
   /*  *******************************
     checkbox functionality start 
   *********************************************   **/
-  const [selectAll, setSelectAll] = useState(false);
+  const [selectAllPer, setselectAllPerPer] = useState(false);
 
   useEffect(() => {
     // Check if all checkboxes are checked
     const allChecked = categoreis.every((item) => item.checked);
-    setSelectAll(allChecked);
+    setselectAllPerPer(allChecked);
   }, [categoreis]);
 
   // Main checkbox functionality start from here
@@ -156,10 +156,10 @@ const ParentCategories = () => {
   const handleMainCheckboxChange = () => {
     const updatedData = categoreis.map((item) => ({
       ...item,
-      checked: !selectAll,
+      checked: !selectAllPer,
     }));
     updateData(updatedData);
-    setSelectAll(!selectAll);
+    setselectAllPerPer(!selectAllPer);
   };
 
   // Datacheckboxes functionality strat from here
@@ -170,7 +170,7 @@ const ParentCategories = () => {
 
     // Check if all checkboxes are checked
     const allChecked = updatedData.every((item) => item.checked);
-    setSelectAll(allChecked);
+    setselectAllPerPer(allChecked);
   };
 
   /*  *******************************
@@ -286,7 +286,7 @@ const ParentCategories = () => {
 
       await updateDoc(doc(db, 'categories', EditCatId), {
         title: editName,
-        status: editStatus,
+        status: editPerentCatStatus,
         image: imageUrl,
         homepagelayout: EditSelectedLayout,
         updated_at: Date.now()
@@ -295,7 +295,7 @@ const ParentCategories = () => {
       updateData({
         EditCatId,
         title: editName,
-        status: editStatus,
+        status: editPerentCatStatus,
         image: imageUrl,
         homepagelayout: EditSelectedLayout,
         updated_at: Date.now(),
@@ -772,8 +772,8 @@ const ParentCategories = () => {
                               Published
                               <input
                                 ref={pubref}
-                                onChange={(e) => setEditStatus('published')}
-                                checked={editStatus === 'published'}
+                                onChange={(e) => seteditPerentCatStatus('published')}
+                                checked={editPerentCatStatus === 'published'}
                                 type="checkbox"
                               />
                               <span class="checkmark"></span>
@@ -784,8 +784,8 @@ const ParentCategories = () => {
                               Hidden
                               <input
                                 ref={hidref}
-                                onChange={(e) => setEditStatus('hidden')}
-                                checked={editStatus == 'hidden'}
+                                onChange={(e) => seteditPerentCatStatus('hidden')}
+                                checked={editPerentCatStatus == 'hidden'}
                                 type="checkbox"
                               />
                               <span class="checkmark"></span>
@@ -811,7 +811,7 @@ const ParentCategories = () => {
                           <label class="check1 fw-400 fs-sm black mb-0">
                             <input
                               type="checkbox"
-                              checked={selectAll}
+                              checked={selectAllPer}
                               onChange={handleMainCheckboxChange}
                             />
                             <span class="checkmark"></span>
@@ -912,7 +912,7 @@ const ParentCategories = () => {
                                           setEditPerCatPopup(true);
                                           setEditName(value.title);
                                           SetEditCatId(value.id);
-                                          setEditStatus(value.status);
+                                          seteditPerentCatStatus(value.status);
                                           setEditImg(value.image);
                                           setEditSelectedLayout(value.homepagelayout);
                                         }}

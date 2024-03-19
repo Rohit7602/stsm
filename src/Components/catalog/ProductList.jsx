@@ -3,6 +3,7 @@ import filtericon from '../../Images/svgs/filtericon.svg';
 import addicon from '../../Images/svgs/addicon.svg';
 import dropdownDots from '../../Images/svgs/dots2.svg';
 import eye_icon from '../../Images/svgs/eye.svg';
+import search from "../../Images/svgs/search.svg";
 import pencil_icon from '../../Images/svgs/pencil.svg';
 import delete_icon from '../../Images/svgs/delte.svg';
 import shortIcon from '../../Images/svgs/short-icon.svg';
@@ -155,6 +156,14 @@ const ProductList = (props) => {
             <h1 className="fw-500  mb-0 black fs-lg">Products</h1>
           </div>
           <div className="d-flex align-itmes-center gap-3">
+          <div className="d-flex px-2 gap-2 align-items-center w_xsm_35 w_sm_50 input_wrapper">
+                <img src={search} alt="searchicon" />
+                <input
+                  type="text"
+                  className="fw-400 categorie_input  "
+                  placeholder="Search for Product..."
+                />
+              </div>
             <button className="filter_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
               <img className="me-1" width={24} src={filtericon} alt="filtericon" />
               Filter
@@ -263,8 +272,8 @@ const ProductList = (props) => {
                           <h3 className="fs-sm fw-400 black mb-0">{value.categories.name}</h3>
                         </td>
                         <td className="p-3 mw_130">
-                          <h3 className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${value.totalStock === "0" ? 'stock_bg_red' : value.totalStock <= value.stockAlert ? 'stock_bg_orange' : 'stock_bg'} `}>
-                            {`${value.totalStock} Left`}
+                          <h3 className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${value.totalStock === "0" ? 'stock_bg_red text-white' : value.totalStock <= value.stockAlert ? 'stock_bg_orange' : 'px-2'} `}>
+                            {`${value.totalStock} Left`} 
                           </h3>
                         </td>
                         <td className="p-3 mw_130">
