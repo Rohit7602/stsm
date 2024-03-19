@@ -408,7 +408,7 @@ function Sidebar(props) {
                   <ul className="ps-0">
                     <li>
                       <NavLink className="dash_links_inner" to="communications/chats">
-                        <h3 className="fs-xs fw-400  white mb-0">Coupans</h3>
+                        <h3 className="fs-xs fw-400  white mb-0">Chats</h3>
                       </NavLink>
                     </li>
                   </ul>
