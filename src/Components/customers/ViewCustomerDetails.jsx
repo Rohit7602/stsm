@@ -162,6 +162,9 @@ const ViewCustomerDetails = () => {
                                 <h2 className="fw-400 fs-sm black mb-0"> Order Id. </h2>
                               </th>
                               <th className="py-3">
+                                <h2 className="fw-400 fs-sm black mb-0"> Invoice </h2>
+                              </th>
+                              <th className="py-3">
                                 <h2 className="fw-400 fs-sm black mb-0"> Order Date </h2>
                               </th>
                               <th className="p-3">
@@ -187,6 +190,9 @@ const ViewCustomerDetails = () => {
                                       <Link to={`/orders/orderdetails/${data.order_id}`}>
                                         <h2 className="fw-400 fs-sm color_blue mb-0 "> # {data.order_id}. </h2>
                                       </Link>
+                                    </td>
+                                    <td>
+                                      <Link className='fw-400 fs-sm color_blue mb-0 '>#9309061235</Link>
                                     </td>
                                     <td className="py-3">
                                       <h2 className="fw-400 fs-sm black mb-0">
