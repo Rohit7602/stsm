@@ -264,7 +264,7 @@ const ProductList = (props) => {
                         </td>
                         <td className="p-3 mw_130">
                           <h3 className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${value.totalStock === "0" ? 'stock_bg_red' : value.totalStock <= value.stockAlert ? 'stock_bg_orange' : 'stock_bg'} `}>
-                            {`${value.totalStock} Left`} 
+                            {`${value.totalStock} Left`}
                           </h3>
                         </td>
                         <td className="p-3 mw_130">
