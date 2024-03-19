@@ -28,7 +28,7 @@ export default function Chats() {
               <img className="w-100" src={chatBg} alt="chatBg" />
               <p className="fs-lg fw-400 text-center mb-0">
                 Click to select a Conversation or,
-                <br />{" "}
+                <br />
                 <span className="color_blue">Start a New Conversation</span>
               </p>
             </div>
