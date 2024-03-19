@@ -20,6 +20,13 @@ export default function Invoices() {
     setInvoicesOrder([...filterData]);
   }, [orders])
 
+
+  useEffect(() => {
+    if (inovicesOrder.length > 0) {
+      setSelectedBill([inovicesOrder[0]]);
+    }
+  }, [inovicesOrder]);
+
   const handleBillNumberClick = (invoiceNumber) => {
     const bill = orders.filter(order => order.invoiceNumber === invoiceNumber);
     setSelectedBill([...bill]);
@@ -105,7 +112,7 @@ export default function Invoices() {
                       <div className="text-end w-50">
                         <p className="fs-xxs fw-700 black mb-0">Bill To:</p>
                         <p className="fs-xxs fw-700 black mb-0">{items.customer.name}</p>
-                        <p style={{maxWidth:"235px"}} className="fs-xs fw-400 black mb-0 mt-1">
+                        <p style={{ maxWidth: "235px" }} className="fs-xs fw-400 black mb-0 mt-1">
                           {items.shipping.address}
                         </p>
                         <p className="fs-xs fw-400 black mb-0 mt-1">
