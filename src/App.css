@@ -1491,7 +1491,6 @@ div.rich-text-editor .ql-editor {
   padding: 20px;
   z-index: 10;
 }
-
 .add_coupon_popup {
   position: fixed;
   width: 480px;
@@ -1972,6 +1971,13 @@ div.rich-text-editor .ql-editor {
 }
 .customer_list_chat::-webkit-scrollbar{
   width: 3px;
+}
+min_width_230{
+  min-width: 230px;
+  width: 230px;
+}
+.top_n_26{
+  top: -26px;
 }
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
