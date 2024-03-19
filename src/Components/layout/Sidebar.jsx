@@ -1,15 +1,17 @@
 // import Logo from '../../Images/svgs/logo.svg';
-import stsm_logo from '../../Images/svgs/stsm_logo.svg'
-import dropDown from '../../Images/svgs/dropdown-white-icon.svg';
-import { NavLink, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import stsm_logo from "../../Images/svgs/stsm_logo.svg";
+import dropDown from "../../Images/svgs/dropdown-white-icon.svg";
+import { NavLink, useLocation } from "react-router-dom";
+import { useState } from "react";
 
 function Sidebar(props) {
   let path = useLocation();
   const [openDropdown, setOpenDropdown] = useState(null);
 
   const toggleDropdown = (dropdownName) => {
-    setOpenDropdown((prevDropdown) => (prevDropdown === dropdownName ? null : dropdownName));
+    setOpenDropdown((prevDropdown) =>
+      prevDropdown === dropdownName ? null : dropdownName
+    );
   };
   return (
     <>
@@ -17,11 +19,16 @@ function Sidebar(props) {
         <div className="sidebar_position d-flex flex-column">
           <div className="logo_bar bg_white d-flex justify-content-center pt_3 position-sticky top-0 z-1 align-items-center">
             <img className="mx-2" src={stsm_logo} alt="Logo" />
-            <button className="admin_btn  p-2 py-1 fw-400 fs-lg bg-transparent  border-0 color_brown">STSM</button>
+            <button className="admin_btn  p-2 py-1 fw-400 fs-lg bg-transparent  border-0 color_brown">
+              STSM
+            </button>
           </div>
           <div className="drops_wrap">
             <ul className="px-0 drop_list">
-              <li onClick={() => toggleDropdown('das')} className=" d-flex align-item-center mt-3">
+              <li
+                onClick={() => toggleDropdown("das")}
+                className=" d-flex align-item-center mt-3"
+              >
                 <NavLink to="" className="w-100">
                   <div className="d-flex align-items-center w-100 dash_links">
                     <svg
@@ -30,7 +37,8 @@ function Sidebar(props) {
                       height="16"
                       viewBox="0 0 16 16"
                       fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <path
                         fill-rule="evenodd"
                         clip-rule="evenodd"
@@ -44,15 +52,17 @@ function Sidebar(props) {
               </li>
               <li>
                 <div
-                  onClick={() => toggleDropdown('catalog')}
-                  className={`w-100 m-0 cursor_pointer ${path.pathname === '/catalog' ||
-                      path.pathname === '/catalog/productlist' ||
-                      path.pathname === '/catalog/serviceareas' ||
-                      path.pathname === '/catalog/newcategory' ||
-                      path.pathname === '/catalog/addproduct'
-                      ? 'active'
+                  onClick={() => toggleDropdown("catalog")}
+                  className={`w-100 m-0 cursor_pointer ${
+                    path.pathname === "/catalog" ||
+                    path.pathname === "/catalog/productlist" ||
+                    path.pathname === "/catalog/serviceareas" ||
+                    path.pathname === "/catalog/newcategory" ||
+                    path.pathname === "/catalog/addproduct"
+                      ? "active"
                       : null
-                    }`}>
+                  }`}
+                >
                   <div className="d-flex align-items-center w-100 dash_links ps-3 ">
                     <div className="d-flex align-items-center w-100">
                       <svg
@@ -61,7 +71,8 @@ function Sidebar(props) {
                         height="16"
                         viewBox="0 0 16 16"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M11.5 13.6L10.2 12.3L9.5 13L11.5 15L15 11.5L14.3 10.8L11.5 13.6ZM6 9H10V10H6V9ZM6 6.5H10V7.5H6V6.5ZM6 4H10V5H6V4Z"
                           fill="white"
@@ -76,30 +87,47 @@ function Sidebar(props) {
                     <img src={dropDown} alt="" />
                   </div>
                 </div>
-                {openDropdown === 'catalog' && (
+                {openDropdown === "catalog" && (
                   <ul className="ps-0">
                     <li>
                       <NavLink
                         to="catalog"
                         end
-                        className={`dash_links_inner ${path.pathname === '/catalog/newcategory' ? 'active' : null
-                          }`}>
-                        <h3 className="fs-xs fw-400  white mb-0">Category List</h3>
+                        className={`dash_links_inner ${
+                          path.pathname === "/catalog/newcategory"
+                            ? "active"
+                            : null
+                        }`}
+                      >
+                        <h3 className="fs-xs fw-400  white mb-0">
+                          Category List
+                        </h3>
                       </NavLink>
                     </li>
 
                     <li>
                       <NavLink
-                        className={`dash_links_inner ${path.pathname === '/catalog/addproduct' ? 'active' : null
-                          }`}
-                        to="catalog/productlist">
-                        <h3 className="fs-xs fw-400  white mb-0">Product List</h3>
+                        className={`dash_links_inner ${
+                          path.pathname === "/catalog/addproduct"
+                            ? "active"
+                            : null
+                        }`}
+                        to="catalog/productlist"
+                      >
+                        <h3 className="fs-xs fw-400  white mb-0">
+                          Product List
+                        </h3>
                       </NavLink>
                     </li>
 
                     <li>
-                      <NavLink className="dash_links_inner" to="catalog/serviceareas">
-                        <h3 className="fs-xs fw-400  white mb-0">Service Areas</h3>
+                      <NavLink
+                        className="dash_links_inner"
+                        to="catalog/serviceareas"
+                      >
+                        <h3 className="fs-xs fw-400  white mb-0">
+                          Service Areas
+                        </h3>
                       </NavLink>
                     </li>
                   </ul>
@@ -229,7 +257,8 @@ function Sidebar(props) {
                         height="14"
                         viewBox="0 0 14 14"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M9.47333 7.47374C10.1269 6.95951 10.604 6.25436 10.8382 5.45637C11.0723 4.65838 11.0519 3.80725 10.7799 3.02139C10.5078 2.23552 9.9975 1.554 9.32005 1.07165C8.64259 0.589288 7.83163 0.330078 7 0.330078C6.16836 0.330078 5.35741 0.589288 4.67995 1.07165C4.00249 1.554 3.49223 2.23552 3.22014 3.02139C2.94805 3.80725 2.92767 4.65838 3.16184 5.45637C3.396 6.25436 3.87307 6.95951 4.52666 7.47374C3.40672 7.92244 2.42952 8.66664 1.69926 9.62702C0.968996 10.5874 0.51304 11.7279 0.379998 12.9271C0.370368 13.0146 0.378075 13.1032 0.402681 13.1878C0.427287 13.2723 0.468309 13.3512 0.523405 13.42C0.634677 13.5587 0.79652 13.6476 0.973331 13.6671C1.15014 13.6865 1.32744 13.6349 1.46621 13.5237C1.60499 13.4124 1.69388 13.2506 1.71333 13.0737C1.85972 11.7705 2.48112 10.5669 3.45881 9.69294C4.4365 8.81892 5.70193 8.33576 7.01333 8.33576C8.32473 8.33576 9.59016 8.81892 10.5679 9.69294C11.5455 10.5669 12.1669 11.7705 12.3133 13.0737C12.3315 13.2376 12.4096 13.3888 12.5327 13.4984C12.6559 13.608 12.8152 13.6681 12.98 13.6671H13.0533C13.2281 13.647 13.3878 13.5586 13.4977 13.4212C13.6076 13.2839 13.6587 13.1086 13.64 12.9337C13.5063 11.7312 13.0479 10.5877 12.3139 9.62588C11.5799 8.66402 10.5979 7.92006 9.47333 7.47374ZM7 7.00041C6.47258 7.00041 5.95701 6.84401 5.51848 6.55099C5.07995 6.25798 4.73815 5.8415 4.53632 5.35423C4.33449 4.86696 4.28168 4.33078 4.38457 3.8135C4.48746 3.29622 4.74144 2.82106 5.11438 2.44812C5.48732 2.07518 5.96247 1.82121 6.47976 1.71831C6.99704 1.61542 7.53322 1.66823 8.02049 1.87006C8.50776 2.0719 8.92423 2.41369 9.21725 2.85222C9.51027 3.29075 9.66667 3.80633 9.66667 4.33374C9.66667 5.04099 9.38571 5.71926 8.88562 6.21936C8.38552 6.71946 7.70724 7.00041 7 7.00041Z"
                           fill="white"
@@ -250,7 +279,8 @@ function Sidebar(props) {
                         height="16"
                         viewBox="0 0 16 16"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M11.5167 13.5L13.8333 11.2L13.1333 10.5L11.5167 12.0833L10.8667 11.4333L10.1667 12.15L11.5167 13.5ZM4 6H12V4.66667H4V6ZM12 15.3333C11.0778 15.3333 10.2916 15.0082 9.64133 14.358C8.99111 13.7078 8.66622 12.9218 8.66667 12C8.66667 11.0778 8.99178 10.2916 9.642 9.64133C10.2922 8.99111 11.0782 8.66622 12 8.66667C12.9222 8.66667 13.7084 8.99178 14.3587 9.642C15.0089 10.2922 15.3338 11.0782 15.3333 12C15.3333 12.9222 15.0082 13.7084 14.358 14.3587C13.7078 15.0089 12.9218 15.3338 12 15.3333ZM2 14.6667V3.33333C2 2.96667 2.13067 2.65267 2.392 2.39133C2.65333 2.13 2.96711 1.99956 3.33333 2H12.6667C13.0333 2 13.3473 2.13067 13.6087 2.392C13.87 2.65333 14.0004 2.96711 14 3.33333V7.78333C13.7889 7.68333 13.5722 7.6 13.35 7.53333C13.1278 7.46667 12.9 7.41667 12.6667 7.38333V3.33333H3.33333V12.7H7.38333C7.43889 13.0444 7.52511 13.3722 7.642 13.6833C7.75889 13.9944 7.91155 14.2889 8.1 14.5667L8 14.6667L7 13.6667L6 14.6667L5 13.6667L4 14.6667L3 13.6667L2 14.6667ZM4 11.3333H7.38333C7.41667 11.1 7.46667 10.8722 7.53333 10.65C7.6 10.4278 7.68333 10.2111 7.78333 10H4V11.3333ZM4 8.66667H8.73333C9.15556 8.25556 9.64733 7.93045 10.2087 7.69133C10.77 7.45222 11.3671 7.33289 12 7.33333H4V8.66667Z"
                           fill="white"
@@ -271,7 +301,8 @@ function Sidebar(props) {
                         height="16"
                         viewBox="0 0 16 16"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M11.5167 13.5L13.8333 11.2L13.1333 10.5L11.5167 12.0833L10.8667 11.4333L10.1667 12.15L11.5167 13.5ZM4 6H12V4.66667H4V6ZM12 15.3333C11.0778 15.3333 10.2916 15.0082 9.64133 14.358C8.99111 13.7078 8.66622 12.9218 8.66667 12C8.66667 11.0778 8.99178 10.2916 9.642 9.64133C10.2922 8.99111 11.0782 8.66622 12 8.66667C12.9222 8.66667 13.7084 8.99178 14.3587 9.642C15.0089 10.2922 15.3338 11.0782 15.3333 12C15.3333 12.9222 15.0082 13.7084 14.358 14.3587C13.7078 15.0089 12.9218 15.3338 12 15.3333ZM2 14.6667V3.33333C2 2.96667 2.13067 2.65267 2.392 2.39133C2.65333 2.13 2.96711 1.99956 3.33333 2H12.6667C13.0333 2 13.3473 2.13067 13.6087 2.392C13.87 2.65333 14.0004 2.96711 14 3.33333V7.78333C13.7889 7.68333 13.5722 7.6 13.35 7.53333C13.1278 7.46667 12.9 7.41667 12.6667 7.38333V3.33333H3.33333V12.7H7.38333C7.43889 13.0444 7.52511 13.3722 7.642 13.6833C7.75889 13.9944 7.91155 14.2889 8.1 14.5667L8 14.6667L7 13.6667L6 14.6667L5 13.6667L4 14.6667L3 13.6667L2 14.6667ZM4 11.3333H7.38333C7.41667 11.1 7.46667 10.8722 7.53333 10.65C7.6 10.4278 7.68333 10.2111 7.78333 10H4V11.3333ZM4 8.66667H8.73333C9.15556 8.25556 9.64733 7.93045 10.2087 7.69133C10.77 7.45222 11.3671 7.33289 12 7.33333H4V8.66667Z"
                           fill="white"
@@ -284,13 +315,15 @@ function Sidebar(props) {
               </li>
               <li>
                 <div
-                  onClick={() => toggleDropdown('marketing')}
+                  onClick={() => toggleDropdown("marketing")}
                   to="marketing"
-                  className={`w-100 cursor_pointer ${path.pathname === '/marketing/coupans' ||
-                      path.pathname === '/marketing/bannersadvertisement'
-                      ? 'active'
+                  className={`w-100 cursor_pointer ${
+                    path.pathname === "/marketing/coupans" ||
+                    path.pathname === "/marketing/bannersadvertisement"
+                      ? "active"
                       : null
-                    }`}>
+                  }`}
+                >
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg
@@ -299,7 +332,8 @@ function Sidebar(props) {
                         height="16"
                         viewBox="0 0 16 16"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <g clip-path="url(#clip0_222_71)">
                           <path
                             d="M14.25 2.09989C14.0781 1.98868 13.8815 1.92139 13.6775 1.90396C13.4735 1.88652 13.2683 1.91946 13.08 1.99989L6.91 4.42989C6.76392 4.48934 6.60771 4.51991 6.45 4.51989H2.5C2.16848 4.51989 1.85054 4.65159 1.61612 4.88601C1.3817 5.12043 1.25 5.43837 1.25 5.76989V5.86989H0V8.86989H1.25V8.99989C1.25783 9.32619 1.39298 9.63648 1.62656 9.86445C1.86013 10.0924 2.17361 10.22 2.5 10.2199L4 13.3999C4.10157 13.614 4.26148 13.7952 4.46136 13.9225C4.66124 14.0499 4.893 14.1183 5.13 14.1199H5.76C6.08978 14.1173 6.40516 13.9844 6.63743 13.7503C6.86969 13.5161 7.00001 13.1997 7 12.8699V10.3399L13.08 12.7699C13.2295 12.8294 13.389 12.8599 13.55 12.8599C13.7997 12.8559 14.0429 12.7794 14.25 12.6399C14.4145 12.5288 14.5501 12.3802 14.6458 12.2063C14.7414 12.0324 14.7943 11.8383 14.8 11.6399V3.12989C14.7991 2.92641 14.7485 2.72623 14.6527 2.54673C14.5568 2.36723 14.4186 2.21384 14.25 2.09989ZM5.75 5.76989V8.99989H2.5V5.76989H5.75ZM5.75 12.8699H5.12L3.89 10.2199H5.75V12.8699ZM7.37 9.14989C7.25127 9.08922 7.12747 9.03903 7 8.99989V5.69989C7.12624 5.67385 7.25003 5.63705 7.37 5.58989L13.55 3.12989V11.6099L7.37 9.14989ZM14.83 6.11989V8.61989C15.1615 8.61989 15.4795 8.4882 15.7139 8.25378C15.9483 8.01936 16.08 7.70142 16.08 7.36989C16.08 7.03837 15.9483 6.72043 15.7139 6.48601C15.4795 6.25159 15.1615 6.11989 14.83 6.11989Z"
@@ -317,23 +351,37 @@ function Sidebar(props) {
                     <img src={dropDown} alt="" />
                   </div>
                 </div>
-                {openDropdown === 'marketing' && (
+                {openDropdown === "marketing" && (
                   <ul className="ps-0">
                     <li>
-                      <NavLink className="dash_links_inner" to="marketing/coupans">
+                      <NavLink
+                        className="dash_links_inner"
+                        to="marketing/coupans"
+                      >
                         <h3 className="fs-xs fw-400  white mb-0">Coupans</h3>
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink className="dash_links_inner" to="marketing/bannersadvertisement">
-                        <h3 className="fs-xs fw-400  white mb-0">Banners & Adv.</h3>
+                      <NavLink
+                        className="dash_links_inner"
+                        to="marketing/bannersadvertisement"
+                      >
+                        <h3 className="fs-xs fw-400  white mb-0">
+                          Banners & Adv.
+                        </h3>
                       </NavLink>
                     </li>
                   </ul>
                 )}
               </li>
               <li>
-                <NavLink to="/communications" className="w-100">
+                <div
+                  onClick={() => toggleDropdown("communications")}
+                  to="marketing"
+                  className={`w-100 cursor_pointer ${
+                    path.pathname === "/communications/chats" ? "active" : null
+                  }`}
+                >
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg
@@ -342,16 +390,29 @@ function Sidebar(props) {
                         height="16"
                         viewBox="0 0 16 16"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M8.00016 6.66699C8.35378 6.66699 8.69292 6.80747 8.94297 7.05752C9.19302 7.30756 9.3335 7.6467 9.3335 8.00033C9.3335 8.35395 9.19302 8.69309 8.94297 8.94313C8.69292 9.19318 8.35378 9.33366 8.00016 9.33366C7.64654 9.33366 7.3074 9.19318 7.05735 8.94313C6.80731 8.69309 6.66683 8.35395 6.66683 8.00033C6.66683 7.6467 6.80731 7.30756 7.05735 7.05752C7.3074 6.80747 7.64654 6.66699 8.00016 6.66699ZM2.66683 2.66699H7.3335C7.68712 2.66699 8.02626 2.80747 8.27631 3.05752C8.52635 3.30756 8.66683 3.6467 8.66683 4.00033V6.00033H7.3335V4.00033H2.66683V7.33366H4.00016V6.00033L6.00016 8.00033L4.00016 10.0003V8.66699H2.66683C2.31321 8.66699 1.97407 8.52652 1.72402 8.27647C1.47397 8.02642 1.3335 7.68728 1.3335 7.33366V4.00033C1.3335 3.6467 1.47397 3.30756 1.72402 3.05752C1.97407 2.80747 2.31321 2.66699 2.66683 2.66699ZM13.3335 13.3337H8.66683C8.31321 13.3337 7.97407 13.1932 7.72402 12.9431C7.47397 12.6931 7.3335 12.3539 7.3335 12.0003V10.0003H8.66683V12.0003H13.3335V8.66699H12.0002V10.0003L10.0002 8.00033L12.0002 6.00033V7.33366H13.3335C13.6871 7.33366 14.0263 7.47413 14.2763 7.72418C14.5264 7.97423 14.6668 8.31337 14.6668 8.66699V12.0003C14.6668 12.3539 14.5264 12.6931 14.2763 12.9431C14.0263 13.1932 13.6871 13.3337 13.3335 13.3337Z"
                           fill="white"
                         />
                       </svg>
-                      <h3 className="fs-xs fw-400  white mb-0">Communications</h3>
+                      <h3 className="fs-xs fw-400  white mb-0">
+                        Communications
+                      </h3>
                     </div>
+                    <img src={dropDown} alt="" />
                   </div>
-                </NavLink>
+                </div>
+                {openDropdown === "communications" && (
+                  <ul className="ps-0">
+                    <li>
+                      <NavLink className="dash_links_inner" to="communications/chats">
+                        <h3 className="fs-xs fw-400  white mb-0">Coupans</h3>
+                      </NavLink>
+                    </li>
+                  </ul>
+                )}
               </li>
               <li>
                 <NavLink to="/invoices" className="w-100">
@@ -363,7 +424,8 @@ function Sidebar(props) {
                         height="16"
                         viewBox="0 0 16 16"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M3 1.5V14.5H11V13.5H4V2.5H9V5.5H12V6.5H13V4.8L12.85 4.65L9.85 1.65L9.7 1.5H3ZM10 3.2L11.3 4.5H10V3.2ZM5 6.5V7.5H11V6.5H5ZM13.5 7.5V8.5C12.65 8.65 12 9.35 12 10.25C12 11.25 12.75 12 13.75 12H14.25C14.65 12 15 12.35 15 12.75C15 13.15 14.65 13.5 14.25 13.5H12.5V14.5H13.5V15.5H14.5V14.5C15.35 14.35 16 13.65 16 12.75C16 11.75 15.25 11 14.25 11H13.75C13.35 11 13 10.65 13 10.25C13 9.85 13.35 9.5 13.75 9.5H15.5V8.5H14.5V7.5H13.5ZM5 9V10H8.5V9H5ZM9.5 9V10H11V9H9.5ZM5 11V12H8.5V11H5ZM9.5 11V12H11V11H9.5Z"
                           fill="white"
@@ -384,7 +446,8 @@ function Sidebar(props) {
                         height="16"
                         viewBox="0 0 16 16"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <g clip-path="url(#clip0_222_59)">
                           <path
                             d="M7.99986 15.4284C12.1025 15.4284 15.4284 12.1025 15.4284 7.99986C15.4284 3.89717 12.1025 0.571289 7.99986 0.571289C3.89717 0.571289 0.571289 3.89717 0.571289 7.99986C0.571289 12.1025 3.89717 15.4284 7.99986 15.4284Z"
@@ -426,7 +489,8 @@ function Sidebar(props) {
                         height="16"
                         viewBox="0 0 16 16"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <g clip-path="url(#clip0_222_78)">
                           <path
                             d="M13.3332 7.99967V3.83234C13.3332 3.77972 13.3229 3.7276 13.3027 3.67898C13.2826 3.63036 13.2531 3.5862 13.2158 3.54901L11.1172 1.45034C11.0422 1.37531 10.9406 1.3331 10.8345 1.33301H3.0665C2.96042 1.33301 2.85868 1.37515 2.78366 1.45017C2.70865 1.52518 2.6665 1.62692 2.6665 1.73301V14.2663C2.6665 14.3724 2.70865 14.4742 2.78366 14.5492C2.85868 14.6242 2.96042 14.6663 3.0665 14.6663H8.6665M5.33317 6.66634H10.6665M5.33317 3.99967H7.99984M5.33317 9.33301H7.33317"
@@ -449,7 +513,9 @@ function Sidebar(props) {
                           </clipPath>
                         </defs>
                       </svg>
-                      <h3 className="fs-xs fw-400  white mb-0">Privacy Policy</h3>
+                      <h3 className="fs-xs fw-400  white mb-0">
+                        Privacy Policy
+                      </h3>
                     </div>
                   </div>
                 </NavLink>
@@ -464,7 +530,8 @@ function Sidebar(props) {
                         height="16"
                         viewBox="0 0 16 16"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <g clip-path="url(#clip0_222_84)">
                           <path
                             d="M1 1V15H8V16H0V0H8.71094L13 4.28906V10H12V5H8V1H1ZM9 1.71094V4H11.2891L9 1.71094ZM2 4H7V5H2V4ZM11 6V7H2V6H11ZM2 9V8H11V9H2ZM2 11V10H8V11H2ZM2 13V12H8V13H2ZM11 11H16V12H11V11ZM11 14V13H16V14H11ZM11 16V15H16V16H11ZM9 12V11H10V12H9ZM9 14V13H10V14H9ZM9 16V15H10V16H9Z"
@@ -477,13 +544,18 @@ function Sidebar(props) {
                           </clipPath>
                         </defs>
                       </svg>
-                      <h3 className="fs-xs fw-400  white mb-0">Terms and Conditions</h3>
+                      <h3 className="fs-xs fw-400  white mb-0">
+                        Terms and Conditions
+                      </h3>
                     </div>
                   </div>
                 </NavLink>
               </li>
               <li>
-                <div onClick={()=>props.setDeletPopup(true)} className="w-100 cursor_pointer">
+                <div
+                  onClick={() => props.setDeletPopup(true)}
+                  className="w-100 cursor_pointer"
+                >
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
                       <svg
@@ -492,7 +564,8 @@ function Sidebar(props) {
                         height="16"
                         viewBox="0 0 12 12"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M10.1716 8.57814H9.34782C9.29157 8.57814 9.23883 8.60275 9.20368 8.64611C9.12165 8.74572 9.03376 8.84181 8.94118 8.93322C8.56254 9.31224 8.11404 9.61429 7.62048 9.82267C7.10913 10.0386 6.55954 10.1494 6.00446 10.1485C5.44313 10.1485 4.89938 10.0383 4.38844 9.82267C3.89488 9.61429 3.44638 9.31224 3.06774 8.93322C2.68842 8.55548 2.38596 8.10776 2.17712 7.61486C1.96032 7.10392 1.85133 6.56135 1.85133 6.00002C1.85133 5.43869 1.96149 4.89611 2.17712 4.38517C2.38571 3.89181 2.68571 3.44767 3.06774 3.06681C3.44977 2.68596 3.89391 2.38596 4.38844 2.17736C4.89938 1.96174 5.44313 1.85158 6.00446 1.85158C6.56579 1.85158 7.10954 1.96056 7.62048 2.17736C8.11501 2.38596 8.55915 2.68596 8.94118 3.06681C9.03376 3.15939 9.12048 3.25549 9.20368 3.35392C9.23883 3.39728 9.29274 3.42189 9.34782 3.42189H10.1716C10.2455 3.42189 10.2912 3.33986 10.2502 3.27775C9.35133 1.88088 7.77868 0.956268 5.99157 0.960955C3.18376 0.967986 0.932585 3.24728 0.96071 6.05158C0.988835 8.81135 3.23649 11.0391 6.00446 11.0391C7.78688 11.0391 9.35251 10.1156 10.2502 8.72228C10.29 8.66017 10.2455 8.57814 10.1716 8.57814ZM11.2134 5.92619L9.55055 4.61369C9.48844 4.56447 9.39821 4.609 9.39821 4.68752V5.57814H5.71852C5.66696 5.57814 5.62477 5.62033 5.62477 5.67189V6.32814C5.62477 6.37971 5.66696 6.42189 5.71852 6.42189H9.39821V7.31252C9.39821 7.39103 9.48962 7.43556 9.55055 7.38635L11.2134 6.07385C11.2246 6.06508 11.2337 6.05387 11.2399 6.04108C11.2462 6.02829 11.2494 6.01425 11.2494 6.00002C11.2494 5.98579 11.2462 5.97175 11.2399 5.95896C11.2337 5.94616 11.2246 5.93496 11.2134 5.92619Z"
                           fill="white"

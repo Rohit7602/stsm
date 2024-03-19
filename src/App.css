@@ -1730,12 +1730,11 @@ div.rich-text-editor .ql-editor {
 .side_invoice_view {
   position: absolute;
   background-color: white;
-  right: 0;
+  right: -100%;
   width: 538px;
   padding: 20px 15px;
   z-index: 2;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.103);
-  border-left: 1px solid rgba(0, 0, 0, 0.205);
+  transition: .3s;
 }
 
 .side_invoice_view::after {
@@ -1748,7 +1747,19 @@ div.rich-text-editor .ql-editor {
   top: 0;
   z-index: 1;
 }
-
+.side_invoice_view::before {
+  content: "";
+  background-color: #f5f7fa;
+  position: absolute;
+  width: 100%;
+  height: 20px;
+  left: 0px;
+  bottom: 0px;
+  z-index: 1;
+}
+.showbill{
+  right: 0;
+}
 .view_pdf_btn {
   padding: 12px 10px;
   border-radius: 5px;
@@ -1905,14 +1916,44 @@ div.rich-text-editor .ql-editor {
 .py_2 {
   padding: 2px 0;
 }
-
 .invoice_data .table_body {
   display: block !important;
   height: calc(100vh - 237px) !important;
   height: 100%;
-  overflow-y: scroll !important;
+  overflow-y: auto !important;
 }
-
+.chat_container{
+  background-color: #F5F7FA;
+  min-height: calc(100vh - 56px);
+  padding: 30px 20px;
+}
+.chat_input{
+  padding: 15px;
+  border-radius: 10px;
+  background-color: var(--color-white);
+  border: 0.8px solid #0000004D;
+}
+.chat_input input{
+  border: 0;
+  outline: 0;
+  background-color: transparent;
+  margin-left: 10px;
+}
+.chat_read_btn{
+  border: 0.8px solid #D9D9D9;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+.chat_read_btn button{
+  border: 0;
+  outline: 0;
+  background-color: transparent;
+  padding: 10px;
+}
+.chat_height{
+ height: calc(100vh - 116px);
+ overflow-y: auto;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
   :root {

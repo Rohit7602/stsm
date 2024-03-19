@@ -36,6 +36,7 @@ import DeliveryBoyInventory from './Components/deliveryman/DeliveryBoyInventory'
 import { useUserAuth } from './context/Authcontext';
 import Coupons from './Components/marketing/Coupons';
 import InvoiceBill from './Components/invoices/InvoiceBill';
+import Chats from './Components/communications/Chats';
 function App() {
 
   const { logoutUser } = useUserAuth()
@@ -163,6 +164,9 @@ function App() {
                         <Route path="marketing">
                           <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
                           <Route path="coupans" element={<Coupons />} />
+                        </Route>
+                        <Route path="communications">
+                          <Route path="chats" element={<Chats />} />
                         </Route>
                         <Route path="privacypolicy" element={<PrivacyPolicy />} />
                         <Route path="term" element={<TermConditions />} />
