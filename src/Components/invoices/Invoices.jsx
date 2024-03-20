@@ -279,7 +279,7 @@ export default function Invoices() {
                               onClick={() => {
                                 handleBillNumberClick(items.invoiceNumber);
                                 setViewSideBIll(
-                                  viewSideBill === true ? false : true
+                                  viewSideBill === false ? true : true
                                 );
                               }}
                               className="fs-sm fw-400 color_blue mb-0"
