@@ -82,6 +82,7 @@ const AddProduct = () => {
   const [discount, setDiscount] = useState(null);
   const [originalPrice, setOriginalPrice] = useState("");
   const [VarintName, setVariantsNAME] = useState("");
+  const [Tax, setTax] = useState(null)
   const [discountType, setDiscountType] = useState("Amount");
   function HandleAddVarients() {
     setVariants((prevVariants) => [
@@ -189,21 +190,23 @@ const AddProduct = () => {
           ServiceCharge,
           DeliveryCharge,
           colors: storeColors,
+          Tax,
           isMultipleVariant: isvarient === true,
           ...(isvarient === false
             ? {
-                varients: [
-                  {
-                    originalPrice: originalPrice,
-                    discountType: discountType,
-                    discount: discount,
-                    unitType,
-                  },
-                ],
-              }
+              varients: [
+                {
+                  VarientName: VarintName,
+                  originalPrice: originalPrice,
+                  discountType: discountType,
+                  discount: discount,
+                  unitType,
+                },
+              ],
+            }
             : {
-                varients: variants,
-              }), // Include the actual list of variants if varient is true
+              varients: variants,
+            }), // Include the actual list of variants if varient is true
         });
         setSearchdata([]);
         setLoaderstatus(false);
@@ -276,6 +279,7 @@ const AddProduct = () => {
         setPreviousCategoryId(items.categories.id);
         setpreviousCategoryParentId(items.categories.parent_id);
         setpreviousCategoryname(items.categories.name);
+        setTax(items.Tax)
 
         const allVariants = [];
         items.varients.map((itm) => {
@@ -373,20 +377,21 @@ const AddProduct = () => {
         DeliveryCharge,
         colors: storeColors,
         isMultipleVariant: isvarient === true,
+        Tax,
         ...(isvarient === false
           ? {
-              varients: [
-                {
-                  originalPrice: variants[0].originalPrice,
-                  discountType: variants[0].discountType,
-                  discount: variants[0].discount,
-                  unitType: variants[0].unitType,
-                },
-              ],
-            }
+            varients: [
+              {
+                originalPrice: variants[0].originalPrice,
+                discountType: variants[0].discountType,
+                discount: variants[0].discount,
+                unitType: variants[0].unitType,
+              },
+            ],
+          }
           : {
-              varients: variants,
-            }),
+            varients: variants,
+          }),
       };
 
       // Check if the selected category is different from the existing category
@@ -650,11 +655,11 @@ const AddProduct = () => {
                                                           (v, i) =>
                                                             i === index
                                                               ? {
-                                                                  ...v,
-                                                                  unitType:
-                                                                    e.target
-                                                                      .innerHTML,
-                                                                }
+                                                                ...v,
+                                                                unitType:
+                                                                  e.target
+                                                                    .innerHTML,
+                                                              }
                                                               : v
                                                         )
                                                     );
@@ -697,9 +702,9 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                              ...v,
-                                              originalPrice: e.target.value,
-                                            }
+                                            ...v,
+                                            originalPrice: e.target.value,
+                                          }
                                           : v
                                       )
                                     )
@@ -723,16 +728,16 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                              ...v,
-                                              discountType:
-                                                selectedDiscountType,
-                                              // Reset discount value when changing the discount type to "Amount"
-                                              discount:
-                                                selectedDiscountType ===
+                                            ...v,
+                                            discountType:
+                                              selectedDiscountType,
+                                            // Reset discount value when changing the discount type to "Amount"
+                                            discount:
+                                              selectedDiscountType ===
                                                 "Amount"
-                                                  ? 0
-                                                  : v.discount,
-                                            }
+                                                ? 0
+                                                : v.discount,
+                                          }
                                           : v
                                       )
                                     );
@@ -765,15 +770,15 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                              ...v,
-                                              discount:
-                                                v.discountType === "Percentage"
-                                                  ? Math.min(
-                                                      e.target.value,
-                                                      100
-                                                    )
-                                                  : e.target.value,
-                                            }
+                                            ...v,
+                                            discount:
+                                              v.discountType === "Percentage"
+                                                ? Math.min(
+                                                  e.target.value,
+                                                  100
+                                                )
+                                                : e.target.value,
+                                          }
                                           : v
                                       )
                                     )
@@ -787,10 +792,33 @@ const AddProduct = () => {
                         <div>
                           <div>
                             <input
+                              value={
+                                variants.length == 0
+                                  ? VarintName
+                                  : variants[0].VarientName
+                              }
                               required
                               className="varient_value fs-2sm fw-400 color_red"
                               placeholder="Enter Varient Name"
                               type="text"
+                              onChange={(e) => {
+                                if (variants.length === 0) {
+                                  // Set originalPrice directly if variants array is empty
+                                  setVariantsNAME(e.target.value);
+                                } else {
+                                  // Update originalPrice for the specific variant
+                                  setVariants((prevVariants) =>
+                                    prevVariants.map((v, i) =>
+                                      i === 0
+                                        ? {
+                                          ...v,
+                                          VarientName: e.target.value,
+                                        }
+                                        : v
+                                    )
+                                  );
+                                }
+                              }}
                             />
                           </div>
                           <div className="d-flex flex-column flex-sm-row gap-3">
@@ -872,9 +900,9 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === 0
                                           ? {
-                                              ...v,
-                                              originalPrice: e.target.value,
-                                            }
+                                            ...v,
+                                            originalPrice: e.target.value,
+                                          }
                                           : v
                                       )
                                     );
@@ -912,14 +940,14 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === 0
                                           ? {
-                                              ...v,
-                                              discountType: e.target.value,
-                                              // Reset discount value when changing the discount type to "Amount"
-                                              discount:
-                                                e.target.value === "Amount"
-                                                  ? 0
-                                                  : v.discount,
-                                            }
+                                            ...v,
+                                            discountType: e.target.value,
+                                            // Reset discount value when changing the discount type to "Amount"
+                                            discount:
+                                              e.target.value === "Amount"
+                                                ? 0
+                                                : v.discount,
+                                          }
                                           : v
                                       )
                                     );
@@ -965,8 +993,8 @@ const AddProduct = () => {
                                   if (variants.length === 0) {
                                     discountType === "Percentage"
                                       ? setDiscount(
-                                          Math.min(e.target.value, 100)
-                                        )
+                                        Math.min(e.target.value, 100)
+                                      )
                                       : setDiscount(e.target.value);
                                   } else {
                                     // Update discount for the specific variant
@@ -974,15 +1002,15 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === 0
                                           ? {
-                                              ...v,
-                                              discount:
-                                                v.discountType === "Percentage"
-                                                  ? Math.min(
-                                                      e.target.value,
-                                                      100
-                                                    )
-                                                  : e.target.value,
-                                            }
+                                            ...v,
+                                            discount:
+                                              v.discountType === "Percentage"
+                                                ? Math.min(
+                                                  e.target.value,
+                                                  100
+                                                )
+                                                : e.target.value,
+                                          }
                                           : v
                                       )
                                     );
@@ -1033,21 +1061,21 @@ const AddProduct = () => {
                           <div className=" d-flex align-items-center mt-3 pt-1 me-5 gap-3 flex-wrap">
                             {storeColors && storeColors.length !== 0
                               ? storeColors.map((items, index) => {
-                                  return (
-                                    <div
-                                      key={index}
-                                      className="d-flex align-items-center gap-3 color_add_input"
-                                    >
-                                      <p className="m-0">{items}</p>
-                                      <img
-                                        onClick={() => handelColorDelete(index)}
-                                        className="cursor_pointer"
-                                        src={closeRed}
-                                        alt="closeRed"
-                                      />
-                                    </div>
-                                  );
-                                })
+                                return (
+                                  <div
+                                    key={index}
+                                    className="d-flex align-items-center gap-3 color_add_input"
+                                  >
+                                    <p className="m-0">{items}</p>
+                                    <img
+                                      onClick={() => handelColorDelete(index)}
+                                      className="cursor_pointer"
+                                      src={closeRed}
+                                      alt="closeRed"
+                                    />
+                                  </div>
+                                );
+                              })
                               : null}
 
                             {colorInput ? (
@@ -1099,8 +1127,8 @@ const AddProduct = () => {
                                 className="mobile_image object-fit-cover"
                                 src={
                                   img &&
-                                  typeof img === "string" &&
-                                  img.startsWith("http")
+                                    typeof img === "string" &&
+                                    img.startsWith("http")
                                     ? img
                                     : URL.createObjectURL(img)
                                 }
@@ -1192,8 +1220,9 @@ const AddProduct = () => {
                         className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                         placeholder="%"
                         id="deliveryCharge"
-                        value={DeliveryCharge}
-                        onChange={(e) => setDeliveryCharges(e.target.value)}
+                        value={Tax}
+                        onChange={(e) => setTax(Math.min(e.target.value, 100)
+                        )}
                       />
                     </div>
                     <label
@@ -1383,18 +1412,17 @@ const AddProduct = () => {
                               return searchvalue.toLowerCase() === ""
                                 ? items
                                 : items.title
-                                    .toLowerCase()
-                                    .includes(searchvalue);
+                                  .toLowerCase()
+                                  .includes(searchvalue);
                             })
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${
-                                    selectedCategory &&
+                                  className={`d-flex justify-content-between ${selectedCategory &&
                                     selectedCategory.id === category.id
-                                      ? "selected"
-                                      : ""
-                                  }`}
+                                    ? "selected"
+                                    : ""
+                                    }`}
                                   onClick={() => handleSelectCategory(category)}
                                 >
                                   <p className="fs-xs fw-400 black mb-0">

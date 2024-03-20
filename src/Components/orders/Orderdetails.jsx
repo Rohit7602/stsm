@@ -87,7 +87,7 @@ export default function NewOrder() {
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
     const shippingCost = filterData[0].shipping_charge;
-    const promoDiscount = filterData[0].promo_discount;
+    const promoDiscount = filterData[0].additional_discount.discount
     return subtotal + shippingCost - promoDiscount;
   };
 
@@ -109,6 +109,9 @@ export default function NewOrder() {
       const orderDocRef = doc(db, "order", id);
       const orderDoc = await getDoc(orderDocRef);
       const orderData = orderDoc.data();
+      if (orderData) {
+        // let productId = orderData. 
+      }
 
       const newStatus = "CONFIRMED";
 
@@ -171,11 +174,26 @@ export default function NewOrder() {
 
   async function handleMarkAsDelivered(id) {
     try {
+      let transcationmode = filterData[0].transaction.mode
       // Toggle the status between 'publish' and 'hidden'
+      let transaction = {
+        date: new Date().toISOString(),
+        mode: "Cash on Delivery",
+        status: "Paid",
+        tx_id: "",
+      }
       const newStatus = "DELIVERED";
-      await updateDoc(doc(db, "order", id), {
-        status: newStatus,
-      });
+
+      if (transcationmode === "Cash on Delivery") {
+        await updateDoc(doc(db, "order", id), {
+          status: newStatus,
+          transaction,
+        });
+      } else {
+        await updateDoc(doc(db, "order", id), {
+          status: newStatus,
+        });
+      }
       // Add a new log entry to the logs collection
       const logData = {
         name: "Store",
@@ -189,6 +207,7 @@ export default function NewOrder() {
       console.log(error);
     }
   }
+
 
   const renderLogIcon = (status) => {
     switch (status) {
@@ -407,7 +426,7 @@ export default function NewOrder() {
                 <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <p className="fs-sm fw-400 black mb-0">Promo Discount</p>
                   <p className="fs-sm fw-400 black mb-0">
-                    (-) ₹ {item.promo_discount}
+                    (-) ₹ {item.additional_discount.discount}
                   </p>
                 </div>
                 <div className="product_borderbottom mt-3"></div>
