@@ -25,6 +25,7 @@ const Coupons = () => {
   const [discounttype, setDiscounttype] = useState("FIXED");
   const [discount, setDiscount] = useState("");
   const [addsServicePopup, setAddsServicePopup] = useState(false);
+  const [description, setdescription] = useState('')
   const [couponsId, setCouponId] = useState('')
   const [deletepopup, setDeletePopup] = useState(false)
 
@@ -48,6 +49,7 @@ const Coupons = () => {
     setStartDate("");
     setEndDate("");
     setDiscounttype("FIXED")
+    setdescription('')
   }
 
 
@@ -63,7 +65,8 @@ const Coupons = () => {
       start_date: new Date(startdate).toISOString(),
       end_date: new Date(enddate).toISOString(),
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
+      description,
     }
     try {
       setLoaderstatus(true)
@@ -112,8 +115,8 @@ const Coupons = () => {
         max_discount: maxdiscount,
         start_date: new Date(startdate).toISOString(),
         end_date: new Date(enddate).toISOString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        description,
       });
 
       updateCouponData({
@@ -125,8 +128,8 @@ const Coupons = () => {
         max_discount: maxdiscount,
         start_date: new Date(startdate).toISOString(),
         end_date: new Date(enddate).toISOString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        description,
       });
 
       setAddsServicePopup(false)
@@ -238,6 +241,16 @@ const Coupons = () => {
                     }
                   }}
                   placeholder="Enter Discount Value"
+                />
+
+                <input
+                  className="popup_coupon_input w-100 fs-xs fw-400 black mt-3"
+                  type="text"
+                  required
+                  id="descrption"
+                  value={description}
+                  onChange={(e) => setdescription(e.target.value)}
+                  placeholder="Enter Description here"
                 />
 
                 <div className="row align-items-center ">
@@ -362,7 +375,7 @@ const Coupons = () => {
                     {allcoupons.map((coupns, index) => {
                       return (
                         <tr key={coupns.id}>
-                          <td className="py-3 ps-3 mx_70 cursor_pointer ">{index+1}</td>
+                          <td className="py-3 ps-3 mx_70 cursor_pointer ">{index + 1}</td>
                           <td className="mx_160 px-2">
                             <h3 className="fs-sm fw-400 black mb-0">{coupns.promo_code}</h3>
                           </td>
@@ -393,6 +406,7 @@ const Coupons = () => {
                                 setMinOrder(coupns.min_order)
                                 setDiscount(coupns.discount_value)
                                 setDiscounttype(coupns.discount_type)
+                                setdescription(coupns.description)
                               }}>
                                 <EditIcon />
                               </div>
