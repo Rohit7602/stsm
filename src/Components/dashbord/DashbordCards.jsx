@@ -46,12 +46,9 @@ function DashbordCards() {
   // console.log("asdfasfasdfasdf", oneWeekAgoStartDate)
   // console.log("ASDFAsdf current date ", currentDate)
 
-  // Filter orders for one week ago
+  // Filter  the New orders 
 
-  const ordersOneWeekAgo = orders.filter(
-    (order) =>
-      new Date(order.created_at) >= oneWeekAgoStartDate && new Date(order.created_at) <= currentDate
-  );
+  const NewOrders = orders.filter((order) => order.status === "NEW");
 
 
 
@@ -206,7 +203,7 @@ function DashbordCards() {
             <div className="col-xl-9 table_box col-lg-7 mb-xl-0 col-12 ">
               <div className=" px-3 tables mb-2 chart_content_wrapper p-2 bg-white h-100">
                 <div className="d-flex align-items-center justify-content-between">
-                  <h3 className="fw-600 black  mb-0 fs-xs py-2">Recent Orders</h3>
+                  <h3 className="fw-600 black  mb-0 fs-xs py-2">New Orders</h3>
                 </div>
                 <div className="recent_order_table">
                   <table className="w-100 ">
@@ -231,14 +228,14 @@ function DashbordCards() {
                       </th>
                       <th className="mx_70"></th>
                     </tr>
-                    {ordersOneWeekAgo.length === 0 ? (
+                    {NewOrders.length === 0 ? (
                       <tr>
                         <td className="text-center py-2 " colSpan="6">
                           No recent orders in the last week
                         </td>
                       </tr>
                     ) : (
-                        ordersOneWeekAgo.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map((data, index) => {
+                      NewOrders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map((data, index) => {
                         return (
                           <tr key={data.created_at} className="product_borderbottom">
                             <td className="py-2 px-3">
@@ -248,7 +245,7 @@ function DashbordCards() {
                               <h4 className="fw-400 black mb-0  fs-xs"> {data.status}</h4>
                             </td>
                             <td className="py-2 px-3">
-                              <h4 className="fw-400 black mb-0  fs-xs">{data.shipping.city }</h4>
+                              <h4 className="fw-400 black mb-0  fs-xs">{data.shipping.city}</h4>
                             </td>
                             <td className="py-2 px-3">
                               <h4 className="fw-400 black mb-0 fs-xs">{data.customer.name}</h4>
@@ -264,11 +261,11 @@ function DashbordCards() {
                                 ₹ {data.order_price}
                               </h4>
                             </td>
-                            <td className="d-flex align-items-center gap-3 py-1">
+                            <td className="py-1 px-3">
                               <Link to={`/orders/orderdetails/${data.order_id}`}>
                                 <img className="cursor_pointer" src={eyeIcon} alt="" />
                               </Link>
-                              <img className="cursor_pointer" src={printIcon} alt="" />
+
                             </td>
                           </tr>
                         );

@@ -361,13 +361,13 @@ const Coupons = () => {
                   <tbody className="table_body">
                     {allcoupons.map((coupns, index) => {
                       return (
-                        <tr>
-                          <td className="py-3 ps-3 mx_70 cursor_pointer ">{index}</td>
+                        <tr key={coupns.id}>
+                          <td className="py-3 ps-3 mx_70 cursor_pointer ">{index+1}</td>
                           <td className="mx_160 px-2">
                             <h3 className="fs-sm fw-400 black mb-0">{coupns.promo_code}</h3>
                           </td>
                           <td className="mx_160 ps-3">
-                            <h3 className="fs-sm fw-400 black mb-0">{coupns.discount_type === "FIXED" ? `₹ ${coupns.discount_value}` : `${coupns.discount_value} %`}</h3>
+                            <h3 className="fs-sm fw-400 black mb-0">{coupns.discount_type === "FIXED" ? `₹${coupns.discount_value}` : `% ${coupns.discount_value}`}</h3>
                           </td>
                           <td className="mx_140 cursor_pointer">
                             <h3 className="fs-sm fw-400 black mb-0"> ₹{coupns.max_discount}</h3>

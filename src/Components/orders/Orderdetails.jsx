@@ -20,6 +20,7 @@ import {
   addDoc,
   collection,
   query,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useState, useEffect } from "react";
@@ -93,14 +94,38 @@ export default function NewOrder() {
     return subtotal + shippingCost - promoDiscount;
   };
 
+  //  generate invoiceNumber 
+  const getInvoiceNo = async () => {
+    const year = new Date().getFullYear() % 100; // Get the last two digits of the current year
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let randomDigits = '';
+    for (let i = 0; i < 6; i++) {
+      randomDigits += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return `ST${year}${randomDigits}`;
+  }
+
+
+
   const handleAcceptOrder = async (id) => {
     try {
-      // Toggle the status between 'publish' and 'hidden'
+      const orderDocRef = doc(db, "order", id);
+      const orderDoc = await getDoc(orderDocRef);
+      const orderData = orderDoc.data();
+
       const newStatus = "CONFIRMED";
 
-      await updateDoc(doc(db, "order", id), {
-        status: newStatus,
-      });
+      if (!orderData.hasOwnProperty("invoiceNumber")) {
+        const invoiceNumber = await getInvoiceNo(); // Assuming getInvoiceNo() is an async function
+        await updateDoc(orderDocRef, {
+          status: newStatus,
+          invoiceNumber: invoiceNumber
+        });
+      } else {
+        await updateDoc(orderDocRef, {
+          status: newStatus
+        });
+      }
 
       // Add a new log entry to the logs collection
       const logData = {
@@ -208,15 +233,14 @@ export default function NewOrder() {
             <div className="d-flex align-items-center">
               <h1 className="fs-lg fw-500 black mb-0 me-1">#{item.order_id}</h1>
               <p
-                className={`d-inline-block ms-3 ${
-                  item.status.toString().toLowerCase() === "new"
-                    ? "fs-sm fw-400 red mb-0 new_order"
-                    : item.status.toString().toLowerCase() === "confirmed"
+                className={`d-inline-block ms-3 ${item.status.toString().toLowerCase() === "new"
+                  ? "fs-sm fw-400 red mb-0 new_order"
+                  : item.status.toString().toLowerCase() === "confirmed"
                     ? "fs-sm fw-400 mb-0 processing_skyblue"
                     : item.status.toString().toLowerCase() === "delivered"
-                    ? "fs-sm fw-400 mb-0 green stock_bg"
-                    : "fs-sm fw-400 mb-0 black cancel_gray"
-                }`}
+                      ? "fs-sm fw-400 mb-0 green stock_bg"
+                      : "fs-sm fw-400 mb-0 black cancel_gray"
+                  }`}
               >
                 {item.status}
               </p>
@@ -319,10 +343,10 @@ export default function NewOrder() {
                               {products.varient_name
                                 .toString()
                                 .toLowerCase() !== "not found" && (
-                                <span className="fs-sm fw-400 black mb-0 ms-3">
-                                  {products.varient_name}
-                                </span>
-                              )}
+                                  <span className="fs-sm fw-400 black mb-0 ms-3">
+                                    {products.varient_name}
+                                  </span>
+                                )}
                             </p>
                             <p className="fs-xxs fw-400 fade_grey mb-0">
                               ID :{products.product_id}
@@ -428,8 +452,8 @@ export default function NewOrder() {
                               {log.data.status === "PROCESSING"
                                 ? "ASSIGN TO DELIVERY "
                                 : log.data.status === "NEW"
-                                ? "ORDER PLACED"
-                                : log.data.status}{" "}
+                                  ? "ORDER PLACED"
+                                  : log.data.status}{" "}
                             </p>
                             <p className="fs-xxs fw-400 black ps-3 ms-1 mb-0">
                               {log.data.name}
