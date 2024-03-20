@@ -88,7 +88,7 @@ const PrivacyPolicy = () => {
           <div className="rich-text-editor mt-5" >
             <ReactQuill
             
-              className="rounded-lg  border w-full mt-[30px] p-[10px] border-[#D9D9D9] border-solid outline-none "
+              className="rounded-lg  border outline-none "
               modules={PrivacyPolicy.modules}
               onChange={handleChange}
               formats={PrivacyPolicy.formats}

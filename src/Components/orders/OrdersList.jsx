@@ -122,7 +122,7 @@ const OrderList = () => {
         {/* product details  */}
         <div className="p-3 mt-4 bg-white product_shadow">
           <div className="overflow-x-scroll line_scroll">
-            <div className="min_width_1350">
+            <div style={{minWidth:"1650px"}}>
               <table className="w-100">
                 <thead className="table_head w-100">
                   <tr className="product_borderbottom">
@@ -148,6 +148,9 @@ const OrderList = () => {
                           </span>
                         </p>
                       </div>
+                    </th>
+                    <th className='mw-200 p-2'>
+                    <h3 className="fs-sm fw-400 black mb-0">Invoice</h3>
                     </th>
                     <th className="mw-200 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Date</h3>
@@ -198,11 +201,16 @@ const OrderList = () => {
                                 <span className="checkmark"></span>
                               </label>
                               <Link
-                                className="fw-400 fs-sm color-blue ms-2"
+                                className="fw-400 fs-sm color_blue ms-2"
                                 to={`orderdetails/${orderTableData.order_id}`}>
                                # {orderTableData.order_id}
                               </Link>
                             </div>
+                          </td>
+                          <td className="p-2 mw-200">
+                            <h3 className="fs-xs fw-400 color_blue mb-0">
+                              #9309061235
+                            </h3>
                           </td>
                           <td className="p-3 mw-200">
                             <h3 className="fs-xs fw-400 black mb-0">
@@ -211,7 +219,7 @@ const OrderList = () => {
                           </td>
                           <td className="p-3 mw-200">
                             <Link to={`/customer/viewcustomerdetails/${orderTableData.uid}`}>
-                              <h3 className="fs-sm fw-400 color-blue mb-0">
+                              <h3 className="fs-sm fw-400 color_blue mb-0">
                                 {orderTableData.customer.name}
                               </h3>
                             </Link>

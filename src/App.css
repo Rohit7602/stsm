@@ -415,13 +415,17 @@ body {
 /*export_btn*/
 .export_btn {
   border-radius: 10px;
-  background: var(--red_gradient,
-      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
 }
 
 .export_btn:hover {
-  background: var(--red_gradient,
-      linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
 }
 
 .unit_type_input {
@@ -442,16 +446,20 @@ body {
   padding: 12px 15px;
   transition: 0.5s ease-in-out;
   background-color: transparent;
-  background: var(--red_gradient,
-      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .reset_btn:hover {
-  background: var(--red_gradient,
-      linear-gradient(90deg, #fff 0%, #fff 49.43%, #fff 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(90deg, #fff 0%, #fff 49.43%, #fff 105.44%)
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -462,15 +470,20 @@ body {
   border-radius: 10px;
   border: 1.5px solid transparent;
   background: linear-gradient(#f5f7fa, #f5f7fa) padding-box,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%) border-box;
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+      border-box;
 }
 
 .reset_border:hover {
-  background: linear-gradient(90deg,
-      #8a2387 0%,
-      #e94057 49.43%,
-      #f27121 105.44%) padding-box,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%) border-box;
+  background: linear-gradient(
+        90deg,
+        #8a2387 0%,
+        #e94057 49.43%,
+        #f27121 105.44%
+      )
+      padding-box,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+      border-box;
 }
 
 /*save_btn*/
@@ -692,11 +705,11 @@ body {
 } */
 
 /* When the checkbox is checked, add a blue background */
-.check input:checked~.checkmark {
+.check input:checked ~ .checkmark {
   background-color: #000000;
 }
 
-.check1 input:checked~.checkmark {
+.check1 input:checked ~ .checkmark {
   background-color: transparent;
 }
 
@@ -708,11 +721,11 @@ body {
 }
 
 /* Show the checkmark when checked */
-.check input:checked~.checkmark:after {
+.check input:checked ~ .checkmark:after {
   display: block;
 }
 
-.check1 input:checked~.checkmark:after {
+.check1 input:checked ~ .checkmark:after {
   display: block;
 }
 
@@ -1007,8 +1020,8 @@ body {
   cursor: pointer;
 }
 
-.btn-check:checked+.btn,
-:not(.btn-check)+.btn:active,
+.btn-check:checked + .btn,
+:not(.btn-check) + .btn:active,
 .btn:first-child:active,
 .btn.active,
 .btn.show {
@@ -1025,10 +1038,6 @@ body {
   border-radius: 10px;
   margin-top: 10px;
 }
-
-
-
-
 
 .stock_popup {
   background-color: var(--color-white);
@@ -1106,13 +1115,11 @@ body {
   display: inline-block;
 }
 
-
 .stock_bg_red {
   background-color: red;
   padding: 5px 10px;
   border-radius: 5px;
   display: inline-block;
-
 }
 
 .mw-250 {
@@ -1131,12 +1138,6 @@ body {
   border-radius: 5px;
   display: inline-block;
 }
-
-
-
-
-
-
 
 .addnew_category_btn {
   background-color: #eafde1 !important;
@@ -1464,7 +1465,12 @@ tbody::-webkit-scrollbar {
 div.rich-text-editor .ql-editor {
   height: calc(100vh - 250px) !important;
 }
-
+.faq-text-editor .ql-editor {
+  height: 200px !important;
+}
+.ql-editor::-webkit-scrollbar {
+  width: 3px;
+}
 .table_body {
   display: block !important;
   height: calc(100vh - 265px) !important;
@@ -1675,7 +1681,7 @@ div.rich-text-editor .ql-editor {
 .addqus_popup {
   padding: 20px;
   background-color: var(--color-white);
-  max-width: 416px;
+  max-width: 700px;
   width: 100%;
   border-radius: 20px;
   position: fixed;
@@ -1690,8 +1696,7 @@ div.rich-text-editor .ql-editor {
   padding: 5px 10px;
   width: 100%;
   resize: none;
-  margin-left: 10px;
-  max-width: 301px;
+  outline: none !important;
 }
 
 .qes_reset_btn {
@@ -1733,7 +1738,7 @@ div.rich-text-editor .ql-editor {
   width: 538px;
   padding: 20px 15px 39px 15px;
   z-index: 2;
-  transition: .3s;
+  transition: 0.3s;
 }
 
 .side_invoice_view::after {
@@ -1756,7 +1761,7 @@ div.rich-text-editor .ql-editor {
   bottom: 0px;
   z-index: 1;
 }
-.showbill{
+.showbill {
   right: 0;
 }
 .view_pdf_btn {
@@ -1920,62 +1925,62 @@ div.rich-text-editor .ql-editor {
   height: 100%;
   overflow-y: auto !important;
 }
-.chat_container{
-  background-color: #F5F7FA;
+.chat_container {
+  background-color: #f5f7fa;
   min-height: calc(100vh - 56px);
   padding: 30px 20px;
 }
-.chat_input{
+.chat_input {
   padding: 15px;
   border-radius: 10px;
   background-color: var(--color-white);
-  border: 0.8px solid #0000004D;
+  border: 0.8px solid #0000004d;
 }
-.chat_input input{
+.chat_input input {
   border: 0;
   outline: 0;
   background-color: transparent;
   margin-left: 10px;
 }
-.chat_read_btn{
-  border: 0.8px solid #D9D9D9;
+.chat_read_btn {
+  border: 0.8px solid #d9d9d9;
   border-radius: 8px;
   margin-top: 20px;
 }
-.chat_read_btn button{
+.chat_read_btn button {
   border: 0;
   outline: 0;
   background-color: transparent;
   padding: 10px;
 }
-.chat_height{
- height: calc(100vh - 116px);
- overflow-y: auto;
+.chat_height {
+  height: calc(100vh - 116px);
+  overflow-y: auto;
 }
 
-.msg_count{
+.msg_count {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background-color: #E5EDFF;
+  background-color: #e5edff;
   border: 1px solid var(--color-blue);
 }
-.mt_20{
+.mt_20 {
   margin-top: 20px;
 }
-.customer_list_chat{
+.customer_list_chat {
   max-height: calc(100vh - 274px);
   overflow-y: auto;
   padding: 30px 20px;
 }
-.customer_list_chat::-webkit-scrollbar{
+.customer_list_chat::-webkit-scrollbar {
   width: 3px;
 }
-min_width_230{
+min_width_230 {
   min-width: 230px;
   width: 230px;
 }
-.top_n_26{
+.top_n_26 {
   top: -26px;
 }
 /* ===========Medgitia-query========== */

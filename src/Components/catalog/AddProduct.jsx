@@ -9,6 +9,9 @@ import addIcon from "../../Images/svgs/addicon.svg";
 import checkGreen from "../../Images/svgs/check-green-btn.svg";
 import closeRed from "../../Images/svgs/close-red-icon.svg";
 import dropdownImg from "../../Images/svgs/dropdown_icon.svg";
+import "react-quill/dist/quill.snow.css";
+import ReactQuill from "react-quill";
+import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import { Col, DropdownButton, Row } from "react-bootstrap";
 import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
@@ -530,7 +533,7 @@ const AddProduct = () => {
                         Description
                       </label>{" "}
                       <br />
-                      <textarea
+                      {/* <textarea
                         id="des"
                         className="mt-2 product_input resize_none fade_grey fw-400"
                         cols="30"
@@ -538,7 +541,17 @@ const AddProduct = () => {
                         placeholder="Enter product name"
                         value={longDes}
                         onChange={(e) => setLongDes(e.target.value)}
-                      ></textarea>
+                      ></textarea> */}
+                      <div className="add_product-text-editor mt-2">
+                        <ReactQuill
+                          className="rounded-lg  product_input outline-none "
+                          modules={AddProduct.modules}
+                          // onChange={handleChange}
+                          formats={AddProduct.formats}
+                          // value={value}
+                          placeholder="Write something..."
+                        />
+                      </div>
                     </div>
                     <br />
                     {/* [Pricing] */}
@@ -1424,5 +1437,38 @@ const AddProduct = () => {
     );
   }
 };
-
+AddProduct.modules = {
+  toolbar: [
+    [{ header: "1" }, { header: "2" }, { font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [
+      { list: "ordered" },
+      { list: "bullet" },
+      { indent: "-1" },
+      { indent: "+1" },
+    ],
+    ["link", "image", "video"],
+    ["clean"],
+  ],
+  clipboard: {
+    matchVisual: true,
+  },
+};
+AddProduct.formats = [
+  "header",
+  "font",
+  "size",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "blockquote",
+  "list",
+  "bullet",
+  "indent",
+  "link",
+  "image",
+  "video",
+];
 export default AddProduct;

@@ -566,7 +566,6 @@ const Categories = () => {
       });
     }
   }
-  const [showAndCol, setShowAndCol] = useState(false);
 
   /*  *******************************
      Edit  Parent  Category  functionality end 
@@ -577,7 +576,11 @@ const Categories = () => {
   } else {
     return (
       <div className="main_panel_wrapper bg_light_grey w-100">
-        {deletepopup || statusPopup || editCatPopup ? (
+        {deletepopup ||
+        statusPopup ||
+        editCatPopup ||
+        editPerCatPopup ||
+        addCatPopup ? (
           <div className="bg_black_overlay"></div>
         ) : null}
         <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
@@ -608,11 +611,7 @@ const Categories = () => {
           <div className="p-3 mt-4">
             <div className="">
               <div className="row">
-                <div
-                  className={`${
-                    showAndCol === true ? "col-9" : "col-3"
-                  } product_shadow bg-white overflow_xl_scroll line_scroll  transition_04`}
-                >
+                <div className="col-9 product_shadow bg-white overflow_xl_scroll line_scroll  transition_04">
                   <div style={{ minWidth: "845px" }}>
                     <table className="w-100">
                       <thead className="w-100 table_head">
@@ -830,50 +829,11 @@ const Categories = () => {
                     </table>
                   </div>
                 </div>
-                <div
-                  className={`${showAndCol === true ? "col-3 " : "col-9"} p-0  transition_04`}
-                >
+                <div className="col-3 p-0">
                   <div className="w-100 px-sm-3 bg_body">
                     <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between position-relative">
-                      <img
-                        onClick={() =>
-                          setShowAndCol(showAndCol === true ? false : true)
-                        }
-                        className="position-absolute start-0 top_n_26 cursor_pointer"
-                        src={dubbleArrow}
-                        alt="dubbleArrow"
-                      />
-                      <div className="d-flex">
-                        <h1 className="fw-500 black fs-lg mb-0">
-                          {/* Parent Categories */}
-                        </h1>
-                      </div>
                       <div className="d-flex align-itmes-center justify-content-center justify-content-md-between  gap-3">
-                        {/* <div className="d-flex px-2 gap-2 align-items-center w_xsm_35 w_sm_50 input_wrapper">
-                          <img src={search} alt="searchicon" />
-                          <input
-                            type="text"
-                            className="fw-400 categorie_input  "
-                            placeholder="Search for categories..."
-                            onChange={(e) => setSearchvalue(e.target.value)}
-                          />
-                        </div> */}
                         <div>
-                          {/* <button
-                            onClick={() => {
-                              setAddCatPopup(true);
-                              setSelectedLayout("oneByThree");
-                            }}
-                            className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
-                          >
-                            <img
-                              className="me-1"
-                              width={20}
-                              src={addicon}
-                              alt="add-icon"
-                            />
-                            Add New Category
-                          </button> */}
                           {addCatPopup === true ? (
                             <div className="parent_category_popup">
                               <form
@@ -1478,25 +1438,22 @@ const Categories = () => {
                       </div>
                     </div>
                     {/* categories details  */}
-                    <div className="bg-white product_shadow">
+                    <div className="bg-white product_shadow position-relative">
+                      <p
+                        className="fs-sm fw-500 position-absolute start-0 white_space_nowrap"
+                        style={{ top: "-30px" }}
+                      >
+                        Parent Categories
+                      </p>
                       <div className="overflow_xl_scroll line_scroll">
-                        <div style={{width:"835px"}}>
+                        <div style={{minWidth:"350px"}}>
                           <table className="w-100">
                             <thead className="table_head w-100">
                               <tr className="product_borderbottom w-100">
                                 <th className="py-3 ps-3">
                                   <div className="d-flex align-items-center gap-3 min_width_300">
-                                    <label class="check1 fw-400 fs-sm black mb-0">
-                                      <input
-                                        type="checkbox"
-                                        checked={selectAllPer}
-                                        onChange={handleMainCheckboxChange}
-                                      />
-                                      <span class="checkmark"></span>
-                                    </label>
                                     <p className="fw-400 fs-sm black mb-0">
-                                      {" "}
-                                      Name{" "}
+                                      Name
                                       <span>
                                         <img
                                           className="ms-2"
@@ -1508,20 +1465,14 @@ const Categories = () => {
                                     </p>
                                   </div>
                                 </th>
-                                <th className="mx_160 ps-4">
-                                  <h3 className="fs-sm fw-400 black mb-0">
-                                    Items
-                                  </h3>
-                                </th>
-                                <th className="mx_160">
-                                  <h3 className="fs-sm fw-400 black mb-0">
-                                    Visibility
-                                  </h3>
-                                </th>
-                                <th className="mw-90 p-3 me-1">
-                                  <h3 className="fs-sm fw-400 black mb-0">
-                                    Action
-                                  </h3>
+                                <th
+                                  onClick={() => {
+                                    setAddCatPopup(true);
+                                    setSelectedLayout("oneByThree");
+                                  }}
+                                  className="text-end fs-2 fw-400 pe-3 cursor_pointer"
+                                >
+                                  +
                                 </th>
                               </tr>
                             </thead>
@@ -1542,18 +1493,8 @@ const Categories = () => {
                                       key={index}
                                       className="product_borderbottom"
                                     >
-                                      <td className="py-3 ps-3 w-100">
-                                        <div className="d-flex align-items-center gap-3 min_width_300">
-                                          <label className="check1 fw-400 fs-sm black mb-0">
-                                            <input
-                                              type="checkbox"
-                                              checked={value.checked || false}
-                                              onChange={() =>
-                                                handleCheckboxChange(index)
-                                              }
-                                            />
-                                            <span className="checkmark me-5"></span>
-                                          </label>
+                                      <td className="py-3 ps-3 w- 100">
+                                        <div className="d-flex align-items-center gap-3">
                                           <div className="d-flex align-items-center">
                                             <div className="w_40">
                                               <img
@@ -1569,107 +1510,36 @@ const Categories = () => {
                                           </div>
                                         </div>
                                       </td>
-                                      <td className="ps-4 mx_160">
-                                        <h3 className="fs-sm fw-400 black mb-0 width_10">
-                                          {getSubcategoriesCount(value.id)}
-                                        </h3>
-                                      </td>
-                                      <td className="mx_160">
-                                        <h3 className="fs-sm fw-400 black mb-0 width_10 color_green">
-                                          {value.status}
-                                        </h3>
-                                      </td>
-                                      <td className="text-center mw-90">
-                                        <div class="dropdown">
-                                          <button
-                                            class="btn dropdown-toggle"
-                                            type="button"
-                                            id="dropdownMenuButton1"
-                                            data-bs-toggle="dropdown"
-                                            aria-expanded="false"
-                                          >
-                                            <img
-                                              // onClick={() => {
-                                              //   handleDelete(value.id);
-                                              // }}
-                                              src={dropdownDots}
-                                              alt="dropdownDots"
-                                            />
-                                          </button>
-                                          <ul
-                                            class="dropdown-menu categories_dropdown"
-                                            aria-labelledby="dropdownMenuButton1"
-                                          >
-                                            <li>
-                                              <div
-                                                class="dropdown-item"
-                                                href="#"
-                                              >
-                                                <div className="d-flex align-items-center categorie_dropdown_options">
-                                                  <img src={eye_icon} alt="" />
-                                                  <p className="fs-sm fw-400 black mb-0 ms-2">
-                                                    View Details
-                                                  </p>
-                                                </div>
-                                              </div>
-                                            </li>
-                                            <li>
-                                              <div
-                                                class="dropdown-item"
-                                                href="#"
-                                              >
-                                                <div
-                                                  onClick={() => {
-                                                    setEditPerCatPopup(true);
-                                                    setEditName(value.title);
-                                                    SetEditCatId(value.id);
-                                                    seteditPerentCatStatus(
-                                                      value.status
-                                                    );
-                                                    setEditImg(value.image);
-                                                    setEditSelectedLayout(
-                                                      value.homepagelayout
-                                                    );
-                                                  }}
-                                                  className="d-flex align-items-center categorie_dropdown_options"
-                                                >
-                                                  <img
-                                                    src={pencil_icon}
-                                                    alt=""
-                                                  />
-                                                  <p className="fs-sm fw-400 black mb-0 ms-2">
-                                                    Edit Category
-                                                  </p>
-                                                </div>
-                                              </div>
-                                            </li>
-                                            <li>
-                                              <div
-                                                class="dropdown-item"
-                                                href="#"
-                                              >
-                                                <div
-                                                  className="d-flex align-items-center categorie_dropdown_options"
-                                                  onClick={() => {
-                                                    handleChangeStatus(
-                                                      value.id,
-                                                      value.status
-                                                    );
-                                                  }}
-                                                >
-                                                  <img
-                                                    src={updown_icon}
-                                                    alt=""
-                                                  />
-                                                  <p className="fs-sm fw-400 green  mb-0 ms-2">
-                                                    {value.status === "hidden"
-                                                      ? "change to  publish"
-                                                      : "Change to hidden"}
-                                                  </p>
-                                                </div>
-                                              </div>
-                                            </li>
-                                          </ul>
+                                      <td className="text-end">
+                                        <div className="d-flex align-items-center gap-2 pe-2 justify-content-end">
+                                          <img
+                                            className="cursor_pointer"
+                                            onClick={() => {
+                                              handleChangeStatus(
+                                                value.id,
+                                                value.status
+                                              );
+                                            }}
+                                            src={updown_icon}
+                                            alt="updown_icon"
+                                          />
+                                          <img
+                                            onClick={() => {
+                                              setEditPerCatPopup(true);
+                                              setEditName(value.title);
+                                              SetEditCatId(value.id);
+                                              seteditPerentCatStatus(
+                                                value.status
+                                              );
+                                              setEditImg(value.image);
+                                              setEditSelectedLayout(
+                                                value.homepagelayout
+                                              );
+                                            }}
+                                            className="cursor_pointer"
+                                            src={pencil_icon}
+                                            alt="pencil_icon"
+                                          />
                                         </div>
                                       </td>
                                     </tr>
