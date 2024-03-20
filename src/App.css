@@ -1731,7 +1731,7 @@ div.rich-text-editor .ql-editor {
   background-color: white;
   right: -100%;
   width: 538px;
-  padding: 20px 15px;
+  padding: 20px 15px 39px 15px;
   z-index: 2;
   transition: .3s;
 }
@@ -1893,7 +1893,6 @@ div.rich-text-editor .ql-editor {
 }
 
 .bill {
-  width: 595px;
   padding: 20px 30px;
   background-color: var(--color-white);
   min-height: calc(100vh - 56px);

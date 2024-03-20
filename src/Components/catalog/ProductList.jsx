@@ -1,20 +1,20 @@
-import React, { createContext, useEffect, useState } from 'react';
-import filtericon from '../../Images/svgs/filtericon.svg';
-import addicon from '../../Images/svgs/addicon.svg';
-import dropdownDots from '../../Images/svgs/dots2.svg';
-import eye_icon from '../../Images/svgs/eye.svg';
+import React, { createContext, useEffect, useState } from "react";
+import filtericon from "../../Images/svgs/filtericon.svg";
+import addicon from "../../Images/svgs/addicon.svg";
+import dropdownDots from "../../Images/svgs/dots2.svg";
+import eye_icon from "../../Images/svgs/eye.svg";
 import search from "../../Images/svgs/search.svg";
-import pencil_icon from '../../Images/svgs/pencil.svg';
-import delete_icon from '../../Images/svgs/delte.svg';
-import shortIcon from '../../Images/svgs/short-icon.svg';
-import updown_icon from '../../Images/svgs/arross.svg';
-import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { deleteObject, getStorage, ref } from 'firebase/storage';
-import { db } from '../../firebase';
-import { Link, NavLink } from 'react-router-dom';
-import { useProductsContext } from '../../context/productgetter';
-import Updatepopup from '../popups/Updatepopup';
-import Deletepopup from '../popups/Deletepopup';
+import pencil_icon from "../../Images/svgs/pencil.svg";
+import delete_icon from "../../Images/svgs/delte.svg";
+import shortIcon from "../../Images/svgs/short-icon.svg";
+import updown_icon from "../../Images/svgs/arross.svg";
+import { doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { deleteObject, getStorage, ref } from "firebase/storage";
+import { db } from "../../firebase";
+import { Link, NavLink } from "react-router-dom";
+import { useProductsContext } from "../../context/productgetter";
+import Updatepopup from "../popups/Updatepopup";
+import Deletepopup from "../popups/Deletepopup";
 const EditProductData = createContext();
 const ProductList = (props) => {
   const { productData, updateData, deleteData } = useProductsContext();
@@ -25,12 +25,12 @@ const ProductList = (props) => {
   const [deletepopup, setDeletePopup] = useState(false);
   const [statusPopup, setStatusPopup] = useState(false);
 
-  const [order, setorder] = useState('ASC');
+  const [order, setorder] = useState("ASC");
   const sorting = (col) => {
     // Create a copy of the data array
     const sortedData = [...productData];
 
-    if (order === 'ASC') {
+    if (order === "ASC") {
       sortedData.sort((a, b) => {
         const valueA = a[col].toLowerCase();
         const valueB = b[col].toLowerCase();
@@ -46,7 +46,7 @@ const ProductList = (props) => {
     }
 
     // Update the order state
-    const newOrder = order === 'ASC' ? 'DESC' : 'ASC';
+    const newOrder = order === "ASC" ? "DESC" : "ASC";
     setorder(newOrder);
 
     // Update the data using the updateData function from your context
@@ -99,8 +99,8 @@ const ProductList = (props) => {
   async function handleChangeStatus(id, status) {
     try {
       // Toggle the status between 'publish' and 'hidden'
-      const newStatus = status === 'hidden' ? 'published' : 'hidden';
-      await updateDoc(doc(db, 'products', id), {
+      const newStatus = status === "hidden" ? "published" : "hidden";
+      await updateDoc(doc(db, "products", id), {
         status: newStatus,
       });
 
@@ -125,7 +125,7 @@ const ProductList = (props) => {
   async function handleDeleteProduct(id, image) {
     try {
       var st = getStorage();
-      await deleteDoc(doc(db, 'products', id)).then(() => {
+      await deleteDoc(doc(db, "products", id)).then(() => {
         for (const images of image) {
           if (image.length !== 0) {
             var reference = ref(st, images);
@@ -165,12 +165,18 @@ const ProductList = (props) => {
               />
             </div>
             <button className="filter_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
-              <img className="me-1" width={24} src={filtericon} alt="filtericon" />
+              <img
+                className="me-1"
+                width={24}
+                src={filtericon}
+                alt="filtericon"
+              />
               Filter
             </button>
             <Link
               to="/catalog/addproduct"
-              className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
+              className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
+            >
               <img className="me-1" width={20} src={addicon} alt="add-icon" />
               Add New Product
             </Link>
@@ -183,7 +189,10 @@ const ProductList = (props) => {
               <table className="w-100">
                 <thead className="table_head w-100">
                   <tr className="product_borderbottom">
-                    <th onClick={() => sorting('name')} className="p-3 cursor_pointer">
+                    <th
+                      onClick={() => sorting("name")}
+                      className="p-3 cursor_pointer"
+                    >
                       <div className="d-flex align-items-center">
                         <label className="check1 fw-400 fs-sm black mb-0">
                           <input
@@ -194,7 +203,7 @@ const ProductList = (props) => {
                           <span className="checkmark"></span>
                         </label>
                         <p className="fw-400 fs-sm black mb-0 ms-2">
-                          Product{' '}
+                          Product{" "}
                           <span>
                             <img
                               className="ms-2 cursor_pointer"
@@ -207,7 +216,9 @@ const ProductList = (props) => {
                       </div>
                     </th>
                     <th className="mw_300 p-3">
-                      <h3 className="fs-sm fw-400 black mb-0">Short Discription </h3>
+                      <h3 className="fs-sm fw-400 black mb-0">
+                        Short Discription{" "}
+                      </h3>
                     </th>
                     <th className="mw_160 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Category</h3>
@@ -215,7 +226,10 @@ const ProductList = (props) => {
                     <th className="mw_130 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Stock</h3>
                     </th>
-                    <th onClick={() => sorting('status')} className="mw_130 p-3 cursor_pointer">
+                    <th
+                      onClick={() => sorting("status")}
+                      className="mw_130 p-3 cursor_pointer"
+                    >
                       <p className="fw-400 fs-sm black mb-0 ms-2">
                         Status
                         <span>
@@ -255,10 +269,15 @@ const ProductList = (props) => {
                               <img src={value.productImages} alt="" />
                             </div>
                             <div className="ps-3 ms-1">
-                              <p className="fw-400 fs-sm black mb-0">{value.name}</p>
+                              <p className="fw-400 fs-sm black mb-0">
+                                {value.name}
+                              </p>
                               <div className="d-flex align-items-center">
                                 <p className="mb-0 fs-xxs fw-400 fade_grey d-flex flex-column">
-                                  <span className="pe-1"> ID : {value.id} </span>
+                                  <span className="pe-1">
+                                    {" "}
+                                    ID : {value.id}{" "}
+                                  </span>
                                   <span>SKU : {value.sku}</span>
                                 </p>
                               </div>
@@ -266,10 +285,14 @@ const ProductList = (props) => {
                           </div>
                         </td>
                         <td className="p-3 mw_300">
-                          <h3 className="fs-xs fw-400 black mb-0">{value.shortDescription}</h3>
+                          <h3 className="fs-xs fw-400 black mb-0">
+                            {value.shortDescription}
+                          </h3>
                         </td>
                         <td className="p-3 mw_160">
-                          <h3 className="fs-sm fw-400 black mb-0">{value.categories.name}</h3>
+                          <h3 className="fs-sm fw-400 black mb-0">
+                            {value.categories.name}
+                          </h3>
                         </td>
                         <td className="p-3 mw_130">
                           <h3 className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${value.totalStock === "0" ? 'stock_bg_red text-white' : value.totalStock <= value.stockAlert ? 'stock_bg_orange' : 'px-2'} `}>
@@ -277,7 +300,9 @@ const ProductList = (props) => {
                           </h3>
                         </td>
                         <td className="p-3 mw_130">
-                          <h3 className={`fs-sm fw-400 black mb-0 ms-2 `}>{value.status}</h3>
+                          <h3 className={`fs-sm fw-400 black mb-0 ms-2 `}>
+                            {value.status}
+                          </h3>
                         </td>
                         <td className="p-3 mx_100">
                           <h3 className="fs-sm fw-400 black mb-0">
@@ -291,7 +316,8 @@ const ProductList = (props) => {
                               type="button"
                               id="dropdownMenuButton3"
                               data-bs-toggle="dropdown"
-                              aria-expanded="false">
+                              aria-expanded="false"
+                            >
                               <img
                                 // onClick={() => {
                                 //  ;
@@ -302,25 +328,33 @@ const ProductList = (props) => {
                             </button>
                             <ul
                               class="dropdown-menu categories_dropdown"
-                              aria-labelledby="dropdownMenuButton3">
+                              aria-labelledby="dropdownMenuButton3"
+                            >
                               <li>
                                 <div class="dropdown-item" href="#">
                                   <div className="d-flex align-items-center categorie_dropdown_options">
                                     <img src={eye_icon} alt="" />
-                                    <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
+                                    <p className="fs-sm fw-400 black mb-0 ms-2">
+                                      View Details
+                                    </p>
                                   </div>
                                 </div>
                               </li>
                               <li>
                                 <div class="dropdown-item" href="#">
-                                  <NavLink to={`/catalog/addproduct/${value.id}`}>
+                                  <NavLink
+                                    to={`/catalog/addproduct/${value.id}`}
+                                  >
                                     <div
                                       onClick={() => {
                                         setProductId(value.id);
                                       }}
-                                      className="d-flex align-items-center categorie_dropdown_options">
+                                      className="d-flex align-items-center categorie_dropdown_options"
+                                    >
                                       <img src={pencil_icon} alt="" />
-                                      <p className="fs-sm fw-400 black mb-0 ms-2">Edit Product</p>
+                                      <p className="fs-sm fw-400 black mb-0 ms-2">
+                                        Edit Product
+                                      </p>
                                     </div>
                                   </NavLink>
                                 </div>
@@ -333,13 +367,14 @@ const ProductList = (props) => {
                                     setProductId(value.id);
                                     setProductStatus(value.status);
                                     setStatusPopup(true);
-                                  }}>
+                                  }}
+                                >
                                   <div className="d-flex align-items-center categorie_dropdown_options">
                                     <img src={updown_icon} alt="" />
                                     <p className="fs-sm fw-400 green mb-0 ms-2">
-                                      {value.status === 'hidden'
-                                        ? 'change to  publish'
-                                        : 'Change to hidden'}
+                                      {value.status === "hidden"
+                                        ? "change to  publish"
+                                        : "Change to hidden"}
                                     </p>
                                   </div>
                                 </div>
@@ -352,9 +387,12 @@ const ProductList = (props) => {
                                       setProductImage(value.image);
                                       setDeletePopup(true);
                                     }}
-                                    className="d-flex align-items-center categorie_dropdown_options">
+                                    className="d-flex align-items-center categorie_dropdown_options"
+                                  >
                                     <img src={delete_icon} alt="" />
-                                    <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
+                                    <p className="fs-sm fw-400 red mb-0 ms-2">
+                                      Delete
+                                    </p>
                                   </div>
                                 </div>
                               </li>
@@ -370,14 +408,18 @@ const ProductList = (props) => {
             {deletepopup ? (
               <Deletepopup
                 showPopup={setDeletePopup}
-                handleDelete={() => handleDeleteProduct(ProductId, ProductImage)}
+                handleDelete={() =>
+                  handleDeleteProduct(ProductId, ProductImage)
+                }
                 itemName="Product"
               />
             ) : null}
             {statusPopup ? (
               <Updatepopup
                 statusPopup={setStatusPopup}
-                handelStatus={() => handleChangeStatus(ProductId, productStatus)}
+                handelStatus={() =>
+                  handleChangeStatus(ProductId, productStatus)
+                }
                 itemName="Product"
               />
             ) : null}
