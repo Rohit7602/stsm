@@ -13,15 +13,8 @@ import manimage from "../../Images/Png/manimage.jpg";
 import { Col, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { useOrdercontext } from "../../context/OrderGetter";
-import {
-  doc,
-  updateDoc,
-  getDocs,
-  addDoc,
-  collection,
-  query,
-  getDoc,
-} from "firebase/firestore";
+
+import { doc, updateDoc, getDocs, addDoc, collection, query, getDoc, } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useState, useEffect } from "react";
 
@@ -37,6 +30,7 @@ export default function NewOrder() {
   const { id } = useParams();
   const { orders, updateData } = useOrdercontext();
   const [filterData, setfilterData] = useState([]);
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const orderData = orders.filter((item) => item.order_id === id);
@@ -57,7 +51,6 @@ export default function NewOrder() {
         }));
         setLogs(logsData);
       };
-
       fetchLogs();
     }
   }, [id, orders]);
@@ -105,18 +98,20 @@ export default function NewOrder() {
 
 
   const handleAcceptOrder = async (id) => {
+    setLoading(true)
     try {
       const orderDocRef = doc(db, "order", id);
       const orderDoc = await getDoc(orderDocRef);
       const orderData = orderDoc.data();
+      const invoiceNumber = await getInvoiceNo();
       if (orderData) {
+        console.log(orderData)
         // let productId = orderData. 
       }
 
       const newStatus = "CONFIRMED";
 
       if (!orderData.hasOwnProperty("invoiceNumber")) {
-        const invoiceNumber = await getInvoiceNo(); // Assuming getInvoiceNo() is an async function
         await updateDoc(orderDocRef, {
           status: newStatus,
           invoiceNumber: invoiceNumber
@@ -125,6 +120,7 @@ export default function NewOrder() {
         await updateDoc(orderDocRef, {
           status: newStatus
         });
+        setLoading(false)
       }
 
       // Add a new log entry to the logs collection
@@ -144,13 +140,17 @@ export default function NewOrder() {
         updated_by: AdminId,
       };
       await addDoc(collection(db, `order/${id}/logs`), AssignDeliver);
-      updateData({ id, status: newStatus });
+      updateData({ id, status: newStatus, invoiceNumber: invoiceNumber });
+
+      setLoading(false)
     } catch (error) {
       console.log(error);
+      setLoading(false)
     }
   };
 
   const handleRejectOrder = async (id) => {
+    setLoading(true)
     try {
       // Toggle the status between 'publish' and 'hidden'
       const newStatus = "REJECTED";
@@ -167,12 +167,15 @@ export default function NewOrder() {
       await addDoc(collection(db, `order/${id}/logs`), logData);
 
       updateData({ id, status: newStatus });
+      setLoading(false)
     } catch (error) {
       console.log(error);
+      setLoading(false)
     }
   };
 
   async function handleMarkAsDelivered(id) {
+    setLoading(true)
     try {
       let transcationmode = filterData[0].transaction.mode
       // Toggle the status between 'publish' and 'hidden'
@@ -203,8 +206,10 @@ export default function NewOrder() {
       };
       await addDoc(collection(db, `order/${id}/logs`), logData);
       updateData({ id, status: newStatus });
+      setLoading(false)
     } catch (error) {
       console.log(error);
+      setLoading(false)
     }
   }
 
@@ -237,6 +242,11 @@ export default function NewOrder() {
         return null;
     }
   };
+
+  if (loading) {
+    return (<Loader> </Loader>)
+  }
+
 
   return (
     <>
