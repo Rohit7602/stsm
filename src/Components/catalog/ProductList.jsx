@@ -156,14 +156,14 @@ const ProductList = (props) => {
             <h1 className="fw-500  mb-0 black fs-lg">Products</h1>
           </div>
           <div className="d-flex align-itmes-center gap-3">
-          <div className="d-flex px-2 gap-2 align-items-center w_xsm_35 w_sm_50 input_wrapper">
-                <img src={search} alt="searchicon" />
-                <input
-                  type="text"
-                  className="fw-400 categorie_input  "
-                  placeholder="Search for Product..."
-                />
-              </div>
+            <div className="d-flex px-2 gap-2 align-items-center w_xsm_35 w_sm_50 input_wrapper">
+              <img src={search} alt="searchicon" />
+              <input
+                type="text"
+                className="fw-400 categorie_input  "
+                placeholder="Search for Product..."
+              />
+            </div>
             <button className="filter_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
               <img className="me-1" width={24} src={filtericon} alt="filtericon" />
               Filter
@@ -273,7 +273,7 @@ const ProductList = (props) => {
                         </td>
                         <td className="p-3 mw_130">
                           <h3 className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${value.totalStock === "0" ? 'stock_bg_red text-white' : value.totalStock <= value.stockAlert ? 'stock_bg_orange' : 'px-2'} `}>
-                            {`${value.totalStock} Left`} 
+                            {value.totalStock === '0' ? `Out of Stock` : `${value.totalStock} Available `}
                           </h3>
                         </td>
                         <td className="p-3 mw_130">
@@ -281,7 +281,7 @@ const ProductList = (props) => {
                         </td>
                         <td className="p-3 mx_100">
                           <h3 className="fs-sm fw-400 black mb-0">
-                            {value.varients[0].originalPrice}
+                            ₹ {value.varients[0].originalPrice}
                           </h3>
                         </td>
                         <td className="text-center mx_100">

@@ -68,12 +68,9 @@ export default function NewOrder() {
   }
 
   function formatDate(dateString) {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    const formattedDate = new Date(dateString).toLocaleDateString(
-      undefined,
-      options
-    );
-    return formattedDate;
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric" };
+    const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
+    return formattedDate.replace('at', '|');
   }
 
   const calculateSubtotal = () => {

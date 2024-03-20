@@ -48,9 +48,9 @@ const ViewCustomerDetails = () => {
 
   // format date function start
   function formatDate(dateString) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric" };
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
-    return formattedDate;
+    return formattedDate.replace('at', '|');
   }
   // format date function end
 
@@ -138,7 +138,7 @@ const ViewCustomerDetails = () => {
                     )}
                     <h2 className="fw-400 fs-2sm black mb-0 mt-3  ">Average Order Value</h2>
                     <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1  ">
-                      {isNaN(AvergaeOrderValue) ? 0 : AvergaeOrderValue.toFixed(2)}
+                      {isNaN(AvergaeOrderValue) ? 0 : `₹ ${AvergaeOrderValue.toFixed(2)}`}
                     </h2>
                     <h2 className="fw-400 fs-2sm black mb-0 mt-3 ">Registration</h2>
                     <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1 ">
@@ -178,10 +178,8 @@ const ViewCustomerDetails = () => {
                                 <h2 className="fw-400 fs-sm black mb-0">Billed Amount</h2>
                               </th>
                             </tr>
-
                           </thead>
                           <tbody>
-
                             {targetOrder.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map((data, index) => {
                               return (
                                 <>
@@ -192,7 +190,7 @@ const ViewCustomerDetails = () => {
                                       </Link>
                                     </td>
                                     <td>
-                                      <Link className='fw-400 fs-sm color_blue mb-0 '>#9309061235</Link>
+                                      <Link to={'/invoices'} className='fw-400 fs-sm color_blue mb-0 '>{typeof (data.invoiceNumber) === "undefined" ? 'N/A' : `#${data.invoiceNumber}`}</Link>
                                     </td>
                                     <td className="py-3">
                                       <h2 className="fw-400 fs-sm black mb-0">

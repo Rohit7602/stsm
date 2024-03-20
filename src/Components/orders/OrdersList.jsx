@@ -15,9 +15,10 @@ const OrderList = () => {
   // format date logic start from here
   // console.log(orderStatus);
   function formatDate(dateString) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric" };
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
-    return formattedDate;
+    return formattedDate.replace('at', '|');
+
   }
 
   /*  *******************************
@@ -117,6 +118,9 @@ const OrderList = () => {
               <img className="me-1" width={24} src={filtericon} alt="filtericon" />
               Filter
             </button>
+
+            <button className="export_btn  white fs-xxs px-3 py-2 fw-400 border-0">Export</button>
+
           </div>
         </div>
         {/* product details  */}

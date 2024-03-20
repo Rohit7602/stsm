@@ -6,6 +6,7 @@ import eyeIcon from '../../Images/svgs/eye-icon.svg';
 import printIcon from '../../Images/svgs/print-icon.svg';
 import { useOrdercontext } from '../../context/OrderGetter';
 import { Link } from 'react-router-dom';
+import { min } from 'date-fns';
 function DashbordCards() {
   const { orders } = useOrdercontext();
   /**  ******************************************* Calculation of Average ORder value According to current Month
@@ -73,9 +74,10 @@ function DashbordCards() {
   // format date function
 
   function formatDate(dateString) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric" };
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
-    return formattedDate;
+    return formattedDate.replace('at', '|');
+    
   }
 
   return (
