@@ -95,7 +95,7 @@ function App() {
     // Cleanup function to unsubscribe when the component unmounts
     return () => unsubscribe();
   }, []);
- 
+
   return (
     <div>
       <Logout logout={handleLogout} setDeletPopup={setDeletPopup} deletPopup={deletPopup} />
@@ -157,9 +157,9 @@ function App() {
                         <Route path="deliveryman">
                           <Route index element={<DeliveryManList />} />
                           <Route path="addnewdeliveryman" element={<AddDeliveryMan />} />
-                          <Route path="deliverymanprofile" element={<DeliverymanProfile />} />
-                          <Route path="deliveryorderlist" element={<DeliveryOrderList />} />
-                          <Route path="inventory" element={<DeliveryBoyInventory />} />
+                          <Route path="deliverymanprofile/:id" element={<DeliverymanProfile />} />
+                          {/* <Route path="deliveryorderlist" element={<DeliveryOrderList />} /> */}
+                          <Route path="inventory/:id" element={<DeliveryBoyInventory />} />
                         </Route>
                         <Route path="marketing">
                           <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
@@ -171,8 +171,8 @@ function App() {
                         <Route path="privacypolicy" element={<PrivacyPolicy />} />
                         <Route path="term" element={<TermConditions />} />
                         <Route path='FAQ' element={<Faqs />} />
-                        <Route path='invoices' element={<Invoices/>} />
-                        <Route path='invoicesbill' element={<InvoiceBill/>} />
+                        <Route path='invoices' element={<Invoices />} />
+                        <Route path='invoicesbill' element={<InvoiceBill />} />
                         {/* <Route path='Addbanner' element={<AddBanner />} /> */}
                       </Routes>
                     </div>

@@ -104,9 +104,18 @@ export default function NewOrder() {
       const orderDoc = await getDoc(orderDocRef);
       const orderData = orderDoc.data();
       const invoiceNumber = await getInvoiceNo();
-      if (orderData) {
-        console.log(orderData)
-        // let productId = orderData. 
+      
+      if (orderData && orderData.items) {
+        for (const item of orderData.items) {
+          const productDocRef = doc(db, "products", item.product_id);
+          const productDoc = await getDoc(productDocRef);
+          const productData = productDoc.data();
+
+          if (productData) {
+            const newQuantity = productData.totalStock - item.quantity;
+            await updateDoc(productDocRef, { totalStock: newQuantity });
+          }
+        }
       }
 
       const newStatus = "CONFIRMED";

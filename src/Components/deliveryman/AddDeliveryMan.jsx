@@ -33,6 +33,18 @@ const AddDeliveryMan = () => {
   }
 
 
+  function RandomDeliveryGenerator() {
+    var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var passwordLength = 6;
+    var d_id = "";
+    for (var i = 0; i <= passwordLength; i++) {
+      var randomNumber = Math.floor(Math.random() * chars.length);
+      d_id += chars.substring(randomNumber, randomNumber + 1);
+    }
+    return `DLVRY-${d_id}`
+  }
+
+
 
 
   const auth = getAuth();
@@ -90,7 +102,7 @@ const AddDeliveryMan = () => {
     let DeliveryManData = {
       basic_info: {
         name: name,
-        dob: DOB,
+        dob: new Date(DOB).toISOString(),
         phone_no: mobile,
         address: address,
         city: city,
@@ -109,7 +121,7 @@ const AddDeliveryMan = () => {
         account_holder_name: nameaccount,
       },
       job_info: {
-        joining_date: date,
+        joining_date: new Date(date).toISOString(),
         employement_type: selectedOption,
         shift: employmentstatus
       },
@@ -127,6 +139,7 @@ const AddDeliveryMan = () => {
       isVerified: true,
       signInMethod: "email",
       status: "online",
+      d_id: RandomDeliveryGenerator()
     }
 
     // try {

@@ -143,7 +143,6 @@ const OrderList = () => {
         header: "PaymentStatus",
         key: "PaymentStatus",
         width: 15,
-
       },
       {
         header: "OrderStatus",
@@ -160,6 +159,7 @@ const OrderList = () => {
         key: "OrderPrice",
         width: 15,
       }
+
       
     ]
 

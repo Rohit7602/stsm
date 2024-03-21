@@ -200,9 +200,9 @@ const DeliveryManList = () => {
                                 />
                                 <span class="checkmark"></span>
                               </label>
-                              <Link to="/deliveryman/deliverymanprofile">
+                              <Link to={`/deliveryman/deliverymanprofile/${data.d_id}`}>
                                 <p className="fw-400 fs-sm black color_blue mb-0 ms-2">{data.basic_info.name}</p>
-                                <p className="fw-400 fs-xs black color_blue mb-0 ms-2">ID {data.uid}</p>
+                                <p className="fw-400 fs-xs black color_blue mb-0 ms-2">ID {data.d_id}</p>
                               </Link>
                             </div>
                           </td>
@@ -210,7 +210,7 @@ const DeliveryManList = () => {
                             <h3 className="fs-sm fw-400 black mb-0">{data.job_info.shift}</h3>
                           </td>
                           <td className="mx_140 ps-5">
-                            <Link to="/deliveryman/deliveryorderlist" className="fs-sm fw-400 black ">10</Link>
+                            <h3 className="fs-sm fw-400 black ">10</h3>
                           </td>
                           <td className="px-2 mx_140">
                             <h3 className={`fs-sm fw-400 ${data.status === "online" ? 'status_btn_green' : 'status_btn_red'} mb-0`}>{data.status}</h3>
@@ -229,7 +229,7 @@ const DeliveryManList = () => {
                             </h3>
                           </td>
                           <td className="text-center mx_100">
-                            <ActionIcon />
+                            <Link to={`inventory/${data.uid}`}> <ActionIcon /></Link>
                           </td>
                         </tr>
                       )
