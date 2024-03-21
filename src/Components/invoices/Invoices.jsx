@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
-import { InvoicesList } from '../../Common/Helper';
-import rightDubbleArrow from '../../Images/svgs/dubble-arrow.svg';
-import billLogo from '../../Images/svgs/bill-logo.svg';
-import pdfIcon from '../../Images/svgs/pdf-icon.svg';
-import printIcon from '../../Images/svgs/print-icon2.svg';
-import { ReactToPrint } from 'react-to-print';
-import { useOrdercontext } from '../../context/OrderGetter';
+import React, { useEffect, useRef, useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { InvoicesList } from "../../Common/Helper";
+import rightDubbleArrow from "../../Images/svgs/dubble-arrow.svg";
+import billLogo from "../../Images/svgs/bill-logo.svg";
+import pdfIcon from "../../Images/svgs/pdf-icon.svg";
+import printIcon from "../../Images/svgs/print-icon2.svg";
+import { ReactToPrint } from "react-to-print";
+import { useOrdercontext } from "../../context/OrderGetter";
+import { type } from "@testing-library/user-event/dist/type";
 
 export default function Invoices() {
   const [viewSideBill, setViewSideBIll] = useState(false);
@@ -238,6 +239,7 @@ export default function Invoices() {
                   </thead>
                   <tbody className="table_body">
                     {inovicesOrder.map((items) => {
+                      let TotalTaxPaid = items.items.reduce((acc, data) => acc + ((data.quantity * data.final_price) * (typeof (data.Tax) === "undefined" ? 0 : (data.Tax / 100))), 0)
                       return (
                         <tr className="product_borderbottom">
                           <td className="px-2 py-3 mx_220">
@@ -266,7 +268,9 @@ export default function Invoices() {
                             <h3 className="fs-sm fw-400 black mb-0">{items.order_price}</h3>
                           </td>
                           <td className="px-2 py-3 mx_150">
-                            <h3 className="fs-sm fw-400 black mb-0">{/* {items.TotalTax} */}0</h3>
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              {TotalTaxPaid}
+                            </h3>
                           </td>
                           <td className="px-2 py-3 mx_180">
                             <h3
