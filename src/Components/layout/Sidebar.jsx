@@ -63,7 +63,7 @@ function Sidebar(props) {
                       : null
                   }`}
                 >
-                  <div className="d-flex align-items-center w-100 dash_links ps-3 ">
+                  <div className="d-flex align-items-center w-100 dash_links">
                     <div className="d-flex align-items-center w-100">
                       <svg
                         className="list_icons"

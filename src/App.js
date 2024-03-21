@@ -37,8 +37,9 @@ import { useUserAuth } from './context/Authcontext';
 import Coupons from './Components/marketing/Coupons';
 import InvoiceBill from './Components/invoices/InvoiceBill';
 import Chats from './Components/communications/Chats';
-function App() {
+import Complains from './Components/communications/Complains';
 
+function App() {
   const { logoutUser } = useUserAuth()
   const [user, setUser] = useState(null);
   const [loading, setloading] = useState(true);
@@ -56,7 +57,6 @@ function App() {
       });
     };
   }, []);
-
 
   if (location.pathname === "/invoices") {
     document.body.classList.add("overflow-hidden");
@@ -167,6 +167,7 @@ function App() {
                         </Route>
                         <Route path="communications">
                           <Route path="chats" element={<Chats />} />
+                          <Route path="complains" element={<Complains />} />
                         </Route>
                         <Route path="privacypolicy" element={<PrivacyPolicy />} />
                         <Route path="term" element={<TermConditions />} />
