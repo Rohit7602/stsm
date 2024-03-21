@@ -125,27 +125,6 @@ function Faqs() {
     setAns(deltaHtml);
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   if (loading) {
     return <Loader></Loader>;
   } else {
