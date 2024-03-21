@@ -9,12 +9,10 @@ import deleteicon from '../../Images/svgs/deleteicon.svg';
 import delete_icon from '../../Images/svgs/delte.svg';
 import updown_icon from '../../Images/svgs/arross.svg';
 import shortIcon from '../../Images/svgs/short-icon.svg';
-import closeicon from '../../Images/svgs/closeicon.svg';
 import saveicon from '../../Images/svgs/saveicon.svg';
+import CloseIcon from '../../Images/svgs/cloes-icon-black.svg';
 import { doc, deleteDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { Link } from 'react-router-dom';
-import { useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { UseServiceContext } from '../../context/ServiceAreasGetter';
@@ -28,8 +26,8 @@ const ServiceArea = () => {
   const [AreaName, SetAreaName] = useState('');
   const [postalCode, SetPostalCode] = useState();
   const [status, setStatus] = useState();
-  const pubref = useRef();
-  const hideref = useRef();
+  const [storeServiceAreaData, setStoreServiceAreaData] = useState('');
+  const [storeServiceArea, setStoreServiceArea] = useState([]);
 
   const [selectedValue, setSelectedValue] = useState('1 Day');
   const [searchvalue, setSearchvalue] = useState('');
@@ -40,11 +38,6 @@ const ServiceArea = () => {
   const [statusPopup, setStatusPopup] = useState(false);
 
   //  edit popup states //
-  const [editServicePopup, setEditServicePopup] = useState(false);
-  const [editServiceName, setEditServiceName] = useState('');
-  const [editServiceDay, setEditServiceDay] = useState('');
-  const [editServiceStatus, setEditServiceStatus] = useState('');
-  const [editPinCode, setEditPinCode] = useState('');
 
   //
 
@@ -88,6 +81,8 @@ const ServiceArea = () => {
     setSelectedValue('1 Day');
     SetPostalCode('');
     SetAreaName('');
+    setStoreServiceArea([]);
+    setStatus('');
   }
 
   /*  *******************************
@@ -106,6 +101,7 @@ const ServiceArea = () => {
           PostalCode: postalCode,
           ServiceStatus: status,
           ExpectedDelivery: selectedValue,
+          AreaList: storeServiceArea,
         });
 
         addServiceData(docRef);
@@ -122,6 +118,7 @@ const ServiceArea = () => {
         console.error('error is adding service areas ', error);
       }
     }
+    setStoreServiceArea([]);
   }
 
   /*  *******************************
@@ -129,10 +126,6 @@ const ServiceArea = () => {
   *********************************************   **/
 
   // Function to handle the selection of an item
-  const handleSelectEditItem = (value) => {
-    // Update the selected value in the state
-    setEditServiceDay(value);
-  };
 
   /*  *******************************
     Edit  Service functionality start from  here  
@@ -141,18 +134,20 @@ const ServiceArea = () => {
     e.preventDefault();
     try {
       await updateDoc(doc(db, 'ServiceAreas', ServiceAreaId), {
-        AreaName: editServiceName,
-        PostalCode: editPinCode,
-        ServiceStatus: editServiceStatus,
-        ExpectedDelivery: editServiceDay,
+        AreaName: AreaName,
+        PostalCode: postalCode,
+        ServiceStatus: status,
+        ExpectedDelivery: selectedValue,
+        AreaList: storeServiceArea,
       });
 
       updateServiceData({
         ServiceAreaId,
-        AreaName: editServiceName,
-        PostalCode: editPinCode,
-        ServiceStatus: editServiceStatus,
-        ExpectedDelivery: editServiceDay,
+        AreaName: AreaName,
+        PostalCode: postalCode,
+        ServiceStatus: status,
+        ExpectedDelivery: selectedValue,
+        AreaList: storeServiceArea,
       });
       toast.success('Service area Updated  Successfully', {
         position: toast.POSITION.TOP_RIGHT,
@@ -160,7 +155,6 @@ const ServiceArea = () => {
     } catch (Error) {
       console.error(Error);
     }
-    setEditServicePopup(false);
   }
 
   /*  *******************************
@@ -247,6 +241,21 @@ const ServiceArea = () => {
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
+  function handelSubmit(e) {
+    if (e.key === 'Enter') {
+      setStoreServiceArea([...storeServiceArea, storeServiceAreaData]);
+      setStoreServiceAreaData('');
+    }
+  }
+  function handelDeleteArea(index) {
+    let updateAreas = [...storeServiceArea];
+    updateAreas.splice(index, 1);
+    setStoreServiceArea(updateAreas);
+  }
+
+  let editServiceData = ServiceData.filter((item) => item.id === ServiceAreaId);
+
+  console.log(editServiceData);
   if (loaderstatus) {
     return (
       <>
@@ -258,7 +267,7 @@ const ServiceArea = () => {
   } else {
     return (
       <div className="main_panel_wrapper bg_light_grey w-100">
-        {addsServicePopup || editServicePopup ? <div className="bg_black_overlay"></div> : ''}
+        {/* {addsServicePopup || editServicePopup ? <div className="bg_black_overlay"></div> : ''} */}
         <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
           <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
             <div className="d-flex">
@@ -274,132 +283,349 @@ const ServiceArea = () => {
                   onChange={(e) => setSearchvalue(e.target.value)}
                 />
               </div>
-              <Link
-                onClick={() => setAddsServicePopup(!addsServicePopup)}
-                className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
-                <img className="me-1" width={20} src={addicon} alt="add-icon" />
-                Add New Area
-              </Link>
-              {addsServicePopup ? (
-                <div className="add_service_area_popup">
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="fs-sm fw-400 black mb-0">Add Service Area</p>
-                    <img
-                      className="cursor_pointer"
-                      onClick={() => setAddsServicePopup(!addsServicePopup)}
-                      src={closeicon}
-                      alt="closeicon"
-                    />
+            </div>
+          </div>
+          {/* categories details  */}
+          {selectAll ? (
+            <div className="d-flex align-items-center gap-3 mt-3 pt-1">
+              <button className="change_to_draft fs-sm fw-400 black">Change To Draft</button>
+              <button className="change_to_live fs-sm fw-400 black">Change To Live</button>
+              <button className="delete_area fs-sm fw-400 text-white">Delete Area</button>
+            </div>
+          ) : null}
+          <div className="row mt-4">
+            <div className="col-8">
+              <div className="p-3 bg-white product_shadow">
+                <div className="overflow_xl_scroll line_scroll">
+                  <div className="categories_xl_overflow_X ">
+                    <table className="w-100">
+                      <thead className="w-100 table_head">
+                        <tr className="product_borderbottom">
+                          <th
+                            onClick={() => sorting('AreaName')}
+                            className="py-3 ps-3 w-100 cursor_pointer">
+                            <div className="d-flex align-items-center gap-3 min_width_300">
+                              <label class="check1 fw-400 fs-sm black mb-0">
+                                <input
+                                  type="checkbox"
+                                  checked={selectAll}
+                                  onChange={handleMainCheckboxChange}
+                                />
+                                <span class="checkmark"></span>
+                              </label>
+                              <p className="fw-400 fs-sm black mb-0 ms-2">
+                                Name / Title{' '}
+                                <span>
+                                  <img
+                                    className="ms-2 cursor_pointer"
+                                    width={20}
+                                    src={shortIcon}
+                                    alt="short-icon"
+                                  />
+                                </span>
+                              </p>
+                            </div>
+                          </th>
+                          <th className="mx_160 px-2">
+                            <h3 className="fs-sm fw-400 black mb-0">Pin / Postal Code</h3>
+                          </th>
+                          <th className="mw-200 ps-3">
+                            <h3 className="fs-sm fw-400 black mb-0">Expected Delivery</h3>
+                          </th>
+                          <th
+                            onClick={() => sorting('ServiceStatus')}
+                            className="mx_140 cursor_pointer">
+                            <p className="fw-400 fs-sm black mb-0 ms-2">
+                              Service Status{' '}
+                              <span>
+                                <img
+                                  className="ms-2 cursor_pointer"
+                                  width={20}
+                                  src={shortIcon}
+                                  alt="short-icon"
+                                />
+                              </span>
+                            </p>
+                          </th>
+                          <th className="mw-90 p-3 me-1 text-center">
+                            <h3 className="fs-sm fw-400 black mb-0">Action</h3>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="table_body">
+                        {ServiceData.filter((data) => {
+                          return searchvalue.toLowerCase() === ''
+                            ? data
+                            : data.AreaName.toLowerCase().includes(searchvalue);
+                        }).map((data, index) => {
+                          return (
+                            <tr className="product_borderbottom">
+                              <td className="py-3 ps-3 w-100">
+                                <div className="d-flex align-items-center gap-3 min_width_300">
+                                  <label class="check1 fw-400 fs-sm black mb-0">
+                                    <input
+                                      type="checkbox"
+                                      checked={data.checked || false}
+                                      onChange={() => handleCheckboxChange(index)}
+                                    />
+                                    <span class="checkmark"></span>
+                                  </label>
+                                  <div className="d-flex align-items-center ms-1">
+                                    <p className="fw-400 fs-sm black mb-0 ms-2">{data.AreaName}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-2 mx_160">
+                                <h3 className="fs-sm fw-400 black mb-0">{data.PostalCode}</h3>
+                              </td>
+                              <td className="ps-4 mw-200">
+                                <h3 className="fs-sm fw-400 black mb-0">{data.ExpectedDelivery}</h3>
+                              </td>
+                              <td className="mx_140">
+                                <h3 className="fs-sm fw-400 black mb-0 color_green ms-5">
+                                  {data.ServiceStatus}
+                                </h3>
+                              </td>
+                              <td className="text-center mw-90">
+                                <div class="dropdown">
+                                  <button
+                                    class="btn dropdown-toggle"
+                                    type="button"
+                                    id="dropdownMenuButton1"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    <img src={dropdownDots} alt="dropdownDots" />
+                                  </button>
+                                  <ul
+                                    class="dropdown-menu categories_dropdown"
+                                    aria-labelledby="dropdownMenuButton1">
+                                    <li>
+                                      <div class="dropdown-item" href="#">
+                                        <div className="d-flex align-items-center categorie_dropdown_options">
+                                          <img src={eye_icon} alt="" />
+                                          <p className="fs-sm fw-400 black mb-0 ms-2">
+                                            View Details
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </li>
+                                    <li>
+                                      <div class="dropdown-item" href="#">
+                                        <div
+                                          onClick={() => {
+                                            setServiceAreaId(data.id);
+                                            SetAreaName(data.AreaName);
+                                            SetPostalCode(data.PostalCode);
+                                            setStatus(data.ServiceStatus);
+                                            setSelectedValue(data.ExpectedDelivery);
+                                            setStoreServiceArea(data.AreaList);
+                                          }}
+                                          className="d-flex align-items-center categorie_dropdown_options">
+                                          <img src={pencil_icon} alt="" />
+                                          <p className="fs-sm fw-400 black mb-0 ms-2">
+                                            Edit ServiceArea
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </li>
+                                    <li>
+                                      <div class="dropdown-item" href="#">
+                                        <div
+                                          onClick={() =>
+                                            handleChangeStatus(data.id, data.ServiceStatus)
+                                          }
+                                          className="d-flex align-items-center categorie_dropdown_options">
+                                          <img src={updown_icon} alt="" />
+                                          {
+                                            <p className="fs-sm fw-400 green mb-0 ms-2">
+                                              {data.ServiceStatus === 'live'
+                                                ? 'change to  draft'
+                                                : 'Change to live'}
+                                            </p>
+                                          }
+                                        </div>
+                                      </div>
+                                    </li>
+                                    <li>
+                                      <div class="dropdown-item" href="#">
+                                        <div
+                                          onClick={() => {
+                                            setServiceAreaId(data.id);
+                                            setDeletePopup(true);
+                                          }}
+                                          className="d-flex align-items-center categorie_dropdown_options">
+                                          <img src={delete_icon} alt="" />
+                                          <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
+                                        </div>
+                                      </div>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                    <ToastContainer />
+                    {/* <div className=""></div> */}
                   </div>
-                  <div className="d-flex align-items-start flex-column border_top_gray pt-3 mt-3">
-                    <label htmlFor="">Name / Title</label>
-                    <input
-                      className="popup_input w-100 fs-xs fw-400 black"
-                      type="text"
-                      value={AreaName}
-                      onChange={(e) => SetAreaName(e.target.value)}
-                      placeholder="Enter Area Name"
+                  {deletepopup ? (
+                    <Deletepopup
+                      showPopup={setDeletePopup}
+                      handleDelete={() => handleDeleteServiceArea(ServiceAreaId)}
+                      itemName="ServiceArea"
                     />
-                  </div>
-                  <div className="d-flex align-items-start flex-column pt-3 mt-1">
-                    <label htmlFor="">Pin Code</label>
-                    <input
-                      className="popup_input w-100 fs-xs fw-400 black"
-                      type="number"
-                      minLength="6"
-                      maxLength="6"
-                      value={postalCode}
-                      onInput={(e) => {
-                        const value = e.target.value.replace(/\D/g, '');
-                        SetPostalCode(value.slice(0, 6));
-                      }}
-                      placeholder="Enter Pin Code "
+                  ) : null}
+                  {statusPopup ? (
+                    <Updatepopup
+                      statusPopup={setStatusPopup}
+                      handelStatus={() => handleChangeStatus(ServiceAreaId, ServiceStatus)}
+                      itemName="ServiceArea"
                     />
-                  </div>
-                  <div className="d-flex align-items-start flex-column pt-3 mt-1">
-                    <label htmlFor="">Expected Delivery</label>
-                    <div class="dropdown w-100 mt-2">
-                      <button
-                        class="btn btn-secondary fs_xs fw-400 dropdown-toggle w-100 text-start popup_input py-2 dropdown_btn_text rounded-0
+                  ) : null}
+                </div>
+              </div>
+            </div>
+            <div className="col-4">
+              <div className="add_service_area_popup">
+                <div className="d-flex align-items-center justify-content-between">
+                  <p className="fs-sm fw-400 black mb-0">
+                    {editServiceData.length === 1 ? 'Edit' : 'New'} Service Area
+                  </p>
+                </div>
+                <div className="d-flex align-items-start flex-column pt-2 mt-1">
+                  <label htmlFor="">Name / Title</label>
+                  <input
+                    className="popup_input w-100 fs-xs fw-400 black"
+                    type="text"
+                    value={AreaName}
+                    onChange={(e) => SetAreaName(e.target.value)}
+                    placeholder="Enter Area Name"
+                  />
+                </div>
+                <div className="d-flex align-items-start flex-column pt-3 mt-1">
+                  <label htmlFor="">Pin Code</label>
+                  <input
+                    className="popup_input w-100 fs-xs fw-400 black"
+                    type="number"
+                    minLength="6"
+                    maxLength="6"
+                    value={postalCode}
+                    onInput={(e) => {
+                      const value = e.target.value.replace(/\D/g, '');
+                      SetPostalCode(value.slice(0, 6));
+                    }}
+                    placeholder="Enter Pin Code "
+                  />
+                </div>
+                <div className="d-flex align-items-start flex-column pt-3 mt-1">
+                  <label htmlFor="">Expected Delivery</label>
+                  <div class="dropdown w-100 mt-2">
+                    <button
+                      class="btn btn-secondary fs_xs fw-400 dropdown-toggle w-100 text-start popup_input py-2 dropdown_btn_text rounded-0
                       mt-0 bg-white"
-                        type="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        {selectedValue}
-                        <img className="float-end" src={dropdown} alt="" />
-                      </button>
-                      <ul class="dropdown-menu w-100">
-                        <li
-                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectItem('1 Day')}>
-                          1 Day
-                        </li>
-                        <li
-                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectItem('2 Day')}>
-                          2 Day
-                        </li>
-                        <li
-                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectItem('3 Day')}>
-                          3 Day
-                        </li>
-                        <li
-                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectItem('4 Day')}>
-                          4 Day
-                        </li>
-                        <li
-                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectItem('5 Day')}>
-                          5 Day
-                        </li>
-                        <li
-                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectItem('6 Day')}>
-                          6 Day
-                        </li>
-                      </ul>
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false">
+                      {selectedValue}
+                      <img className="float-end" src={dropdown} alt="" />
+                    </button>
+                    <ul class="dropdown-menu w-100">
+                      <li
+                        class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                        onClick={() => handleSelectItem('1 Day')}>
+                        1 Day
+                      </li>
+                      <li
+                        class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                        onClick={() => handleSelectItem('2 Day')}>
+                        2 Day
+                      </li>
+                      <li
+                        class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                        onClick={() => handleSelectItem('3 Day')}>
+                        3 Day
+                      </li>
+                      <li
+                        class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                        onClick={() => handleSelectItem('4 Day')}>
+                        4 Day
+                      </li>
+                      <li
+                        class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                        onClick={() => handleSelectItem('5 Day')}>
+                        5 Day
+                      </li>
+                      <li
+                        class="dropdown-item fs-xs fw-400 dropdown_btn_text"
+                        onClick={() => handleSelectItem('6 Day')}>
+                        6 Day
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <h2 className="fw-400 fs-2sm black mb-0">Status</h2>
+                  <div className="d-flex align-items-center gap-5">
+                    <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
+                      <label class="check fw-400 fs-sm black mb-0">
+                        Live
+                        <input
+                          type="checkbox"
+                          checked={status === 'live'}
+                          onChange={(e) => {
+                            setStatus('live');
+                          }}
+                        />
+                        <span class="checkmark"></span>
+                      </label>
+                    </div>
+                    <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
+                      <label class="check fw-400 fs-sm black mb-0">
+                        Draft
+                        <input
+                          type="checkbox"
+                          checked={status === 'draft'}
+                          onChange={(e) => {
+                            setStatus('draft');
+                          }}
+                        />
+                        <span class="checkmark"></span>
+                      </label>
                     </div>
                   </div>
-                  <div className="mt-4">
-                    <h2 className="fw-400 fs-2sm black mb-0">Status</h2>
-                    <div className="d-flex align-items-center gap-5">
-                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
-                        <label class="check fw-400 fs-sm black mb-0">
-                          Live
-                          <input
-                            type="checkbox"
-                            ref={pubref}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setStatus('live');
-                                hideref.current.checked = false;
-                              }
-                            }}
-                          />
-                          <span class="checkmark"></span>
-                        </label>
+                </div>
+                <div className="d-flex align-items-start flex-column pt-3 mt-1">
+                  <label htmlFor="">Select Areas</label>
+                  <input
+                    onKeyPress={(e) => {
+                      handelSubmit(e);
+                    }}
+                    onChange={(e) => setStoreServiceAreaData(e.target.value)}
+                    className="popup_input w-100 fs-xs fw-400 black"
+                    type="text"
+                    value={storeServiceAreaData}
+                    placeholder="Enter Area Name"
+                  />
+                </div>
+                <div className="d-flex align-items-center flex-wrap gap-2 mt-2 pt-1">
+                  {storeServiceArea.map((items, index) => {
+                    return (
+                      <div key={index} className="d-flex align-items-center gap-1 areas">
+                        <p className="fs-xxs fw-400 m-0">{items}</p>
+                        <img
+                          onClick={() => handelDeleteArea(index)}
+                          className="cursor_pointer"
+                          src={CloseIcon}
+                          alt=""
+                        />
                       </div>
-                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
-                        <label class="check fw-400 fs-sm black mb-0">
-                          Draft
-                          <input
-                            type="checkbox"
-                            ref={hideref}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setStatus('draft');
-                                pubref.current.checked = false;
-                              }
-                            }}
-                          />
-                          <span class="checkmark"></span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center gap-3 justify-content-end pt-3 mt-3 border_top_gray">
+                    );
+                  })}
+                </div>
+                {!ServiceAreaId ? (
+                  <div className="d-flex align-items-center gap-3 justify-content-end mt-3">
                     <button className="reset_border" onClick={handleResetServiceArea}>
                       <button className="fs-sm fw-400 reset_btn border-0 px-sm-3 px-2 py-2 ">
                         Reset
@@ -412,325 +638,32 @@ const ServiceArea = () => {
                       Save
                     </button>
                   </div>
-                </div>
-              ) : null}
-              {editServicePopup ? (
-                <div className="add_service_area_popup">
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="fs-sm fw-400 black mb-0">Edit Service Area</p>
-                    <img
-                      className="cursor_pointer"
-                      onClick={() => setEditServicePopup(false)}
-                      src={closeicon}
-                      alt="closeicon"
-                    />
-                  </div>
-                  <div className="d-flex align-items-start flex-column border_top_gray pt-3 mt-3">
-                    <label htmlFor="">Name / Title</label>
-                    <input
-                      className="popup_input w-100 fs-xs fw-400 black"
-                      type="text"
-                      value={editServiceName}
-                      onChange={(e) => setEditServiceName(e.target.value)}
-                      placeholder="Enter Area Name"
-                    />
-                  </div>
-                  <div className="d-flex align-items-start flex-column pt-3 mt-1">
-                    <label htmlFor="">Pin Code</label>
-                    <input
-                      className="popup_input w-100 fs-xs fw-400 black"
-                      type="number"
-                      minLength="6"
-                      maxLength="6"
-                      value={editPinCode}
-                      onInput={(e) => {
-                        setEditPinCode(e.target.value);
-                      }}
-                      placeholder="Enter Pin Code "
-                    />
-                  </div>
-                  <div className="d-flex align-items-start flex-column pt-3 mt-1">
-                    <label htmlFor="">Expected Delivery</label>
-                    <div class="dropdown w-100 mt-2">
-                      <button
-                        class="btn btn-secondary fs_xs fw-400 dropdown-toggle w-100 text-start popup_input py-2 dropdown_btn_text rounded-0
-                      mt-0 bg-white"
-                        type="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        {editServiceDay}
-                        <img className="float-end" src={dropdown} alt="" />
-                      </button>
-                      <ul class="dropdown-menu w-100">
-                        <li
-                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectEditItem('1 Day')}>
-                          1 Day
-                        </li>
-                        <li
-                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectEditItem('2 Day')}>
-                          2 Day
-                        </li>
-                        <li
-                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectEditItem('3 Day')}>
-                          3 Day
-                        </li>
-                        <li
-                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectEditItem('4 Day')}>
-                          4 Day
-                        </li>
-                        <li
-                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectEditItem('5 Day')}>
-                          5 Day
-                        </li>
-                        <li
-                          class="dropdown-item fs-xs fw-400 dropdown_btn_text"
-                          onClick={() => handleSelectEditItem('6 Day')}>
-                          6 Day
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div className="mt-4">
-                    <h2 className="fw-400 fs-2sm black mb-0">Status</h2>
-                    <div className="d-flex align-items-center gap-5">
-                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
-                        <label class="check fw-400 fs-sm black mb-0">
-                          Live
-                          <input
-                            type="checkbox"
-                            onChange={() => {
-                              setEditServiceStatus('live');
-                            }}
-                            checked={editServiceStatus === 'live'}
-                          />
-                          <span class="checkmark"></span>
-                        </label>
-                      </div>
-                      <div className="mt-3 ms-3 py-1 d-flex align-items-center gap-3">
-                        <label class="check fw-400 fs-sm black mb-0">
-                          Draft
-                          <input
-                            type="checkbox"
-                            onChange={(e) => {
-                              setEditServiceStatus('draft');
-                            }}
-                            checked={editServiceStatus === 'draft'}
-                          />
-                          <span class="checkmark"></span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center gap-3 justify-content-end pt-3 mt-3 border_top_gray">
-                    <button className="reset_border" onClick={handleResetServiceArea}>
+                ) : null}
+                {ServiceAreaId ? (
+                  <div className="d-flex align-items-center gap-3 justify-content-end mt-3">
+                    <button
+                      className="reset_border"
+                      onClick={() => {
+                        SetAreaName('');
+                        SetPostalCode('');
+                        setStatus('');
+                        setSelectedValue('1 Day');
+                        setServiceAreaId('');
+                        setStoreServiceArea([]);
+                      }}>
                       <button className="fs-sm fw-400 reset_btn border-0 px-sm-3 px-2 py-2 ">
-                        Reset
+                        cancel
                       </button>
                     </button>
                     <button
                       onClick={HandleEditSaveServiceAreas}
                       className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black">
                       <img src={saveicon} alt="saveicon" />
-                      Save
+                      Update
                     </button>
                   </div>
-                </div>
-              ) : null}
-            </div>
-          </div>
-          {/* categories details  */}
-          <div className="p-3 mt-3 bg-white product_shadow mt-4">
-            <div className="overflow_xl_scroll line_scroll">
-              <div className="categories_xl_overflow_X ">
-                <table className="w-100">
-                  <thead className="w-100 table_head">
-                    <tr className="product_borderbottom">
-                      <th
-                        onClick={() => sorting('AreaName')}
-                        className="py-3 ps-3 w-100 cursor_pointer">
-                        <div className="d-flex align-items-center gap-3 min_width_300">
-                          <label class="check1 fw-400 fs-sm black mb-0">
-                            <input
-                              type="checkbox"
-                              checked={selectAll}
-                              onChange={handleMainCheckboxChange}
-                            />
-                            <span class="checkmark"></span>
-                          </label>
-                          <p className="fw-400 fs-sm black mb-0 ms-2">
-                            Name / Title{' '}
-                            <span>
-                              <img
-                                className="ms-2 cursor_pointer"
-                                width={20}
-                                src={shortIcon}
-                                alt="short-icon"
-                              />
-                            </span>
-                          </p>
-                        </div>
-                      </th>
-                      <th className="mx_160 px-2">
-                        <h3 className="fs-sm fw-400 black mb-0">Pin / Postal Code</h3>
-                      </th>
-                      <th className="mw-200 ps-3">
-                        <h3 className="fs-sm fw-400 black mb-0">Expected Delivery</h3>
-                      </th>
-                      <th
-                        onClick={() => sorting('ServiceStatus')}
-                        className="mx_140 cursor_pointer">
-                        <p className="fw-400 fs-sm black mb-0 ms-2">
-                          Service Status{' '}
-                          <span>
-                            <img
-                              className="ms-2 cursor_pointer"
-                              width={20}
-                              src={shortIcon}
-                              alt="short-icon"
-                            />
-                          </span>
-                        </p>
-                      </th>
-                      <th className="mw-90 p-3 me-1 text-center">
-                        <h3 className="fs-sm fw-400 black mb-0">Action</h3>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="table_body">
-                    {ServiceData.filter((data) => {
-                      return searchvalue.toLowerCase() === ''
-                        ? data
-                        : data.AreaName.toLowerCase().includes(searchvalue);
-                    }).map((data, index) => {
-                      return (
-                        <tr className="product_borderbottom">
-                          <td className="py-3 ps-3 w-100">
-                            <div className="d-flex align-items-center gap-3 min_width_300">
-                              <label class="check1 fw-400 fs-sm black mb-0">
-                                <input
-                                  type="checkbox"
-                                  checked={data.checked || false}
-                                  onChange={() => handleCheckboxChange(index)}
-                                />
-                                <span class="checkmark"></span>
-                              </label>
-                              <div className="d-flex align-items-center ms-1">
-                                <p className="fw-400 fs-sm black mb-0 ms-2">{data.AreaName}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-2 mx_160">
-                            <h3 className="fs-sm fw-400 black mb-0">{data.PostalCode}</h3>
-                          </td>
-                          <td className="ps-4 mw-200">
-                            <h3 className="fs-sm fw-400 black mb-0">{data.ExpectedDelivery}</h3>
-                          </td>
-                          <td className="mx_140">
-                            <h3 className="fs-sm fw-400 black mb-0 color_green ms-5">
-                              {data.ServiceStatus}
-                            </h3>
-                          </td>
-                          <td className="text-center mw-90">
-                            <div class="dropdown">
-                              <button
-                                class="btn dropdown-toggle"
-                                type="button"
-                                id="dropdownMenuButton1"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                <img src={dropdownDots} alt="dropdownDots" />
-                              </button>
-                              <ul
-                                class="dropdown-menu categories_dropdown"
-                                aria-labelledby="dropdownMenuButton1">
-                                <li>
-                                  <div class="dropdown-item" href="#">
-                                    <div className="d-flex align-items-center categorie_dropdown_options">
-                                      <img src={eye_icon} alt="" />
-                                      <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
-                                    </div>
-                                  </div>
-                                </li>
-                                <li>
-                                  <div class="dropdown-item" href="#">
-                                    <div
-                                      onClick={() => {
-                                        setServiceAreaId(data.id);
-                                        setEditServicePopup(true);
-                                        setEditServiceName(data.AreaName);
-                                        setEditServiceDay(data.ExpectedDelivery);
-                                        setEditPinCode(data.PostalCode);
-                                        setEditServiceStatus(data.ServiceStatus);
-                                      }}
-                                      className="d-flex align-items-center categorie_dropdown_options">
-                                      <img src={pencil_icon} alt="" />
-                                      <p className="fs-sm fw-400 black mb-0 ms-2">
-                                        Edit ServiceArea
-                                      </p>
-                                    </div>
-                                  </div>
-                                </li>
-                                <li>
-                                  <div class="dropdown-item" href="#">
-                                    <div
-                                      onClick={() =>
-                                        handleChangeStatus(data.id, data.ServiceStatus)
-                                      }
-                                      className="d-flex align-items-center categorie_dropdown_options">
-                                      <img src={updown_icon} alt="" />
-                                      {
-                                        <p className="fs-sm fw-400 green mb-0 ms-2">
-                                          {data.ServiceStatus === 'live'
-                                            ? 'change to  draft'
-                                            : 'Change to live'}
-                                        </p>
-                                      }
-                                    </div>
-                                  </div>
-                                </li>
-                                <li>
-                                  <div class="dropdown-item" href="#">
-                                    <div
-                                      onClick={() => {
-                                        setServiceAreaId(data.id);
-                                        setDeletePopup(true);
-                                      }}
-                                      className="d-flex align-items-center categorie_dropdown_options">
-                                      <img src={delete_icon} alt="" />
-                                      <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
-                                    </div>
-                                  </div>
-                                </li>
-                              </ul>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-                <ToastContainer />
-                {/* <div className=""></div> */}
+                ) : null}
               </div>
-              {deletepopup ? (
-                <Deletepopup
-                  showPopup={setDeletePopup}
-                  handleDelete={() => handleDeleteServiceArea(ServiceAreaId)}
-                  itemName="ServiceArea"
-                />
-              ) : null}
-              {statusPopup ? (
-                <Updatepopup
-                  statusPopup={setStatusPopup}
-                  handelStatus={() => handleChangeStatus(ServiceAreaId, ServiceStatus)}
-                  itemName="ServiceArea"
-                />
-              ) : null}
             </div>
           </div>
         </div>

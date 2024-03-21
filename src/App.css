@@ -1475,16 +1475,8 @@ div.rich-text-editor .ql-editor {
 }
 
 .add_service_area_popup {
-  position: fixed;
-  width: 400px;
   background-color: #ffffff;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  min-height: 500px;
-  border-radius: 30px;
   padding: 20px;
-  z-index: 10;
 }
 
 .add_coupon_popup {
@@ -2013,6 +2005,32 @@ min_width_230 {
 }
 .left_content_width {
   width: 170px;
+}
+.areas {
+  border: 0.5px solid #0000004d;
+  padding: 5px 10px;
+  border-radius: 30px;
+}
+.change_to_draft {
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 0;
+  outline: 0;
+  background-color: #b5b5b5;
+}
+.change_to_live {
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 0;
+  outline: 0;
+  background-color: #54b435;
+}
+.delete_area {
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 0;
+  outline: 0;
+  background-color: #DD0000;
 }
 
 /* ===========Medgitia-query========== */
