@@ -7,6 +7,9 @@ import updown_icon from '../../Images/svgs/arross.svg';
 import shortIcon from '../../Images/svgs/short-icon.svg';
 import { Link } from 'react-router-dom';
 import { useOrdercontext } from '../../context/OrderGetter';
+import { exec } from 'apexcharts';
+
+
 const OrderList = () => {
   // context
   const { orders, updateData } = useOrdercontext();
@@ -18,7 +21,6 @@ const OrderList = () => {
     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric" };
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
     return formattedDate.replace('at', '|');
-
   }
 
   /*  *******************************
@@ -95,6 +97,122 @@ const OrderList = () => {
       Sorting Functionality end from here  
     *********************************************   **/
 
+
+
+  /*  *******************************
+    Export  Excel File start from here  
+  *********************************************   **/
+  const ExcelJS = require('exceljs');
+
+  function exportExcelFile() {
+    const workbook = new ExcelJS.Workbook()
+    const excelSheet = workbook.addWorksheet("Order List")
+    excelSheet.properties.defaultRowHeight = 20;
+
+    excelSheet.getRow(1).font = {
+      name: "Conic Sans MS",
+      family: 4,
+      size: 14,
+      bold:true,
+    }
+    excelSheet.columns = [
+      {
+        header: "OrderNumber",
+        key: "OrderNumber",
+        width: 15,
+      },
+      {
+        header: "Invoice",
+        key: "Invoice",
+        width: 15,
+
+      },
+      {
+        header: "Date",
+        key: "Date",
+        width: 15,
+
+      },
+      {
+        header: "Customer",
+        key: "Customer",
+        width: 15,
+
+      },
+      {
+        header: "PaymentStatus",
+        key: "PaymentStatus",
+        width: 15,
+
+      },
+      {
+        header: "OrderStatus",
+        key: "OrderStatus",
+        width: 15,
+      },
+      {
+        header: "items",
+        key: "items",
+        width: 15,
+      },
+      {
+        header: "OrderPrice",
+        key: "OrderPrice",
+        width: 15,
+      }
+      
+    ]
+
+    orders.map((order) => {
+      excelSheet.addRow({
+        OrderNumber: order.order_id,
+        Invoice: typeof (order.invoiceNumber) === "undefined" ? "N/A" : order.invoiceNumber,
+        Date: formatDate(order.created_at),
+        Customer: order.customer.name,
+        PaymentStatus: order.transaction.status,
+        OrderStatus: order.status,
+        items: order.items.length,
+        OrderPrice: order.order_price,
+      })
+    })
+
+
+    workbook.xlsx.writeBuffer().then(data => {
+      let blob = new Blob([data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      })
+
+      const url = window.URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = url;
+      anchor.download = 'orderList.xlsx'
+      anchor.click()
+      window.URL.revokeObjectURL(url);
+
+    })
+
+
+  }
+
+
+
+
+
+
+
+
+  /*  *******************************
+  Export  Excel File end  here  
+*********************************************   **/
+
+
+
+
+
+
+
+
+
   return (
     <div className="main_panel_wrapper overflow-x-hidden bg_light_grey w-100">
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
@@ -119,7 +237,7 @@ const OrderList = () => {
               Filter
             </button>
 
-            <button className="export_btn  white fs-xxs px-3 py-2 fw-400 border-0">Export</button>
+            <button onClick={exportExcelFile} className="export_btn  white fs-xxs px-3 py-2 fw-400 border-0">Export</button>
 
           </div>
         </div>
@@ -231,15 +349,15 @@ const OrderList = () => {
                           <td className="p-3 mw_160">
                             <h3
                               className={`fs-sm fw-400 mb-0 d-inline-block ${orderTableData.transaction.status.toString().toLowerCase() ===
-                                  'paid'
-                                  ? 'black stock_bg'
+                                'paid'
+                                ? 'black stock_bg'
+                                : orderTableData.transaction.status.toString().toLowerCase() ===
+                                  'cod'
+                                  ? 'black cancel_gray'
                                   : orderTableData.transaction.status.toString().toLowerCase() ===
-                                    'cod'
-                                    ? 'black cancel_gray'
-                                    : orderTableData.transaction.status.toString().toLowerCase() ===
-                                      'refund'
-                                      ? 'new_order red'
-                                      : 'color_brown on_credit_bg'
+                                    'refund'
+                                    ? 'new_order red'
+                                    : 'color_brown on_credit_bg'
                                 }`}>
                               {orderTableData.transaction.status}
                             </h3>
@@ -247,12 +365,12 @@ const OrderList = () => {
                           <td className="p-3 mw_160">
                             <p
                               className={`d-inline-block ${orderTableData.status.toString().toLowerCase() === 'new'
-                                  ? 'fs-sm fw-400 red mb-0 new_order'
-                                  : orderTableData.status.toString().toLowerCase() === 'processing'
-                                    ? 'fs-sm fw-400 mb-0 processing_skyblue'
-                                    : orderTableData.status.toString().toLowerCase() === 'delivered'
-                                      ? 'fs-sm fw-400 mb-0 green stock_bg'
-                                      : 'fs-sm fw-400 mb-0 black cancel_gray'
+                                ? 'fs-sm fw-400 red mb-0 new_order'
+                                : orderTableData.status.toString().toLowerCase() === 'processing'
+                                  ? 'fs-sm fw-400 mb-0 processing_skyblue'
+                                  : orderTableData.status.toString().toLowerCase() === 'delivered'
+                                    ? 'fs-sm fw-400 mb-0 green stock_bg'
+                                    : 'fs-sm fw-400 mb-0 black cancel_gray'
                                 }`}>
                               {orderTableData.status}
                             </p>

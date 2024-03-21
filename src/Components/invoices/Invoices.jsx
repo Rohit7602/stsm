@@ -7,6 +7,7 @@ import pdfIcon from "../../Images/svgs/pdf-icon.svg";
 import printIcon from "../../Images/svgs/print-icon2.svg";
 import { ReactToPrint } from "react-to-print";
 import { useOrdercontext } from "../../context/OrderGetter";
+import { type } from "@testing-library/user-event/dist/type";
 
 export default function Invoices() {
   const [viewSideBill, setViewSideBIll] = useState(false);
@@ -98,6 +99,7 @@ export default function Invoices() {
               {selectedBill.length > 0
                 ? selectedBill.map((items) => {
                   const subtotal = items.items.reduce((acc, data) => acc + (data.quantity * data.final_price), 0);
+                  
                   return (
                     <div className="mt-3">
                       <div className="d-flex align-items-start justify-content-between gap-3">
@@ -194,7 +196,7 @@ export default function Invoices() {
                                   {typeof (data.Tax) === "undefined" ? "0" : data.Tax}%
                                 </td>
                                 <td className="fs-xxs fw-400 black p_5_10 text-end">
-                                  ₹{(data.quantity * data.final_price) + (typeof (data.text) === "undefined" ? 0 : ((data.quantity * data.final_price) * (data.Tax / 100)) )}
+                                  ₹{(data.quantity * data.final_price) + (typeof (data.text) === "undefined" ? 0 : ((data.quantity * data.final_price) * (data.Tax / 100)))}
                                 </td>
                               </tr>
                             );
@@ -269,6 +271,7 @@ export default function Invoices() {
                   </thead>
                   <tbody className="table_body">
                     {inovicesOrder.map((items) => {
+                      let TotalTaxPaid = items.items.reduce((acc, data) => acc + ((data.quantity * data.final_price) * (typeof (data.Tax) === "undefined" ? 0 : (data.Tax / 100))), 0)
                       return (
                         <tr className="product_borderbottom">
                           <td className="px-2 py-3 mx_220">
@@ -304,7 +307,7 @@ export default function Invoices() {
                           </td>
                           <td className="px-2 py-3 mx_150">
                             <h3 className="fs-sm fw-400 black mb-0">
-                              {/* {items.TotalTax} */}0
+                              {TotalTaxPaid}
                             </h3>
                           </td>
                           <td className="px-2 py-3 mx_180">
