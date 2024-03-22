@@ -57,10 +57,16 @@ function App() {
     };
   }, []);
 
-  if (
-    location.pathname === '/invoices' ||
-    location.pathname === '/orders' 
-  ) {
+  // Check if '/orders/orderdetails/' is one of the segments
+  var pathSegments = location.pathname.split('/');
+  console.log(pathSegments[1]);
+
+  // Check if '/orders/orderdetails/' is one of the segments
+  if (pathSegments.includes('orders') && pathSegments.includes('orderdetails')) {
+    document.body.classList.add('overflow_hidden');
+  }
+
+  if (location.pathname === '/invoices' || location.pathname === '/orders') {
     document.body.classList.add('overflow-hidden');
   } else {
     document.body.classList.remove('overflow-hidden');

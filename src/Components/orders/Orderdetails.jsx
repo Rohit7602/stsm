@@ -249,7 +249,7 @@ export default function NewOrder() {
   }
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-hidden">
       {filterData.map((item, index) => (
         <div key={index} className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
           <div className="d-flex align-items-center justify-content-between py-3 my-1">

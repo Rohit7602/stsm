@@ -31,6 +31,10 @@ body {
   scroll-behavior: smooth !important;
 }
 
+.overflow_hidden {
+  overflow-x: hidden !important;
+}
+
 /*--------------------------------- ROOT-DEFINE-VALUES --------------------------------- */
 :root {
   --color-black: #000000;
@@ -1698,7 +1702,6 @@ div.rich-text-editor .ql-editor {
   transform: translate(-50%, -50%);
   z-index: 3;
 }
-
 .ques_input {
   border: 0.5px solid #0000004d;
   padding: 5px 10px;
