@@ -7,6 +7,7 @@ import orderDelevered from "../../Images/svgs/order-delivered.svg";
 import orderDeliveryAssign from "../../Images/svgs/order-delivery-assign.svg";
 import orderPlaceed from "../../Images/svgs/order-placed.svg";
 import orderReject from "../../Images/svgs/order-reject.svg";
+import orderCanceled from '../../Images/svgs/CANCELLED.svg'
 import whitesaveicon from "../../Images/svgs/white_saveicon.svg";
 import profile from "../../Images/Png/customer_profile.png";
 import manimage from "../../Images/Png/manimage.jpg";
@@ -104,7 +105,7 @@ export default function NewOrder() {
       const orderDoc = await getDoc(orderDocRef);
       const orderData = orderDoc.data();
       const invoiceNumber = await getInvoiceNo();
-      
+
       if (orderData && orderData.items) {
         for (const item of orderData.items) {
           const productDocRef = doc(db, "products", item.product_id);
@@ -247,6 +248,9 @@ export default function NewOrder() {
         return (
           <img className="bg-white" src={orderDelevered} alt="orderDelivered" />
         );
+      case "CANCELLED":
+        return (
+          <img style={{ width: "44px", height: "44px" }} src={orderCanceled} alt="orderCanceled" />);
       default:
         return null;
     }
