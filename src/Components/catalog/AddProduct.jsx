@@ -1,32 +1,33 @@
-import React, { useState, useEffect, useContext } from "react";
-import saveicon from "../../Images/svgs/saveicon.svg";
-import savegreenicon from "../../Images/svgs/save_green_icon.svg";
-import SearchIcon from "../../Images/svgs/search.svg";
-import whiteSaveicon from "../../Images/svgs/white_saveicon.svg";
-import deleteicon from "../../Images/svgs/deleteicon.svg";
-import closeicon from "../../Images/svgs/closeicon.svg";
-import addIcon from "../../Images/svgs/addicon.svg";
-import checkGreen from "../../Images/svgs/check-green-btn.svg";
-import closeRed from "../../Images/svgs/close-red-icon.svg";
-import dropdownImg from "../../Images/svgs/dropdown_icon.svg";
-import "react-quill/dist/quill.snow.css";
-import ReactQuill from "react-quill";
-import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
-import { Col, DropdownButton, Row } from "react-bootstrap";
-import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import Dropdown from "react-bootstrap/Dropdown";
-import { storage } from "../../firebase";
-import { useRef } from "react";
-import { useProductsContext } from "../../context/productgetter";
-import { useSubCategories } from "../../context/categoriesGetter";
-import { useParams, useNavigate } from "react-router-dom";
-import { increment } from "firebase/firestore";
-import Loader from "../Loader";
-import { Units } from "../../Common/Helper";
+import React, { useState, useEffect, useContext } from 'react';
+import saveicon from '../../Images/svgs/saveicon.svg';
+import savegreenicon from '../../Images/svgs/save_green_icon.svg';
+import SearchIcon from '../../Images/svgs/search.svg';
+import whiteSaveicon from '../../Images/svgs/white_saveicon.svg';
+import deleteicon from '../../Images/svgs/deleteicon.svg';
+import deleteiconWithBg from '../../Images/svgs/delete-icon-with-bg.svg';
+import closeicon from '../../Images/svgs/closeicon.svg';
+import addIcon from '../../Images/svgs/addicon.svg';
+import checkGreen from '../../Images/svgs/check-green-btn.svg';
+import closeRed from '../../Images/svgs/close-red-icon.svg';
+import dropdownImg from '../../Images/svgs/dropdown_icon.svg';
+import 'react-quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill';
+import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
+import { Col, DropdownButton, Row } from 'react-bootstrap';
+import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import Dropdown from 'react-bootstrap/Dropdown';
+import { storage } from '../../firebase';
+import { useRef } from 'react';
+import { useProductsContext } from '../../context/productgetter';
+import { useSubCategories } from '../../context/categoriesGetter';
+import { useParams, useNavigate } from 'react-router-dom';
+import { increment } from 'firebase/firestore';
+import Loader from '../Loader';
+import { Units } from '../../Common/Helper';
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -36,57 +37,55 @@ const AddProduct = () => {
 
   let ProductsID = productId.id;
 
-  const [name, setName] = useState("");
-  const [shortDes, setShortDes] = useState("");
-  const [longDes, setLongDes] = useState("");
+  const [name, setName] = useState('');
+  const [shortDes, setShortDes] = useState('');
+  const [longDes, setLongDes] = useState('');
   const [isvarient, setisVarient] = useState(false);
   const [colorVar, setColorVar] = useState(false);
-  const [color, setColor] = useState("");
+  const [color, setColor] = useState('');
   const [storeColors, setStoreColors] = useState([]);
   const [colorInput, setColorInput] = useState(false);
   // context
   const { addData } = useProductsContext();
   const { data } = useSubCategories();
   // console.log(color);
-  const [status, setStatus] = useState("published");
-  const [sku, setSku] = useState("");
-  const [totalStock, setTotalStock] = useState("");
-  const [StockCount, setStockCount] = useState("");
-  const [stockPrice, setStockPrice] = useState("");
-  const [categories, setCategories] = useState("");
+  const [status, setStatus] = useState('published');
+  const [sku, setSku] = useState('');
+  const [totalStock, setTotalStock] = useState('');
+  const [StockCount, setStockCount] = useState('');
+  const [stockPrice, setStockPrice] = useState('');
+  const [categories, setCategories] = useState('');
   const [imageUpload22, setImageUpload22] = useState([]);
   // const [categoriesdata, setSubcategoriesData] = useState([]);
   const [searchdata, setSearchdata] = useState([]);
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [stockpopup, setStockpopup] = useState(false);
-  const [unitType, setUnitType] = useState("KG");
+  const [unitType, setUnitType] = useState('KG');
   const [DeliveryCharge, setDeliveryCharges] = useState();
   const [ServiceCharge, setServiceCharge] = useState();
   const [SalesmanCommission, setSalesmanComssion] = useState();
 
   //  search functionaltiy in categories and selected categories
-  const [searchvalue, setSearchvalue] = useState("");
+  const [searchvalue, setSearchvalue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [previousCategoryId, setPreviousCategoryId] = useState(null);
   const [previousCategoryname, setpreviousCategoryname] = useState(null);
-  const [previousCategoryParentId, setpreviousCategoryParentId] =
-    useState(null);
+  const [previousCategoryParentId, setpreviousCategoryParentId] = useState(null);
+  const [selectedArea, setSelectedArea] = useState('');
 
   const handleSelectCategory = (category) => {
-    setSearchvalue("");
+    setSearchvalue('');
     setSelectedCategory(category);
     setSelectedCategoryId(category.id);
   };
 
-
-
   const [variants, setVariants] = useState([]);
   const [discount, setDiscount] = useState(null);
-  const [originalPrice, setOriginalPrice] = useState("");
-  const [VarintName, setVariantsNAME] = useState("");
-  const [Tax, setTax] = useState(null)
-  const [discountType, setDiscountType] = useState("Amount");
+  const [originalPrice, setOriginalPrice] = useState('');
+  const [VarintName, setVariantsNAME] = useState('');
+  const [Tax, setTax] = useState(null);
+  const [discountType, setDiscountType] = useState('Amount');
   function HandleAddVarients() {
     setVariants((prevVariants) => [
       ...prevVariants,
@@ -100,9 +99,9 @@ const AddProduct = () => {
     ]);
     // Reset individual variant properties
     setOriginalPrice(0);
-    setDiscountType("Amount");
+    setDiscountType('Amount');
     setDiscount(0);
-    setVariantsNAME("");
+    setVariantsNAME('');
   }
 
   function handleDeleteVariant(index) {
@@ -126,12 +125,10 @@ const AddProduct = () => {
     setStockpopup(false);
   }
 
-
-  const convertDeltaToHtml = deltaops => {
+  const convertDeltaToHtml = (deltaops) => {
     const converter = new QuillDeltaToHtmlConverter(deltaops, {});
     return converter.convert();
-  }
-
+  };
 
   function handleDescriptionChange(content, delta, source, editor) {
     const deltaOps = editor.getContents().ops;
@@ -139,26 +136,24 @@ const AddProduct = () => {
     setLongDes(deltaHtml);
   }
 
-
-
   // const pubref = useRef();
   // const hidref = useRef();
 
   function handleReset() {
-    setName("");
-    setShortDes("");
-    setLongDes("");
+    setName('');
+    setShortDes('');
+    setLongDes('');
     setOriginalPrice(0);
-    setDiscountType("Amount");
+    setDiscountType('Amount');
     setDiscount(null);
     setVariants([]);
     setCategories();
-    setStatus("published");
-    setSku("");
-    setTotalStock("");
+    setStatus('published');
+    setSku('');
+    setTotalStock('');
     setImageUpload22([]);
     setSelectedCategory(null);
-    setStockPrice("");
+    setStockPrice('');
     setDeliveryCharges(0);
     setSalesmanComssion(0);
     setServiceCharge(0);
@@ -169,26 +164,26 @@ const AddProduct = () => {
     e.preventDefault();
 
     if (imageUpload22.length === 0 && status === undefined) {
-      alert("set status");
+      alert('set status');
     } else if (imageUpload22.length === 0) {
-      alert("set image ");
+      alert('set image ');
     } else if (!name || !shortDes || !totalStock) {
-      alert("Please enter name  or ShortDescription or TotalStock ");
+      alert('Please enter name  or ShortDescription or TotalStock ');
     } else if (!selectedCategory) {
-      alert("please select category ");
+      alert('please select category ');
     } else {
       try {
         setLoaderstatus(true);
         const imagelinks = [];
         for await (const file of imageUpload22) {
-          const filename = Math.floor(Date.now() / 1000) + "-" + file.name;
+          const filename = Math.floor(Date.now() / 1000) + '-' + file.name;
           const storageRef = ref(storage, `/products/${filename}`);
           const upload = await uploadBytes(storageRef, file);
           const imageUrl = await getDownloadURL(storageRef);
           imagelinks.push(imageUrl);
         }
 
-        const docRef = await addDoc(collection(db, "products"), {
+        const docRef = await addDoc(collection(db, 'products'), {
           name: name,
           shortDescription: shortDes,
           longDescription: longDes,
@@ -212,28 +207,28 @@ const AddProduct = () => {
           isMultipleVariant: isvarient === true,
           ...(isvarient === false
             ? {
-              varients: [
-                {
-                  VarientName: VarintName,
-                  originalPrice: originalPrice,
-                  discountType: discountType,
-                  discount: discount,
-                  unitType,
-                },
-              ],
-            }
+                varients: [
+                  {
+                    VarientName: VarintName,
+                    originalPrice: originalPrice,
+                    discountType: discountType,
+                    discount: discount,
+                    unitType,
+                  },
+                ],
+              }
             : {
-              varients: variants,
-            }), // Include the actual list of variants if varient is true
+                varients: variants,
+              }), // Include the actual list of variants if varient is true
         });
         setSearchdata([]);
         setLoaderstatus(false);
 
-        await updateDoc(doc(db, "sub_categories", selectedCategoryId), {
+        await updateDoc(doc(db, 'sub_categories', selectedCategoryId), {
           noOfProducts: increment(1),
         });
 
-        toast.success("Product added Successfully !", {
+        toast.success('Product added Successfully !', {
           position: toast.POSITION.TOP_RIGHT,
         });
         handleReset();
@@ -242,7 +237,7 @@ const AddProduct = () => {
         toast.error(e, {
           position: toast.POSITION.TOP_RIGHT,
         });
-        console.error("Error adding document: ", e);
+        console.error('Error adding document: ', e);
       }
     }
   }
@@ -253,11 +248,11 @@ const AddProduct = () => {
     const selectedImages = Array.from(event.target.files);
 
     selectedImages.forEach((selectedFile) => {
-      const allowedExtensions = [".png", ".jpeg", ".jpg", ".webp"];
-      const fileExtension = selectedFile.name.split(".").pop().toLowerCase();
+      const allowedExtensions = ['.png', '.jpeg', '.jpg', '.webp'];
+      const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
 
       if (!allowedExtensions.includes(`.${fileExtension}`)) {
-        toast.error("Please select a valid image file within 1.5 MB.");
+        toast.error('Please select a valid image file within 1.5 MB.');
       } else {
         setImageUpload22((prevImages) => [...prevImages, selectedFile]);
       }
@@ -297,7 +292,7 @@ const AddProduct = () => {
         setPreviousCategoryId(items.categories.id);
         setpreviousCategoryParentId(items.categories.parent_id);
         setpreviousCategoryname(items.categories.name);
-        setTax(items.Tax)
+        setTax(items.Tax);
 
         const allVariants = [];
         items.varients.map((itm) => {
@@ -323,7 +318,7 @@ const AddProduct = () => {
 
   useEffect(() => {
     if (storeColors && storeColors.length > 0) {
-      console.log("if working ");
+      console.log('if working ');
       setColorVar(true);
     } else {
       setColorVar(false); // Uncheck the "Yes" checkbox if there are no colors
@@ -331,14 +326,14 @@ const AddProduct = () => {
   }, [storeColors]);
 
   function handelStoreColor() {
-    if (color !== "") {
+    if (color !== '') {
       setStoreColors([...storeColors, color]);
       setColorInput(false);
-      setColor("");
+      setColor('');
     }
   }
 
-  console.log("colors is ", storeColors);
+  console.log('colors is ', storeColors);
 
   function handelColorDelete(index) {
     let updaedColor = [...storeColors];
@@ -350,7 +345,7 @@ const AddProduct = () => {
 
   function CancelUpdate(e) {
     e.preventDefault();
-    navigate("/catalog/productlist");
+    navigate('/catalog/productlist');
   }
 
   async function UpdateProductDatas(e) {
@@ -361,11 +356,11 @@ const AddProduct = () => {
       for await (const file of imageUpload22) {
         let imageUrl = null;
         if (file instanceof File) {
-          const filename = Math.floor(Date.now() / 1000) + "-" + file.name;
+          const filename = Math.floor(Date.now() / 1000) + '-' + file.name;
           const storageRef = ref(storage, `/products/${filename}`);
           await uploadBytes(storageRef, file);
           imageUrl = await getDownloadURL(storageRef);
-        } else if (typeof file === "string" && file.startsWith("http")) {
+        } else if (typeof file === 'string' && file.startsWith('http')) {
           imageUrl = file;
         }
         if (imageUrl) {
@@ -373,7 +368,7 @@ const AddProduct = () => {
         }
       }
 
-      console.log("previoisdCategoryId", previousCategoryId);
+      console.log('previoisdCategoryId', previousCategoryId);
 
       const updateDatas = {
         name: name,
@@ -398,56 +393,56 @@ const AddProduct = () => {
         Tax,
         ...(isvarient === false
           ? {
-            varients: [
-              {
-                VarientName : variants[0].VarientName,
-                originalPrice: variants[0].originalPrice,
-                discountType: variants[0].discountType,
-                discount: variants[0].discount,
-                unitType: variants[0].unitType,
-              },
-            ],
-          }
+              varients: [
+                {
+                  VarientName: variants[0].VarientName,
+                  originalPrice: variants[0].originalPrice,
+                  discountType: variants[0].discountType,
+                  discount: variants[0].discount,
+                  unitType: variants[0].unitType,
+                },
+              ],
+            }
           : {
-            varients: variants,
-          }),
+              varients: variants,
+            }),
       };
 
       // Check if the selected category is different from the existing category
       if (selectedCategoryId === null) {
       } else {
-        console.log("update if working here ", selectedCategoryId);
+        console.log('update if working here ', selectedCategoryId);
         updateDatas.categories = {
           parent_id: selectedCategory.cat_ID,
           id: selectedCategory.id,
           name: selectedCategory.title,
         };
         let existingCategoryId = updateDatas.categories.id; // Update existingCategoryId
-        console.log("existing id ", existingCategoryId);
+        console.log('existing id ', existingCategoryId);
 
-        await updateDoc(doc(db, "sub_categories", previousCategoryId), {
+        await updateDoc(doc(db, 'sub_categories', previousCategoryId), {
           noOfProducts: increment(-1),
         });
 
-        await updateDoc(doc(db, "sub_categories", existingCategoryId), {
+        await updateDoc(doc(db, 'sub_categories', existingCategoryId), {
           noOfProducts: increment(1),
         });
       }
 
-      await updateDoc(doc(db, "products", ProductsID), updateDatas);
+      await updateDoc(doc(db, 'products', ProductsID), updateDatas);
       updateProductData({
         ProductsID,
         ...updateDatas,
       });
       setLoaderstatus(false);
-      toast.success("Product updated Successfully !", {
+      toast.success('Product updated Successfully !', {
         position: toast.POSITION.TOP_RIGHT,
       });
 
-      navigate("/catalog/productlist");
+      navigate('/catalog/productlist');
     } catch (error) {
       setLoaderstatus(false);
-      console.log("Error in update Product", error);
+      console.log('Error in update Product', error);
     }
   }
 
@@ -469,17 +464,13 @@ const AddProduct = () => {
               {!productId.id ? (
                 <div className="d-flex align-itmes-center gap-3">
                   <button className="reset_border">
-                    <button
-                      onClick={handleReset}
-                      className="fs-sm reset_btn  border-0 fw-400 "
-                    >
+                    <button onClick={handleReset} className="fs-sm reset_btn  border-0 fw-400 ">
                       Reset
                     </button>
                   </button>
                   <button
                     className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
-                    type="submit"
-                  >
+                    type="submit">
                     <img src={saveicon} alt="saveicon" />
                     Save
                   </button>
@@ -489,16 +480,14 @@ const AddProduct = () => {
                   <button className="reset_border">
                     <button
                       onClick={(e) => CancelUpdate(e)}
-                      className="fs-sm reset_btn  border-0 fw-400 "
-                    >
+                      className="fs-sm reset_btn  border-0 fw-400 ">
                       Cancel
                     </button>
                   </button>
                   <button
                     onClick={(e) => UpdateProductDatas(e)}
                     className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
-                    type="submit"
-                  >
+                    type="submit">
                     <img src={saveicon} alt="saveicon" />
                     Update
                   </button>
@@ -512,9 +501,7 @@ const AddProduct = () => {
                   <div>
                     {/* Ist-box  */}
                     <div class="product_shadow bg_white p-3  ">
-                      <h2 className="fw-400 fs-2sm black mb-0">
-                        Basic Information
-                      </h2>
+                      <h2 className="fw-400 fs-2sm black mb-0">Basic Information</h2>
                       {/* ist input */}
                       <label htmlFor="Name" className="fs-xs fw-400 mt-3 black">
                         Name <span className="red ms-1 fs-sm">*</span>
@@ -528,16 +515,12 @@ const AddProduct = () => {
                         id="Name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                      />{" "}
+                      />{' '}
                       <br />
                       {/* 2nd input */}
-                      <label
-                        htmlFor="short"
-                        className="fs-xs fw-400 mt-3 black"
-                      >
-                        Short Description{" "}
-                        <span className="red ms-1 fs-sm">*</span>
-                      </label>{" "}
+                      <label htmlFor="short" className="fs-xs fw-400 mt-3 black">
+                        Short Description <span className="red ms-1 fs-sm">*</span>
+                      </label>{' '}
                       <br />
                       <input
                         type="text"
@@ -547,12 +530,12 @@ const AddProduct = () => {
                         id="short"
                         value={shortDes}
                         onChange={(e) => setShortDes(e.target.value)}
-                      />{" "}
+                      />{' '}
                       <br />
                       {/* 3rd input */}
                       <label htmlFor="des" className="fs-xs fw-400 mt-3 black">
                         Description
-                      </label>{" "}
+                      </label>{' '}
                       <br />
                       {/* <textarea
                         id="des"
@@ -575,12 +558,94 @@ const AddProduct = () => {
                       </div>
                     </div>
                     <br />
+                    <div className="product_shadow bg_white p-3">
+                      <div className="pb-3 mb-1">
+                        <h2 className="fw-400 fs-2sm black mb-0">
+                          Availability <span className="red ms-1 fs-sm">*</span>
+                        </h2>
+                        <p className="fs-xxs fw-400 black mt-1 mb-0">
+                          Choose the areas where the product will be shown
+                        </p>
+                      </div>
+                      <div className="text-end">
+                        <button type="button" className="fs-2sm fw-400 color_green add_varient_btn">
+                          + Add More
+                        </button>
+                      </div>
+                      <div className="row align-items-end">
+                        <div className=" col-4">
+                          <label className="fs-xs fw-400 mt-3 black" htmlFor="pinCode">
+                            Enter Pin Code
+                          </label>
+                          <div className="d-flex align-items-center">
+                            <input
+                              required
+                              type="number"
+                              className="mt-2 product_input fade_grey fw-400"
+                              placeholder="125001"
+                              id="pinCode"
+                            />
+                          </div>
+                        </div>
+                        <div className=" col-7">
+                          <label className="fs-xs fw-400 mt-2 black" htmlFor="">
+                            Select Area
+                          </label>
+
+                          <Dropdown className="category_dropdown">
+                            <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
+                              <div className="product_input d-flex align-items-center justify-content-between">
+                                <p className="fade_grey fw-400 w-100 mb-0 text-start" required>
+                                  {selectedArea}
+                                </p>
+                                <img src={dropdownImg} alt="" />
+                              </div>
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu className="w-100">
+                              <div className="d-flex flex-column">
+                                <div>
+                                  <Dropdown.Item>
+                                    <div onClick={() => setSelectedArea('Dabra Chowk')}>
+                                      <p className="fs-xs fw-400 black m-0 py-2">Dabra Chowk</p>
+                                    </div>
+                                  </Dropdown.Item>
+                                  <Dropdown.Item>
+                                    <div onClick={() => setSelectedArea('Bus Stand')}>
+                                      <p className="fs-xs fw-400 black m-0 py-2">Bus Stand</p>
+                                    </div>
+                                  </Dropdown.Item>
+                                  <Dropdown.Item>
+                                    <div onClick={() => setSelectedArea('Nagori Gate')}>
+                                      <p className="fs-xs fw-400 black m-0 py-2">Nagori Gate</p>
+                                    </div>
+                                  </Dropdown.Item>
+                                  <Dropdown.Item>
+                                    <div onClick={() => setSelectedArea('Dabra Chowk')}>
+                                      <p className="fs-xs fw-400 black m-0 py-2">Dabra Chowk</p>
+                                    </div>
+                                  </Dropdown.Item>
+                                </div>
+                              </div>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        </div>
+                        <div className="col-1">
+                          <img
+                            className="w-100 cursor_pointer"
+                            height={48}
+                            src={deleteiconWithBg}
+                            alt="deleteiconWithBg"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <br />
                     {/* [Pricing] */}
                     <div className="product_shadow bg_white p-3">
                       <div className=" d-flex align-items-center w-75 justify-content-between pb-3 mb-1">
                         <h2 className="fw-400 fs-2sm black mb-0">
-                          Have More Varients?{" "}
-                          <span className="red ms-1 fs-sm">*</span>
+                          Have More Varients? <span className="red ms-1 fs-sm">*</span>
                         </h2>
                         <div className="d-flex align-items-center">
                           <label className="pe-3 me-1" for="varient_yes">
@@ -612,8 +677,7 @@ const AddProduct = () => {
                           <button
                             onClick={HandleAddVarients}
                             type="button"
-                            className="fs-2sm fw-400 color_green add_varient_btn"
-                          >
+                            className="fs-2sm fw-400 color_green add_varient_btn">
                             +Add Varient
                           </button>
                         </div>
@@ -631,9 +695,7 @@ const AddProduct = () => {
                                 onChange={(e) =>
                                   setVariants((prevVariants) =>
                                     prevVariants.map((v, i) =>
-                                      i === index
-                                        ? { ...v, VarientName: e.target.value }
-                                        : v
+                                      i === index ? { ...v, VarientName: e.target.value } : v
                                     )
                                   )
                                 }
@@ -647,10 +709,7 @@ const AddProduct = () => {
                             </div>
                             <div className="d-flex flex-column flex-sm-row gap-3">
                               <div className="w-100">
-                                <label
-                                  htmlFor="salesMan"
-                                  className="fs-xs fw-400 mt-3 black"
-                                >
+                                <label htmlFor="salesMan" className="fs-xs fw-400 mt-3 black">
                                   Unit type
                                 </label>
                                 <br />
@@ -658,8 +717,7 @@ const AddProduct = () => {
                                   <Dropdown className="category_dropdown z-1 w-100">
                                     <Dropdown.Toggle
                                       id="dropdown-basic"
-                                      className="mt-2 unit_type_input border-0"
-                                    >
+                                      className="mt-2 unit_type_input border-0">
                                       <div className="product_input d-flex align-items-center justify-content-between">
                                         <p className="fade_grey fw-400 w-100 mb-0 text-start">
                                           {variant.unitType}
@@ -675,33 +733,23 @@ const AddProduct = () => {
                                               <div className="d-flex justify-content-between">
                                                 <p
                                                   onClick={(e) => {
-                                                    console.log(
-                                                      e.target.innerHTML
-                                                    );
-                                                    setVariants(
-                                                      (prevVariants) =>
-                                                        prevVariants.map(
-                                                          (v, i) =>
-                                                            i === index
-                                                              ? {
-                                                                ...v,
-                                                                unitType:
-                                                                  e.target
-                                                                    .innerHTML,
-                                                              }
-                                                              : v
-                                                        )
+                                                    console.log(e.target.innerHTML);
+                                                    setVariants((prevVariants) =>
+                                                      prevVariants.map((v, i) =>
+                                                        i === index
+                                                          ? {
+                                                              ...v,
+                                                              unitType: e.target.innerHTML,
+                                                            }
+                                                          : v
+                                                      )
                                                     );
                                                   }}
-                                                  className="fs-xs fw-400 black mb-0 py-6px"
-                                                >
+                                                  className="fs-xs fw-400 black mb-0 py-6px">
                                                   {item}
                                                 </p>
                                                 {unitType == item ? (
-                                                  <img
-                                                    src={savegreenicon}
-                                                    alt="savegreenicon"
-                                                  />
+                                                  <img src={savegreenicon} alt="savegreenicon" />
                                                 ) : null}
                                               </div>
                                             );
@@ -713,10 +761,7 @@ const AddProduct = () => {
                                 </div>
                               </div>
                               <div className="w-100">
-                                <label
-                                  htmlFor="origi"
-                                  className="fs-xs fw-400 mt-3 black"
-                                >
+                                <label htmlFor="origi" className="fs-xs fw-400 mt-3 black">
                                   Original Price
                                 </label>
                                 <input
@@ -731,9 +776,9 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                            ...v,
-                                            originalPrice: e.target.value,
-                                          }
+                                              ...v,
+                                              originalPrice: e.target.value,
+                                            }
                                           : v
                                       )
                                     )
@@ -741,12 +786,9 @@ const AddProduct = () => {
                                 />
                               </div>
                               <div className="w-100">
-                                <label
-                                  htmlFor="Discount"
-                                  className="fs-xs fw-400 mt-3 black"
-                                >
+                                <label htmlFor="Discount" className="fs-xs fw-400 mt-3 black">
                                   Discount Type
-                                </label>{" "}
+                                </label>{' '}
                                 <select
                                   className="mt-2 product_input fade_grey fw-400"
                                   id="Discount"
@@ -757,30 +799,22 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                            ...v,
-                                            discountType:
-                                              selectedDiscountType,
-                                            // Reset discount value when changing the discount type to "Amount"
-                                            discount:
-                                              selectedDiscountType ===
-                                                "Amount"
-                                                ? 0
-                                                : v.discount,
-                                          }
+                                              ...v,
+                                              discountType: selectedDiscountType,
+                                              // Reset discount value when changing the discount type to "Amount"
+                                              discount:
+                                                selectedDiscountType === 'Amount' ? 0 : v.discount,
+                                            }
                                           : v
                                       )
                                     );
-                                  }}
-                                >
+                                  }}>
                                   <option value="Amount">Amount</option>
                                   <option value="Percentage">Percentage</option>
                                 </select>
                               </div>
                               <div className="w-100">
-                                <label
-                                  htmlFor="ddisc"
-                                  className="fs-xs fw-400 mt-3 black"
-                                >
+                                <label htmlFor="ddisc" className="fs-xs fw-400 mt-3 black">
                                   Discount
                                 </label>
                                 <input
@@ -788,9 +822,7 @@ const AddProduct = () => {
                                   type="number"
                                   className="mt-2 product_input fade_grey fw-400"
                                   placeholder={
-                                    variant.discountType !== "Percentage"
-                                      ? "₹ 0.00"
-                                      : "%"
+                                    variant.discountType !== 'Percentage' ? '₹ 0.00' : '%'
                                   }
                                   id="ddisc"
                                   value={variant.discount}
@@ -799,15 +831,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                            ...v,
-                                            discount:
-                                              v.discountType === "Percentage"
-                                                ? Math.min(
-                                                  e.target.value,
-                                                  100
-                                                )
-                                                : e.target.value,
-                                          }
+                                              ...v,
+                                              discount:
+                                                v.discountType === 'Percentage'
+                                                  ? Math.min(e.target.value, 100)
+                                                  : e.target.value,
+                                            }
                                           : v
                                       )
                                     )
@@ -821,11 +850,7 @@ const AddProduct = () => {
                         <div>
                           <div>
                             <input
-                              value={
-                                variants.length == 0
-                                  ? VarintName
-                                  : variants[0].VarientName
-                              }
+                              value={variants.length == 0 ? VarintName : variants[0].VarientName}
                               required
                               className="varient_value fs-2sm fw-400 color_red"
                               placeholder="Enter Varient Name"
@@ -840,9 +865,9 @@ const AddProduct = () => {
                                     prevVariants.map((v, i) =>
                                       i === 0
                                         ? {
-                                          ...v,
-                                          VarientName: e.target.value,
-                                        }
+                                            ...v,
+                                            VarientName: e.target.value,
+                                          }
                                         : v
                                     )
                                   );
@@ -852,10 +877,7 @@ const AddProduct = () => {
                           </div>
                           <div className="d-flex flex-column flex-sm-row gap-3">
                             <div className="w-100">
-                              <label
-                                htmlFor="salesMan"
-                                className="fs-xs fw-400 mt-3 black"
-                              >
+                              <label htmlFor="salesMan" className="fs-xs fw-400 mt-3 black">
                                 Unit type
                               </label>
                               <br />
@@ -863,8 +885,7 @@ const AddProduct = () => {
                                 <Dropdown className="category_dropdown z-1 w-100">
                                   <Dropdown.Toggle
                                     id="dropdown-basic"
-                                    className="mt-2 unit_type_input border-0"
-                                  >
+                                    className="mt-2 unit_type_input border-0">
                                     <div className="product_input d-flex align-items-center justify-content-between">
                                       <p className="fade_grey fw-400 w-100 mb-0 text-start">
                                         {unitType}
@@ -879,16 +900,10 @@ const AddProduct = () => {
                                           return (
                                             <div
                                               onClick={() => setUnitType(item)}
-                                              className="d-flex justify-content-between"
-                                            >
-                                              <p className="fs-xs fw-400 black mb-0">
-                                                {item}
-                                              </p>
+                                              className="d-flex justify-content-between">
+                                              <p className="fs-xs fw-400 black mb-0">{item}</p>
                                               {unitType == item ? (
-                                                <img
-                                                  src={savegreenicon}
-                                                  alt="savegreenicon"
-                                                />
+                                                <img src={savegreenicon} alt="savegreenicon" />
                                               ) : null}
                                             </div>
                                           );
@@ -902,10 +917,7 @@ const AddProduct = () => {
 
                             {/* ist input */}
                             <div className="w-100">
-                              <label
-                                htmlFor="origi"
-                                className="fs-xs fw-400 mt-3 black"
-                              >
+                              <label htmlFor="origi" className="fs-xs fw-400 mt-3 black">
                                 Original Price
                               </label>
                               <input
@@ -915,9 +927,7 @@ const AddProduct = () => {
                                 placeholder="₹ 0.00"
                                 id="origi"
                                 value={
-                                  variants.length == 0
-                                    ? originalPrice
-                                    : variants[0].originalPrice
+                                  variants.length == 0 ? originalPrice : variants[0].originalPrice
                                 }
                                 onChange={(e) => {
                                   if (variants.length === 0) {
@@ -929,9 +939,9 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === 0
                                           ? {
-                                            ...v,
-                                            originalPrice: e.target.value,
-                                          }
+                                              ...v,
+                                              originalPrice: e.target.value,
+                                            }
                                           : v
                                       )
                                     );
@@ -941,89 +951,66 @@ const AddProduct = () => {
                             </div>
                             {/* 2nd input */}
                             <div className="w-100">
-                              <label
-                                htmlFor="Discount"
-                                className="fs-xs fw-400 mt-3 black"
-                              >
+                              <label htmlFor="Discount" className="fs-xs fw-400 mt-3 black">
                                 Discount Type
                               </label>
                               <select
                                 className="mt-2 product_input  fade_grey fw-400"
                                 id="Discount"
                                 value={
-                                  variants.length == 0
-                                    ? discountType
-                                    : variants[0].discountType
+                                  variants.length == 0 ? discountType : variants[0].discountType
                                 }
                                 onChange={(e) => {
                                   if (variants.length === 0) {
                                     // Set discountType directly if variants array is empty
                                     setDiscountType(e.target.value);
                                     // Reset discount value when changing the discount type to "Amount"
-                                    setDiscount(
-                                      e.target.value === "Amount" ? 0 : discount
-                                    );
+                                    setDiscount(e.target.value === 'Amount' ? 0 : discount);
                                   } else {
                                     // Update discountType for the specific variant
                                     setVariants((prevVariants) =>
                                       prevVariants.map((v, i) =>
                                         i === 0
                                           ? {
-                                            ...v,
-                                            discountType: e.target.value,
-                                            // Reset discount value when changing the discount type to "Amount"
-                                            discount:
-                                              e.target.value === "Amount"
-                                                ? 0
-                                                : v.discount,
-                                          }
+                                              ...v,
+                                              discountType: e.target.value,
+                                              // Reset discount value when changing the discount type to "Amount"
+                                              discount:
+                                                e.target.value === 'Amount' ? 0 : v.discount,
+                                            }
                                           : v
                                       )
                                     );
                                   }
-                                }}
-                              >
+                                }}>
                                 <option
                                   className="mt-2 product_input fade_grey fw-400"
-                                  value="Amount"
-                                >
+                                  value="Amount">
                                   Amount
                                 </option>
                                 <option
                                   className="mt-2 product_input fade_grey fw-400"
-                                  value="Percentage"
-                                >
+                                  value="Percentage">
                                   Percentage
                                 </option>
                               </select>
                             </div>
                             {/* 3rd input */}
                             <div className="w-100">
-                              <label
-                                htmlFor="ddisc"
-                                className="fs-xs fw-400 mt-3 black"
-                              >
+                              <label htmlFor="ddisc" className="fs-xs fw-400 mt-3 black">
                                 Discount
                               </label>
                               <input
                                 required
                                 type="number"
                                 className="mt-2 product_input fade_grey fw-400"
-                                placeholder={
-                                  discountType !== "Percentage" ? "₹ 0.00" : "%"
-                                }
+                                placeholder={discountType !== 'Percentage' ? '₹ 0.00' : '%'}
                                 id="ddisc"
-                                value={
-                                  variants.length == 0
-                                    ? discount
-                                    : variants[0].discount
-                                }
+                                value={variants.length == 0 ? discount : variants[0].discount}
                                 onChange={(e) => {
                                   if (variants.length === 0) {
-                                    discountType === "Percentage"
-                                      ? setDiscount(
-                                        Math.min(e.target.value, 100)
-                                      )
+                                    discountType === 'Percentage'
+                                      ? setDiscount(Math.min(e.target.value, 100))
                                       : setDiscount(e.target.value);
                                   } else {
                                     // Update discount for the specific variant
@@ -1031,15 +1018,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === 0
                                           ? {
-                                            ...v,
-                                            discount:
-                                              v.discountType === "Percentage"
-                                                ? Math.min(
-                                                  e.target.value,
-                                                  100
-                                                )
-                                                : e.target.value,
-                                          }
+                                              ...v,
+                                              discount:
+                                                v.discountType === 'Percentage'
+                                                  ? Math.min(e.target.value, 100)
+                                                  : e.target.value,
+                                            }
                                           : v
                                       )
                                     );
@@ -1054,8 +1038,7 @@ const AddProduct = () => {
                     <div className="product_shadow bg_white p-3 mt-4">
                       <div className=" d-flex align-items-center w-75 justify-content-between pb-3 mb-1">
                         <h2 className="fw-400 fs-2sm black mb-0">
-                          Have More Colours ?{" "}
-                          <span className="red ms-1 fs-sm">*</span>
+                          Have More Colours ? <span className="red ms-1 fs-sm">*</span>
                         </h2>
                         <div className="d-flex align-items-center">
                           <label className="pe-3 me-1" for="color_yes">
@@ -1084,27 +1067,24 @@ const AddProduct = () => {
                       </div>
                       {colorVar === true ? (
                         <div>
-                          <h2 className="fw-400 fs-2sm black mb-0">
-                            Colours Varient
-                          </h2>
+                          <h2 className="fw-400 fs-2sm black mb-0">Colours Varient</h2>
                           <div className=" d-flex align-items-center mt-3 pt-1 me-5 gap-3 flex-wrap">
                             {storeColors && storeColors.length !== 0
                               ? storeColors.map((items, index) => {
-                                return (
-                                  <div
-                                    key={index}
-                                    className="d-flex align-items-center gap-3 color_add_input"
-                                  >
-                                    <p className="m-0">{items}</p>
-                                    <img
-                                      onClick={() => handelColorDelete(index)}
-                                      className="cursor_pointer"
-                                      src={closeRed}
-                                      alt="closeRed"
-                                    />
-                                  </div>
-                                );
-                              })
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="d-flex align-items-center gap-3 color_add_input">
+                                      <p className="m-0">{items}</p>
+                                      <img
+                                        onClick={() => handelColorDelete(index)}
+                                        className="cursor_pointer"
+                                        src={closeRed}
+                                        alt="closeRed"
+                                      />
+                                    </div>
+                                  );
+                                })
                               : null}
 
                             {colorInput ? (
@@ -1126,8 +1106,7 @@ const AddProduct = () => {
                             <button
                               onClick={() => setColorInput(true)}
                               type="button"
-                              className="add_color_btn fs-xs fw-400 fade_grey"
-                            >
+                              className="add_color_btn fs-xs fw-400 fade_grey">
                               + Add Color
                             </button>
                           </div>
@@ -1155,9 +1134,7 @@ const AddProduct = () => {
                               <img
                                 className="mobile_image object-fit-cover"
                                 src={
-                                  img &&
-                                    typeof img === "string" &&
-                                    img.startsWith("http")
+                                  img && typeof img === 'string' && img.startsWith('http')
                                     ? img
                                     : URL.createObjectURL(img)
                                 }
@@ -1174,8 +1151,7 @@ const AddProduct = () => {
                         ))}
                         <label
                           htmlFor="file22"
-                          className="color_green cursor_pointer fs-sm addmedia_btn d-flex justify-content-center align-items-center"
-                        >
+                          className="color_green cursor_pointer fs-sm addmedia_btn d-flex justify-content-center align-items-center">
                           + Add Media
                         </label>
                       </div>
@@ -1196,9 +1172,9 @@ const AddProduct = () => {
                         <label className="check fw-400 fs-sm black mb-0">
                           Published
                           <input
-                            onChange={() => setStatus("published")}
+                            onChange={() => setStatus('published')}
                             type="radio"
-                            checked={status === "published"}
+                            checked={status === 'published'}
                           />
                           <span className="checkmark"></span>
                         </label>
@@ -1207,9 +1183,9 @@ const AddProduct = () => {
                         <label className="check fw-400 fs-sm black mb-0">
                           Hidden
                           <input
-                            onChange={() => setStatus("hidden")}
+                            onChange={() => setStatus('hidden')}
                             type="radio"
-                            checked={status === "hidden"}
+                            checked={status === 'hidden'}
                           />
                           <span className="checkmark"></span>
                         </label>
@@ -1217,10 +1193,7 @@ const AddProduct = () => {
                     </div>
                   </div>
                   <div>
-                    <label
-                      htmlFor="deliveryCharge"
-                      className="fs-xs fw-400 mt-3 black pt-1"
-                    >
+                    <label htmlFor="deliveryCharge" className="fs-xs fw-400 mt-3 black pt-1">
                       Delivery Charge
                     </label>
                     <br />
@@ -1235,10 +1208,7 @@ const AddProduct = () => {
                         onChange={(e) => setDeliveryCharges(e.target.value)}
                       />
                     </div>
-                    <label
-                      htmlFor="deliveryCharge"
-                      className="fs-xs fw-400 mt-3 black pt-1"
-                    >
+                    <label htmlFor="deliveryCharge" className="fs-xs fw-400 mt-3 black pt-1">
                       Tax
                     </label>
                     <br />
@@ -1250,14 +1220,10 @@ const AddProduct = () => {
                         placeholder="%"
                         id="deliveryCharge"
                         value={Tax}
-                        onChange={(e) => setTax(Math.min(e.target.value, 100)
-                        )}
+                        onChange={(e) => setTax(Math.min(e.target.value, 100))}
                       />
                     </div>
-                    <label
-                      htmlFor="serviceCharge"
-                      className="fs-xs fw-400 mt-3 black"
-                    >
+                    <label htmlFor="serviceCharge" className="fs-xs fw-400 mt-3 black">
                       Service charge
                     </label>
                     <br />
@@ -1272,10 +1238,7 @@ const AddProduct = () => {
                         onChange={(e) => setServiceCharge(e.target.value)}
                       />
                     </div>
-                    <label
-                      htmlFor="salesMan"
-                      className="fs-xs fw-400 mt-3 black"
-                    >
+                    <label htmlFor="salesMan" className="fs-xs fw-400 mt-3 black">
                       Sales man Commission
                     </label>
                     <br />
@@ -1316,9 +1279,9 @@ const AddProduct = () => {
                   </div>
                   {/* 2nd input */}
                   <label htmlFor="total" className="fs-xs fw-400 mt-3 black">
-                    Total Stock{" "}
+                    Total Stock{' '}
                     <span className="fade_grey ms-2">{`Purchase Value : ₹${stockPrice}`}</span>
-                  </label>{" "}
+                  </label>{' '}
                   <br />
                   <div className="position-relative">
                     <div className="product_input d-flex align-items-center justify-content-between mt-2">
@@ -1331,33 +1294,19 @@ const AddProduct = () => {
                         id="total"
                         value={totalStock}
                       />
-                      <img
-                        onClick={() => setStockpopup(true)}
-                        src={addIcon}
-                        alt="addIcon"
-                      />
+                      <img onClick={() => setStockpopup(true)} src={addIcon} alt="addIcon" />
                     </div>
                     {stockpopup === true ? (
                       <div className="stock_popup">
-                        <div
-                          onClick={() => setStockpopup(false)}
-                          className="text-end"
-                        >
+                        <div onClick={() => setStockpopup(false)} className="text-end">
                           <img src={closeicon} alt="closeicon" />
                         </div>
                         <div className="d-flex flex-column mt-2">
-                          <label className="fs-xs fw-400 black">
-                            Date of Purchase
-                          </label>
-                          <input
-                            className="product_input fade_grey fw-400 mt-2"
-                            type="date"
-                          />
+                          <label className="fs-xs fw-400 black">Date of Purchase</label>
+                          <input className="product_input fade_grey fw-400 mt-2" type="date" />
                         </div>
                         <div className="d-flex flex-column mt-2">
-                          <label className="fs-xs fw-400 black">
-                            Total Quantity
-                          </label>
+                          <label className="fs-xs fw-400 black">Total Quantity</label>
                           <input
                             className="product_input fade_grey fw-400 mt-2"
                             type="number"
@@ -1367,9 +1316,7 @@ const AddProduct = () => {
                           />
                         </div>
                         <div className="d-flex flex-column mt-2">
-                          <label className="fs-xs fw-400 black">
-                            Total Purchase Price
-                          </label>
+                          <label className="fs-xs fw-400 black">Total Purchase Price</label>
                           <input
                             className="product_input fade_grey fw-400 mt-2"
                             type="number"
@@ -1380,8 +1327,7 @@ const AddProduct = () => {
                         </div>
                         <button
                           className="stock_save_btn d-flex align-items-center"
-                          onClick={HandleStockPopUpSave}
-                        >
+                          onClick={HandleStockPopUpSave}>
                           <img src={whiteSaveicon} alt="whiteSaveicon" />
                           <p className="fs-sm fw-400 white ms-2 mb-0">Save</p>
                         </button>
@@ -1398,28 +1344,73 @@ const AddProduct = () => {
                       placeholder="Enter alert count "
                       value={StockCount}
                       onChange={(e) => setStockCount(e.target.value)}
-                    />{" "}
+                    />{' '}
                   </div>
                   <br />
                 </div>
                 {/* Categories */}
                 <div className="mt-4 product_shadow bg_white p-3">
                   <lable className="fw-400 fs-2sm black mb-0">
+                    Select Brand <span className="red ms-1 fs-sm">*</span>
+                  </lable>
+                  <Dropdown className="category_dropdown">
+                    <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
+                      <div className="product_input">
+                        <div className="d-flex align-items-center justify-content-between">
+                          <p className="fade_grey fw-400 w-100 mb-0 text-start" required>
+                            {selectedCategory
+                              ? selectedCategory.title || selectedCategory
+                              : 'Select Brand'}
+                          </p>
+                          <img src={dropdownImg} alt="dropdownImg" />
+                        </div>
+                      </div>
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu className="w-100">
+                      <div className="d-flex flex-column">
+                        <div>
+                          <button type="button" className="addnew_category_btn fs-xs green">
+                            +Add <span className="black"> New Brand</span>
+                          </button>
+                          {data
+                            .filter((items) => {
+                              return searchvalue.toLowerCase() === ''
+                                ? items
+                                : items.title.toLowerCase().includes(searchvalue);
+                            })
+                            .map((category) => (
+                              <Dropdown.Item>
+                                <div
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
+                                  onClick={() => handleSelectCategory(category)}>
+                                  <p className="fs-xs fw-400 black mb-0">{category.title}</p>
+                                  {selectedCategory && selectedCategory.id === category.id && (
+                                    <img src={savegreenicon} alt="savegreenicon" />
+                                  )}
+                                </div>
+                              </Dropdown.Item>
+                            ))}
+                        </div>
+                      </div>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </div>
+                <div className="mt-4 product_shadow bg_white p-3">
+                  <lable className="fw-400 fs-2sm black mb-0">
                     Categories <span className="red ms-1 fs-sm">*</span>
                   </lable>
                   <Dropdown className="category_dropdown">
-                    <Dropdown.Toggle
-                      id="dropdown-basic"
-                      className="dropdown_input_btn"
-                    >
+                    <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
                       <div className="product_input">
-                        <p
-                          className="fade_grey fw-400 w-100 mb-0 text-start"
-                          required
-                        >
+                        <p className="fade_grey fw-400 w-100 mb-0 text-start" required>
                           {selectedCategory
                             ? selectedCategory.title || selectedCategory
-                            : "Select Category"}
+                            : 'Select Category'}
                         </p>
                       </div>
                     </Dropdown.Toggle>
@@ -1438,32 +1429,23 @@ const AddProduct = () => {
                         <div>
                           {data
                             .filter((items) => {
-                              return searchvalue.toLowerCase() === ""
+                              return searchvalue.toLowerCase() === ''
                                 ? items
-                                : items.title
-                                  .toLowerCase()
-                                  .includes(searchvalue);
+                                : items.title.toLowerCase().includes(searchvalue);
                             })
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${selectedCategory &&
-                                    selectedCategory.id === category.id
-                                    ? "selected"
-                                    : ""
-                                    }`}
-                                  onClick={() => handleSelectCategory(category)}
-                                >
-                                  <p className="fs-xs fw-400 black mb-0">
-                                    {category.title}
-                                  </p>
-                                  {selectedCategory &&
-                                    selectedCategory.id === category.id && (
-                                      <img
-                                        src={savegreenicon}
-                                        alt="savegreenicon"
-                                      />
-                                    )}
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
+                                  onClick={() => handleSelectCategory(category)}>
+                                  <p className="fs-xs fw-400 black mb-0">{category.title}</p>
+                                  {selectedCategory && selectedCategory.id === category.id && (
+                                    <img src={savegreenicon} alt="savegreenicon" />
+                                  )}
                                 </div>
                               </Dropdown.Item>
                             ))}
@@ -1483,36 +1465,31 @@ const AddProduct = () => {
 };
 AddProduct.modules = {
   toolbar: [
-    [{ header: "1" }, { header: "2" }, { font: [] }],
+    [{ header: '1' }, { header: '2' }, { font: [] }],
     [{ size: [] }],
-    ["bold", "italic", "underline", "strike", "blockquote"],
-    [
-      { list: "ordered" },
-      { list: "bullet" },
-      { indent: "-1" },
-      { indent: "+1" },
-    ],
-    ["link", "image", "video"],
-    ["clean"],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+    ['link', 'image', 'video'],
+    ['clean'],
   ],
   clipboard: {
     matchVisual: true,
   },
 };
 AddProduct.formats = [
-  "header",
-  "font",
-  "size",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "blockquote",
-  "list",
-  "bullet",
-  "indent",
-  "link",
-  "image",
-  "video",
+  'header',
+  'font',
+  'size',
+  'bold',
+  'italic',
+  'underline',
+  'strike',
+  'blockquote',
+  'list',
+  'bullet',
+  'indent',
+  'link',
+  'image',
+  'video',
 ];
 export default AddProduct;

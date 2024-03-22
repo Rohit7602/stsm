@@ -28,7 +28,7 @@ const DeliveryManList = () => {
 
   const [selectedValue, setSelectedValue] = useState('1 Day');
   const [searchvalue, setSearchvalue] = useState('');
-  console.log("delivery man data ", DeliveryManData)
+  console.log('delivery man data ', DeliveryManData);
   const [order, setorder] = useState('ASC');
   const sorting = (col) => {
     // Create a copy of the data array
@@ -109,7 +109,9 @@ const DeliveryManList = () => {
                   onChange={(e) => setSearchvalue(e.target.value)}
                 />
               </div>
-              <Link to="/deliveryman/addnewdeliveryman" className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
+              <Link
+                to="/deliveryman/addnewdeliveryman"
+                className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
                 <img className="me-1" width={20} src={addicon} alt="add-icon" />
                 Add New Delivery Man
               </Link>
@@ -201,8 +203,12 @@ const DeliveryManList = () => {
                                 <span class="checkmark"></span>
                               </label>
                               <Link to={`/deliveryman/deliverymanprofile/${data.d_id}`}>
-                                <p className="fw-400 fs-sm black color_blue mb-0 ms-2">{data.basic_info.name}</p>
-                                <p className="fw-400 fs-xs black color_blue mb-0 ms-2">ID {data.d_id}</p>
+                                <p className="fw-400 fs-sm black color_blue mb-0 ms-2">
+                                  {data.basic_info.name}
+                                </p>
+                                <p className="fw-400 fs-xs black color_blue mb-0 ms-2">
+                                  ID {data.d_id}
+                                </p>
                               </Link>
                             </div>
                           </td>
@@ -213,15 +219,29 @@ const DeliveryManList = () => {
                             <h3 className="fs-sm fw-400 black ">10</h3>
                           </td>
                           <td className="px-2 mx_140">
-                            <h3 className={`fs-sm fw-400 ${data.status === "online" ? 'status_btn_green' : 'status_btn_red'} mb-0`}>{data.status}</h3>
+                            <h3
+                              className={`fs-sm fw-400 ${
+                                data.status === 'online' ? 'status_btn_green' : 'status_btn_red'
+                              } mb-0`}>
+                              {data.status}
+                            </h3>
                             {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">online</h3> */}
                           </td>
                           <td className="ps-3 mx_160">
-                            <h3 className={`fs-sm fw-400 status_btn_green mb-0  ${data.isVerified == true ? 'status_btn_green' : 'status_btn_red'} `}>{data.isVerified === true ? 'Approved' : "Rejected"}</h3>
+                            <h3
+                              className={`fs-sm fw-400 status_btn_green mb-0  ${
+                                data.isVerified == true ? 'status_btn_green' : 'status_btn_red'
+                              } `}>
+                              {data.isVerified === true ? 'Approved' : 'Rejected'}
+                            </h3>
                             {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">Rejected</h3> */}
                           </td>
                           <td className="ps-3 mx_160">
-                            <h3 className="fs-sm fw-400 black mb-0">9 11 sector</h3>
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              <button className="service_area_show_btn fs-sm fw-400">
+                                Show
+                              </button>
+                            </h3>
                           </td>
                           <td className=" mx_140 ps-3">
                             <h3 className="fs-sm fw-400 black mb-0 ">
@@ -229,12 +249,14 @@ const DeliveryManList = () => {
                             </h3>
                           </td>
                           <td className="text-center mx_100">
-                            <Link to={`inventory/${data.uid}`}> <ActionIcon /></Link>
+                            <Link to={`inventory/${data.uid}`}>
+                              {' '}
+                              <ActionIcon />
+                            </Link>
                           </td>
                         </tr>
-                      )
-                    })
-                    }
+                      );
+                    })}
                   </tbody>
                 </table>
                 <ToastContainer />

@@ -1,61 +1,54 @@
-import React, { useState, useEffect } from "react";
-import closeicon from "../../Images/svgs/closeicon.svg";
-import { Link } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { DeleteIcon, EditIcon, TickIcon } from "../../Common/Icon";
-import { addDoc, collection, doc, deleteDoc, updateDoc } from "firebase/firestore";
-import { useCouponcontext } from "../../context/CouponsGetter";
-import { db } from "../../firebase";
-import Loader from "../Loader";
-import Deletepopup from "../popups/Deletepopup";
-
-
+import React, { useState, useEffect } from 'react';
+import closeicon from '../../Images/svgs/closeicon.svg';
+import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { DeleteIcon, EditIcon, TickIcon } from '../../Common/Icon';
+import { addDoc, collection, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { useCouponcontext } from '../../context/CouponsGetter';
+import { db } from '../../firebase';
+import Loader from '../Loader';
+import Deletepopup from '../popups/Deletepopup';
 
 const Coupons = () => {
-
-  const { allcoupons, deleteCouponData, updateCouponData, addCouponData } = useCouponcontext()
+  const { allcoupons, deleteCouponData, updateCouponData, addCouponData } = useCouponcontext();
 
   const [loaderstatus, setLoaderstatus] = useState(false);
-  const [code, setCode] = useState("");
-  const [maxdiscount, setMaxDiscount] = useState("");
-  const [startdate, setStartDate] = useState("");
-  const [enddate, setEndDate] = useState("");
-  const [minorder, setMinOrder] = useState("");
-  const [discounttype, setDiscounttype] = useState("FIXED");
-  const [discount, setDiscount] = useState("");
+  const [code, setCode] = useState('');
+  const [maxdiscount, setMaxDiscount] = useState('');
+  const [startdate, setStartDate] = useState('');
+  const [enddate, setEndDate] = useState('');
+  const [minorder, setMinOrder] = useState('');
+  const [discounttype, setDiscounttype] = useState('FIXED');
+  const [discount, setDiscount] = useState('');
   const [addsServicePopup, setAddsServicePopup] = useState(false);
-  const [description, setdescription] = useState('')
-  const [couponsId, setCouponId] = useState('')
-  const [deletepopup, setDeletePopup] = useState(false)
-
-
+  const [description, setdescription] = useState('');
+  const [couponsId, setCouponId] = useState('');
+  const [deletepopup, setDeletePopup] = useState(false);
+  const [couponUseCount, setcouponUseCount] = useState(null);
 
   function formatDate(dateString) {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    const formattedDate = new Date(dateString).toLocaleDateString(
-      undefined,
-      options
-    );
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
     return formattedDate;
   }
 
   function handleReset() {
-    setAddsServicePopup(false)
-    setCode("");
-    setDiscount("");
-    setMinOrder("");
-    setMaxDiscount("");
-    setStartDate("");
-    setEndDate("");
-    setDiscounttype("FIXED")
-    setdescription('')
+    setAddsServicePopup(false);
+    setCode('');
+    setDiscount('');
+    setMinOrder('');
+    setMaxDiscount('');
+    setStartDate('');
+    setEndDate('');
+    setDiscounttype('FIXED');
+    setdescription('');
+    setcouponUseCount(null);
   }
-
 
   async function addcoupons(e) {
     e.preventDefault();
-    handleReset()
+    handleReset();
     let coupon_data = {
       promo_code: code,
       discount_type: discounttype,
@@ -67,44 +60,39 @@ const Coupons = () => {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       description,
-    }
+      coupon_count: couponUseCount,
+    };
     try {
-      setLoaderstatus(true)
+      setLoaderstatus(true);
       let docref = await addDoc(collection(db, 'Coupons'), coupon_data);
-      addCouponData(docref)
-      setLoaderstatus(false)
-      toast.success("Coupon added Successfully !", {
+      addCouponData(docref);
+      setLoaderstatus(false);
+      toast.success('Coupon added Successfully !', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
-      console.log("Error in Add coupon ", error)
+      console.log('Error in Add coupon ', error);
     }
   }
 
   async function handleDeleteCoupon(id) {
     try {
-      setLoaderstatus(true)
+      setLoaderstatus(true);
       await deleteDoc(doc(db, 'Coupons', id)).then(() => {
         deleteCouponData(id);
       });
-      setLoaderstatus(false)
-      toast.success("Coupon Deleted Successfully !", {
+      setLoaderstatus(false);
+      toast.success('Coupon Deleted Successfully !', {
         position: toast.POSITION.TOP_RIGHT,
       });
-      setCouponId('')
+      setCouponId('');
     } catch (error) {
       console.log(error);
     }
   }
 
-
-
-
-
-
   async function handleUpdateCoupons(id) {
-    setLoaderstatus(true)
-
+    setLoaderstatus(true);
 
     try {
       await updateDoc(doc(db, 'Coupons', id), {
@@ -117,6 +105,7 @@ const Coupons = () => {
         end_date: new Date(enddate).toISOString(),
         updated_at: new Date().toISOString(),
         description,
+        coupon_count: couponUseCount,
       });
 
       updateCouponData({
@@ -130,43 +119,39 @@ const Coupons = () => {
         end_date: new Date(enddate).toISOString(),
         updated_at: new Date().toISOString(),
         description,
+        coupon_count: couponUseCount,
       });
 
-      setAddsServicePopup(false)
-      setLoaderstatus(false)
-      handleReset()
+      setAddsServicePopup(false);
+      setLoaderstatus(false);
+      handleReset();
       toast.success('Coupons  Updated  Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
-      console.log("error in update Coupon", error)
+      console.log('error in update Coupon', error);
     }
-
   }
 
   function handleClose() {
-    setAddsServicePopup(false)
+    setAddsServicePopup(false);
     handleReset();
-    setCouponId('')
+    setCouponId('');
   }
 
-
   if (loaderstatus) {
-    return (
-      <Loader></Loader>
-    );
+    return <Loader></Loader>;
   } else {
     return (
       <div className="main_panel_wrapper bg_light_grey w-100">
-        {(addsServicePopup || deletepopup) ? <div className="bg_black_overlay"></div> : ""}
+        {addsServicePopup || deletepopup ? <div className="bg_black_overlay"></div> : ''}
 
         <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
           <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
             <h1 className="fw-500 black fs-lg mb-0">Coupons</h1>
             <Link
               onClick={() => setAddsServicePopup(!addsServicePopup)}
-              className="update_entry black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 gap-2 "
-            >
+              className="update_entry black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 gap-2 ">
               <TickIcon />
               Add Counpon
             </Link>
@@ -174,9 +159,7 @@ const Coupons = () => {
               <form onSubmit={addcoupons} className="add_coupon_popup  ">
                 <div className="d-flex  justify-content-between position-relative mt-1">
                   <div className="w-100">
-                    <label className="fs-sm fw-400 black mb-0">
-                      Promo Code
-                    </label>
+                    <label className="fs-sm fw-400 black mb-0">Promo Code</label>
                     <input
                       required
                       className="popup_coupon_input w-100 fs-xs fw-400 black mt-2"
@@ -202,9 +185,9 @@ const Coupons = () => {
                         <label class="check fw-400 fs-sm black mb-0">
                           Percentage
                           <input
-                            onChange={() => setDiscounttype("PERCENTAGE")}
+                            onChange={() => setDiscounttype('PERCENTAGE')}
                             type="radio"
-                            checked={discounttype === "PERCENTAGE"}
+                            checked={discounttype === 'PERCENTAGE'}
                           />
                           <span class="checkmark"></span>
                         </label>
@@ -215,9 +198,9 @@ const Coupons = () => {
                         <label class="check fw-400 fs-sm black mb-0">
                           Fixed
                           <input
-                            onChange={() => setDiscounttype("FIXED")}
+                            onChange={() => setDiscounttype('FIXED')}
                             type="radio"
-                            checked={discounttype === "FIXED"}
+                            checked={discounttype === 'FIXED'}
                           />
                           <span class="checkmark"></span>
                         </label>
@@ -234,8 +217,8 @@ const Coupons = () => {
                   value={discount}
                   onChange={(e) => {
                     const value = e.target.value;
-                    if (discounttype === "PERCENTAGE" && value > 100) {
-                      setDiscount(100)
+                    if (discounttype === 'PERCENTAGE' && value > 100) {
+                      setDiscount(100);
                     } else {
                       setDiscount(value);
                     }
@@ -251,6 +234,15 @@ const Coupons = () => {
                   value={description}
                   onChange={(e) => setdescription(e.target.value)}
                   placeholder="Enter Description here"
+                />
+                <input
+                  className="popup_coupon_input w-100 fs-xs fw-400 black mt-3"
+                  type="number"
+                  required
+                  id="couponcount"
+                  value={couponUseCount}
+                  onChange={(e) => setcouponUseCount(e.target.value)}
+                  placeholder="Enter coupon uses count  here"
                 />
 
                 <div className="row align-items-center ">
@@ -318,18 +310,16 @@ const Coupons = () => {
                 {couponsId ? (
                   <button
                     onClick={() => {
-                      handleUpdateCoupons(couponsId)
+                      handleUpdateCoupons(couponsId);
                     }}
-                    className="fs-sm d-flex gap-2 mt-3 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black"
-                  >
+                    className="fs-sm d-flex gap-2 mt-3 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black">
                     <TickIcon />
                     update Promo
                   </button>
                 ) : (
                   <button
                     type="submit"
-                    className="fs-sm d-flex gap-2 mt-3 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black"
-                  >
+                    className="fs-sm d-flex gap-2 mt-3 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black">
                     <TickIcon />
                     Add Promo
                   </button>
@@ -348,14 +338,10 @@ const Coupons = () => {
                         <h3 className="fs-sm fw-400 black mb-0">Promo Code</h3>
                       </th>
                       <th className="mx_160 ps-3">
-                        <h3 className="fs-sm fw-400 black mb-0">
-                          Discount Value
-                        </h3>
+                        <h3 className="fs-sm fw-400 black mb-0">Discount Value</h3>
                       </th>
                       <th className="mx_140 cursor_pointer">
-                        <h3 className="fs-sm fw-400 black mb-0">
-                          Max. Discount
-                        </h3>
+                        <h3 className="fs-sm fw-400 black mb-0">Max. Discount</h3>
                       </th>
                       <th className="mx_160 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Min. Order</h3>
@@ -380,7 +366,11 @@ const Coupons = () => {
                             <h3 className="fs-sm fw-400 black mb-0">{coupns.promo_code}</h3>
                           </td>
                           <td className="mx_160 ps-3">
-                            <h3 className="fs-sm fw-400 black mb-0">{coupns.discount_type === "FIXED" ? `₹${coupns.discount_value}` : `% ${coupns.discount_value}`}</h3>
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              {coupns.discount_type === 'FIXED'
+                                ? `₹${coupns.discount_value}`
+                                : `% ${coupns.discount_value}`}
+                            </h3>
                           </td>
                           <td className="mx_140 cursor_pointer">
                             <h3 className="fs-sm fw-400 black mb-0"> ₹{coupns.max_discount}</h3>
@@ -389,49 +379,54 @@ const Coupons = () => {
                             <h3 className="fs-sm fw-400 black mb-0">₹ {coupns.min_order}</h3>
                           </td>
                           <td className="mx_160 ps-3">
-                            <h3 className="fs-sm fw-400 black mb-0">{formatDate(coupns.start_date)}</h3>
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              {formatDate(coupns.start_date)}
+                            </h3>
                           </td>
                           <td className="mx_160 ps-3">
-                            <h3 className="fs-sm fw-400 black mb-0">{formatDate(coupns.end_date)}</h3>
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              {formatDate(coupns.end_date)}
+                            </h3>
                           </td>
                           <td className="mx_100 p-3 me-1">
                             <div className="d-flex gap-3">
-                              <div onClick={() => {
-                                setAddsServicePopup(true)
-                                setCouponId(coupns.id);
-                                setCode(coupns.promo_code)
-                                setMaxDiscount(coupns.max_discount)
-                                setStartDate(coupns.start_date)
-                                setEndDate(coupns.end_date)
-                                setMinOrder(coupns.min_order)
-                                setDiscount(coupns.discount_value)
-                                setDiscounttype(coupns.discount_type)
-                                setdescription(coupns.description)
-                              }}>
+                              <div
+                                onClick={() => {
+                                  setAddsServicePopup(true);
+                                  setCouponId(coupns.id);
+                                  setCode(coupns.promo_code);
+                                  setMaxDiscount(coupns.max_discount);
+                                  setStartDate(coupns.start_date);
+                                  setEndDate(coupns.end_date);
+                                  setMinOrder(coupns.min_order);
+                                  setDiscount(coupns.discount_value);
+                                  setDiscounttype(coupns.discount_type);
+                                  setdescription(coupns.description);
+                                  setcouponUseCount(coupns.coupon_count);
+                                }}>
                                 <EditIcon />
                               </div>
-                              <div onClick={() => {
-                                setDeletePopup(true);
-                                setCouponId(coupns.id)
-                              }}>
+                              <div
+                                onClick={() => {
+                                  setDeletePopup(true);
+                                  setCouponId(coupns.id);
+                                }}>
                                 <DeleteIcon> </DeleteIcon>
                               </div>
                             </div>
                           </td>
                         </tr>
-                      )
+                      );
                     })}
                   </tbody>
                 </table>
-                {
-                  deletepopup ? (
-                    <Deletepopup
-                      showPopup={setDeletePopup}
-                      handleDelete={() => handleDeleteCoupon(couponsId)}
-                      items="Coupon"
-                    />
-                  ) : null
-                }
+                {deletepopup ? (
+                  <Deletepopup
+                    showPopup={setDeletePopup}
+                    handleDelete={() => handleDeleteCoupon(couponsId)}
+                    items="Coupon"
+                  />
+                ) : null}
                 <ToastContainer />
               </div>
             </div>

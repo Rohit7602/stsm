@@ -28,10 +28,6 @@ const ViewCustomerDetails = () => {
     console.log('Order not found');
   }
 
-
-
-
-
   const mostRecentOrder = targetOrder.reduce((maxOrder, currentOrder) => {
     // Compare the created_at timestamps
     const maxTimestamp = maxOrder ? new Date(maxOrder.created_at).getTime() : 0;
@@ -48,7 +44,13 @@ const ViewCustomerDetails = () => {
 
   // format date function start
   function formatDate(dateString) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric" };
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    };
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
     return formattedDate.replace('at', '|');
   }
@@ -127,7 +129,9 @@ const ViewCustomerDetails = () => {
                               addSuffix: true,
                             })}
                           </h2>
-                          <Link to={`/orders/orderdetails/${mostRecentOrder.order_id}`} className="fw-400 fs-xs fade_grey mb-0 mt-1 color_blue ">
+                          <Link
+                            to={`/orders/orderdetails/${mostRecentOrder.order_id}`}
+                            className="fw-400 fs-xs fade_grey mb-0 mt-1 color_blue ">
                             {' '}
                             {mostRecentOrder.order_id}
                           </Link>
@@ -144,6 +148,8 @@ const ViewCustomerDetails = () => {
                     <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1 ">
                       {calculateTimeAgo(Customerdata.created_at)}
                     </h2>
+                    <p className="fw-400 fs-sm black mt-3 mb-0">Total Order : 12</p>
+                    <p className="fw-400 fs-sm black mt-2 mb-0">Current Month : 3</p>
                   </div>
                 </Col>
                 <Col xxl={8}>
@@ -155,79 +161,97 @@ const ViewCustomerDetails = () => {
                           <h2 className="fw-400 fs-2sm black mb-0  ">Total Spent :₹{totalSpent}</h2>
                         </div>
                         <div className="d-flex justify-content-between align-items-center mt-3"></div>
-                        <table className="w-100">
-                          <thead>
-                            <tr className="product_borderbottom">
-                              <th className="p-3">
-                                <h2 className="fw-400 fs-sm black mb-0"> Order Id. </h2>
-                              </th>
-                              <th className="py-3">
-                                <h2 className="fw-400 fs-sm black mb-0"> Invoice </h2>
-                              </th>
-                              <th className="py-3">
-                                <h2 className="fw-400 fs-sm black mb-0"> Order Date </h2>
-                              </th>
-                              <th className="p-3">
-                                <h2 className="fw-400 fs-sm black mb-0"> Status </h2>
-                              </th>
-                              <th className="py-3">
-                                <h2 className="fw-400 fs-sm black mb-0"> Items </h2>
-                              </th>
+                        <div className="overflow-x-auto">
+                          <div style={{ minWidth: '1100px' }} className="pb-3">
+                            <table className="w-100 costomer_order_table">
+                              <thead className="table_head">
+                                <tr className="product_borderbottom">
+                                  <th className="p-3">
+                                    <h2 className="fw-400 fs-sm black mb-0"> Order Id. </h2>
+                                  </th>
+                                  <th className="py-3">
+                                    <h2 className="fw-400 fs-sm black mb-0"> Invoice </h2>
+                                  </th>
+                                  <th className="py-3">
+                                    <h2 className="fw-400 fs-sm black mb-0"> Order Date </h2>
+                                  </th>
+                                  <th className="p-3">
+                                    <h2 className="fw-400 fs-sm black mb-0"> Status </h2>
+                                  </th>
+                                  <th className="py-3">
+                                    <h2 className="fw-400 fs-sm black mb-0"> Items </h2>
+                                  </th>
 
-                              <th className="mx_140 ps-3">
-                                <h2 className="fw-400 fs-sm black mb-0">Billed Amount</h2>
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {targetOrder.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map((data, index) => {
-                              return (
-                                <>
-                                  <tr className="product_borderbottom">
-                                    <td className="p-3">
-                                      <Link to={`/orders/orderdetails/${data.order_id}`}>
-                                        <h2 className="fw-400 fs-sm color_blue mb-0 "> # {data.order_id}. </h2>
-                                      </Link>
-                                    </td>
-                                    <td>
-                                      <Link to={'/invoices'} className='fw-400 fs-sm color_blue mb-0 '>{typeof (data.invoiceNumber) === "undefined" ? 'N/A' : `#${data.invoiceNumber}`}</Link>
-                                    </td>
-                                    <td className="py-3">
-                                      <h2 className="fw-400 fs-sm black mb-0">
-                                        {' '}
-                                        {formatDate(data.created_at)}{' '}
-                                      </h2>
-                                    </td>
-                                    <td className="p-3">
-                                      <h2
-                                        className={`d-inline-block ${data.status.toString().toLowerCase() === 'new'
-                                          ? 'fs-sm fw-400 red mb-0 new_order'
-                                          : data.status.toString().toLowerCase() === 'processing'
-                                            ? 'fs-sm fw-400 mb-0 processing_skyblue'
-                                            : data.status.toString().toLowerCase() === 'delivered'
-                                              ? 'fs-sm fw-400 mb-0 green stock_bg'
-                                              : 'fs-sm fw-400 mb-0 black cancel_gray'
-                                          }`}>
-                                        {data.status}
-                                      </h2>
-                                    </td>
-                                    <td className="py-3">
-                                      <h2 className="fw-400 fs-sm black mb-0">
-                                        {' '}
-                                        {data.items.length} Items{' '}
-                                      </h2>
-                                    </td>
-                                    <td className="mx_140 ps-3">
-                                      <h2 className="fw-400 fs-sm black mb-0">
-                                        ₹{data.order_price}
-                                      </h2>
-                                    </td>
-                                  </tr>
-                                </>
-                              );
-                            })}
-                          </tbody>
-                        </table>
+                                  <th className="mx_140 ps-3">
+                                    <h2 className="fw-400 fs-sm black mb-0">Billed Amount</h2>
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="table_body costomer_order_table">
+                                {targetOrder
+                                  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                                  .map((data, index) => {
+                                    return (
+                                      <>
+                                        <tr className="product_borderbottom">
+                                          <td className="p-3">
+                                            <Link to={`/orders/orderdetails/${data.order_id}`}>
+                                              <h2 className="fw-400 fs-sm color_blue mb-0 ">
+                                                {' '}
+                                                # {data.order_id}.{' '}
+                                              </h2>
+                                            </Link>
+                                          </td>
+                                          <td>
+                                            <Link
+                                              to={'/invoices'}
+                                              className="fw-400 fs-sm color_blue mb-0 ">
+                                              {typeof data.invoiceNumber === 'undefined'
+                                                ? 'N/A'
+                                                : `#${data.invoiceNumber}`}
+                                            </Link>
+                                          </td>
+                                          <td className="py-3">
+                                            <h2 className="fw-400 fs-sm black mb-0">
+                                              {' '}
+                                              {formatDate(data.created_at)}{' '}
+                                            </h2>
+                                          </td>
+                                          <td className="p-3">
+                                            <h2
+                                              className={`d-inline-block ${
+                                                data.status.toString().toLowerCase() === 'new'
+                                                  ? 'fs-sm fw-400 red mb-0 new_order'
+                                                  : data.status.toString().toLowerCase() ===
+                                                    'processing'
+                                                  ? 'fs-sm fw-400 mb-0 processing_skyblue'
+                                                  : data.status.toString().toLowerCase() ===
+                                                    'delivered'
+                                                  ? 'fs-sm fw-400 mb-0 green stock_bg'
+                                                  : 'fs-sm fw-400 mb-0 black cancel_gray'
+                                              }`}>
+                                              {data.status}
+                                            </h2>
+                                          </td>
+                                          <td className="py-3">
+                                            <h2 className="fw-400 fs-sm black mb-0">
+                                              {' '}
+                                              {data.items.length} Items{' '}
+                                            </h2>
+                                          </td>
+                                          <td className="mx_140 ps-3">
+                                            <h2 className="fw-400 fs-sm black mb-0">
+                                              ₹{data.order_price}
+                                            </h2>
+                                          </td>
+                                        </tr>
+                                      </>
+                                    );
+                                  })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
