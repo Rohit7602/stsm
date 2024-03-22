@@ -1474,8 +1474,21 @@ div.rich-text-editor .ql-editor {
   overflow-y: auto !important;
 }
 
+.table_body2 {
+  display: block !important;
+  height: calc(100vh - 330px) !important;
+  height: 100%;
+  overflow-y: auto !important;
+}
+
 .table_head,
 .table_body tr {
+  display: table !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+.table_head,
+.table_body2 tr {
   display: table !important;
   width: 100% !important;
   table-layout: fixed !important;
@@ -1653,6 +1666,12 @@ div.rich-text-editor .ql-editor {
   padding: 0px 20px;
   border-radius: 50px;
   height: 47px;
+}
+.order_details_bill {
+  position: absolute;
+  right: -300%;
+  top: -100px;
+  z-index: 1;
 }
 
 .color_add_input input {

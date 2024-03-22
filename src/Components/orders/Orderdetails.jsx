@@ -1,27 +1,30 @@
-import React from "react";
-import saveicon from "../../Images/svgs/saveicon.svg";
-import mobileicon from "../../Images/Png/mobile_icon_40.png";
-import billicon from "../../Images/svgs/bill_icon.svg";
-import orderAccepted from "../../Images/svgs/order-accepted.svg";
-import orderDelevered from "../../Images/svgs/order-delivered.svg";
-import orderDeliveryAssign from "../../Images/svgs/order-delivery-assign.svg";
-import orderPlaceed from "../../Images/svgs/order-placed.svg";
-import orderReject from "../../Images/svgs/order-reject.svg";
-import whitesaveicon from "../../Images/svgs/white_saveicon.svg";
-import profile from "../../Images/Png/customer_profile.png";
-import manimage from "../../Images/Png/manimage.jpg";
-import { Col, Row } from "react-bootstrap";
-import { useParams } from "react-router-dom";
-import { useOrdercontext } from "../../context/OrderGetter";
+import React, { useRef } from 'react';
+import saveicon from '../../Images/svgs/saveicon.svg';
+import mobileicon from '../../Images/Png/mobile_icon_40.png';
+import billicon from '../../Images/svgs/bill_icon.svg';
+import orderAccepted from '../../Images/svgs/order-accepted.svg';
+import billLogo from '../../Images/svgs/bill-logo.svg';
+import orderDelevered from '../../Images/svgs/order-delivered.svg';
+import orderDeliveryAssign from '../../Images/svgs/order-delivery-assign.svg';
+import orderPlaceed from '../../Images/svgs/order-placed.svg';
+import orderReject from '../../Images/svgs/order-reject.svg';
+import whitesaveicon from '../../Images/svgs/white_saveicon.svg';
+import profile from '../../Images/Png/customer_profile.png';
+import manimage from '../../Images/Png/manimage.jpg';
+import { Col, Row } from 'react-bootstrap';
+import { Link, useParams } from 'react-router-dom';
+import { useOrdercontext } from '../../context/OrderGetter';
+import { ReactToPrint } from 'react-to-print';
 
-import { doc, updateDoc, getDocs, addDoc, collection, query, getDoc, } from "firebase/firestore";
-import { db } from "../../firebase";
-import { useState, useEffect } from "react";
+import { doc, updateDoc, getDocs, addDoc, collection, query, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
+import { useState, useEffect } from 'react';
 
-import { useUserAuth } from "../../context/Authcontext";
-import Loader from "../Loader";
+import { useUserAuth } from '../../context/Authcontext';
+import Loader from '../Loader';
 
 export default function NewOrder() {
+  const componentRef = useRef();
   const { userData } = useUserAuth();
   // console.log("user data ", userData)
   let AdminId = userData.uuid;
@@ -30,7 +33,7 @@ export default function NewOrder() {
   const { id } = useParams();
   const { orders, updateData } = useOrdercontext();
   const [filterData, setfilterData] = useState([]);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const orderData = orders.filter((item) => item.order_id === id);
@@ -61,7 +64,13 @@ export default function NewOrder() {
   }
 
   function formatDate(dateString) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric" };
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    };
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
     return formattedDate.replace('at', '|');
   }
@@ -69,9 +78,7 @@ export default function NewOrder() {
   const calculateSubtotal = () => {
     return filterData[0].items.reduce(
       (acc, item) =>
-        acc +
-        item.varient_price * item.quantity -
-        item.varient_discount * item.quantity,
+        acc + item.varient_price * item.quantity - item.varient_discount * item.quantity,
       0
     );
   };
@@ -80,11 +87,11 @@ export default function NewOrder() {
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
     const shippingCost = filterData[0].shipping_charge;
-    const promoDiscount = filterData[0].additional_discount.discount
+    const promoDiscount = filterData[0].additional_discount.discount;
     return subtotal + shippingCost - promoDiscount;
   };
 
-  //  generate invoiceNumber 
+  //  generate invoiceNumber
   const getInvoiceNo = async () => {
     const year = new Date().getFullYear() % 100; // Get the last two digits of the current year
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -93,21 +100,19 @@ export default function NewOrder() {
       randomDigits += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return `ST${year}${randomDigits}`;
-  }
-
-
+  };
 
   const handleAcceptOrder = async (id) => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const orderDocRef = doc(db, "order", id);
+      const orderDocRef = doc(db, 'order', id);
       const orderDoc = await getDoc(orderDocRef);
       const orderData = orderDoc.data();
       const invoiceNumber = await getInvoiceNo();
-      
+
       if (orderData && orderData.items) {
         for (const item of orderData.items) {
-          const productDocRef = doc(db, "products", item.product_id);
+          const productDocRef = doc(db, 'products', item.product_id);
           const productDoc = await getDoc(productDocRef);
           const productData = productDoc.data();
 
@@ -118,23 +123,23 @@ export default function NewOrder() {
         }
       }
 
-      const newStatus = "CONFIRMED";
+      const newStatus = 'CONFIRMED';
 
-      if (!orderData.hasOwnProperty("invoiceNumber")) {
+      if (!orderData.hasOwnProperty('invoiceNumber')) {
         await updateDoc(orderDocRef, {
           status: newStatus,
-          invoiceNumber: invoiceNumber
+          invoiceNumber: invoiceNumber,
         });
       } else {
         await updateDoc(orderDocRef, {
-          status: newStatus
+          status: newStatus,
         });
-        setLoading(false)
+        setLoading(false);
       }
 
       // Add a new log entry to the logs collection
       const logData = {
-        name: "Admin",
+        name: 'Admin',
         status: newStatus,
         updated_at: new Date().toISOString(),
         updated_by: AdminId,
@@ -143,32 +148,32 @@ export default function NewOrder() {
       await addDoc(collection(db, `order/${id}/logs`), logData);
 
       const AssignDeliver = {
-        name: "Admin",
-        status: "PROCESSING",
+        name: 'Admin',
+        status: 'PROCESSING',
         updated_at: new Date().toISOString(),
         updated_by: AdminId,
       };
       await addDoc(collection(db, `order/${id}/logs`), AssignDeliver);
       updateData({ id, status: newStatus, invoiceNumber: invoiceNumber });
 
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       console.log(error);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
   const handleRejectOrder = async (id) => {
-    setLoading(true)
+    setLoading(true);
     try {
       // Toggle the status between 'publish' and 'hidden'
-      const newStatus = "REJECTED";
-      await updateDoc(doc(db, "order", id), {
+      const newStatus = 'REJECTED';
+      await updateDoc(doc(db, 'order', id), {
         status: newStatus,
       });
       // Add a new log entry to the logs collection
       const logData = {
-        name: "Admin",
+        name: 'Admin',
         status: newStatus,
         updated_at: new Date().toISOString(),
         updated_by: AdminId,
@@ -176,184 +181,165 @@ export default function NewOrder() {
       await addDoc(collection(db, `order/${id}/logs`), logData);
 
       updateData({ id, status: newStatus });
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       console.log(error);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
   async function handleMarkAsDelivered(id) {
-    setLoading(true)
+    setLoading(true);
     try {
-      let transcationmode = filterData[0].transaction.mode
+      let transcationmode = filterData[0].transaction.mode;
       // Toggle the status between 'publish' and 'hidden'
       let transaction = {
         date: new Date().toISOString(),
-        mode: "Cash on Delivery",
-        status: "Paid",
-        tx_id: "",
-      }
-      const newStatus = "DELIVERED";
+        mode: 'Cash on Delivery',
+        status: 'Paid',
+        tx_id: '',
+      };
+      const newStatus = 'DELIVERED';
 
-      if (transcationmode === "Cash on Delivery") {
-        await updateDoc(doc(db, "order", id), {
+      if (transcationmode === 'Cash on Delivery') {
+        await updateDoc(doc(db, 'order', id), {
           status: newStatus,
           transaction,
         });
       } else {
-        await updateDoc(doc(db, "order", id), {
+        await updateDoc(doc(db, 'order', id), {
           status: newStatus,
         });
       }
       // Add a new log entry to the logs collection
       const logData = {
-        name: "Store",
+        name: 'Store',
         status: newStatus,
         updated_at: new Date().toISOString(),
         updated_by: AdminId,
       };
       await addDoc(collection(db, `order/${id}/logs`), logData);
       updateData({ id, status: newStatus });
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       console.log(error);
-      setLoading(false)
+      setLoading(false);
     }
   }
 
-
   const renderLogIcon = (status) => {
     switch (status) {
-      case "NEW":
+      case 'NEW':
         return <img src={orderPlaceed} alt="orderPlaced" />;
-      case "CONFIRMED":
-        return (
-          <img src={orderAccepted} className="bg-white" alt="orderAccepted" />
-        );
-      case "REJECTED":
-        return (
-          <img src={orderReject} className="bg-white" alt="orderRejected" />
-        );
-      case "PROCESSING":
-        return (
-          <img
-            className="bg-white"
-            src={orderDeliveryAssign}
-            alt="orderDeliveryAssign"
-          />
-        );
-      case "DELIVERED":
-        return (
-          <img className="bg-white" src={orderDelevered} alt="orderDelivered" />
-        );
+      case 'CONFIRMED':
+        return <img src={orderAccepted} className="bg-white" alt="orderAccepted" />;
+      case 'REJECTED':
+        return <img src={orderReject} className="bg-white" alt="orderRejected" />;
+      case 'PROCESSING':
+        return <img className="bg-white" src={orderDeliveryAssign} alt="orderDeliveryAssign" />;
+      case 'DELIVERED':
+        return <img className="bg-white" src={orderDelevered} alt="orderDelivered" />;
       default:
         return null;
     }
   };
 
   if (loading) {
-    return (<Loader> </Loader>)
+    return <Loader> </Loader>;
   }
 
-
   return (
-    <>
+    <div className="overflow-x-hidden">
       {filterData.map((item, index) => (
-        <div
-          key={index}
-          className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100"
-        >
+        <div key={index} className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100">
           <div className="d-flex align-items-center justify-content-between py-3 my-1">
             <div className="d-flex align-items-center">
               <h1 className="fs-lg fw-500 black mb-0 me-1">#{item.order_id}</h1>
               <p
-                className={`d-inline-block ms-3 ${item.status.toString().toLowerCase() === "new"
-                  ? "fs-sm fw-400 red mb-0 new_order"
-                  : item.status.toString().toLowerCase() === "confirmed"
-                    ? "fs-sm fw-400 mb-0 processing_skyblue"
-                    : item.status.toString().toLowerCase() === "delivered"
-                      ? "fs-sm fw-400 mb-0 green stock_bg"
-                      : "fs-sm fw-400 mb-0 black cancel_gray"
-                  }`}
-              >
+                className={`d-inline-block ms-3 ${
+                  item.status.toString().toLowerCase() === 'new'
+                    ? 'fs-sm fw-400 red mb-0 new_order'
+                    : item.status.toString().toLowerCase() === 'confirmed'
+                    ? 'fs-sm fw-400 mb-0 processing_skyblue'
+                    : item.status.toString().toLowerCase() === 'delivered'
+                    ? 'fs-sm fw-400 mb-0 green stock_bg'
+                    : 'fs-sm fw-400 mb-0 black cancel_gray'
+                }`}>
                 {item.status}
               </p>
             </div>
-            {item.status === "NEW" ? (
+            {item.status === 'NEW' ? (
               <div className="d-flex align-items-center">
                 <div className="d-flex align-itmes-center gap-3">
                   <button className="reset_border">
                     <button
                       onClick={() => handleRejectOrder(item.id)}
-                      className="fs-sm reset_btn  border-0 fw-400"
-                    >
+                      className="fs-sm reset_btn  border-0 fw-400">
                       Reject Order
                     </button>
                   </button>
                   <button
                     onClick={() => handleAcceptOrder(item.id)}
                     className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
-                    type="submit"
-                  >
+                    type="submit">
                     <img src={saveicon} alt="saveicon" />
                     ACCEPT ORDER
                   </button>
                 </div>
               </div>
-            ) : item.status === "CANCELLED" ? (
+            ) : item.status === 'CANCELLED' ? (
               <div className="d-flex align-items-center">
                 <button
                   className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black"
-                  type="submit"
-                >
+                  type="submit">
                   <img src={saveicon} alt="saveicon" />
                   Mark as Refunded
                 </button>
               </div>
-            ) : item.status === "RETURNED" ? (
+            ) : item.status === 'RETURNED' ? (
               <div></div>
-            ) : item.status === "DISPATCHED" ? (
+            ) : item.status === 'DISPATCHED' ? (
               <div></div>
-            ) : item.status === "CONFIRMED" ? (
+            ) : item.status === 'CONFIRMED' ? (
               <div className="d-flex align-items-center">
                 <div className="d-flex align-itmes-center gap-3">
                   <button
                     onClick={() => handleMarkAsDelivered(item.id)}
                     className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 green_btn fw-400 white"
-                    type="submit"
-                  >
+                    type="submit">
                     <img src={whitesaveicon} alt="whitesaveicon" />
                     Mark as Delivered
                   </button>
                 </div>
               </div>
             ) : (
-              ""
+              ''
             )}
           </div>
           <div className="d-flex align-items-center gap-4 py-3 px-2 mt-2 mb-3">
-            <p className="fs-xs fw-400 black mb-0">
-              {formatDate(item.created_at)}
-            </p>
+            <p className="fs-xs fw-400 black mb-0">{formatDate(item.created_at)}</p>
             <span>|</span>
             <p className="fs-xs fw-400 black mb-0">{item.items.length}</p>
             <span>|</span>
-            <p className="fs-xs fw-400 black mb-0">
-              ₹ {calculateTotal().toFixed(2)}
-            </p>
+            <p className="fs-xs fw-400 black mb-0">₹ {calculateTotal().toFixed(2)}</p>
             <span>|</span>
             <p className="fs-xs fw-400 black mb-0 paid stock_bg">
               {item.transaction.status.toUpperCase()}
             </p>
-            {item.status != "NEW" ? (
-              <button
-                type="button"
-                className="d-flex align-items-center bill_generate mt-0"
-              >
-                <img src={billicon} alt="billicon" />
-                <p className="fs-sm fw-400 black mb-0 ms-2">Generate Bill</p>
-              </button>
+            {item.status != 'NEW' ? (
+              <ReactToPrint
+                trigger={() => {
+                  return (
+                    <button type="button" className="d-flex align-items-center bill_generate mt-0">
+                      <img src={billicon} alt="billicon" />
+                      <p className="fs-sm fw-400 black mb-0 ms-2">Generate Bill</p>
+                    </button>
+                  );
+                }}
+                content={() => componentRef.current}
+                documentTitle="Invoice"
+                pageStyle="print"
+              />
             ) : null}
           </div>
           <Row className="">
@@ -366,27 +352,21 @@ export default function NewOrder() {
                       <div className="d-flex align-items-center justify-content-between mt-3">
                         <div className="d-flex align-items-center mw-300 p-2">
                           <div style={{}}>
-                            <img
-                              src={products.image}
-                              alt="mobileicon"
-                              className="items_images"
-                            />
+                            <img src={products.image} alt="mobileicon" className="items_images" />
                           </div>
                           <div className="ps-3">
                             <p className="fs-sm fw-400 black mb-0">
-                              {products.title}{" "}
-                              {products.varient_name
-                                .toString()
-                                .toLowerCase() !== "not found" && (
-                                  <span className="fs-sm fw-400 black mb-0 ms-3">
-                                    {products.varient_name}
-                                  </span>
-                                )}
+                              {products.title}{' '}
+                              {products.varient_name.toString().toLowerCase() !== 'not found' && (
+                                <span className="fs-sm fw-400 black mb-0 ms-3">
+                                  {products.varient_name}
+                                </span>
+                              )}
                             </p>
                             <p className="fs-xxs fw-400 fade_grey mb-0">
                               ID :{products.product_id}
                             </p>
-                            {products.color.toString().toLowerCase() != "" && (
+                            {products.color.toString().toLowerCase() != '' && (
                               <p className="fs-xxs fw-400 fade_grey mb-0">
                                 color :{products.color}
                               </p>
@@ -395,19 +375,17 @@ export default function NewOrder() {
                         </div>
                         <div className="d-flex align-items-center p-3">
                           <p className="fs-sm fw-400 black mb-0">
-                            ₹ {products.varient_price}{" "}
-                            <span className="ms-4">X</span>
+                            ₹ {products.varient_price} <span className="ms-4">X</span>
                           </p>
                           <p className="fs-sm fw-400 black mb-0 ps-4 ms-2 me-5">
                             {products.quantity}
                           </p>
                           <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">
-                            (-) ₹{" "}
-                            {products.varient_discount * products.quantity}
+                            (-) ₹ {products.varient_discount * products.quantity}
                           </p>
                         </div>
                         <p className="fs-sm fw-400 black mb-0 p-3">
-                          ₹{" "}
+                          ₹{' '}
                           {products.varient_price * products.quantity -
                             products.varient_discount * products.quantity}
                         </p>
@@ -432,15 +410,11 @@ export default function NewOrder() {
                 <div className="product_borderbottom mt-3"></div>
                 <div className="d-flex align-items-center justify-content-between mt-4">
                   <p className="fs-sm fw-400 black mb-0">Subtotal</p>
-                  <p className="fs-sm fw-400 black mb-0">
-                    ₹{calculateSubtotal().toFixed(2)}
-                  </p>
+                  <p className="fs-sm fw-400 black mb-0">₹{calculateSubtotal().toFixed(2)}</p>
                 </div>
                 <div className="d-flex align-items-center justify-content-between mt-2">
                   <p className="fs-sm fw-400 black mb-0">Shipping Cost</p>
-                  <p className="fs-sm fw-400 black mb-0">
-                    ₹ {item.shipping_charge}
-                  </p>
+                  <p className="fs-sm fw-400 black mb-0">₹ {item.shipping_charge}</p>
                 </div>
                 <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <p className="fs-sm fw-400 black mb-0">Promo Discount</p>
@@ -452,9 +426,7 @@ export default function NewOrder() {
                 <div>
                   <div className="d-flex align-items-center justify-content-between mt-4 mb-3">
                     <p className="fs-sm fw-400 black mb-0">Total</p>
-                    <p className="fs-sm fw-700 black mb-0">
-                      ₹ {calculateTotal().toFixed(2)}
-                    </p>
+                    <p className="fs-sm fw-700 black mb-0">₹ {calculateTotal().toFixed(2)}</p>
                   </div>
                 </div>
               </div>
@@ -462,16 +434,11 @@ export default function NewOrder() {
                 <p className="fs-2sm fw-400 black mb-0">Order Logs</p>
                 <div className="order_logs_line">
                   {logs
-                    .sort(
-                      (a, b) =>
-                        new Date(a.data.updated_at) -
-                        new Date(b.data.updated_at)
-                    )
+                    .sort((a, b) => new Date(a.data.updated_at) - new Date(b.data.updated_at))
                     .map((log, index) => (
                       <div
                         key={index}
-                        className="d-flex align-items-center justify-content-between mt-3"
-                      >
+                        className="d-flex align-items-center justify-content-between mt-3">
                         {/* <div className="d-flex align-items-center">
                         {renderLogIcon(log.data.status)}
                         <div className="ps-3 ms-1">
@@ -483,16 +450,14 @@ export default function NewOrder() {
                           {renderLogIcon(log.data.status)}
                           <div className="ps-2 ms-1">
                             <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">
-                              {" "}
-                              {log.data.status === "PROCESSING"
-                                ? "ASSIGN TO DELIVERY "
-                                : log.data.status === "NEW"
-                                  ? "ORDER PLACED"
-                                  : log.data.status}{" "}
+                              {' '}
+                              {log.data.status === 'PROCESSING'
+                                ? 'ASSIGN TO DELIVERY '
+                                : log.data.status === 'NEW'
+                                ? 'ORDER PLACED'
+                                : log.data.status}{' '}
                             </p>
-                            <p className="fs-xxs fw-400 black ps-3 ms-1 mb-0">
-                              {log.data.name}
-                            </p>
+                            <p className="fs-xxs fw-400 black ps-3 ms-1 mb-0">{log.data.name}</p>
                           </div>
                         </div>
                         <div>
@@ -589,68 +554,173 @@ export default function NewOrder() {
                 <div className="d-flex align-items-center p-2 mt-3">
                   <img src={manimage} alt="profile" className="manicon " />
                   <div className="ps-3">
-                    <p className="fs-sm fw-400 black mb-0">
-                      {item.customer.name}
-                    </p>
+                    <p className="fs-sm fw-400 black mb-0">{item.customer.name}</p>
                     <p className="fs-xxs fw-400 fade_grey mb-0">
-                      {item.customer.email === "" ? "N/A" : item.customer.email}
+                      {item.customer.email === '' ? 'N/A' : item.customer.email}
                     </p>
                   </div>
                 </div>
                 <div className="mt-3">
                   <p className="fs-2sm fw-400 black mb-0">Contact</p>
-                  <p className="fs-xs fw-400 black mb-0 pt-1 mt-3">
-                    {item.customer.name}
-                  </p>
-                  <p className="fs-xs fw-400 black mb-0 pt-1">
-                    {item.customer.phone}
-                  </p>
-                  <p className="fs-xs fw-400 black mb-0 pt-1">
-                    {item.customer.email}
-                  </p>
+                  <p className="fs-xs fw-400 black mb-0 pt-1 mt-3">{item.customer.name}</p>
+                  <p className="fs-xs fw-400 black mb-0 pt-1">{item.customer.phone}</p>
+                  <p className="fs-xs fw-400 black mb-0 pt-1">{item.customer.email}</p>
                 </div>
               </div>
               <div className="p-3 bg-white product_shadow mt-4">
                 <p className="fs-2sm fw-400 black mb-0">Shipping Info</p>
-                <p className="fs-xs fw-400 black mb-0 pt-1 mt-3">
-                  {item.shipping.contact_person}
-                </p>
-                <p className="fs-xs fw-400 black mb-0 pt-1">
-                  {item.shipping.address}
-                </p>
-                <p className="fs-xs fw-400 black mb-0 pt-1">
-                  {item.shipping.contact_no}
-                </p>
+                <p className="fs-xs fw-400 black mb-0 pt-1 mt-3">{item.shipping.contact_person}</p>
+                <p className="fs-xs fw-400 black mb-0 pt-1">{item.shipping.address}</p>
+                <p className="fs-xs fw-400 black mb-0 pt-1">{item.shipping.contact_no}</p>
               </div>
-              {(item.transaction.mode === "Cash on Delivery" || item.transaction.mode === "UPI / Bank Transfer" || item.transaction.mode === "Pay Later / Credit") && (item.transaction.status === "Paid" || item.status === "DELIVERED") ? <div className="p-3 bg-white product_shadow mt-4">
-                <p className="fs-2sm fw-400 black mb-0">Transactions</p>
-                <div className="d-flex flex-column mt-3">
-                  <div className="p-2">
-                    <p className="fs-sm fw-400 black mb-0">Mode of Payment</p>
-                    <p className="fs-xxs fw-400 fade_grey mb-0">
-                      {item.transaction.mode}
-                      {item.transaction.tx_id && (
-                        <>
-                          {" "}tx :{" "}
-                          {item.transaction.tx_id}{" "}
-                        </>
-                      )}
-                      {item.transaction.date && (
-                        <>
-                          {"  "}  | {formatDate(item.transaction.date)}
-                        </>
-                      )}
+              {(item.transaction.mode === 'Cash on Delivery' ||
+                item.transaction.mode === 'UPI / Bank Transfer' ||
+                item.transaction.mode === 'Pay Later / Credit') &&
+              (item.transaction.status === 'Paid' || item.status === 'DELIVERED') ? (
+                <div className="p-3 bg-white product_shadow mt-4">
+                  <p className="fs-2sm fw-400 black mb-0">Transactions</p>
+                  <div className="d-flex flex-column mt-3">
+                    <div className="p-2">
+                      <p className="fs-sm fw-400 black mb-0">Mode of Payment</p>
+                      <p className="fs-xxs fw-400 fade_grey mb-0">
+                        {item.transaction.mode}
+                        {item.transaction.tx_id && <> tx : {item.transaction.tx_id} </>}
+                        {item.transaction.date && (
+                          <>
+                            {'  '} | {formatDate(item.transaction.date)}
+                          </>
+                        )}
+                      </p>
+                    </div>
+                    <p className="fs-sm fw-400 black mb-0 p-3 ps-0">
+                      ₹ {calculateTotal().toFixed(2)}
                     </p>
                   </div>
-                  <p className="fs-sm fw-400 black mb-0 p-3 ps-0">
-                    ₹ {calculateTotal().toFixed(2)}
-                  </p>
                 </div>
-              </div> : null}
+              ) : null}
             </Col>
           </Row>
         </div>
       ))}
-    </>
+      <div className="order_details_bill">
+        <div ref={componentRef} className="bill m-auto">
+          <div className="d-flex align-items-center justify-content-between">
+            <img src={billLogo} alt="billLogo" />
+            <div className="text-end">
+              <h1 className="fs_24 fw-700 black mb-0">INVOICE</h1>
+              <p className="fs-xxs fw_700 black mb-0"># G67R7G78H9</p>
+              <p className="fs-xs fw_400 green mb-0">PAID</p>
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="d-flex align-items-start justify-content-between gap-3">
+              <div className="w-50">
+                <p className="fs-xs fw-700 black mb-0">Save Time Save Money</p>
+                <p className="fs-xxs fw-400 black mb-0 mt-1">
+                  Near TVS Agency, Hansi Road, Barwala
+                </p>
+                <p className="fs-xxs fw-400 black mb-0 mt-1">Hisar, Haryana - 125121</p>
+                <p className="fs-xxs fw-400 black mb-0 mt-1">GSTIN : 06GWMPS2545Q1ZJ</p>
+              </div>
+              <div className="text-end w-50">
+                <p className="fs-xxs fw-700 black mb-0">Bill To:</p>
+                <p className="fs-xxs fw-700 black mb-0">John Doe</p>
+                <p className="fs-xxs fw-400 black mb-0 mt-1">Street/ Area/ Landmark Name,</p>
+                <p className="fs-xxs fw-400 black mb-0 mt-4 text-end">Invoice Date : 01-01-2024</p>
+              </div>
+            </div>
+            <table className="w-100 mt-3">
+              <thead>
+                <tr className="bg_dark_black">
+                  <th className="fs-xxs fw-400 white p_10">#</th>
+                  <th className="fs-xxs fw-400 white p_10">Item Description</th>
+                  <th className="fs-xxs fw-400 white p_10 text-center">Qty</th>
+                  <th className="fs-xxs fw-400 white p_10 text-end">Unit Cost</th>
+                  <th className="fs-xxs fw-400 white p_10 text-center">Tax</th>
+                  <th className="fs-xxs fw-400 white p_10 text-end">Line Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="fs-xxs fw-400 black p_5_10">1</td>
+                  <td className="p_5_10">
+                    <span>
+                      <p className="fs-xxs fw-400 black mb-0">Kamdhenu Khal</p>
+                      <span className="d-flex align-items-center gap-2">
+                        <p className=" fs-xxxs fw-700 black mb-0">₹ 130 OFF</p>
+                        <p className="fs-xxxs fw-400 black mb-0"> MRP : 1360.00</p>
+                      </span>
+                      <span className="d-flex align-items-center gap-3">
+                        <p className=" fs-xxxs fw-400 black mb-0">Variant : 49 KG</p>
+                        <p className="fs-xxxs fw-400 black mb-0">Color : Red</p>
+                      </span>
+                    </span>
+                  </td>
+                  <td className="fs-xxs fw-400 black p_5_10 text-center">2</td>
+                  <td className="fs-xxs fw-400 black p_5_10 text-end">1230.00</td>
+                  <td className="fs-xxs fw-400 black p_5_10 text-center">0%</td>
+                  <td className="fs-xxs fw-400 black p_5_10 text-end">2567.00</td>
+                </tr>
+                <tr>
+                  <td className="fs-xxs fw-400 black p_5_10">1</td>
+                  <td className="p_5_10">
+                    <span>
+                      <p className="fs-xxs fw-400 black mb-0">Kamdhenu Khal</p>
+                      <span className="d-flex align-items-center gap-2">
+                        <p className=" fs-xxxs fw-700 black mb-0">₹ 130 OFF</p>
+                        <p className="fs-xxxs fw-400 black mb-0"> MRP : 1360.00</p>
+                      </span>
+                      <span className="d-flex align-items-center gap-3">
+                        <p className=" fs-xxxs fw-400 black mb-0">Variant : 49 KG</p>
+                        <p className="fs-xxxs fw-400 black mb-0">Color : Red</p>
+                      </span>
+                    </span>
+                  </td>
+                  <td className="fs-xxs fw-400 black p_5_10 text-center">2</td>
+                  <td className="fs-xxs fw-400 black p_5_10 text-end">1230.00</td>
+                  <td className="fs-xxs fw-400 black p_5_10 text-center">0%</td>
+                  <td className="fs-xxs fw-400 black p_5_10 text-end">2567.00</td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="d-flex align-items-center justify-content-between mt-3">
+              <div className="w-75 text-end">
+                <p className="fs_xxs fw-700 black mb-0">Sub Total</p>
+                <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">Promo Discount</p>
+                <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">Total Amount</p>
+              </div>
+              <div className="text-end">
+                <p className="fs_xxs fw-400 black mb-0">₹ 2567.00</p>
+                <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">(-) ₹ 0.00</p>
+                <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">₹ 2567.00</p>
+              </div>
+            </div>
+          </div>
+          <span className="mt-3 bill_border d-inline-block"></span>
+          <p className="fs-xxxs fw-400 black m-0 mt-1">
+            Note : You Saved <span className="fw-700">₹ 260.00</span> on product discount.
+          </p>
+          <p className="fs_xxs fw-400 black mb-0 mt-3">Transactions:</p>
+          <table className="mt-3 w-100">
+            <thead>
+              <tr>
+                <th className="fs-xxs fw-400 black py_2">Transaction ID</th>
+                <th className="fs-xxs fw-400 black py_2">Payment Mode</th>
+                <th className="fs-xxs fw-400 black py_2">Date</th>
+                <th className="fs-xxs fw-400 black py_2">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="bill_border">
+                <td className="fs-xxs fw-400 black py-1">5798h608HTI</td>
+                <td className="fs-xxs fw-400 black py-1">UPI</td>
+                <td className="fs-xxs fw-400 black py-1">01-01-2024</td>
+                <td className="fs-xxs fw-400 black py-1">01-01-2024</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 }

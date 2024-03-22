@@ -16,7 +16,7 @@ import { useProductsContext } from '../../context/productgetter';
 import Updatepopup from '../popups/Updatepopup';
 import Deletepopup from '../popups/Deletepopup';
 const EditProductData = createContext();
-const ProductList = (props) => {
+const ProductList = () => {
   const { productData, updateProductData, deleteData } = useProductsContext();
   // states
   const [ProductId, setProductId] = useState(null);
@@ -173,6 +173,13 @@ const ProductList = (props) => {
             </Link>
           </div>
         </div>
+        {selectAll.length >= 2 ? (
+          <div className="d-flex align-items-center gap-3 mt-3 pt-1">
+            <button className="change_to_draft fs-sm fw-400 black">Change To Draft</button>
+            <button className="change_to_live fs-sm fw-400 black">Change To Live</button>
+            <button className="delete_area fs-sm fw-400 text-white">Delete Area</button>
+          </div>
+        ) : null}
         {/* product details  */}
         <div className="p-3 mt-3 bg-white product_shadow mt-4">
           <div className="overflow-x-scroll line_scroll">
@@ -233,7 +240,7 @@ const ProductList = (props) => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="table_body">
+                <tbody className={`${selectAll.length>=2?"table_body2":"table_body"}`}>
                   {productData.map((value, index) => {
                     return (
                       <tr key={index}>

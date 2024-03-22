@@ -579,6 +579,12 @@ const Categories = () => {
             </div>
           </div>
           {/* categories details  */}
+          {selectAll.length > 1 ? (
+            <div className="d-flex align-items-center gap-3 mt-3 pt-1">
+              <button className="change_to_draft fs-sm fw-400 black">Change To Draft</button>
+              <button className="change_to_live fs-sm fw-400 black">Change To Live</button>
+            </div>
+          ) : null}
           <div className="p-3 mt-4">
             <div className="">
               <div className="row">
@@ -646,7 +652,7 @@ const Categories = () => {
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="table_body">
+                      <tbody className={`${selectAll.length > 1 ? 'table_body2' : 'table_body'}`}>
                         {data
                           .filter((item) => {
                             const mainCategory = categoreis.find(
@@ -1269,7 +1275,8 @@ const Categories = () => {
                                 </th>
                               </tr>
                             </thead>
-                            <tbody className="table_body">
+                            <tbody
+                              className={`${selectAll.length > 1 ? 'table_body2' : 'table_body'}`}>
                               {categoreis.map((value, index) => {
                                 return (
                                   <tr key={index} className="product_borderbottom">
