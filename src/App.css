@@ -13,7 +13,6 @@
   text-decoration: line-through;
 }
 
-
 * {
   padding: 0;
   margin: 0;
@@ -420,13 +419,17 @@ body {
 /*export_btn*/
 .export_btn {
   border-radius: 10px;
-  background: var(--red_gradient,
-      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
 }
 
 .export_btn:hover {
-  background: var(--red_gradient,
-      linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
 }
 
 .unit_type_input {
@@ -447,8 +450,10 @@ body {
   padding: 12px 15px;
   transition: 0.5s ease-in-out;
   background-color: transparent;
-  background: var(--red_gradient,
-      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
+  background: var(
+    --red_gradient,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -693,11 +698,11 @@ body {
 } */
 
 /* When the checkbox is checked, add a blue background */
-.check input:checked~.checkmark {
+.check input:checked ~ .checkmark {
   background-color: #000000;
 }
 
-.check1 input:checked~.checkmark {
+.check1 input:checked ~ .checkmark {
   background-color: transparent;
 }
 
@@ -709,11 +714,11 @@ body {
 }
 
 /* Show the checkmark when checked */
-.check input:checked~.checkmark:after {
+.check input:checked ~ .checkmark:after {
   display: block;
 }
 
-.check1 input:checked~.checkmark:after {
+.check1 input:checked ~ .checkmark:after {
   display: block;
 }
 
@@ -1008,8 +1013,8 @@ body {
   cursor: pointer;
 }
 
-.btn-check:checked+.btn,
-:not(.btn-check)+.btn:active,
+.btn-check:checked + .btn,
+:not(.btn-check) + .btn:active,
 .btn:first-child:active,
 .btn.active,
 .btn.show {
@@ -2044,9 +2049,39 @@ min_width_230 {
   border-radius: 10px;
   border: 0;
   outline: 0;
-  background-color: #DD0000;
+  background-color: #dd0000;
 }
-
+.dropdown-item:active {
+  background-color: rgb(218, 218, 218) !important;
+}
+.costomer_order_table {
+  max-height: 36vh;
+  overflow-x: auto;
+}
+::-webkit-scrollbar {
+  height: 3px;
+}
+.service_area_show_btn {
+  padding: 5px 15px;
+  border: 0;
+  background-color: rgb(192, 188, 188);
+  color: black;
+  border-radius: 5px;
+}
+.reject_delivery {
+  padding: 12px 15px;
+  background-color: var(--color-red);
+  border-radius: 10px;
+  border: 0;
+  color: white;
+}
+.approve_btn {
+  padding: 12px 15px;
+  background-color: var(--color-brown);
+  border-radius: 10px;
+  border: 0;
+  color: black;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1199.98px) {
   :root {

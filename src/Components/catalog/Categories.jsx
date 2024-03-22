@@ -1270,59 +1270,49 @@ const Categories = () => {
                               </tr>
                             </thead>
                             <tbody className="table_body">
-                              {categoreis
-
-                                .filter((data) => {
-                                  // console.log(data);
-                                  return search.toLowerCase() === ''
-                                    ? data
-                                    : data.title.toLowerCase().includes(searchvalue);
-                                })
-                                .map((value, index) => {
-                                  return (
-                                    <tr key={index} className="product_borderbottom">
-                                      <td className="py-3 ps-3 w- 100">
-                                        <div className="d-flex align-items-center gap-3">
-                                          <div className="d-flex align-items-center">
-                                            <div className="w_40">
-                                              <img src={value.image} alt="categoryImg" />
-                                            </div>
-                                            <div className="ps-3 ms-1">
-                                              <p className="fw-400 fs-sm black mb-0">
-                                                {value.title}
-                                              </p>
-                                            </div>
+                              {categoreis.map((value, index) => {
+                                return (
+                                  <tr key={index} className="product_borderbottom">
+                                    <td className="py-3 ps-3 w- 100">
+                                      <div className="d-flex align-items-center gap-3">
+                                        <div className="d-flex align-items-center">
+                                          <div className="w_40">
+                                            <img src={value.image} alt="categoryImg" />
+                                          </div>
+                                          <div className="ps-3 ms-1">
+                                            <p className="fw-400 fs-sm black mb-0">{value.title}</p>
                                           </div>
                                         </div>
-                                      </td>
-                                      <td className="text-end">
-                                        <div className="d-flex align-items-center gap-2 pe-2 justify-content-end">
-                                          <img
-                                            className="cursor_pointer"
-                                            onClick={() => {
-                                              handleChangeStatus(value.id, value.status);
-                                            }}
-                                            src={updown_icon}
-                                            alt="updown_icon"
-                                          />
-                                          <img
-                                            onClick={() => {
-                                              setEditPerCatPopup(true);
-                                              setEditName(value.title);
-                                              SetEditCatId(value.id);
-                                              seteditPerentCatStatus(value.status);
-                                              setEditImg(value.image);
-                                              setEditSelectedLayout(value.homepagelayout);
-                                            }}
-                                            className="cursor_pointer"
-                                            src={pencil_icon}
-                                            alt="pencil_icon"
-                                          />
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  );
-                                })}
+                                      </div>
+                                    </td>
+                                    <td className="text-end">
+                                      <div className="d-flex align-items-center gap-2 pe-2 justify-content-end">
+                                        <img
+                                          className="cursor_pointer"
+                                          onClick={() => {
+                                            handleChangeStatus(value.id, value.status);
+                                          }}
+                                          src={updown_icon}
+                                          alt="updown_icon"
+                                        />
+                                        <img
+                                          onClick={() => {
+                                            setEditPerCatPopup(true);
+                                            setEditName(value.title);
+                                            SetEditCatId(value.id);
+                                            seteditPerentCatStatus(value.status);
+                                            setEditImg(value.image);
+                                            setEditSelectedLayout(value.homepagelayout);
+                                          }}
+                                          className="cursor_pointer"
+                                          src={pencil_icon}
+                                          alt="pencil_icon"
+                                        />
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
                             </tbody>
                           </table>
                         </div>

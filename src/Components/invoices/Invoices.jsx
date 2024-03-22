@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
-import { InvoicesList } from "../../Common/Helper";
-import rightDubbleArrow from "../../Images/svgs/dubble-arrow.svg";
-import billLogo from "../../Images/svgs/bill-logo.svg";
-import pdfIcon from "../../Images/svgs/pdf-icon.svg";
-import printIcon from "../../Images/svgs/print-icon2.svg";
-import { ReactToPrint } from "react-to-print";
-import { useOrdercontext } from "../../context/OrderGetter";
-import { type } from "@testing-library/user-event/dist/type";
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
+import { InvoicesList } from '../../Common/Helper';
+import rightDubbleArrow from '../../Images/svgs/dubble-arrow.svg';
+import billLogo from '../../Images/svgs/bill-logo.svg';
+import pdfIcon from '../../Images/svgs/pdf-icon.svg';
+import printIcon from '../../Images/svgs/print-icon2.svg';
+import { ReactToPrint } from 'react-to-print';
+import { useOrdercontext } from '../../context/OrderGetter';
+import { type } from '@testing-library/user-event/dist/type';
 
 export default function Invoices() {
   const [viewSideBill, setViewSideBIll] = useState(false);
@@ -207,7 +207,7 @@ export default function Invoices() {
                 : null}
             </div>
             <div className="overflow_xl_scroll line_scroll">
-              <div className="categories_xl_overflow_X ">
+              <div style={{ minWidth: '1500px' }}>
                 <table className="w-100">
                   <thead className="w-100 table_head">
                     <tr className="product_borderbottom">
@@ -217,7 +217,7 @@ export default function Invoices() {
                       <th className="mx_180 px-2 py-3">
                         <p className="fs-sm fw-400 black mb-0">Customer</p>
                       </th>
-                      <th className="mw-200 cursor_pointer px-2 py-3">
+                      <th className=" mw-250 cursor_pointer px-2 py-3">
                         <p className="fw-400 fs-sm black mb-0">Date</p>
                       </th>
                       <th className="mx_150 px-2 py-3">
@@ -229,7 +229,7 @@ export default function Invoices() {
                       <th className="mx_180 px-2 py-3">
                         <h3 className="fs-sm fw-400 black mb-0">Payment Status</h3>
                       </th>
-                      <th className="mx_150 px-2 py-3">
+                      <th className="mw-200 px-2 py-3">
                         <h3 className="fs-sm fw-400 black mb-0">Payment Mode</h3>
                       </th>
                       <th className="mw-200 px-2 py-3">
@@ -239,7 +239,14 @@ export default function Invoices() {
                   </thead>
                   <tbody className="table_body">
                     {inovicesOrder.map((items) => {
-                      let TotalTaxPaid = items.items.reduce((acc, data) => acc + ((data.quantity * data.final_price) * (typeof (data.Tax) === "undefined" ? 0 : (data.Tax / 100))), 0)
+                      let TotalTaxPaid = items.items.reduce(
+                        (acc, data) =>
+                          acc +
+                          data.quantity *
+                            data.final_price *
+                            (typeof data.Tax === 'undefined' ? 0 : data.Tax / 100),
+                        0
+                      );
                       return (
                         <tr className="product_borderbottom">
                           <td className="px-2 py-3 mx_220">
@@ -249,7 +256,7 @@ export default function Invoices() {
                                 setViewSideBIll(viewSideBill === false ? true : true);
                               }}
                               className="fs-sm fw-400 color_blue mb-0">
-                              #{items.invoiceNumber}
+                              #{items.invoiceNumber === '' ? 'N/A' : items.invoiceNumber}
                             </Link>
                           </td>
                           <td className="px-2 py-3 mx_180">
@@ -259,18 +266,16 @@ export default function Invoices() {
                               {items.customer.name}
                             </Link>
                           </td>
-                          <td className="px-2 py-3 mw-200">
+                          <td className="px-2 py-3 mw-250">
                             <h3 className="fs-sm fw-400 black mb-0">
                               {formatDate(items.created_at)}
                             </h3>
                           </td>
                           <td className="px-2 py-3 mx_150">
-                            <h3 className="fs-sm fw-400 black mb-0">{items.order_price}</h3>
+                            <h3 className="fs-sm fw-400 black mb-0">₹ {items.order_price}</h3>
                           </td>
                           <td className="px-2 py-3 mx_150">
-                            <h3 className="fs-sm fw-400 black mb-0">
-                              {TotalTaxPaid}
-                            </h3>
+                            <h3 className="fs-sm fw-400 black mb-0">₹ {TotalTaxPaid}</h3>
                           </td>
                           <td className="px-2 py-3 mx_180">
                             <h3
@@ -280,7 +285,7 @@ export default function Invoices() {
                               {items.transaction.status}
                             </h3>
                           </td>
-                          <td className="px-2 py-3 mx_150">
+                          <td className="px-2 py-3 mw-200">
                             <h3 className="fs-sm fw-400 black mb-0">{items.transaction.mode}</h3>
                           </td>
                           <td className="px-2 py-3 mw-200">
