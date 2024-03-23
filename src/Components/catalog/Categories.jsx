@@ -26,6 +26,7 @@ import { Link } from 'react-router-dom';
 import { useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Deletepopup from '../popups/Deletepopup';
 
 import { ref, uploadBytes, getDownloadURL, getStorage, deleteObject } from 'firebase/storage';
 import { storage, db } from '../../firebase';
@@ -50,14 +51,14 @@ const Categories = () => {
   const [selectedSubcategoryparentId, setselectedSubcategoryparentId] = useState(null);
   const [selectedSubcategoryImage, setSelectedSubcategoryImage] = useState(null);
   const [selectedSubcategoryStatus, setSelectedSubcategoryStatus] = useState(null);
+  const [deletepopup, setDeletePopup] = useState(false);
   const [cat_id, setCat_ID] = useState('');
 
-  console.log(data, 'Sub Categories data');
+  // console.log(data, 'Sub Categories data');
 
   const handleModifyClicked = (index) => {
     setSelectedCategory(index === selectedCategory ? null : index);
   };
-  const [deletepopup, setDeletePopup] = useState(false);
   const [statusPopup, setStatusPopup] = useState(false);
   const [editCatPopup, setEditCatPopup] = useState(false);
   const [editsearchvalue, setEditSearchvalue] = useState('');
@@ -250,6 +251,8 @@ const Categories = () => {
     }
   }
 
+
+
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
@@ -423,7 +426,7 @@ const Categories = () => {
   };
 
   /*  *******************************
-     get count of items in maincategory    functionality end 
+      get count of items in maincategory    functionality end 
   *********************************************   **/
 
   /*  *******************************
@@ -438,19 +441,74 @@ const Categories = () => {
       await updateDoc(doc(db, 'categories', id), {
         status: newStatus,
       });
-      alert('status Change succesffuly ');
+      toast.success('Status  Changed Successfully !', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
       updateData({ id, status: newStatus });
+
     } catch (error) {
       console.log(error);
     }
   }
 
+
+  async function HandleChangeToDraft(e) {
+    e.preventDefault()
+    try {
+      setloading(true)
+      const newStatus = "hidden"
+      for (let ids of selectAll) {
+        await updateDoc(doc(db, 'sub_categories', ids), {
+          status: newStatus
+        })
+
+        updateData({ ids, status: newStatus })
+      }
+      setloading(false)
+      toast.success('Status  Changed Successfully !', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      setSelectAll([])
+    } catch (error) {
+      setloading(false)
+      console.log("Error in change status", error)
+    }
+  }
+
+
+  async function HandleChangeToLive(e) {
+    e.preventDefault()
+    try {
+      setloading(true)
+      const newStatus = "published"
+      for (let ids of selectAll) {
+        await updateDoc(doc(db, 'sub_categories', ids), {
+          status: newStatus
+        })
+
+        updateData({ ids, status: newStatus })
+      }
+      setloading(false)
+      toast.success('Status  Changed Successfully !', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      setSelectAll([])
+    } catch (error) {
+      setloading(false)
+      console.log("Error in change status", error)
+    }
+
+  }
+
+
+
+
   /*  *******************************
-     Change status functionality end 
+        Change status functionality end 
    *********************************************   **/
 
   /*  *******************************
-   Edit  Image Upload   functionality start 
+      Edit  Image Upload   functionality start 
  *********************************************   **/
 
   function HanleEditImgUpload(e) {
@@ -579,6 +637,12 @@ const Categories = () => {
             </div>
           </div>
           {/* categories details  */}
+          {selectAll.length > 1 ? (
+            <div className="d-flex align-items-center gap-3 mt-3 pt-1">
+              <button className="change_to_draft fs-sm fw-400 black" onClick={HandleChangeToDraft}>Change To Draft</button>
+              <button className="change_to_live fs-sm fw-400 black" onClick={HandleChangeToLive} >Change To Live</button>
+            </div>
+          ) : null}
           <div className="p-3 mt-4">
             <div className="">
               <div className="row">
@@ -646,7 +710,7 @@ const Categories = () => {
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="table_body">
+                      <tbody className={`${selectAll.length > 1 ? 'table_body2' : 'table_body'}`}>
                         {data
                           .filter((item) => {
                             const mainCategory = categoreis.find(
@@ -1065,8 +1129,8 @@ const Categories = () => {
                                             // src={URL.createObjectURL(editImg)}
                                             src={
                                               editImg &&
-                                              typeof editImg === 'string' &&
-                                              editImg.startsWith('http')
+                                                typeof editImg === 'string' &&
+                                                editImg.startsWith('http')
                                                 ? editImg
                                                 : URL.createObjectURL(editImg)
                                             }
@@ -1269,7 +1333,8 @@ const Categories = () => {
                                 </th>
                               </tr>
                             </thead>
-                            <tbody className="table_body">
+                            <tbody
+                              className={`${selectAll.length > 1 ? 'table_body2' : 'table_body'}`}>
                               {categoreis.map((value, index) => {
                                 return (
                                   <tr key={index} className="product_borderbottom">
@@ -1372,8 +1437,8 @@ const Categories = () => {
                           className="mobile_image object-fit-cover"
                           src={
                             editCatImg &&
-                            typeof editCatImg === 'string' &&
-                            editCatImg.startsWith('http')
+                              typeof editCatImg === 'string' &&
+                              editCatImg.startsWith('http')
                               ? editCatImg
                               : URL.createObjectURL(editCatImg)
                           }
@@ -1467,11 +1532,10 @@ const Categories = () => {
                               .map((category) => (
                                 <Dropdown.Item key={category.id}>
                                   <div
-                                    className={`d-flex justify-content-between ${
-                                      selectedCategory && selectedCategory.id === category.id
-                                        ? 'selected'
-                                        : ''
-                                    }`}
+                                    className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                      }`}
                                     onClick={() => handleSelectCategory(category)}>
                                     <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                     {selectedCategory && selectedCategory.id === category.id && (

@@ -8,15 +8,19 @@ import pencil_icon from '../../Images/svgs/pencil.svg';
 import delete_icon from '../../Images/svgs/delte.svg';
 import shortIcon from '../../Images/svgs/short-icon.svg';
 import updown_icon from '../../Images/svgs/arross.svg';
-import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { doc, deleteDoc, updateDoc, getDoc } from 'firebase/firestore';
 import { deleteObject, getStorage, ref } from 'firebase/storage';
 import { db } from '../../firebase';
 import { Link, NavLink } from 'react-router-dom';
 import { useProductsContext } from '../../context/productgetter';
 import Updatepopup from '../popups/Updatepopup';
 import Deletepopup from '../popups/Deletepopup';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Loader from '../Loader';
 const EditProductData = createContext();
-const ProductList = (props) => {
+
+const ProductList = () => {
   const { productData, updateProductData, deleteData } = useProductsContext();
   // states
   const [ProductId, setProductId] = useState(null);
@@ -24,6 +28,7 @@ const ProductList = (props) => {
   const [ProductImage, setProductImage] = useState(null);
   const [deletepopup, setDeletePopup] = useState(false);
   const [statusPopup, setStatusPopup] = useState(false);
+  const [loading, setloading] = useState(false)
 
   const [order, setorder] = useState('ASC');
   const sorting = (col) => {
@@ -54,7 +59,7 @@ const ProductList = (props) => {
   };
 
   /*  *******************************
-   checkbox functionality start 
+    checkbox functionality start 
  *********************************************   **/
   const [selectAll, setSelectAll] = useState([]);
 
@@ -83,6 +88,11 @@ const ProductList = (props) => {
     }
   }
 
+
+
+
+  console.log("asdasdfasdf", selectAll)
+
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
@@ -107,6 +117,57 @@ const ProductList = (props) => {
     }
   }
 
+
+  async function HandleChangeToLiveBluck(e) {
+    e.preventDefault()
+    try {
+      setloading(true)
+      // Toggle the status between 'publish' and 'hidden'
+      const newStatus = 'published'
+      for (let id of selectAll) {
+        await updateDoc(doc(db, 'products', id), {
+          status: newStatus,
+        });
+        updateProductData({ id, status: newStatus });
+      }
+      setloading(false)
+      toast.success('Status updated Successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+
+
+
+  async function HandleChangeToDraftBluck(e) {
+    e.preventDefault()
+    try {
+      setloading(true)
+      let newStatus = "hidden"
+      for (let id of selectAll) {
+        await updateDoc(doc(db, 'products', id), {
+          status: newStatus,
+        });
+        updateProductData({ id, status: newStatus });
+      }
+      setloading(false)
+      toast.success('Status updated Successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+
+
+
   /**
    ******************************************************
       Change Status  functionality end  here 
@@ -120,7 +181,9 @@ const ProductList = (props) => {
      */
 
   async function handleDeleteProduct(id, image) {
+
     try {
+      setloading(true)
       var st = getStorage();
       await deleteDoc(doc(db, 'products', id)).then(() => {
         for (const images of image) {
@@ -131,16 +194,63 @@ const ProductList = (props) => {
         }
         deleteData(id);
       });
+      setloading(false)
     } catch (error) {
       console.log(error);
+      setloading(false)
     }
   }
+
+  async function handleDeleteSelectedProducts() {
+    try {
+      setloading(true);
+      var st = getStorage();
+      for (const id of selectAll) {
+        const productRef = doc(db, 'products', id);
+        const productDoc = await getDoc(productRef);
+        const productData = productDoc.data();
+        if (productData && productData.productImages) {
+          for (const imageUrl of productData.productImages) {
+            const reference = ref(st, imageUrl);
+            await deleteObject(reference);
+            console.log(`Image ${imageUrl} deleted from Storage`);
+          }
+        }
+        await deleteDoc(productRef);
+        console.log(`Product with ID ${id} deleted from Firestore`);
+        deleteData(id)
+      }
+      setloading(false);
+    } catch (error) {
+      console.error('Error deleting selected products and their images:', error);
+      setloading(false);
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /**
    ******************************************************
       Handle Delete functionality end  here 
   *************************************************
+ 
      */
+
+
+  if (loading) {
+    return <Loader />
+  }
 
   return (
     <div className="main_panel_wrapper overflow-x-hidden bg_light_grey w-100">
@@ -173,6 +283,13 @@ const ProductList = (props) => {
             </Link>
           </div>
         </div>
+        {selectAll.length >= 2 ? (
+          <div className="d-flex align-items-center gap-3 mt-3 pt-1">
+            <button className="change_to_draft fs-sm fw-400 black" onClick={HandleChangeToDraftBluck}>Change To Draft</button>
+            <button className="change_to_live fs-sm fw-400 black" onClick={HandleChangeToLiveBluck}>Change To Live</button>
+            <button className="delete_area fs-sm fw-400 text-white" onClick={handleDeleteSelectedProducts}>Delete Product</button>
+          </div>
+        ) : null}
         {/* product details  */}
         <div className="p-3 mt-3 bg-white product_shadow mt-4">
           <div className="overflow-x-scroll line_scroll">
@@ -233,7 +350,7 @@ const ProductList = (props) => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="table_body">
+                <tbody className={`${selectAll.length >= 2 ? "table_body2" : "table_body"}`}>
                   {productData.map((value, index) => {
                     return (
                       <tr key={index}>
@@ -243,7 +360,7 @@ const ProductList = (props) => {
                               className="position-relative"
                               type="checkbox"
                               value={value.id}
-                              checked={selectAll.includes(value.id)}
+                              checked={selectAll.includes(value.id, value.productImages)}
                               onChange={handleCheckboxChange}
                             />
                             <span className="checkmark me-5"></span>
@@ -271,19 +388,18 @@ const ProductList = (props) => {
                         </td>
                         <td className="p-3 mw_130">
                           <h3
-                            className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${
-                              value.totalStock === '0'
-                                ? 'stock_bg_red text-white'
-                                : value.totalStock <= value.stockAlert
+                            className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${value.totalStock === '0'
+                              ? 'stock_bg_red text-white'
+                              : value.totalStock <= value.stockAlert
                                 ? 'stock_bg_orange'
                                 : 'px-2'
-                            } `}>
+                              } `}>
                             {/* {value.totalStock === '0' ? `Out of Stock` : `${value.totalStock} Available `} */}
                             {value.totalStock === '0'
                               ? `Out of Stock`
                               : value.totalStock <= value.stockAlert
-                              ? `${value.totalStock} Left`
-                              : `${value.totalStock} Available`}
+                                ? `${value.totalStock} Left`
+                                : `${value.totalStock} Available`}
                           </h3>
                         </td>
                         <td className="p-3 mw_130">
@@ -359,7 +475,7 @@ const ProductList = (props) => {
                                   <div
                                     onClick={() => {
                                       setProductId(value.id);
-                                      setProductImage(value.image);
+                                      setProductImage(value.productImages);
                                       setDeletePopup(true);
                                     }}
                                     className="d-flex align-items-center categorie_dropdown_options">
@@ -393,6 +509,8 @@ const ProductList = (props) => {
             ) : null}
           </div>
         </div>
+
+        <ToastContainer></ToastContainer>
       </div>
     </div>
   );

@@ -37,10 +37,10 @@ const ViewCustomerDetails = () => {
   }, null);
 
   const totalSpent = targetOrder.reduce((sum, order) => sum + order.order_price, 0);
-  console.log(totalSpent);
+  // console.log(totalSpent);
 
   const AvergaeOrderValue = totalSpent / targetOrder.length;
-  console.log(AvergaeOrderValue);
+  // console.log(AvergaeOrderValue);
 
   // format date function start
   function formatDate(dateString) {
@@ -60,6 +60,32 @@ const ViewCustomerDetails = () => {
   const calculateTimeAgo = (timestamp) => {
     return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
   };
+
+
+  //  order of this month calulation 
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1; // Note: getMonth() returns 0-based index
+
+  const ordersThisMonth = targetOrder.filter(order => {
+    const orderDate = new Date(order.created_at);
+    const orderMonth = orderDate.getMonth() + 1; // Note: getMonth() returns 0-based index
+
+    return orderMonth === currentMonth;
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // calculate  time end
 
@@ -148,8 +174,8 @@ const ViewCustomerDetails = () => {
                     <h2 className="fw-400 fs-xs fade_grey mb-0 mt-1 ">
                       {calculateTimeAgo(Customerdata.created_at)}
                     </h2>
-                    <p className="fw-400 fs-sm black mt-3 mb-0">Total Order : 12</p>
-                    <p className="fw-400 fs-sm black mt-2 mb-0">Current Month : 3</p>
+                    <p className="fw-400 fs-sm black mt-3 mb-0">Total Order : {targetOrder.length}</p>
+                    <p className="fw-400 fs-sm black mt-2 mb-0">Current Month : {ordersThisMonth.length}</p>
                   </div>
                 </Col>
                 <Col xxl={8}>
@@ -219,17 +245,16 @@ const ViewCustomerDetails = () => {
                                           </td>
                                           <td className="p-3">
                                             <h2
-                                              className={`d-inline-block ${
-                                                data.status.toString().toLowerCase() === 'new'
-                                                  ? 'fs-sm fw-400 red mb-0 new_order'
-                                                  : data.status.toString().toLowerCase() ===
-                                                    'processing'
+                                              className={`d-inline-block ${data.status.toString().toLowerCase() === 'new'
+                                                ? 'fs-sm fw-400 red mb-0 new_order'
+                                                : data.status.toString().toLowerCase() ===
+                                                  'processing'
                                                   ? 'fs-sm fw-400 mb-0 processing_skyblue'
                                                   : data.status.toString().toLowerCase() ===
                                                     'delivered'
-                                                  ? 'fs-sm fw-400 mb-0 green stock_bg'
-                                                  : 'fs-sm fw-400 mb-0 black cancel_gray'
-                                              }`}>
+                                                    ? 'fs-sm fw-400 mb-0 green stock_bg'
+                                                    : 'fs-sm fw-400 mb-0 black cancel_gray'
+                                                }`}>
                                               {data.status}
                                             </h2>
                                           </td>

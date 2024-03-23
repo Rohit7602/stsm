@@ -106,7 +106,7 @@ const ParentCategories = () => {
           homepagelayout: selectedLayout,
           created_at: Date.now(),
           updated_at: Date.now(),
-          noOfSubcateogry: 0
+          noOfSubcateogry: 0,
         });
         setLoaderstatus(false);
         toast.success('Category added Successfully !', {
@@ -143,35 +143,35 @@ const ParentCategories = () => {
   /*  *******************************
     checkbox functionality start 
   *********************************************   **/
-  const [selectAllPer, setselectAllPerPer] = useState(false);
-
-  useEffect(() => {
-    // Check if all checkboxes are checked
-    const allChecked = categoreis.every((item) => item.checked);
-    setselectAllPerPer(allChecked);
-  }, [categoreis]);
+  const [selectAll, setselectAll] = useState([]);
 
   // Main checkbox functionality start from here
 
-  const handleMainCheckboxChange = () => {
-    const updatedData = categoreis.map((item) => ({
-      ...item,
-      checked: !selectAllPer,
-    }));
-    updateData(updatedData);
-    setselectAllPerPer(!selectAllPer);
-  };
+  function handleMainCheckboxChange() {
+    if (selectAll.length === categoreis.length) {
+      setselectAll([]);
+    } else {
+      let allCheck = categoreis.map((items) => {
+        return items.id;
+      });
+      setselectAll(allCheck);
+    }
+  }
 
   // Datacheckboxes functionality strat from here
-  const handleCheckboxChange = (index) => {
-    const updatedData = [...categoreis];
-    updatedData[index].checked = !categoreis[index].checked;
-    updateData(updatedData);
-
-    // Check if all checkboxes are checked
-    const allChecked = updatedData.every((item) => item.checked);
-    setselectAllPerPer(allChecked);
-  };
+  function handleCheckboxChange(e) {
+    let isChecked = e.target.checked;
+    let value = e.target.value;
+    if (isChecked) {
+      setselectAll([...selectAll, value]);
+    } else {
+      setselectAll((prev) =>
+        prev.filter((id) => {
+          return id != value;
+        })
+      );
+    }
+  }
 
   /*  *******************************
       Checbox  functionality end 
@@ -213,13 +213,11 @@ const ParentCategories = () => {
       Change status functionality end 
     *********************************************   **/
 
-
   /*  *******************************
     Edit  Image Upload   functionality start 
   *********************************************   **/
 
   function HanleEditImgUpload(e) {
-
     const selectedFile = e.target.files[0];
     if (!ImageisValidOrNot(selectedFile)) {
       toast.error('Please select a valid image file within 1.5 MB. ');
@@ -229,20 +227,16 @@ const ParentCategories = () => {
     }
   }
 
-
-
   /*  *******************************
       Edit  Image  upload  functionality start 
   *********************************************   **/
-
-
 
   /*  *******************************
     Edit  Image  functionality start 
   *********************************************   **/
 
   function HandleDeleteEditImg() {
-    setLoaderstatus(true)
+    setLoaderstatus(true);
     setEditImg('');
     if (typeof editImg === 'string' && editImg.startsWith('http')) {
       try {
@@ -251,9 +245,9 @@ const ParentCategories = () => {
           var reference = ref(st, editImg);
           deleteObject(reference);
         }
-        setLoaderstatus(false)
+        setLoaderstatus(false);
       } catch (Error) {
-        setLoaderstatus(false)
+        setLoaderstatus(false);
         console.log(Error);
       }
     }
@@ -263,14 +257,13 @@ const ParentCategories = () => {
       Edit  Image  functionality end 
    *********************************************   **/
 
-
   /*  *******************************
      Edit Parent  Category   functionality start 
   *********************************************   **/
   async function HandleSaveEditCategory(e) {
     e.preventDefault();
     setEditPerCatPopup(false);
-    setLoaderstatus(true)
+    setLoaderstatus(true);
     try {
       let imageUrl = null;
       if (editImg instanceof File) {
@@ -289,7 +282,7 @@ const ParentCategories = () => {
         status: editPerentCatStatus,
         image: imageUrl,
         homepagelayout: EditSelectedLayout,
-        updated_at: Date.now()
+        updated_at: Date.now(),
       });
 
       updateData({
@@ -302,12 +295,12 @@ const ParentCategories = () => {
       });
 
       // alert("Updated Successfully");
-      setLoaderstatus(false)
+      setLoaderstatus(false);
       toast.success('Parent Category updated Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
-      setLoaderstatus(false)
+      setLoaderstatus(false);
       toast.error(error, {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -318,18 +311,13 @@ const ParentCategories = () => {
       Edit  Parent  Category  functionality end 
    *********************************************   **/
 
-
-
-
   if (loaderstatus) {
-    return (
-      <Loader></Loader>
-    );
+    return <Loader></Loader>;
   } else {
     return (
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
         {addCatPopup || editPerCatPopup ? <div className="bg_black_overlay"></div> : ''}
-        <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
+        <div className="w-100 px-sm-3 mt-4 bg_body">
           <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
             <div className="d-flex">
               <h1 className="fw-500   black fs-lg mb-0">Parent Categories</h1>
@@ -590,8 +578,8 @@ const ParentCategories = () => {
                               Cancel
                             </button>
                           </button>
-                          <button onClick={HandleSaveEditCategory}
-
+                          <button
+                            onClick={HandleSaveEditCategory}
                             type="submit"
                             className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn">
                             <img src={saveicon} alt="saveicon" />
@@ -638,8 +626,8 @@ const ParentCategories = () => {
                                   // src={URL.createObjectURL(editImg)}
                                   src={
                                     editImg &&
-                                      typeof editImg === 'string' &&
-                                      editImg.startsWith('http')
+                                    typeof editImg === 'string' &&
+                                    editImg.startsWith('http')
                                       ? editImg
                                       : URL.createObjectURL(editImg)
                                   }
@@ -799,8 +787,14 @@ const ParentCategories = () => {
               </div>
             </div>
           </div>
+          {selectAll.length > 1 ? (
+            <div className="d-flex align-items-center gap-3 mt-3 pt-1">
+              <button className="change_to_draft fs-sm fw-400 black">Change To Draft</button>
+              <button className="change_to_live fs-sm fw-400 black">Change To Live</button>
+            </div>
+          ) : null}
           {/* categories details  */}
-          <div className="p-3 mt-3 bg-white product_shadow">
+          <div className="p-3 mt-3 bg-white product_shadow ">
             <div className="overflow_xl_scroll line_scroll">
               <div className="categories_xl_overflow_X">
                 <table className="w-100">
@@ -811,14 +805,13 @@ const ParentCategories = () => {
                           <label class="check1 fw-400 fs-sm black mb-0">
                             <input
                               type="checkbox"
-                              checked={selectAllPer}
+                              checked={categoreis.length === selectAll.length}
                               onChange={handleMainCheckboxChange}
                             />
                             <span class="checkmark"></span>
                           </label>
                           <p className="fw-400 fs-sm black mb-0">
-                            {' '}
-                            Name{' '}
+                            Name
                             <span>
                               <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
                             </span>
@@ -836,11 +829,10 @@ const ParentCategories = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="table_body">
+                  <tbody className={`${selectAll.length > 1 ? 'table_body2' : 'table_body'}`}>
                     {categoreis
 
                       .filter((data) => {
-                        // console.log(data);
                         return search.toLowerCase() === ''
                           ? data
                           : data.title.toLowerCase().includes(searchvalue);
@@ -853,8 +845,9 @@ const ParentCategories = () => {
                                 <label className="check1 fw-400 fs-sm black mb-0">
                                   <input
                                     type="checkbox"
-                                    checked={value.checked || false}
-                                    onChange={() => handleCheckboxChange(index)}
+                                    value={value.id}
+                                    checked={selectAll.includes(value.id)}
+                                    onChange={handleCheckboxChange}
                                   />
                                   <span className="checkmark me-5"></span>
                                 </label>

@@ -1,34 +1,30 @@
-import React from "react";
-
-const InvoiceBill =() => {
+import React from 'react';
+import billLogo from '../../Images/svgs/bill-logo.svg';
+const InvoiceBill = () => {
   return (
     <div>
       <div className="bill m-auto">
-        <div className="text-end">
-          <h1 className="fs_24 fw-700 black mb-0">INVOICE</h1>
-          <p className="fs-xxs fw_700 black mb-0"># G67R7G78H9</p>
-          <p className="fs-xs fw_400 green mb-0">PAID</p>
+        <div className="d-flex align-items-center justify-content-between">
+          <img src={billLogo} alt="billLogo" />
+          <div className="text-end">
+            <h1 className="fs_24 fw-700 black mb-0">INVOICE</h1>
+            <p className="fs-xxs fw_700 black mb-0"># G67R7G78H9</p>
+            <p className="fs-xs fw_400 green mb-0">PAID</p>
+          </div>
         </div>
         <div className="mt-3">
           <div className="d-flex align-items-start justify-content-between gap-3">
             <div className="w-50">
               <p className="fs-xs fw-700 black mb-0">Save Time Save Money</p>
-              <p className="fs-xs fw-400 black mb-0 mt-1">
-                Street/ Area/ Landmark Name,
-              </p>
-              <p className="fs-xs fw-400 black mb-0 mt-1">
-                City, State - Pin Code
-              </p>
+              <p className="fs-xxs fw-400 black mb-0 mt-1">Near TVS Agency, Hansi Road, Barwala</p>
+              <p className="fs-xxs fw-400 black mb-0 mt-1">Hisar, Haryana - 125121</p>
+              <p className="fs-xxs fw-400 black mb-0 mt-1">GSTIN : 06GWMPS2545Q1ZJ</p>
             </div>
             <div className="text-end w-50">
               <p className="fs-xxs fw-700 black mb-0">Bill To:</p>
               <p className="fs-xxs fw-700 black mb-0">John Doe</p>
-              <p className="fs-xs fw-400 black mb-0 mt-1">
-                Street/ Area/ Landmark Name,
-              </p>
-              <p className="fs-xs fw-400 black mb-0 mt-4 text-end">
-                Invoice Date : 01-01-2024
-              </p>
+              <p className="fs-xxs fw-400 black mb-0 mt-1">Street/ Area/ Landmark Name,</p>
+              <p className="fs-xxs fw-400 black mb-0 mt-4 text-end">Invoice Date : 01-01-2024</p>
             </div>
           </div>
           <table className="w-100 mt-3">
@@ -37,9 +33,9 @@ const InvoiceBill =() => {
                 <th className="fs-xxs fw-400 white p_10">#</th>
                 <th className="fs-xxs fw-400 white p_10">Item Description</th>
                 <th className="fs-xxs fw-400 white p_10 text-center">Qty</th>
-                <th className="fs-xxs fw-400 white p_10 text-end">Rate</th>
+                <th className="fs-xxs fw-400 white p_10 text-end">Unit Cost</th>
                 <th className="fs-xxs fw-400 white p_10 text-center">Tax</th>
-                <th className="fs-xxs fw-400 white p_10 text-end">Amount</th>
+                <th className="fs-xxs fw-400 white p_10 text-end">Line Total</th>
               </tr>
             </thead>
             <tbody>
@@ -48,10 +44,12 @@ const InvoiceBill =() => {
                 <td className="p_5_10">
                   <span>
                     <p className="fs-xxs fw-400 black mb-0">Kamdhenu Khal</p>
-                    <span className="d-flex align-items-center gap-3 mt-1">
-                      <p className=" fs-xxxs fw-400 black mb-0">
-                        Variant : 49 KG
-                      </p>
+                    <span className="d-flex align-items-center gap-2">
+                      <p className=" fs-xxxs fw-700 black mb-0">₹ 130 OFF</p>
+                      <p className="fs-xxxs fw-400 black mb-0"> MRP : 1360.00</p>
+                    </span>
+                    <span className="d-flex align-items-center gap-3">
+                      <p className=" fs-xxxs fw-400 black mb-0">Variant : 49 KG</p>
                       <p className="fs-xxxs fw-400 black mb-0">Color : Red</p>
                     </span>
                   </span>
@@ -66,10 +64,12 @@ const InvoiceBill =() => {
                 <td className="p_5_10">
                   <span>
                     <p className="fs-xxs fw-400 black mb-0">Kamdhenu Khal</p>
-                    <span className="d-flex align-items-center gap-3 mt-1">
-                      <p className=" fs-xxxs fw-400 black mb-0">
-                        Variant : 49 KG
-                      </p>
+                    <span className="d-flex align-items-center gap-2">
+                      <p className=" fs-xxxs fw-700 black mb-0">₹ 130 OFF</p>
+                      <p className="fs-xxxs fw-400 black mb-0"> MRP : 1360.00</p>
+                    </span>
+                    <span className="d-flex align-items-center gap-3">
+                      <p className=" fs-xxxs fw-400 black mb-0">Variant : 49 KG</p>
                       <p className="fs-xxxs fw-400 black mb-0">Color : Red</p>
                     </span>
                   </span>
@@ -84,19 +84,20 @@ const InvoiceBill =() => {
           <div className="d-flex align-items-center justify-content-between mt-3">
             <div className="w-75 text-end">
               <p className="fs_xxs fw-700 black mb-0">Sub Total</p>
-              <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">Total</p>
-              <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">Total Paid</p>
-              <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">Amount Due</p>
+              <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">Promo Discount</p>
+              <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">Total Amount</p>
             </div>
             <div className="text-end">
               <p className="fs_xxs fw-400 black mb-0">₹ 2567.00</p>
-              <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">₹ 2567.00</p>
-              <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">₹ 2567.00</p>
+              <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">(-) ₹ 0.00</p>
               <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">₹ 2567.00</p>
             </div>
           </div>
         </div>
         <span className="mt-3 bill_border d-inline-block"></span>
+        <p className="fs-xxxs fw-400 black m-0 mt-1">
+          Note : You Saved <span className="fw-700">₹ 260.00</span> on product discount.
+        </p>
         <p className="fs_xxs fw-400 black mb-0 mt-3">Transactions:</p>
         <table className="mt-3 w-100">
           <thead>

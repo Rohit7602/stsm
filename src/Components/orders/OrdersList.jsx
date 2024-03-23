@@ -1,18 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import filtericon from '../../Images/svgs/filtericon.svg';
 import SearchIcon from '../../Images/svgs/search.svg';
 import dropdownDots from '../../Images/svgs/dots2.svg';
 import eye_icon from '../../Images/svgs/eye.svg';
 import updown_icon from '../../Images/svgs/arross.svg';
 import shortIcon from '../../Images/svgs/short-icon.svg';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useOrdercontext } from '../../context/OrderGetter';
 import { exec } from 'apexcharts';
-
+import viewBill from '../invoices/InvoiceBill';
+import { ReactToPrint } from 'react-to-print';
+import billLogo from '../../Images/svgs/bill-logo.svg';
 const OrderList = () => {
+  const componentRef = useRef();
   // context
   const { orders, updateData } = useOrdercontext();
   const [searchvalue, setSearchvalue] = useState('');
+  const [selectedBill, setSelectedBill] = useState('')
+
+
+
+  const handleBillNumberClick = (invoiceNumber) => {
+    const bill = orders.filter((order) => order.invoiceNumber === invoiceNumber);
+    setSelectedBill([...bill]);
+  };
+
 
   // format date logic start from here
   // console.log(orderStatus);
@@ -188,7 +200,7 @@ const OrderList = () => {
     });
   }
 
-  
+
 
   /*  *******************************
   Export  Excel File end  here  
@@ -315,12 +327,23 @@ const OrderList = () => {
                             </span>
                           </td>
                           <td className="p-2 mw-200">
-                            <h3 className="fs-xs fw-400 color_blue mb-0">
-                              #
-                              {typeof orderTableData.invoiceNumber === 'undefined'
-                                ? 'N/A'
-                                : orderTableData.invoiceNumber}
-                            </h3>
+                            <button onClick={handleBillNumberClick(orderTableData.invoiceNumber)} className="border-0 bg-white">
+                              <ReactToPrint
+                                trigger={() => {
+                                  return (
+                                    <h3 className="fs-xs fw-400 color_blue mb-0">
+                                      #
+                                      {typeof orderTableData.invoiceNumber === 'undefined'
+                                        ? 'N/A'
+                                        : orderTableData.invoiceNumber}
+                                    </h3>
+                                  );
+                                }}
+                                content={() => componentRef.current}
+                                documentTitle="Invoice"
+                                pageStyle="print"
+                              />
+                            </button>
                           </td>
                           <td className="p-3 mw-200">
                             <h3 className="fs-xs fw-400 black mb-0">
@@ -336,32 +359,30 @@ const OrderList = () => {
                           </td>
                           <td className="p-3 mw_160">
                             <h3
-                              className={`fs-sm fw-400 mb-0 d-inline-block ${
-                                orderTableData.transaction.status.toString().toLowerCase() ===
-                                'paid'
+                              className={`fs-sm fw-400 mb-0 d-inline-block ${orderTableData.transaction.status.toString().toLowerCase() ===
+                                  'paid'
                                   ? 'black stock_bg'
                                   : orderTableData.transaction.status.toString().toLowerCase() ===
                                     'cod'
-                                  ? 'black cancel_gray'
-                                  : orderTableData.transaction.status.toString().toLowerCase() ===
-                                    'refund'
-                                  ? 'new_order red'
-                                  : 'color_brown on_credit_bg'
-                              }`}>
+                                    ? 'black cancel_gray'
+                                    : orderTableData.transaction.status.toString().toLowerCase() ===
+                                      'refund'
+                                      ? 'new_order red'
+                                      : 'color_brown on_credit_bg'
+                                }`}>
                               {orderTableData.transaction.status}
                             </h3>
                           </td>
                           <td className="p-3 mw_160">
                             <p
-                              className={`d-inline-block ${
-                                orderTableData.status.toString().toLowerCase() === 'new'
+                              className={`d-inline-block ${orderTableData.status.toString().toLowerCase() === 'new'
                                   ? 'fs-sm fw-400 red mb-0 new_order'
                                   : orderTableData.status.toString().toLowerCase() === 'processing'
-                                  ? 'fs-sm fw-400 mb-0 processing_skyblue'
-                                  : orderTableData.status.toString().toLowerCase() === 'delivered'
-                                  ? 'fs-sm fw-400 mb-0 green stock_bg'
-                                  : 'fs-sm fw-400 mb-0 black cancel_gray'
-                              }`}>
+                                    ? 'fs-sm fw-400 mb-0 processing_skyblue'
+                                    : orderTableData.status.toString().toLowerCase() === 'delivered'
+                                      ? 'fs-sm fw-400 mb-0 green stock_bg'
+                                      : 'fs-sm fw-400 mb-0 black cancel_gray'
+                                }`}>
                               {orderTableData.status}
                             </p>
                           </td>
@@ -408,6 +429,165 @@ const OrderList = () => {
               </table>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div>
+        <div>
+          {selectedBill.length > 0
+            ? selectedBill.map((items) => {
+              const subtotal = items.items.reduce(
+                (acc, data) => acc + data.quantity * data.final_price,
+                0
+              );
+              const savedDiscount = items.items.reduce(
+                (acc, data) => acc + data.quantity * data.varient_discount,
+                0
+              );
+              return (
+                <div className="bill m-auto" ref={componentRef}>
+                  <div className="d-flex align-items-start justify-content-between">
+                    <img src={billLogo} alt="billLogo" />
+                    <div className="text-end">
+                      <h1 className="fs_24 fw-700 black mb-0">INVOICE</h1>
+                      <p className="fs-xxs fw_700 black mb-0">#{items.invoiceNumber}</p>
+                      <p className="fs-xs fw_400 green mb-0">{items.transaction.status}</p>
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <div className="d-flex align-items-start justify-content-between gap-3">
+                      <div className="w-50">
+                        <p className="fs-xs fw-700 black mb-0">Save Time Save Money</p>
+                        <p className="fs-xs fw-400 black mb-0 mt-1">
+                          Near TVS Agency, Hansi Road, Barwala,
+                        </p>
+                        <p className="fs-xs fw-400 black mb-0 mt-1">Hisar, Haryana - 125121</p>
+                        <p className="fs-xs fw-400 black mb-0 mt-1">GSTIN : 06GWMPS2545Q1ZJ</p>
+                      </div>
+                      <div className="text-end w-50">
+                        <p className="fs-xxs fw-700 black mb-0">Bill To:</p>
+                        <p className="fs-xxs fw-700 black mb-0">{items.customer.name}</p>
+                        <p className="fs-xs fw-400 black mb-0 mt-1">{items.shipping.address}</p>
+                        <p className="fs-xs fw-400 black mb-0 mt-1">
+                          {items.shipping.city} {items.shipping.state}{' '}
+                        </p>
+                        <p className="fs-xs fw-400 black mb-0 mt-4 text-end">
+                          Invoice Date : {formatDate(items.created_at)}
+                        </p>
+                      </div>
+                    </div>
+                    <table className="w-100 mt-3">
+                      <thead>
+                        <tr className="bg_dark_black">
+                          <th className="fs-xxs fw-400 white p_10">#</th>
+                          <th className="fs-xxs fw-400 white p_10">Item Description</th>
+                          <th className="fs-xxs fw-400 white p_10 text-center">Qty</th>
+                          <th className="fs-xxs fw-400 white p_10 text-end">Unit Cost</th>
+                          <th className="fs-xxs fw-400 white p_10 text-center">Tax</th>
+                          <th className="fs-xxs fw-400 white p_10 text-end">Line Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {items.items.map((data) => {
+                          return (
+                            <tr>
+                              <td className="fs-xxs fw-400 black p_5_10">1</td>
+                              <td className="p_5_10">
+                                <span>
+                                  <p className="fs-xxs fw-400 black mb-0">{data.title}</p>
+                                  <span className="d-flex align-items-center gap-2">
+                                    <p className=" fs-xxxs fw-700 black mb-0">
+                                      ₹ {data.varient_discount} OFF
+                                    </p>
+                                    <p
+                                      className={`fs-xxxs fw-400 black mb-0  ${data.varient_discount !== '0' ? 'strikethrough' : null
+                                        }`}>
+                                      MRP : {data.varient_price}
+                                    </p>
+                                  </span>
+                                  <span className="d-flex align-items-center gap-3">
+                                    <p className=" fs-xxxs fw-400 black mb-0">
+                                      {data.varient_name} {data.unitType}
+                                    </p>
+                                    <p className="fs-xxxs fw-400 black mb-0">{data.color}</p>
+                                  </span>
+                                </span>
+                              </td>
+                              <td className="fs-xxs fw-400 black p_5_10 text-center">
+                                {data.quantity}
+                              </td>
+                              <td className="fs-xxs fw-400 black p_5_10 text-end">
+                                {data.final_price}
+                              </td>
+                              <td className="fs-xxs fw-400 black p_5_10 text-center">
+                                {typeof data.Tax === 'undefined' ? '0' : data.Tax}%
+                              </td>
+                              <td className="fs-xxs fw-400 black p_5_10 text-end">
+                                ₹
+                                {data.quantity * data.final_price +
+                                  (typeof data.text === 'undefined'
+                                    ? 0
+                                    : data.quantity * data.final_price * (data.Tax / 100))}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                    <div className="d-flex align-items-center justify-content-between mt-3">
+                      <div className="w-75 text-end">
+                        <p className="fs_xxs fw-700 black mb-0">Sub Total</p>
+                        <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">Promo Discount</p>
+                        <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">Total Amount</p>
+                      </div>
+                      <div className="text-end">
+                        <p className="fs_xxs fw-400 black mb-0">₹{subtotal}</p>
+                        <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
+                          (-) ₹ {items.additional_discount.discount}
+                        </p>
+                        <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
+                          {/* {((data.quantity * data.final_price) * (data.Tax / 100))} */}
+                          {items.order_price}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <span className="mt-3 bill_border d-inline-block"></span>
+                  <p className=" fs-xxxs fw-400 black mb-0 mt-1">
+                    Note : You Saved <span className="fw-700"> ₹{savedDiscount} </span> on product
+                    discount.
+                  </p>
+                  {items.transaction.status === 'Paid' ? (
+                    <div>
+                      <p className="fs_xxs fw-400 black mb-0 mt-3">Transactions:</p>
+                      <table className="mt-3 w-100">
+                        <thead>
+                          <tr>
+                            <th className="fs-xxs fw-400 black py_2">Transaction ID</th>
+                            <th className="fs-xxs fw-400 black py_2">Payment Mode</th>
+                            <th className="fs-xxs fw-400 black py_2">Date</th>
+                            <th className="fs-xxs fw-400 black py_2">Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="bill_border">
+                            <td className="fs-xxs fw-400 black py-1">
+                              {items.transaction.tx_id === '' ? 'N/A' : items.transaction.tx_id}
+                            </td>
+                            <td className="fs-xxs fw-400 black py-1">{items.transaction.mode}</td>
+                            <td className="fs-xxs fw-400 black py-1">
+                              {formatDate(items.transaction.date)}
+                            </td>
+                            <td className="fs-xxs fw-400 black py-1">₹{items.order_price}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })
+            : null}
         </div>
       </div>
     </div>

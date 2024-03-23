@@ -20,10 +20,9 @@ import { useEffect, useRef, useState } from 'react';
 import { auth, messaging } from './firebase';
 import HashLoader from 'react-spinners/HashLoader';
 import CheckConnection from './Components/CheckConnection';
-import Invoices from './Components/invoices/Invoices'
+import Invoices from './Components/invoices/Invoices';
 import { permissionHandler } from './firebase';
 import DeliveryManList from './Components/deliveryman/DeliveryManList';
-
 
 import PrivacyPolicy from './Components/PrivacyPolicy/PrivacyPolicy';
 import TermConditions from './Components/Security/TermConditions/TermConditions';
@@ -40,7 +39,7 @@ import Chats from './Components/communications/Chats';
 import Complains from './Components/communications/Complains';
 
 function App() {
-  const { logoutUser } = useUserAuth()
+  const { logoutUser } = useUserAuth();
   const [user, setUser] = useState(null);
   const [loading, setloading] = useState(true);
   const location = useLocation();
@@ -58,15 +57,24 @@ function App() {
     };
   }, []);
 
-  if (location.pathname === "/invoices") {
-    document.body.classList.add("overflow-hidden");
+  // Check if '/orders/orderdetails/' is one of the segments
+  var pathSegments = location.pathname.split('/');
+  // console.log(pathSegments[1]);
+
+  // Check if '/orders/orderdetails/' is one of the segments
+  if (pathSegments.includes('orders') && pathSegments.includes('orderdetails')) {
+    document.body.classList.add('overflow_hidden');
+  }
+
+  if (location.pathname === '/invoices' || location.pathname === '/orders') {
+    document.body.classList.add('overflow-hidden');
   } else {
-    document.body.classList.remove("overflow-hidden");
+    document.body.classList.remove('overflow-hidden');
   }
   const handleLogout = async () => {
     try {
       // Sign out the user from Firebase Authentication
-      await logoutUser()
+      await logoutUser();
       // Update the user state to trigger the rendering of the Login component
       localStorage.removeItem('isAdmin', 'true');
       setUser(true);
@@ -89,7 +97,7 @@ function App() {
         // User is signed out
         setUser(true);
       }
-      setloading(false)
+      setloading(false);
     });
 
     // Cleanup function to unsubscribe when the component unmounts
@@ -171,9 +179,9 @@ function App() {
                         </Route>
                         <Route path="privacypolicy" element={<PrivacyPolicy />} />
                         <Route path="term" element={<TermConditions />} />
-                        <Route path='FAQ' element={<Faqs />} />
-                        <Route path='invoices' element={<Invoices />} />
-                        <Route path='invoicesbill' element={<InvoiceBill />} />
+                        <Route path="FAQ" element={<Faqs />} />
+                        <Route path="invoices" element={<Invoices />} />
+                        <Route path="invoicesbill" element={<InvoiceBill />} />
                         {/* <Route path='Addbanner' element={<AddBanner />} /> */}
                       </Routes>
                     </div>

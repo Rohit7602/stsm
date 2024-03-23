@@ -232,8 +232,8 @@ function DashbordCards() {
                     </tr>
                     {NewOrders.length === 0 ? (
                       <tr>
-                        <td className="text-center py-2 " colSpan="6">
-                          No recent orders in the last week
+                        <td className="text-center py-2 fs-lg " colSpan="6">
+                          No new Orders 
                         </td>
                       </tr>
                     ) : (

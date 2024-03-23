@@ -31,6 +31,10 @@ body {
   scroll-behavior: smooth !important;
 }
 
+.overflow_hidden {
+  overflow-x: hidden !important;
+}
+
 /*--------------------------------- ROOT-DEFINE-VALUES --------------------------------- */
 :root {
   --color-black: #000000;
@@ -1474,8 +1478,21 @@ div.rich-text-editor .ql-editor {
   overflow-y: auto !important;
 }
 
+.table_body2 {
+  display: block !important;
+  height: calc(100vh - 330px) !important;
+  height: 100%;
+  overflow-y: auto !important;
+}
+
 .table_head,
 .table_body tr {
+  display: table !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+.table_head,
+.table_body2 tr {
   display: table !important;
   width: 100% !important;
   table-layout: fixed !important;
@@ -1654,6 +1671,12 @@ div.rich-text-editor .ql-editor {
   border-radius: 50px;
   height: 47px;
 }
+.order_details_bill {
+  position: absolute;
+  right: -300%;
+  top: -100px;
+  z-index: 1;
+}
 
 .color_add_input input {
   border: 0;
@@ -1679,7 +1702,6 @@ div.rich-text-editor .ql-editor {
   transform: translate(-50%, -50%);
   z-index: 3;
 }
-
 .ques_input {
   border: 0.5px solid #0000004d;
   padding: 5px 10px;

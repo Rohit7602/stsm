@@ -202,6 +202,84 @@ const ServiceArea = () => {
     }
   }
 
+
+  async function handleChangeLiveSelectedAread(e) {
+    e.preventDefault()
+    try {
+      setLoaderstatus(true)
+      let newStatus = "live"
+      for (let ids of selectAll) {
+        await updateDoc(doc(db, 'ServiceAreas', ids), {
+          ServiceStatus: newStatus,
+        });
+        updateServiceData({ ids, ServiceStatus: newStatus });
+      }
+      setSelectAll([])
+      setLoaderstatus(false)
+      toast.success('Status Changed Successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (e) {
+      console.log("error ", e)
+    }
+  }
+
+
+  async function handleChangeDarftSelectedAread(e) {
+    e.preventDefault()
+    try {
+      setLoaderstatus(true)
+      let newStatus = "draft"
+      for (let ids of selectAll) {
+        await updateDoc(doc(db, 'ServiceAreas', ids), {
+          ServiceStatus: newStatus,
+        });
+        updateServiceData({ ids, ServiceStatus: newStatus });
+      }
+      setSelectAll([])
+      setLoaderstatus(false)
+      toast.success('Status Changed Successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (e) {
+      console.log("error ", e)
+    }
+
+  }
+
+
+  async function handleDeleteSelectedAread(e) {
+    e.preventDefault()
+    try {
+      setLoaderstatus(true)
+      for (let ids of selectAll) {
+        await deleteDoc(doc(db, 'ServiceAreas', ids)).then(() => {
+          deleteServiceData(ids);
+        });
+      }
+      setLoaderstatus(false)
+      selectAll([])
+      toast.success('Deleted  Successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      console.log("error", error)
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   /*  *******************************
       Change service  status functionality end 
     *********************************************   **/
@@ -209,33 +287,31 @@ const ServiceArea = () => {
   /*  *******************************
       checkbox functionality start 
     *********************************************   **/
-  const [selectAll, setSelectAll] = useState(false);
-
-  useEffect(() => {
-    // Check if all checkboxes are checked
-    const allChecked = ServiceData.every((item) => item.checked);
-    setSelectAll(allChecked);
-  }, [ServiceData]);
-
-  // Main checkbox functionality start from here
+  const [selectAll, setSelectAll] = useState([]);
 
   const handleMainCheckboxChange = () => {
-    const updatedData = ServiceData.map((item) => ({
-      ...item,
-      checked: !selectAll,
-    }));
-    updateServiceData(updatedData);
-    setSelectAll(!selectAll);
+    if (ServiceData.length === selectAll.length) {
+      setSelectAll([]);
+    } else {
+      let allCheck = ServiceData.map((item) => {
+        return item.id;
+      });
+      setSelectAll(allCheck);
+    }
   };
   // Datacheckboxes functionality strat from here
-  const handleCheckboxChange = (index) => {
-    const updatedData = [...ServiceData];
-    updatedData[index].checked = !ServiceData[index].checked;
-    updateServiceData(updatedData);
-
-    // Check if all checkboxes are checked
-    const allChecked = updatedData.every((item) => item.checked);
-    setSelectAll(allChecked);
+  const handleCheckboxChange = (e) => {
+    let isChecked = e.target.checked;
+    let value = e.target.value;
+    if (isChecked) {
+      setSelectAll([...selectAll, value]);
+    } else {
+      setSelectAll((prev) =>
+        prev.filter((id) => {
+          return id != value;
+        })
+      );
+    }
   };
 
   /*  *******************************
@@ -254,8 +330,6 @@ const ServiceArea = () => {
   }
 
   let editServiceData = ServiceData.filter((item) => item.id === ServiceAreaId);
-
-  console.log(editServiceData);
   if (loaderstatus) {
     return (
       <>
@@ -286,11 +360,11 @@ const ServiceArea = () => {
             </div>
           </div>
           {/* categories details  */}
-          {selectAll ? (
+          {selectAll.length > 1 ? (
             <div className="d-flex align-items-center gap-3 mt-3 pt-1">
-              <button className="change_to_draft fs-sm fw-400 black">Change To Draft</button>
-              <button className="change_to_live fs-sm fw-400 black">Change To Live</button>
-              <button className="delete_area fs-sm fw-400 text-white">Delete Area</button>
+              <button className="change_to_draft fs-sm fw-400 black" onClick={handleChangeDarftSelectedAread}>Change To Draft</button>
+              <button className="change_to_live fs-sm fw-400 black" onClick={handleChangeLiveSelectedAread} >Change To Live</button>
+              <button className="delete_area fs-sm fw-400 text-white" onClick={handleDeleteSelectedAread}>Delete Area</button>
             </div>
           ) : null}
           <div className="row mt-4">
@@ -308,7 +382,7 @@ const ServiceArea = () => {
                               <label class="check1 fw-400 fs-sm black mb-0">
                                 <input
                                   type="checkbox"
-                                  checked={selectAll}
+                                  checked={selectAll.length === ServiceData.length}
                                   onChange={handleMainCheckboxChange}
                                 />
                                 <span class="checkmark"></span>
@@ -352,7 +426,7 @@ const ServiceArea = () => {
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="table_body">
+                      <tbody className={`${selectAll.length > 1 ? 'table_body2' : 'table_body'}`}>
                         {ServiceData.filter((data) => {
                           return searchvalue.toLowerCase() === ''
                             ? data
@@ -365,8 +439,9 @@ const ServiceArea = () => {
                                   <label class="check1 fw-400 fs-sm black mb-0">
                                     <input
                                       type="checkbox"
-                                      checked={data.checked || false}
-                                      onChange={() => handleCheckboxChange(index)}
+                                      value={data.id}
+                                      checked={selectAll.includes(data.id)}
+                                      onChange={handleCheckboxChange}
                                     />
                                     <span class="checkmark"></span>
                                   </label>
