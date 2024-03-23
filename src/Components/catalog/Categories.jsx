@@ -587,8 +587,8 @@ const Categories = () => {
           ) : null}
           <div className="p-3 mt-4">
             <div className="">
-              <div className="row">
-                <div className="col-9 product_shadow bg-white overflow_xl_scroll line_scroll  transition_04">
+              <div className="d-flex flex-nowrap">
+                <div className="product_shadow bg-white overflow_xl_scroll line_scroll  transition_04">
                   <div style={{ minWidth: '845px' }}>
                     <table className="w-100">
                       <thead className="w-100 table_head">
@@ -776,7 +776,7 @@ const Categories = () => {
                     </table>
                   </div>
                 </div>
-                <div className="col-3 p-0">
+                <div className="p-0">
                   <div className="w-100 ps-sm-3 bg_body">
                     <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between position-relative">
                       <div className="d-flex align-itmes-center justify-content-center justify-content-md-between  gap-3">
@@ -1245,13 +1245,13 @@ const Categories = () => {
                         style={{ top: '-30px' }}>
                         Parent Categories
                       </p>
-                      <div className="overflow_xl_scroll line_scroll">
-                        <div style={{ minWidth: '350px' }}>
+                      <div className="">
+                        <div style={{ width: '350px' }}>
                           <table className="w-100">
                             <thead className="table_head w-100">
                               <tr className="product_borderbottom w-100">
                                 <th className="py-3 ps-3">
-                                  <div className="d-flex align-items-center gap-3 min_width_300">
+                                  <div className="d-flex align-items-center gap-3">
                                     <p className="fw-400 fs-sm black mb-0">
                                       Name
                                       <span>
@@ -1280,7 +1280,7 @@ const Categories = () => {
                               {categoreis.map((value, index) => {
                                 return (
                                   <tr key={index} className="product_borderbottom">
-                                    <td className="py-3 ps-3 w- 100">
+                                    <td className="py-3 ps-3">
                                       <div className="d-flex align-items-center gap-3">
                                         <div className="d-flex align-items-center">
                                           <div className="w_40">

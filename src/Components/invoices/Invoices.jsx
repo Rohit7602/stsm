@@ -308,7 +308,7 @@ export default function Invoices() {
 
       {/************* {Invoice PDF} *************/}
 
-      <div>
+      <div className="order_details_bill">
         {selectedBill.length > 0
           ? selectedBill.map((items) => {
               const subtotal = items.items.reduce(

@@ -72,7 +72,6 @@ const AddProduct = () => {
   const [previousCategoryId, setPreviousCategoryId] = useState(null);
   const [previousCategoryname, setpreviousCategoryname] = useState(null);
   const [previousCategoryParentId, setpreviousCategoryParentId] = useState(null);
-  const [selectedArea, setSelectedArea] = useState('');
 
   const handleSelectCategory = (category) => {
     setSearchvalue('');
@@ -446,6 +445,50 @@ const AddProduct = () => {
     }
   }
 
+  const [selectarea, setSelectArea] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const handleCheckboxChange = (e) => {
+    let isChecked = e.target.checked;
+    let value = e.target.value;
+    if (isChecked) {
+      setSelectArea([...selectarea, value]);
+    } else {
+      setSelectArea((prevState) => prevState.filter((area) => area !== value));
+    }
+  };
+
+  let areas = ['Jaipur', 'Ganganagar', 'Hisar', 'Bus Stand'];
+
+  const toggleDropdown = () => {
+    setDropdownOpen((prevState) => !prevState);
+  };
+
+  const closeDropdown = () => {
+    setDropdownOpen(false);
+  };
+
+  const handleProductInputClick = () => {
+    if (dropdownOpen) {
+      closeDropdown();
+    } else {
+      toggleDropdown();
+    }
+  };
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   if (loaderstatus) {
     return (
       <>
@@ -577,7 +620,7 @@ const AddProduct = () => {
                           <label className="fs-xs fw-400 mt-3 black" htmlFor="pinCode">
                             Enter Pin Code
                           </label>
-                          <div className="d-flex align-items-center">
+                          <div className="d-flex align-items-center me-2">
                             <input
                               required
                               type="number"
@@ -587,19 +630,45 @@ const AddProduct = () => {
                             />
                           </div>
                         </div>
-                        <div className=" col-7">
+                        <div className="col-7 position-relative p-0">
+                          <label className="fs-xs fw-400 mt-2 black" htmlFor="">
+                            Select Area
+                          </label>
+                          <div
+                            className="product_input d-flex align-items-center justify-content-between mt-2"
+                            onClick={handleProductInputClick}>
+                            <p className="fade_grey fw-400 w-100 mb-0 text-start" required>
+                              {selectarea.join(' , ')}
+                            </p>
+                            <img src={dropdownImg} alt="" />
+                          </div>
+                          {dropdownOpen && (
+                            <div ref={dropdownRef} className="position-absolute area_dropdown">
+                              {areas.map((city) => (
+                                <div className="d-flex align-items-center gap-3 py-1" key={city}>
+                                  <input
+                                    id={city}
+                                    type="checkbox"
+                                    value={city}
+                                    onChange={handleCheckboxChange}
+                                    checked={selectarea.includes(city)}
+                                  />
+                                  <label className="fs-xs fw-400 black w-100" htmlFor={city}>
+                                    {city}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        {/* <div className=" col-7">
                           <label className="fs-xs fw-400 mt-2 black" htmlFor="">
                             Select Area
                           </label>
 
                           <Dropdown className="category_dropdown">
                             <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
-                              <div className="product_input d-flex align-items-center justify-content-between">
-                                <p className="fade_grey fw-400 w-100 mb-0 text-start" required>
-                                  {selectedArea}
-                                </p>
-                                <img src={dropdownImg} alt="" />
-                              </div>
+                              
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu className="w-100">
@@ -629,7 +698,7 @@ const AddProduct = () => {
                               </div>
                             </Dropdown.Menu>
                           </Dropdown>
-                        </div>
+                        </div> */}
                         <div className="col-1">
                           <img
                             className="w-100 cursor_pointer"

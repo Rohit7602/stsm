@@ -422,7 +422,7 @@ const OrderList = () => {
         </div>
       </div>
 
-      <div>
+      <div className="order_details_bill">
         <div ref={componentRef} className="bill m-auto">
           <div className="d-flex align-items-center justify-content-between">
             <img src={billLogo} alt="billLogo" />
