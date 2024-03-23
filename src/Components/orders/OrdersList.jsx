@@ -327,7 +327,7 @@ const OrderList = () => {
                             </span>
                           </td>
                           <td className="p-2 mw-200">
-                            <button onClick={handleBillNumberClick(orderTableData.invoiceNumber)} className="border-0 bg-white">
+                            <button onClick={() => handleBillNumberClick(orderTableData.invoiceNumber)} className="border-0 bg-white">
                               <ReactToPrint
                                 trigger={() => {
                                   return (

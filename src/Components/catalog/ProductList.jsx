@@ -93,8 +93,6 @@ const ProductList = () => {
 
 
 
-  console.log("asdasdfasdf", selectAll)
-
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/

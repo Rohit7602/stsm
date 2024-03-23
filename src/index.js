@@ -20,7 +20,7 @@ import { DeliverManContextProvider } from './context/DeliverymanGetter';
 import { FaqProvider } from './context/Faq';
 import { UserAuthContextProvider } from './context/Authcontext';
 import { CouponContextProvider } from './context/CouponsGetter';
-
+import { BrandContextProvider } from './context/BrandsContext';
 // Put any other imports below so that CSS from your
 // components takes precedence over default styles.
 
@@ -28,30 +28,32 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <UserAuthContextProvider>
-    <ImageValidationProvider>
-      <SubCategoriesProvider>
-        <MainCategoriesProvider>
-          <ProductsProvider>
-            <ImageHandleProvider>
-              <BannerDataProvider>
-                <OrderContextProvider>
-                  <CustomersProvider>
-                    <ServiceContextProvider>
+      <ImageValidationProvider>
+        <SubCategoriesProvider>
+          <MainCategoriesProvider>
+            <ProductsProvider>
+              <ImageHandleProvider>
+                <BannerDataProvider>
+                  <OrderContextProvider>
+                    <CustomersProvider>
+                      <ServiceContextProvider>
                         <FaqProvider>
                           <DeliverManContextProvider>
                             <CouponContextProvider>
-                              <App />
-                            </CouponContextProvider> 
+                              <BrandContextProvider>
+                                <App />
+                              </BrandContextProvider>
+                            </CouponContextProvider>
                           </DeliverManContextProvider>
-                      </FaqProvider>
-                    </ServiceContextProvider>
-                  </CustomersProvider>
-                </OrderContextProvider>
-              </BannerDataProvider>
-            </ImageHandleProvider>
-          </ProductsProvider>
-        </MainCategoriesProvider>
-      </SubCategoriesProvider>
+                        </FaqProvider>
+                      </ServiceContextProvider>
+                    </CustomersProvider>
+                  </OrderContextProvider>
+                </BannerDataProvider>
+              </ImageHandleProvider>
+            </ProductsProvider>
+          </MainCategoriesProvider>
+        </SubCategoriesProvider>
       </ImageValidationProvider>
     </UserAuthContextProvider>
   </BrowserRouter>

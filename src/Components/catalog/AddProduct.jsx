@@ -24,6 +24,8 @@ import { storage } from '../../firebase';
 import { useRef } from 'react';
 import { useProductsContext } from '../../context/productgetter';
 import { useSubCategories } from '../../context/categoriesGetter';
+import { useBrandcontext } from '../../context/BrandsContext';
+
 import { useParams, useNavigate } from 'react-router-dom';
 import { increment } from 'firebase/firestore';
 import Loader from '../Loader';
@@ -33,6 +35,8 @@ const AddProduct = () => {
   const navigate = useNavigate();
 
   const { productData, updateProductData } = useProductsContext();
+  const { allBrands } = useBrandcontext()
+
   const productId = useParams();
 
   let ProductsID = productId.id;
@@ -73,12 +77,22 @@ const AddProduct = () => {
   const [previousCategoryname, setpreviousCategoryname] = useState(null);
   const [previousCategoryParentId, setpreviousCategoryParentId] = useState(null);
 
+  const [selectBrand, setSelectBrand] = useState(null)
+
   const handleSelectCategory = (category) => {
     setSearchvalue('');
     setSelectedCategory(category);
     setSelectedCategoryId(category.id);
   };
 
+  const handleSelectBrand = (brand) => {
+    setSelectBrand(brand)
+  }
+
+
+
+
+  const [addMoreArea, setAddMoreArea] = useState([])
   const [variants, setVariants] = useState([]);
   const [discount, setDiscount] = useState(null);
   const [originalPrice, setOriginalPrice] = useState('');
@@ -106,6 +120,26 @@ const AddProduct = () => {
   function handleDeleteVariant(index) {
     setVariants((prevVariants) => prevVariants.filter((_, i) => i !== index));
   }
+
+  function handlAddMoreAreas() {
+    setAddMoreArea((prevareas) => [
+      ...prevareas,
+      {
+        pincode: '',
+        SelectedAreas: ''
+      }
+    ])
+
+  }
+
+
+  function handleDeleteArea(index) {
+    // setVariants((prevVariants) => prevVariants.filter((_, i) => i !== index));
+    setAddMoreArea((Prevarareas) => Prevarareas.filter((_, i) => i !== index))
+  }
+
+
+
 
   // stock popup save functionality
 
@@ -195,6 +229,10 @@ const AddProduct = () => {
             id: selectedCategory.id,
             name: selectedCategory.title,
           },
+          brand: {
+            id: selectBrand.id,
+            name: selectBrand.name
+          },
           productImages: imagelinks,
           created_at: Date.now(),
           updated_at: Date.now(),
@@ -206,19 +244,19 @@ const AddProduct = () => {
           isMultipleVariant: isvarient === true,
           ...(isvarient === false
             ? {
-                varients: [
-                  {
-                    VarientName: VarintName,
-                    originalPrice: originalPrice,
-                    discountType: discountType,
-                    discount: discount,
-                    unitType,
-                  },
-                ],
-              }
+              varients: [
+                {
+                  VarientName: VarintName,
+                  originalPrice: originalPrice,
+                  discountType: discountType,
+                  discount: discount,
+                  unitType,
+                },
+              ],
+            }
             : {
-                varients: variants,
-              }), // Include the actual list of variants if varient is true
+              varients: variants,
+            }), // Include the actual list of variants if varient is true
         });
         setSearchdata([]);
         setLoaderstatus(false);
@@ -392,19 +430,19 @@ const AddProduct = () => {
         Tax,
         ...(isvarient === false
           ? {
-              varients: [
-                {
-                  VarientName: variants[0].VarientName,
-                  originalPrice: variants[0].originalPrice,
-                  discountType: variants[0].discountType,
-                  discount: variants[0].discount,
-                  unitType: variants[0].unitType,
-                },
-              ],
-            }
+            varients: [
+              {
+                VarientName: variants[0].VarientName,
+                originalPrice: variants[0].originalPrice,
+                discountType: variants[0].discountType,
+                discount: variants[0].discount,
+                unitType: variants[0].unitType,
+              },
+            ],
+          }
           : {
-              varients: variants,
-            }),
+            varients: variants,
+          }),
       };
 
       // Check if the selected category is different from the existing category
@@ -611,7 +649,7 @@ const AddProduct = () => {
                         </p>
                       </div>
                       <div className="text-end">
-                        <button type="button" className="fs-2sm fw-400 color_green add_varient_btn">
+                        <button onClick={handlAddMoreAreas} type="button" className="fs-2sm fw-400 color_green add_varient_btn">
                           + Add More
                         </button>
                       </div>
@@ -705,6 +743,7 @@ const AddProduct = () => {
                             height={48}
                             src={deleteiconWithBg}
                             alt="deleteiconWithBg"
+                          // onClick={() => handleDeleteArea(index) }
                           />
                         </div>
                       </div>
@@ -807,9 +846,9 @@ const AddProduct = () => {
                                                       prevVariants.map((v, i) =>
                                                         i === index
                                                           ? {
-                                                              ...v,
-                                                              unitType: e.target.innerHTML,
-                                                            }
+                                                            ...v,
+                                                            unitType: e.target.innerHTML,
+                                                          }
                                                           : v
                                                       )
                                                     );
@@ -845,9 +884,9 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                              ...v,
-                                              originalPrice: e.target.value,
-                                            }
+                                            ...v,
+                                            originalPrice: e.target.value,
+                                          }
                                           : v
                                       )
                                     )
@@ -868,12 +907,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                              ...v,
-                                              discountType: selectedDiscountType,
-                                              // Reset discount value when changing the discount type to "Amount"
-                                              discount:
-                                                selectedDiscountType === 'Amount' ? 0 : v.discount,
-                                            }
+                                            ...v,
+                                            discountType: selectedDiscountType,
+                                            // Reset discount value when changing the discount type to "Amount"
+                                            discount:
+                                              selectedDiscountType === 'Amount' ? 0 : v.discount,
+                                          }
                                           : v
                                       )
                                     );
@@ -900,12 +939,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                              ...v,
-                                              discount:
-                                                v.discountType === 'Percentage'
-                                                  ? Math.min(e.target.value, 100)
-                                                  : e.target.value,
-                                            }
+                                            ...v,
+                                            discount:
+                                              v.discountType === 'Percentage'
+                                                ? Math.min(e.target.value, 100)
+                                                : e.target.value,
+                                          }
                                           : v
                                       )
                                     )
@@ -934,9 +973,9 @@ const AddProduct = () => {
                                     prevVariants.map((v, i) =>
                                       i === 0
                                         ? {
-                                            ...v,
-                                            VarientName: e.target.value,
-                                          }
+                                          ...v,
+                                          VarientName: e.target.value,
+                                        }
                                         : v
                                     )
                                   );
@@ -1008,9 +1047,9 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === 0
                                           ? {
-                                              ...v,
-                                              originalPrice: e.target.value,
-                                            }
+                                            ...v,
+                                            originalPrice: e.target.value,
+                                          }
                                           : v
                                       )
                                     );
@@ -1041,12 +1080,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === 0
                                           ? {
-                                              ...v,
-                                              discountType: e.target.value,
-                                              // Reset discount value when changing the discount type to "Amount"
-                                              discount:
-                                                e.target.value === 'Amount' ? 0 : v.discount,
-                                            }
+                                            ...v,
+                                            discountType: e.target.value,
+                                            // Reset discount value when changing the discount type to "Amount"
+                                            discount:
+                                              e.target.value === 'Amount' ? 0 : v.discount,
+                                          }
                                           : v
                                       )
                                     );
@@ -1087,12 +1126,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === 0
                                           ? {
-                                              ...v,
-                                              discount:
-                                                v.discountType === 'Percentage'
-                                                  ? Math.min(e.target.value, 100)
-                                                  : e.target.value,
-                                            }
+                                            ...v,
+                                            discount:
+                                              v.discountType === 'Percentage'
+                                                ? Math.min(e.target.value, 100)
+                                                : e.target.value,
+                                          }
                                           : v
                                       )
                                     );
@@ -1140,20 +1179,20 @@ const AddProduct = () => {
                           <div className=" d-flex align-items-center mt-3 pt-1 me-5 gap-3 flex-wrap">
                             {storeColors && storeColors.length !== 0
                               ? storeColors.map((items, index) => {
-                                  return (
-                                    <div
-                                      key={index}
-                                      className="d-flex align-items-center gap-3 color_add_input">
-                                      <p className="m-0">{items}</p>
-                                      <img
-                                        onClick={() => handelColorDelete(index)}
-                                        className="cursor_pointer"
-                                        src={closeRed}
-                                        alt="closeRed"
-                                      />
-                                    </div>
-                                  );
-                                })
+                                return (
+                                  <div
+                                    key={index}
+                                    className="d-flex align-items-center gap-3 color_add_input">
+                                    <p className="m-0">{items}</p>
+                                    <img
+                                      onClick={() => handelColorDelete(index)}
+                                      className="cursor_pointer"
+                                      src={closeRed}
+                                      alt="closeRed"
+                                    />
+                                  </div>
+                                );
+                              })
                               : null}
 
                             {colorInput ? (
@@ -1427,8 +1466,8 @@ const AddProduct = () => {
                       <div className="product_input">
                         <div className="d-flex align-items-center justify-content-between">
                           <p className="fade_grey fw-400 w-100 mb-0 text-start" required>
-                            {selectedCategory
-                              ? selectedCategory.title || selectedCategory
+                            {selectBrand
+                              ? selectBrand.name || selectBrand
                               : 'Select Brand'}
                           </p>
                           <img src={dropdownImg} alt="dropdownImg" />
@@ -1442,28 +1481,21 @@ const AddProduct = () => {
                           <button type="button" className="addnew_category_btn fs-xs green">
                             +Add <span className="black"> New Brand</span>
                           </button>
-                          {data
-                            .filter((items) => {
-                              return searchvalue.toLowerCase() === ''
-                                ? items
-                                : items.title.toLowerCase().includes(searchvalue);
-                            })
-                            .map((category) => (
-                              <Dropdown.Item>
-                                <div
-                                  className={`d-flex justify-content-between ${
-                                    selectedCategory && selectedCategory.id === category.id
-                                      ? 'selected'
-                                      : ''
+                          {allBrands.map((brand) => (
+                            <Dropdown.Item>
+                              <div
+                                className={`d-flex justify-content-between ${selectBrand && selectBrand.id === brand.id
+                                  ? 'selected'
+                                  : ''
                                   }`}
-                                  onClick={() => handleSelectCategory(category)}>
-                                  <p className="fs-xs fw-400 black mb-0">{category.title}</p>
-                                  {selectedCategory && selectedCategory.id === category.id && (
-                                    <img src={savegreenicon} alt="savegreenicon" />
-                                  )}
-                                </div>
-                              </Dropdown.Item>
-                            ))}
+                                onClick={() => handleSelectBrand(brand)}>
+                                <p className="fs-xs fw-400 black mb-0">{brand.name}</p>
+                                {selectBrand && selectBrand.id === brand.id && (
+                                  <img src={savegreenicon} alt="savegreenicon" />
+                                )}
+                              </div>
+                            </Dropdown.Item>
+                          ))}
                         </div>
                       </div>
                     </Dropdown.Menu>
@@ -1483,7 +1515,6 @@ const AddProduct = () => {
                         </p>
                       </div>
                     </Dropdown.Toggle>
-
                     <Dropdown.Menu className="w-100">
                       <div className="d-flex flex-column">
                         <div className="d-flex align-items-center product_input position-sticky top-0">
@@ -1505,11 +1536,10 @@ const AddProduct = () => {
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${
-                                    selectedCategory && selectedCategory.id === category.id
-                                      ? 'selected'
-                                      : ''
-                                  }`}
+                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
+                                    ? 'selected'
+                                    : ''
+                                    }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (

@@ -9,42 +9,36 @@ import addImage from '../../Images/svgs/image-add.svg';
 import closeIcon from '../../Images/svgs/closeicon.svg';
 import deleteicon2 from '../../Images/svgs/deleteicon.svg';
 import Loader from '../Loader';
+import { ref, uploadBytes, getDownloadURL, getStorage, deleteObject } from 'firebase/storage';
+import { storage, db } from '../../firebase';
+import { addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useImageHandleContext } from '../../context/ImageHandler';
+import { useBrandcontext } from '../../context/BrandsContext';
+import Deletepopup from '../popups/Deletepopup';
+
 const Brands = () => {
   const [selectAll, setSelectAll] = useState([]);
   const [addBrand, setAddBrand] = useState(false);
+  const [editBrand, setEditBrand] = useState(false)
+  const [brandName, setBrandName] = useState('')
   const [brandImg, setaBrandImg] = useState(null);
-  const brandData = [
-    {
-      id: '1',
-      brandName: 'Brand Name',
-      totalProducts: 120,
-    },
-    {
-      id: '2',
-      brandName: 'Brand Name',
-      totalProducts: 120,
-    },
-    {
-      id: '3',
-      brandName: 'Brand Name',
-      totalProducts: 120,
-    },
-    {
-      id: '4',
-      brandName: 'Brand Name',
-      totalProducts: 120,
-    },
-    {
-      id: '5',
-      brandName: 'Brand Name',
-      totalProducts: 120,
-    },
-  ];
+  const [loading, setLoading] = useState(false)
+  const [deletepopup, setdeletepopup] = useState(false)
+  const [brandId, setBrandId] = useState('')
+  const [searchvalue, setSearchvalue] = useState('')
+
+  const { ImageisValidOrNot } = useImageHandleContext();
+  const { allBrands, addBrandData, updateBrandData, deleteBrandData } = useBrandcontext()
+
+
+
   function handleMainCheckboxChange() {
-    if (brandData.length === selectAll.length) {
+    if (allBrands.length === selectAll.length) {
       setSelectAll([]);
     } else {
-      let allCheck = brandData.map((items) => {
+      let allCheck = allBrands.map((items) => {
         return items.id;
       });
       setSelectAll(allCheck);
@@ -64,19 +58,169 @@ const Brands = () => {
     }
   }
   function handleUploadImage(e) {
-    setaBrandImg(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    if (!ImageisValidOrNot(selectedFile)) {
+      toast.error('Please select a valid image file within 1.5 MB.');
+      setaBrandImg(null);
+    } else {
+      setaBrandImg(selectedFile);
+    }
   }
+
+
+  function handleResetBrandData() {
+    setAddBrand('')
+    setaBrandImg(null)
+    setBrandName('')
+  }
+
+
+  const handleAddBrandData = async (e) => {
+    e.preventDefault()
+    try {
+      if (addBrand === "" && brandImg === "") {
+        alert("please enter the name and image ")
+      } else {
+        setLoading(true);
+        const filename = Math.floor(Date.now() / 1000) + '-' + brandImg.name;
+        const storageRef = ref(storage, `/Brand/${filename}`);
+        const upload = await uploadBytes(storageRef, brandImg);
+        const imageUrl = await getDownloadURL(storageRef);
+
+        const docRef = await addDoc(collection(db, 'Brands'), {
+          name: brandName,
+          image: imageUrl,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          totalProducts: 0
+        });
+        setLoading(false);
+        toast.success('Brand added Successfully !', {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        addBrandData(docRef)
+        handleResetBrandData()
+      }
+    } catch (error) {
+      setLoading(false)
+      console.log("Error in Brand Data", error)
+    }
+  }
+
+
+
+  async function handleDeleteBrand(id, image) {
+    try {
+      setLoading(true)
+      var st = getStorage();
+      await deleteDoc(doc(db, 'Brands', id)).then(() => {
+        if (image !== "") {
+          var reference = ref(st, image);
+          deleteObject(reference);
+        }
+        deleteBrandData(id);
+      });
+      setLoading(false)
+    } catch (error) {
+      console.log(error);
+      setLoading(false)
+    }
+  }
+
+
+  async function handleUpdateBrand(e) {
+    e.preventDefault();
+    setEditBrand(false);
+    setLoading(true);
+    try {
+      let imageUrl = null;
+      if (brandImg instanceof File) {
+        const filename = Math.floor(Date.now() / 1000) + '-' + brandImg.name;
+        const storageRef = ref(storage, `/Brand/${filename}`);
+        await uploadBytes(storageRef, brandImg);
+        imageUrl = await getDownloadURL(storageRef);
+      } else if (typeof brandImg === 'string' && brandImg.startsWith('http')) {
+        imageUrl = brandImg;
+      }
+      const updateData = {
+        name: brandName,
+        image: imageUrl,
+        updated_at: new Date().toISOString(),
+      };
+      await updateDoc(doc(db, 'Brands', brandId), updateData);
+      updateBrandData({
+        brandId,
+        ...updateData,
+      });
+      setLoading(false);
+      toast.success('Brands updated Successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+
+
+
+  function handleDeleteEditImge() {
+    setLoading(true);
+    setaBrandImg('');
+    if (typeof brandImg === 'string' && brandImg.startsWith('http')) {
+      setLoading(true);
+      try {
+        if (brandImg !== "") {
+          var st = getStorage();
+          var reference = ref(st, brandImg);
+          deleteObject(reference);
+        }
+        setLoading(false);
+      } catch (Error) {
+        console.log(Error);
+      }
+      setLoading(false);
+    }
+    setLoading(false);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  if (loading) {
+    return (<Loader />)
+  }
+
+
 
   return (
     <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
-      {addBrand ? <div className="bg_black_overlay"></div> : null}
-      {addBrand ? (
+      {addBrand || editBrand ? <div className="bg_black_overlay"></div> : null}
+      {deletepopup === true ? (
+        <div className="bg_black_overlay"></div>
+      ) : null}
+      {addBrand || editBrand ? (
         <div className="add_brand">
           <form action="">
             <div className="d-flex align-items-center justify-content-between mb-3">
               <p className="fs-2sm fw-400 black m-0">Add New Brand</p>
               <img
-                onClick={() => setAddBrand(false)}
+                onClick={() => {
+                  setEditBrand(false)
+                  setAddBrand(false)
+                }}
                 className="cursor_pointer"
                 src={closeIcon}
                 alt="closeIcon"
@@ -91,6 +235,8 @@ const Brands = () => {
                 type="text"
                 id="brandName"
                 placeholder="name of Brand"
+                value={brandName}
+                onChange={e => setBrandName(e.target.value)}
               />
             </div>
             <div className="d-flex align-items-star mt-3 pt-1">
@@ -112,12 +258,18 @@ const Brands = () => {
                     <img
                       height={157}
                       className="w-100 object-fit-cover"
-                      src={URL.createObjectURL(brandImg)}
+                      src={
+                        brandImg &&
+                          typeof brandImg === 'string' &&
+                          brandImg.startsWith('http')
+                          ? brandImg
+                          : URL.createObjectURL(brandImg)
+                      }
                       alt="brandImg"
                     />
                   )}
                   <img
-                    onClick={() => setaBrandImg(null)}
+                    onClick={() => handleDeleteEditImge()}
                     className="position-absolute end-0 top-0 cursor_pointer"
                     src={deleteicon2}
                     alt="deleteicon2"
@@ -125,10 +277,13 @@ const Brands = () => {
                 </div>
               )}
             </div>
-            <div className="d-flex align-items-center justify-content-end gap-2 mt-3 pt-1">
-              <button className="fs-sm fw-400 black brand_rest_btn">Reset</button>
-              <button className="fs-sm fw-400 black brand_upload_btn">Upload</button>
-            </div>
+            {editBrand ? <div className="d-flex align-items-center justify-content-end gap-2 mt-3 pt-1">
+              <button className="fs-sm fw-400 black brand_upload_btn" onClick={handleUpdateBrand} >Update</button>
+            </div> :
+              <div className="d-flex align-items-center justify-content-end gap-2 mt-3 pt-1">
+                <button className="fs-sm fw-400 black brand_rest_btn" onClick={() => handleResetBrandData()}>Reset</button>
+                <button className="fs-sm fw-400 black brand_upload_btn" onClick={handleAddBrandData} >Upload</button>
+              </div>}
           </form>
         </div>
       ) : null}
@@ -145,6 +300,8 @@ const Brands = () => {
                 type="text"
                 className="fw-400 categorie_input  "
                 placeholder="Search for Brands..."
+                value={searchvalue}
+                onChange={(e) => setSearchvalue(e.target.value)}
               />
             </div>
             <div>
@@ -169,7 +326,7 @@ const Brands = () => {
                         <label class="check1 fw-400 fs-sm black mb-0">
                           <input
                             type="checkbox"
-                            checked={brandData.length === selectAll.length}
+                            checked={allBrands.length === selectAll.length}
                             onChange={handleMainCheckboxChange}
                           />
                           <span class="checkmark"></span>
@@ -186,7 +343,10 @@ const Brands = () => {
                   </tr>
                 </thead>
                 <tbody className="table_body">
-                  {brandData.map((value, index) => {
+
+                  {allBrands.filter((item) => {
+                    return (searchvalue.toLowerCase() === '' ? item : item.name.toLowerCase().includes(searchvalue))
+                  }).map((value, index) => {
                     return (
                       <tr key={index} className="product_borderbottom">
                         <td className="py-3 ps-3 w-100">
@@ -201,7 +361,7 @@ const Brands = () => {
                               <span className="checkmark me-5"></span>
                             </label>
                             <div>
-                              <p className="fw-400 fs-sm black mb-0">{value.brandName}</p>
+                              <p className="fw-400 fs-sm black mb-0">{value.name}</p>
                             </div>
                           </div>
                         </td>
@@ -225,7 +385,12 @@ const Brands = () => {
                               aria-labelledby="dropdownMenuButton1">
                               <li>
                                 <div class="dropdown-item" href="#">
-                                  <div className="d-flex align-items-center categorie_dropdown_options">
+                                  <div onClick={() => {
+                                    setBrandName(value.name)
+                                    setaBrandImg(value.image)
+                                    setEditBrand(true)
+                                    setBrandId(value.id)
+                                  }} className="d-flex align-items-center categorie_dropdown_options">
                                     <img src={pencil_icon} alt="" />
                                     <p className="fs-sm fw-400 black mb-0 ms-2">Edit</p>
                                   </div>
@@ -241,7 +406,11 @@ const Brands = () => {
                               </li>
                               <li>
                                 <div class="dropdown-item" href="#">
-                                  <div className="d-flex align-items-center categorie_dropdown_options">
+                                  <div onClick={() => {
+                                    setBrandId(value.id);
+                                    setaBrandImg(value.image);
+                                    setdeletepopup(true);
+                                  }} className="d-flex align-items-center categorie_dropdown_options">
                                     <img src={deleteicon} alt="" />
                                     <p className="fs-sm fw-400 red mb-0 ms-2">Delete</p>
                                   </div>
@@ -256,9 +425,18 @@ const Brands = () => {
                 </tbody>
               </table>
             </div>
+
           </div>
+          {deletepopup ? (
+            <Deletepopup
+              showPopup={setdeletepopup}
+              handleDelete={() => handleDeleteBrand(brandId, brandImg)}
+              itemName="Brand"
+            />
+          ) : null}
         </div>
       </div>
+      <ToastContainer></ToastContainer>
     </div>
   );
 };
