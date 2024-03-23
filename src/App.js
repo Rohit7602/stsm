@@ -20,6 +20,7 @@ import { useEffect, useRef, useState } from 'react';
 import { auth, messaging } from './firebase';
 import HashLoader from 'react-spinners/HashLoader';
 import CheckConnection from './Components/CheckConnection';
+import Brands from './Components/brands/Brands';
 import Invoices from './Components/invoices/Invoices';
 import { permissionHandler } from './firebase';
 import DeliveryManList from './Components/deliveryman/DeliveryManList';
@@ -178,6 +179,10 @@ function App() {
                           <Route path="complains" element={<Complains />} />
                         </Route>
                         <Route path="privacypolicy" element={<PrivacyPolicy />} />
+                        <Route path="setting">
+                          <Route path="brands" element={<Brands/>} />
+                          {/* <Route path="products" element={< />} /> */}
+                        </Route>
                         <Route path="term" element={<TermConditions />} />
                         <Route path="FAQ" element={<Faqs />} />
                         <Route path="invoices" element={<Invoices />} />
