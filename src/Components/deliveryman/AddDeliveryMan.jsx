@@ -93,7 +93,6 @@ const AddDeliveryMan = () => {
   const [selectedOption, setSelectedOption] = useState("");
 
   const handleOptionChange = (e) => {
-
     setSelectedOption(e.target.value);
   };
   async function handlesave(e) {
@@ -136,7 +135,7 @@ const AddDeliveryMan = () => {
       },
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      isVerified: true,
+      is_verified: true,
       signInMethod: "email",
       status: "online",
       d_id: RandomDeliveryGenerator()
@@ -537,7 +536,6 @@ const AddDeliveryMan = () => {
                     <h2 className="fw-400 fs-2sm black mb-0 pt-3">
                       Employment Type
                     </h2>
-
                     <select
                       value={selectedOption}
                       onChange={handleOptionChange}
@@ -546,7 +544,6 @@ const AddDeliveryMan = () => {
                       <option className="option-commission" value="COMMISSION">Commission</option>
                       <option className="option-salaried" value="SALARIED">Salaried</option>
                     </select>
-
                     <div className="d-flex align-items-center mt-3 justify-content-between">
                       <div className="mt-3 mx-2 py-1 d-flex align-items-center gap-3">
                         <label className="check fw-400 fs-sm black mb-0">

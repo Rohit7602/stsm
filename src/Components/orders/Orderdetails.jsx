@@ -287,7 +287,7 @@ export default function NewOrder() {
                     ? 'fs-sm fw-400 mb-0 processing_skyblue'
                     : item.status.toString().toLowerCase() === 'delivered'
                       ? 'fs-sm fw-400 mb-0 green stock_bg'
-                      : 'fs-sm fw-400 mb-0 black cancel_gray'
+                      : 'fs-sm fw-400 mb-0 black status_btn_red'
                   }`}>
                 {item.status}
               </p>

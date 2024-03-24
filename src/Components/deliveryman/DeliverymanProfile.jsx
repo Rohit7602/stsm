@@ -6,9 +6,13 @@ import profile_image from '../../Images/Png/customer_profile.png';
 import { useParams } from 'react-router-dom';
 import Loader from '../Loader';
 import { UseDeliveryManContext } from '../../context/DeliverymanGetter';
+import { updateDoc, doc } from 'firebase/firestore';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { db } from '../../firebase';
 
 const DeliverymanProfile = () => {
-  const { DeliveryManData } = UseDeliveryManContext();
+  const { DeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
   const { id } = useParams();
   const [filterData, setfilterData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -22,7 +26,53 @@ const DeliverymanProfile = () => {
     return <Loader> </Loader>;
   }
 
-  console.log('filter Data is ', filterData);
+
+
+  async function ApprovedDelivermanProfile(id) {
+    try {
+      setLoading(true)
+      await updateDoc(doc(db, 'Delivery', id), {
+        is_verified: true,
+        updated_at: new Date().toISOString()
+      })
+      setLoading(false)
+      updateDeliveryManData({ id: id, is_verified: true })
+      toast.success('Verified Successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      setLoading(false)
+      console.log("error is ", error)
+    }
+
+  }
+
+
+  async function RejectDelivermanProfile(id) {
+    try {
+      setLoading(true)
+      await updateDoc(doc(db, 'Delivery', id), {
+        is_verified: false,
+        updated_at: new Date().toISOString()
+      })
+      setLoading(false)
+      updateDeliveryManData({ id: id, is_verified: true })
+      toast.success('Rejected Successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      setLoading(false)
+      console.log("error is ", error)
+    }
+
+  }
+
+  if (loading) {
+    return (
+      <Loader />
+    )
+  }
+
 
   return filterData.map((datas, index) => {
     return (
@@ -34,11 +84,11 @@ const DeliverymanProfile = () => {
           <div className="d-flex justify-content-center">
             <div className="d-flex  align-items-center flex-column flex-sm-row gap-2 gap-sm-0  justify-content-between">
               <div className="d-flex align-itmes-center gap-3">
-                <button className="approve_btn  d-flex align-items-center gap-2">
+                <button onClick={() => ApprovedDelivermanProfile(datas.id)} className="approve_btn  d-flex align-items-center gap-2">
                   <img src={blackCheck} alt="blackCheck" />
                   <p className="m-0">Approve</p>
                 </button>
-                <button className="reject_delivery">Reject profile</button>
+                <button onClick={() => RejectDelivermanProfile(datas.id)} className="reject_delivery">Reject profile</button>
                 <button className="reset_border">
                   <button className="fs-sm reset_btn border-0 fw-400  d-flex align-items-center gap-2 transition_04">
                     <svg
@@ -256,6 +306,7 @@ const DeliverymanProfile = () => {
             </div>
           </Col>
         </Row>
+        <ToastContainer></ToastContainer>
       </div>
     );
   });

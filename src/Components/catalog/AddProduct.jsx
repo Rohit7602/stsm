@@ -25,7 +25,7 @@ import { useRef } from 'react';
 import { useProductsContext } from '../../context/productgetter';
 import { useSubCategories } from '../../context/categoriesGetter';
 import { useBrandcontext } from '../../context/BrandsContext';
-
+import { UseServiceContext } from '../../context/ServiceAreasGetter';
 import { useParams, useNavigate } from 'react-router-dom';
 import { increment } from 'firebase/firestore';
 import Loader from '../Loader';
@@ -36,11 +36,17 @@ const AddProduct = () => {
 
   const { productData, updateProductData } = useProductsContext();
   const { allBrands } = useBrandcontext()
+  const { ServiceData } = UseServiceContext()
+
+
+  const skuList = productData.map(product => product.sku);
+  console.log("sku list is ", skuList)
+
+
 
   const productId = useParams();
 
   let ProductsID = productId.id;
-
   const [name, setName] = useState('');
   const [shortDes, setShortDes] = useState('');
   const [longDes, setLongDes] = useState('');
@@ -92,13 +98,21 @@ const AddProduct = () => {
 
 
 
-  const [addMoreArea, setAddMoreArea] = useState([])
+  const [addMoreArea, setAddMoreArea] = useState([
+    {
+      pincode: '',
+      area_name: '',
+      terretory: []
+    }
+  ]);
   const [variants, setVariants] = useState([]);
   const [discount, setDiscount] = useState(null);
   const [originalPrice, setOriginalPrice] = useState('');
   const [VarintName, setVariantsNAME] = useState('');
   const [Tax, setTax] = useState(null);
   const [discountType, setDiscountType] = useState('Amount');
+
+
   function HandleAddVarients() {
     setVariants((prevVariants) => [
       ...prevVariants,
@@ -121,12 +135,84 @@ const AddProduct = () => {
     setVariants((prevVariants) => prevVariants.filter((_, i) => i !== index));
   }
 
+  const [selectarea, setSelectArea] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(Array(addMoreArea.length).fill(false));
+  const dropdownRef = useRef(null);
+  // const [areas, setAreas] = useState([]);
+
+  const handleCheckboxChange = (e) => {
+    let isChecked = e.target.checked;
+    let value = e.target.value;
+    if (isChecked) {
+      setSelectArea([...selectarea, value]);
+    } else {
+      setSelectArea((prevState) => prevState.filter((area) => area !== value));
+    }
+  };
+
+
+  const toggleDropdown = (index) => {
+    setDropdownOpen((prevState) => {
+      if (Array.isArray(prevState)) {
+        const newState = [...prevState];
+        newState[index] = !newState[index];
+        return newState;
+      } else {
+        return !prevState;
+      }
+    });
+  };
+
+  const closeDropdown = (index) => {
+    setDropdownOpen((prevState) => {
+      if (Array.isArray(prevState)) {
+        const newState = [...prevState];
+        newState[index] = false;
+        return newState;
+      } else {
+        return false;
+      }
+    });
+  };
+
+  const handleProductInputClick = (index) => {
+    if (dropdownOpen[index]) {
+      closeDropdown(index);
+    } else {
+      // Close other dropdowns before opening the clicked one
+      setDropdownOpen(Array(addMoreArea.length).fill(false));
+      toggleDropdown(index);
+    }
+  };
+
+
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+
+
+
+
+
+
+
   function handlAddMoreAreas() {
     setAddMoreArea((prevareas) => [
       ...prevareas,
       {
         pincode: '',
-        SelectedAreas: ''
+        area_name: '',
+        terretory: []
       }
     ])
 
@@ -139,9 +225,64 @@ const AddProduct = () => {
   }
 
 
+  function handlePincodeChange(index, newPincode) {
+    const filterData = ServiceData.filter((datas) => datas.PostalCode === newPincode)
+    const areaName = filterData[0].AreaName
+    setAddMoreArea((prevVariants) =>
+      prevVariants.map((v, i) =>
+        i === index ? { ...v, pincode: newPincode, area_name: areaName } : v
+      )
+    );
+  }
+
+  function handleSelectedAreasChange(index, newSelectedAreas) {
+    setAddMoreArea((prevVariants) =>
+      prevVariants.map((v, i) =>
+        i === index ? { ...v, terretory: newSelectedAreas } : v
+      )
+    );
+
+  }
+
+
+
+  // const allPincodes = addMoreArea.map(area => area.pincode);
+
+  // const filteredServices = allPincodes.reduce((acc, pincode) => {
+  //   const servicesForPincode = ServiceData.filter(service => service.PostalCode === pincode);
+  //   return [...acc, ...servicesForPincode];
+  // }, []);
+
+  // console.log("filtered service is ", filteredServices);
+
+
+  // useEffect(() => {
+  //   const latestPincode = addMoreArea[addMoreArea.length - 1]?.pincode;
+  //   if (latestPincode) {
+  //     // Update areas based on the latest added pincode
+  //     const filteredServices = ServiceData.filter(service => service.PostalCode === latestPincode);
+  //     const newAreas = filteredServices.map(service => service.AreaList);
+  //     setAreas(newAreas);
+  //   } else {
+  //     setAreas([]); // Reset areas if no pincode is available
+  //   }
+  // }, [addMoreArea, ServiceData]);
+
+
+
 
 
   // stock popup save functionality
+
+  // useEffect(() => {
+  //   console.log("add more areas is", addMoreArea)
+  // }, [addMoreArea])
+
+
+
+
+
+
 
   // get total amount functionality
   function handleTotalQunatity(e) {
@@ -231,7 +372,8 @@ const AddProduct = () => {
           },
           brand: {
             id: selectBrand.id,
-            name: selectBrand.name
+            name: selectBrand.name,
+            image: selectBrand.image
           },
           productImages: imagelinks,
           created_at: Date.now(),
@@ -257,6 +399,7 @@ const AddProduct = () => {
             : {
               varients: variants,
             }), // Include the actual list of variants if varient is true
+          serviceable_areas: addMoreArea,
         });
         setSearchdata([]);
         setLoaderstatus(false);
@@ -370,7 +513,6 @@ const AddProduct = () => {
     }
   }
 
-  console.log('colors is ', storeColors);
 
   function handelColorDelete(index) {
     let updaedColor = [...storeColors];
@@ -427,6 +569,11 @@ const AddProduct = () => {
         DeliveryCharge,
         colors: storeColors,
         isMultipleVariant: isvarient === true,
+        brand: {
+          id: selectBrand.id,
+          name: selectBrand.name,
+          image: selectBrand.image
+        },
         Tax,
         ...(isvarient === false
           ? {
@@ -483,49 +630,19 @@ const AddProduct = () => {
     }
   }
 
-  const [selectarea, setSelectArea] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
 
-  const handleCheckboxChange = (e) => {
-    let isChecked = e.target.checked;
-    let value = e.target.value;
-    if (isChecked) {
-      setSelectArea([...selectarea, value]);
+  function handleSkuChange(e) {
+    const newSku = e.target.value;
+    if (skuList.includes(newSku)) {
+      // SKU already exists, show an error or handle the duplicate SKU
+      alert("SKU already exists please enter different sku");
     } else {
-      setSelectArea((prevState) => prevState.filter((area) => area !== value));
+      // SKU is unique, set the new SKU value
+      setSku(newSku);
     }
-  };
+  }
 
-  let areas = ['Jaipur', 'Ganganagar', 'Hisar', 'Bus Stand'];
 
-  const toggleDropdown = () => {
-    setDropdownOpen((prevState) => !prevState);
-  };
-
-  const closeDropdown = () => {
-    setDropdownOpen(false);
-  };
-
-  const handleProductInputClick = () => {
-    if (dropdownOpen) {
-      closeDropdown();
-    } else {
-      toggleDropdown();
-    }
-  };
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setDropdownOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   if (loaderstatus) {
     return (
@@ -654,98 +771,87 @@ const AddProduct = () => {
                         </button>
                       </div>
                       <div className="row align-items-end">
-                        <div className=" col-4">
-                          <label className="fs-xs fw-400 mt-3 black" htmlFor="pinCode">
-                            Enter Pin Code
-                          </label>
-                          <div className="d-flex align-items-center me-2">
-                            <input
-                              required
-                              type="number"
-                              className="mt-2 product_input fade_grey fw-400"
-                              placeholder="125001"
-                              id="pinCode"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-7 position-relative p-0">
-                          <label className="fs-xs fw-400 mt-2 black" htmlFor="">
-                            Select Area
-                          </label>
-                          <div
-                            className="product_input d-flex align-items-center justify-content-between mt-2"
-                            onClick={handleProductInputClick}>
-                            <p className="fade_grey fw-400 w-100 mb-0 text-start" required>
-                              {selectarea.join(' , ')}
-                            </p>
-                            <img src={dropdownImg} alt="" />
-                          </div>
-                          {dropdownOpen && (
-                            <div ref={dropdownRef} className="position-absolute area_dropdown">
-                              {areas.map((city) => (
-                                <div className="d-flex align-items-center gap-3 py-1" key={city}>
+                        {addMoreArea.map((area, index) => {
+                          const pincode = area.pincode;
+                          const areasForPincode = ServiceData
+                            .filter(service => service.PostalCode === pincode)
+                            .map(service => service.AreaList);
+
+                          return (
+                            <>
+                              <div className=" col-4">
+                                <label className="fs-xs fw-400 mt-3 black" htmlFor="pinCode">
+                                  Enter Pin Code
+                                </label>
+                                <div className="d-flex align-items-center me-2">
                                   <input
-                                    id={city}
-                                    type="checkbox"
-                                    value={city}
-                                    onChange={handleCheckboxChange}
-                                    checked={selectarea.includes(city)}
+                                    required
+                                    type="number"
+                                    className="mt-2 product_input fade_grey fw-400"
+                                    placeholder="125001"
+                                    id="pinCode"
+                                    value={area.pincode}
+                                    onChange={(e) => handlePincodeChange(index, e.target.value)}
                                   />
-                                  <label className="fs-xs fw-400 black w-100" htmlFor={city}>
-                                    {city}
-                                  </label>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        {/* <div className=" col-7">
-                          <label className="fs-xs fw-400 mt-2 black" htmlFor="">
-                            Select Area
-                          </label>
-
-                          <Dropdown className="category_dropdown">
-                            <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
-                              
-                            </Dropdown.Toggle>
-
-                            <Dropdown.Menu className="w-100">
-                              <div className="d-flex flex-column">
-                                <div>
-                                  <Dropdown.Item>
-                                    <div onClick={() => setSelectedArea('Dabra Chowk')}>
-                                      <p className="fs-xs fw-400 black m-0 py-2">Dabra Chowk</p>
-                                    </div>
-                                  </Dropdown.Item>
-                                  <Dropdown.Item>
-                                    <div onClick={() => setSelectedArea('Bus Stand')}>
-                                      <p className="fs-xs fw-400 black m-0 py-2">Bus Stand</p>
-                                    </div>
-                                  </Dropdown.Item>
-                                  <Dropdown.Item>
-                                    <div onClick={() => setSelectedArea('Nagori Gate')}>
-                                      <p className="fs-xs fw-400 black m-0 py-2">Nagori Gate</p>
-                                    </div>
-                                  </Dropdown.Item>
-                                  <Dropdown.Item>
-                                    <div onClick={() => setSelectedArea('Dabra Chowk')}>
-                                      <p className="fs-xs fw-400 black m-0 py-2">Dabra Chowk</p>
-                                    </div>
-                                  </Dropdown.Item>
                                 </div>
                               </div>
-                            </Dropdown.Menu>
-                          </Dropdown>
-                        </div> */}
-                        <div className="col-1">
-                          <img
-                            className="w-100 cursor_pointer"
-                            height={48}
-                            src={deleteiconWithBg}
-                            alt="deleteiconWithBg"
-                          // onClick={() => handleDeleteArea(index) }
-                          />
-                        </div>
+                              <div className="col-7 position-relative p-0">
+                                <label className="fs-xs fw-400 mt-2 black" htmlFor="">
+                                  Select Area
+                                </label>
+                                <div
+                                  className="product_input   d-flex align-items-center justify-content-between mt-2"
+                                  onClick={() => handleProductInputClick(index)}>
+                                  <p className="fade_grey fw-400 w-100 mb-0 text-start" required>
+                                    {area.terretory.join(' , ')}
+                                  </p>
+                                  <img src={dropdownImg} alt="" />
+                                </div>
+                                {dropdownOpen[index] && (
+                                  <div ref={dropdownRef} className="position-absolute z-3 area_dropdown">
+                                    {areasForPincode.map((cities, i) => (
+                                      <div key={i}>
+                                        {cities.map((city) => (
+                                          <div className="d-flex align-items-center gap-3 py-1" key={city}>
+                                            <input
+                                              id={city}
+                                              type="checkbox"
+                                              value={city}
+                                              onChange={(e) => {
+                                                const isChecked = e.target.checked;
+                                                const value = e.target.value;
+                                                const newSelectedAreas = isChecked
+                                                  ? [...(area.terretory ?? []), value]
+                                                  : (area.terretory ?? []).filter((selectedCity) => selectedCity !== value);
+                                                handleSelectedAreasChange(index, newSelectedAreas);
+                                                // Log the selected areas
+                                                console.log('Selected Areas:', newSelectedAreas);
+                                              }}
+                                              checked={(area.terretory ?? []).includes(city)}
+                                            />
+                                            <label className="fs-xs fw-400 black w-100" htmlFor={city}>
+                                              {city}
+                                            </label>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="col-1">
+                                <img
+                                  onClick={() => handleDeleteArea(index)}
+                                  className="w-100 cursor_pointer"
+                                  height={48}
+                                  src={deleteiconWithBg}
+                                  alt="deleteiconWithBg"
+                                // onClick={() => handleDeleteArea(index) }
+                                />
+                              </div>
+                            </>
+                          )
+                        })}
                       </div>
                     </div>
                     <br />
@@ -1382,7 +1488,7 @@ const AddProduct = () => {
                       placeholder="6HK3I5"
                       value={sku}
                       id="sku"
-                      onChange={(e) => setSku(e.target.value)}
+                      onChange={handleSkuChange}
                     />
                   </div>
                   {/* 2nd input */}

@@ -153,6 +153,7 @@ const Brands = () => {
         ...updateData,
       });
       setLoading(false);
+      handleResetBrandData()
       toast.success('Brands updated Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -220,6 +221,7 @@ const Brands = () => {
                 onClick={() => {
                   setEditBrand(false)
                   setAddBrand(false)
+                  handleResetBrandData()
                 }}
                 className="cursor_pointer"
                 src={closeIcon}

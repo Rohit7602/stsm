@@ -17,62 +17,17 @@ import "react-toastify/dist/ReactToastify.css";
 import { UseServiceContext } from "../../context/ServiceAreasGetter";
 import Deletepopup from "../popups/Deletepopup";
 import Updatepopup from "../popups/Updatepopup";
+import Loader from "../Loader";
+
+import { useProductsContext } from "../../context/productgetter";
 
 const DeliveryBoyInventory = () => {
-  const { ServiceData, addServiceData, deleteServiceData, updateServiceData } =
-    UseServiceContext();
-  const [addsServicePopup, setAddsServicePopup] = useState(false);
-  const [loaderstatus, setLoaderstatus] = useState(false);
-  const [AreaName, SetAreaName] = useState("");
-  const [postalCode, SetPostalCode] = useState();
-  const [status, setStatus] = useState();
-  const pubref = useRef();
-  const hideref = useRef();
 
-  const [selectedValue, setSelectedValue] = useState("1 Day");
-  const [searchvalue, setSearchvalue] = useState("");
+  const { productData }  = useProductsContext()
+  
 
-  const [deletepopup, setDeletePopup] = useState(false);
-  const [ServiceAreaId, setServiceAreaId] = useState(null);
-  const [ServiceStatus, setServiceStatus] = useState(null);
-  const [statusPopup, setStatusPopup] = useState(false);
-
-  //  edit popup states //
-  const [editServicePopup, setEditServicePopup] = useState(false);
-  const [editServiceName, setEditServiceName] = useState("");
-  const [editServiceDay, setEditServiceDay] = useState("");
-  const [editServiceStatus, setEditServiceStatus] = useState("");
-  const [editPinCode, setEditPinCode] = useState("");
-
-  //
-
-  const [order, setorder] = useState("ASC");
-  const sorting = (col) => {
-    // Create a copy of the data array
-    const sortedData = [...ServiceData];
-
-    if (order === "ASC") {
-      sortedData.sort((a, b) => {
-        const valueA = a[col].toLowerCase();
-        const valueB = b[col].toLowerCase();
-        return valueA.localeCompare(valueB);
-      });
-    } else {
-      // If the order is not ASC, assume it's DESC
-      sortedData.sort((a, b) => {
-        const valueA = a[col].toLowerCase();
-        const valueB = b[col].toLowerCase();
-        return valueB.localeCompare(valueA);
-      });
-    }
-
-    // Update the order state
-    const newOrder = order === "ASC" ? "DESC" : "ASC";
-    setorder(newOrder);
-
-    // Update the data using the updateData function from your context
-    updateServiceData(sortedData);
-  };
+  const [loaderstatus , setLoaderstatus] = useState(false)
+  const [selectedValue , setSelectedValue] = useState()
 
   // Function to handle the selection of an item
   const handleSelectItem = (value) => {
@@ -80,189 +35,18 @@ const DeliveryBoyInventory = () => {
     setSelectedValue(value);
   };
 
-  // handle reset function start from here
-
-  function handleResetServiceArea() {
-    setSelectedValue("1 Day");
-    SetPostalCode("");
-    SetAreaName("");
-    pubref.current.checked = false;
-    hideref.current.checked = false;
-  }
-
-  /*  *******************************
-    Add New Service  functionality start 
-  *********************************************   **/
-
-  async function HandleSaveServiceAreas(e) {
-    e.preventDefault();
-    if (!AreaName && !postalCode && !status) {
-      alert("Please Fill All Field");
-    } else {
-      setLoaderstatus(true);
-      try {
-        const docRef = await addDoc(collection(db, "ServiceAreas"), {
-          AreaName: AreaName,
-          PostalCode: postalCode,
-          ServiceStatus: status,
-          ExpectedDelivery: selectedValue,
-        });
-
-        addServiceData(docRef);
-        setLoaderstatus(false);
-        toast.success("Category  added Successfully !", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        handleResetServiceArea();
-        setAddsServicePopup(false);
-      } catch (error) {
-        toast.error("Error in Adding Service Areas", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        console.error("error is adding service areas ", error);
-      }
-    }
-  }
-
-  /*  *******************************
-    Add New Service functionality end here  
-  *********************************************   **/
-
-  // Function to handle the selection of an item
-  const handleSelectEditItem = (value) => {
-    // Update the selected value in the state
-    setEditServiceDay(value);
-  };
-
-  /*  *******************************
-    Edit  Service functionality start from  here  
-  *********************************************   **/
-  async function HandleEditSaveServiceAreas(e) {
-    e.preventDefault();
-    try {
-      await updateDoc(doc(db, "ServiceAreas", ServiceAreaId), {
-        AreaName: editServiceName,
-        PostalCode: editPinCode,
-        ServiceStatus: editServiceStatus,
-        ExpectedDelivery: editServiceDay,
-      });
-
-      updateServiceData({
-        ServiceAreaId,
-        AreaName: editServiceName,
-        PostalCode: editPinCode,
-        ServiceStatus: editServiceStatus,
-        ExpectedDelivery: editServiceDay,
-      });
-      toast.success("Service area Updated  Successfully", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } catch (Error) {
-      console.error(Error);
-    }
-    setEditServicePopup(false);
-  }
-
-  /*  *******************************
-    Edit  Service functionality end from  here  
-  *********************************************   **/
-
-  /*  *******************************
-      Delete functionality start 
-   *********************************************   **/
-
-  async function handleDeleteServiceArea(id) {
-    try {
-      await deleteDoc(doc(db, "ServiceAreas", id)).then(() => {
-        deleteServiceData(id);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  /*  *******************************
-      Delete functionality end 
-    *********************************************   **/
-
-  /*  *******************************
-      Change service  status functionality start 
-   *********************************************   **/
-
-  async function handleChangeStatus(id, status) {
-    try {
-      // Toggle the status between 'publish' and 'hidden'
-      const newStatus = status === "live" ? "draft" : "live";
-      await updateDoc(doc(db, "ServiceAreas", id), {
-        ServiceStatus: newStatus,
-      });
-      updateServiceData({ id, ServiceStatus: newStatus });
-      toast.success("Status Changed Successfully", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } catch (error) {
-      toast.error(error, {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      console.log(error);
-    }
-  }
-
-  /*  *******************************
-      Change service  status functionality end 
-    *********************************************   **/
-
-  /*  *******************************
-      checkbox functionality start 
-    *********************************************   **/
-  const [selectAll, setSelectAll] = useState(false);
-
-  useEffect(() => {
-    // Check if all checkboxes are checked
-    const allChecked = ServiceData.every((item) => item.checked);
-    setSelectAll(allChecked);
-  }, [ServiceData]);
-
-  // Main checkbox functionality start from here
-
-  const handleMainCheckboxChange = () => {
-    const updatedData = ServiceData.map((item) => ({
-      ...item,
-      checked: !selectAll,
-    }));
-    updateServiceData(updatedData);
-    setSelectAll(!selectAll);
-  };
-  // Datacheckboxes functionality strat from here
-  const handleCheckboxChange = (index) => {
-    const updatedData = [...ServiceData];
-    updatedData[index].checked = !ServiceData[index].checked;
-    updateServiceData(updatedData);
-
-    // Check if all checkboxes are checked
-    const allChecked = updatedData.every((item) => item.checked);
-    setSelectAll(allChecked);
-  };
+  
+  
 
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
   if (loaderstatus) {
-    return (
-      <>
-        <div className="loader">
-          <h3 className="heading">Uploading Data... Please Wait</h3>
-        </div>
-      </>
-    );
+    return (<Loader></Loader>)
+    
   } else {
     return (
       <div className="main_panel_wrapper bg_light_grey w-100">
-        {addsServicePopup || editServicePopup ? (
-          <div className="bg_black_overlay"></div>
-        ) : (
-          ""
-        )}
         <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
           <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between ">
             <div className="d-flex align-items-center mw-300 p-2">
@@ -366,15 +150,14 @@ const DeliveryBoyInventory = () => {
                   <thead className="w-100 table_head">
                     <tr className="product_borderbottom">
                       <th
-                        onClick={() => sorting("AreaName")}
                         className="py-3 ps-3 w-100 cursor_pointer"
                       >
                         <div className="d-flex align-items-center gap-3 min_width_300">
                           <label class="check1 fw-400 fs-sm black mb-0">
                             <input
                               type="checkbox"
-                              checked={selectAll}
-                              onChange={handleMainCheckboxChange}
+                              // checked={selectAll}
+                              // onChange={handleMainCheckboxChange}
                             />
                             <span class="checkmark"></span>
                           </label>
@@ -398,7 +181,7 @@ const DeliveryBoyInventory = () => {
                         <h3 className="fs-sm fw-400 black mb-0">Brand</h3>
                       </th>
                       <th
-                        onClick={() => sorting("ServiceStatus")}
+                      
                         className="mx_140 cursor_pointer"
                       >
                         <p className="fw-400 fs-sm black mb-0 ms-2">Quantity</p>
@@ -441,22 +224,7 @@ const DeliveryBoyInventory = () => {
                 <ToastContainer />
                 {/* <div className=""></div> */}
               </div>
-              {deletepopup ? (
-                <Deletepopup
-                  showPopup={setDeletePopup}
-                  handleDelete={() => handleDeleteServiceArea(ServiceAreaId)}
-                  itemName="ServiceArea"
-                />
-              ) : null}
-              {statusPopup ? (
-                <Updatepopup
-                  statusPopup={setStatusPopup}
-                  handelStatus={() =>
-                    handleChangeStatus(ServiceAreaId, ServiceStatus)
-                  }
-                  itemName="ServiceArea"
-                />
-              ) : null}
+              
             </div>
           </div>
         </div>

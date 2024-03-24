@@ -220,19 +220,17 @@ const DeliveryManList = () => {
                           </td>
                           <td className="px-2 mx_140">
                             <h3
-                              className={`fs-sm fw-400 ${
-                                data.status === 'online' ? 'status_btn_green' : 'status_btn_red'
-                              } mb-0`}>
+                              className={`fs-sm fw-400 ${data.status === 'online' ? 'status_btn_green' : 'status_btn_red'
+                                } mb-0`}>
                               {data.status}
                             </h3>
                             {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">online</h3> */}
                           </td>
                           <td className="ps-3 mx_160">
                             <h3
-                              className={`fs-sm fw-400 status_btn_green mb-0  ${
-                                data.isVerified == true ? 'status_btn_green' : 'status_btn_red'
-                              } `}>
-                              {data.isVerified === true ? 'Approved' : 'Rejected'}
+                              className={`fs-sm fw-400 status_btn_green mb-0  ${data.is_verified == true ? 'status_btn_green' : 'status_btn_red'
+                                } `}>
+                              {data.is_verified === true ? 'Approved' : 'Rejected'}
                             </h3>
                             {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">Rejected</h3> */}
                           </td>
@@ -249,10 +247,15 @@ const DeliveryManList = () => {
                             </h3>
                           </td>
                           <td className="text-center mx_100">
-                            <Link to={`inventory/${data.uid}`}>
-                              {' '}
-                              <ActionIcon />
-                            </Link>
+                            {data.is_verified === true && data.status === "online" ? (
+                              <Link to={`inventory/${data.uid}`}>
+                                <ActionIcon />
+                              </Link>
+                            ) : (
+                              <div>
+                                <ActionIcon />
+                              </div>
+                            )}
                           </td>
                         </tr>
                       );

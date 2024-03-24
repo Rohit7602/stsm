@@ -209,41 +209,51 @@ const Coupons = () => {
                   </div>
                 </div>
 
-                <input
-                  className="popup_coupon_input w-100 fs-xs fw-400 black mt-3"
-                  type="text"
-                  required
-                  id="discount"
-                  value={discount}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (discounttype === 'PERCENTAGE' && value > 100) {
-                      setDiscount(100);
-                    } else {
-                      setDiscount(value);
-                    }
-                  }}
-                  placeholder="Enter Discount Value"
-                />
+                <div className="w-100 mt-3">
+                  <label className="fs-sm fw-400 black mb-0">Discount Value</label>
+                  <input
+                    className="popup_coupon_input w-100 fs-xs fw-400 black mt-1"
+                    type="text"
+                    required
+                    id="discount"
+                    value={discount}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (discounttype === 'PERCENTAGE' && value > 100) {
+                        setDiscount(100);
+                      } else {
+                        setDiscount(value);
+                      }
+                    }}
+                    placeholder="Enter Discount Value"
+                  />
+                </div>
 
-                <input
-                  className="popup_coupon_input w-100 fs-xs fw-400 black mt-3"
-                  type="text"
-                  required
-                  id="descrption"
-                  value={description}
-                  onChange={(e) => setdescription(e.target.value)}
-                  placeholder="Enter Description here"
-                />
-                <input
-                  className="popup_coupon_input w-100 fs-xs fw-400 black mt-3"
-                  type="number"
-                  required
-                  id="couponcount"
-                  value={couponUseCount}
-                  onChange={(e) => setcouponUseCount(e.target.value)}
-                  placeholder="Enter coupon uses count  here"
-                />
+                <div className="w-100 mt-2">
+                  <label className="fs-sm fw-400 black mb-0">Description</label>
+                  <input
+                    className="popup_coupon_input w-100 fs-xs fw-400 black mt-1"
+                    type="text"
+                    required
+                    id="descrption"
+                    value={description}
+                    onChange={(e) => setdescription(e.target.value)}
+                    placeholder="Enter Description here"
+                  />
+                </div>
+
+                <div className="w-100 mt-2">
+                  <label className="fs-sm fw-400 black mb-0">Coupon Count</label>
+                  <input
+                    className="popup_coupon_input w-100 fs-xs fw-400 black mt-1"
+                    type="number"
+                    required
+                    id="couponcount"
+                    value={couponUseCount}
+                    onChange={(e) => setcouponUseCount(e.target.value)}
+                    placeholder="Enter coupon uses count  here"
+                  />
+                </div>
 
                 <div className="row align-items-center ">
                   <div className="col-6">
