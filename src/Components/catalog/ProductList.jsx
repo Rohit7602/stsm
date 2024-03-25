@@ -195,6 +195,9 @@ const ProductList = () => {
         deleteData(id);
       });
       setloading(false)
+      toast.success('Product Deleted Successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     } catch (error) {
       console.log(error);
       setloading(false)
@@ -213,11 +216,11 @@ const ProductList = () => {
           for (const imageUrl of productData.productImages) {
             const reference = ref(st, imageUrl);
             await deleteObject(reference);
-            console.log(`Image ${imageUrl} deleted from Storage`);
+            // console.log(`Image ${imageUrl} deleted from Storage`);
           }
         }
         await deleteDoc(productRef);
-        console.log(`Product with ID ${id} deleted from Firestore`);
+        // console.log(`Product with ID ${id} deleted from Firestore`);
         deleteData(id)
       }
       setloading(false);
@@ -257,7 +260,7 @@ const ProductList = () => {
       {deletepopup === true || statusPopup === true ? (
         <div className="bg_black_overlay"></div>
       ) : null}
-      
+
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
         <div className="d-flex  align-items-center flex-column flex-sm-row  gap-2 gap-sm-0 justify-content-between">
           <div className="d-flex">
@@ -392,10 +395,15 @@ const ProductList = () => {
                         </td>
                         <td className="p-3 mw_160">
                           <h3 className="fs-sm fw-400 black mb-0">
-                            <span className="d-flex align-items-center gap-1">
+                            {value.brand ? (
+                              <span className="d-flex align-items-center gap-1">
+                                <img style={{ height: '20px', width: '20px' }} src={value.brand.image} alt="brandImg" />
+                                <p className="fs-sm fw-400 black m-0">{value.brand.name}</p>
+                              </span>
+                            ) : <span className="d-flex align-items-center gap-1">
                               <img src={brandImg} alt="brandImg" />
                               <p className="fs-sm fw-400 black m-0">Brand name</p>
-                            </span>
+                            </span>}
                           </h3>
                         </td>
                         <td className="p-3 mw_130">
@@ -415,11 +423,11 @@ const ProductList = () => {
                           </h3>
                         </td>
                         <td className="p-3 mw_130">
-                          <h3 className={`fs-sm fw-400 black mb-0 ms-2 `}>{value.status}</h3>
+                          <h3 className={`fs-sm fw-400 black mb-0 ms-2 ${value.status === 'hidden' ? 'text-danger' : null} `}>{value.status}</h3>
                         </td>
                         <td className="p-3 mx_100">
                           <h3 className="fs-sm fw-400 black mb-0">
-                            ₹ {value.varients[0].originalPrice}
+                            ₹{value.varients[0].originalPrice}
                           </h3>
                         </td>
                         <td className="text-center mx_100">

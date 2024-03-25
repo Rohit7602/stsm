@@ -40,7 +40,7 @@ const AddProduct = () => {
 
 
   const skuList = productData.map(product => product.sku);
-  console.log("sku list is ", skuList)
+  // console.log("sku list is ", skuList)
 
 
 
@@ -82,7 +82,7 @@ const AddProduct = () => {
   const [previousCategoryId, setPreviousCategoryId] = useState(null);
   const [previousCategoryname, setpreviousCategoryname] = useState(null);
   const [previousCategoryParentId, setpreviousCategoryParentId] = useState(null);
-
+  const [brandid, setbrandid] = useState(null)
   const [selectBrand, setSelectBrand] = useState(null)
 
   const handleSelectCategory = (category) => {
@@ -93,6 +93,7 @@ const AddProduct = () => {
 
   const handleSelectBrand = (brand) => {
     setSelectBrand(brand)
+    setbrandid(brand.id)
   }
 
 
@@ -408,6 +409,9 @@ const AddProduct = () => {
           noOfProducts: increment(1),
         });
 
+        await updateDoc(doc(db, 'Brands', brandid), {
+          totalProducts: increment(1)
+        })
         toast.success('Product added Successfully !', {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -474,6 +478,7 @@ const AddProduct = () => {
         setpreviousCategoryname(items.categories.name);
         setTax(items.Tax);
 
+
         const allVariants = [];
         items.varients.map((itm) => {
           allVariants.push({
@@ -489,16 +494,24 @@ const AddProduct = () => {
           setUnitType(allVariants[0].unitType);
         }
 
+        // const allAreas = []
+        // items.serviceable_areas.map((item) => {
+        //   allAreas.push({
+        //     area_name: item.area_name,
+        //     pincode: item.pincode,
+        //     terretory: item.terretory
+        //   })
+        // })
+        // setAddMoreArea(allAreas)
         // Set the state with all the variants
         setVariants(allVariants);
-        console.log(allVariants);
       });
     }
   }, []);
 
   useEffect(() => {
     if (storeColors && storeColors.length > 0) {
-      console.log('if working ');
+      // console.log('if working ');
       setColorVar(true);
     } else {
       setColorVar(false); // Uncheck the "Yes" checkbox if there are no colors
@@ -547,7 +560,7 @@ const AddProduct = () => {
         }
       }
 
-      console.log('previoisdCategoryId', previousCategoryId);
+      // console.log('previoisdCategoryId', previousCategoryId);
 
       const updateDatas = {
         name: name,
@@ -595,14 +608,14 @@ const AddProduct = () => {
       // Check if the selected category is different from the existing category
       if (selectedCategoryId === null) {
       } else {
-        console.log('update if working here ', selectedCategoryId);
+        // console.log('update if working here ', selectedCategoryId);
         updateDatas.categories = {
           parent_id: selectedCategory.cat_ID,
           id: selectedCategory.id,
           name: selectedCategory.title,
         };
         let existingCategoryId = updateDatas.categories.id; // Update existingCategoryId
-        console.log('existing id ', existingCategoryId);
+        // console.log('existing id ', existingCategoryId);
 
         await updateDoc(doc(db, 'sub_categories', previousCategoryId), {
           noOfProducts: increment(-1),
@@ -825,7 +838,7 @@ const AddProduct = () => {
                                                   : (area.terretory ?? []).filter((selectedCity) => selectedCity !== value);
                                                 handleSelectedAreasChange(index, newSelectedAreas);
                                                 // Log the selected areas
-                                                console.log('Selected Areas:', newSelectedAreas);
+                                                // console.log('Selected Areas:', newSelectedAreas);
                                               }}
                                               checked={(area.terretory ?? []).includes(city)}
                                             />
@@ -947,7 +960,7 @@ const AddProduct = () => {
                                               <div className="d-flex justify-content-between">
                                                 <p
                                                   onClick={(e) => {
-                                                    console.log(e.target.innerHTML);
+                                                    // console.log(e.target.innerHTML);
                                                     setVariants((prevVariants) =>
                                                       prevVariants.map((v, i) =>
                                                         i === index

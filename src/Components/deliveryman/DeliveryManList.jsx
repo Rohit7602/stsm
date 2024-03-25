@@ -36,15 +36,15 @@ const DeliveryManList = () => {
 
     if (order === 'ASC') {
       sortedData.sort((a, b) => {
-        const valueA = a[col].toLowerCase();
-        const valueB = b[col].toLowerCase();
+        const valueA = getProperty(a, col).toLowerCase();
+        const valueB = getProperty(b, col).toLowerCase();
         return valueA.localeCompare(valueB);
       });
     } else {
       // If the order is not ASC, assume it's DESC
       sortedData.sort((a, b) => {
-        const valueA = a[col].toLowerCase();
-        const valueB = b[col].toLowerCase();
+        const valueA = getProperty(a, col).toLowerCase();
+        const valueB = getProperty(b, col).toLowerCase();
         return valueB.localeCompare(valueA);
       });
     }
@@ -56,6 +56,20 @@ const DeliveryManList = () => {
     // Update the data using the updateData function from your context
     updateDeliveryManData(sortedData);
   };
+
+  const getProperty = (obj, path) => {
+    const keys = path.split('.');
+    let result = obj;
+    for (let key of keys) {
+      result = result[key];
+    }
+    return result;
+  };
+
+  
+
+
+
   const [selectAll, setSelectAll] = useState(false);
 
   useEffect(() => {
@@ -125,7 +139,7 @@ const DeliveryManList = () => {
                   <thead className="w-100 table_head">
                     <tr className="product_borderbottom">
                       <th
-                        onClick={() => sorting('AreaName')}
+                        onClick={() => sorting('basic_info.name')}
                         className="py-3 ps-3  cursor_pointer ">
                         <div className="d-flex align-items-center gap-3 ">
                           <label class="check1 fw-400 fs-sm black mb-0">
@@ -156,7 +170,7 @@ const DeliveryManList = () => {
                         <h3 className="fs-sm fw-400 black mb-0">Total Order’s</h3>
                       </th>
                       <th
-                        onClick={() => sorting('ServiceStatus')}
+                        onClick={() => sorting('status')}
                         className="mx_140 cursor_pointer">
                         <p className="fw-400 fs-sm black mb-0 ms-2">
                           Status
@@ -228,9 +242,9 @@ const DeliveryManList = () => {
                           </td>
                           <td className="ps-3 mx_160">
                             <h3
-                              className={`fs-sm fw-400 status_btn_green mb-0  ${data.is_verified == true ? 'status_btn_green' : 'status_btn_red'
+                              className={`fs-sm fw-400 status_btn_green mb-0  ${data.profile_status === 'NEW' ? ' on_credit_bg' : data.profile_status === "APPROVED" ? 'green stock_bg ' : 'status_btn_red'
                                 } `}>
-                              {data.is_verified === true ? 'Approved' : 'Rejected'}
+                              {data.profile_status === 'NEW' ? 'PENDING' : data.profile_status}
                             </h3>
                             {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">Rejected</h3> */}
                           </td>
