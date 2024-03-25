@@ -381,7 +381,7 @@ const OrderList = () => {
                                     ? 'fs-sm fw-400 mb-0 processing_skyblue'
                                     : orderTableData.status.toString().toLowerCase() === 'delivered'
                                       ? 'fs-sm fw-400 mb-0 green stock_bg'
-                                    : 'fs-sm fw-400 mb-0 black status_btn_red'
+                                    : 'fs-sm fw-400 mb-0 black cancel_gray'
                                 }`}>
                               {orderTableData.status}
                             </p>

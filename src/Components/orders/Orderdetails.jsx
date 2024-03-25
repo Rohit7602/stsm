@@ -9,7 +9,7 @@ import orderDeliveryAssign from '../../Images/svgs/order-delivery-assign.svg';
 import orderPlaceed from '../../Images/svgs/order-placed.svg';
 import orderReject from '../../Images/svgs/order-reject.svg';
 import whitesaveicon from '../../Images/svgs/white_saveicon.svg';
-import orderCanceled from '../../Images/svgs/CANCELLED.svg'
+import orderCanceled from '../../Images/svgs/order_Canceled.svg'
 
 import profile from '../../Images/Png/customer_profile.png';
 import manimage from '../../Images/Png/manimage.jpg';
@@ -263,7 +263,7 @@ export default function NewOrder() {
         );
       case "CANCELLED":
         return (
-          <img style={{ width: "44px", height: "44px" }} src={orderCanceled} alt="orderCanceled" />);
+          <img className="bg-white"  src={orderCanceled} alt="orderCanceled" />);
       default:
         return null;
     }

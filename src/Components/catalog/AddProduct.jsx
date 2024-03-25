@@ -226,8 +226,8 @@ const AddProduct = () => {
 
 
   function handlePincodeChange(index, newPincode) {
-    const filterData = ServiceData.filter((datas) => datas.PostalCode === newPincode)
-    const areaName = filterData[0].AreaName
+    const filterData = ServiceData.filter((datas) => datas.PostalCode === newPincode);
+    const areaName = filterData[0]?.AreaName || '';
     setAddMoreArea((prevVariants) =>
       prevVariants.map((v, i) =>
         i === index ? { ...v, pincode: newPincode, area_name: areaName } : v
