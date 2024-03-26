@@ -12,14 +12,27 @@ import { UseServiceContext } from '../../context/ServiceAreasGetter';
 import Deletepopup from '../popups/Deletepopup';
 import Updatepopup from '../popups/Updatepopup';
 import Loader from '../Loader';
+import { useParams } from 'react-router-dom';
+
 
 import { useProductsContext } from '../../context/productgetter';
 
 const DeliveryBoyInventory = () => {
+  const { id } = useParams()
+  console.log(id)
   const { productData } = useProductsContext();
-
+  const product_names = productData.map((product) => product.name)
+  // console.log("product name is ", product_names)
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [selectedValue, setSelectedValue] = useState();
+  const [productname, setproductname] = useState('');
+  const [varient, setVarient] = useState('');
+  const [quantity, setquantity] = useState('');
+  const [selectedproduct, setselectedProduct] = useState([]);
+  const [AllItems, setAllItems] = useState([]);
+
+
+
 
   // Function to handle the selection of an item
   const handleSelectItem = (value) => {
@@ -27,12 +40,70 @@ const DeliveryBoyInventory = () => {
     setSelectedValue(value);
   };
 
+  useEffect(() => {
+    let filterData = productData.filter((product) => product.name === productname)
+    // console.log("filter data si ", filterData)
+    setselectedProduct(filterData)
+  }, [productname])
+
+  // console.log("selected product is ", selectedproduct)
+
+
+  function HandleAddToVan(e) {
+    e.preventDefault()
+    // console.log("function working here ")
+    setAllItems((prevVariants) => [
+      ...prevVariants,
+      {
+        name: productname,
+        productid: selectedproduct.length > 0 && selectedproduct[0].id,
+        quantity: selectedproduct.length > 0 && quantity,
+        sku: selectedproduct.length > 0 && selectedproduct[0].sku,
+        brand: selectedproduct.length > 0 && selectedproduct[0].brand.name,
+        unitType: selectedproduct.length > 0 && selectedproduct[0].varients[0].unitType,
+        varient: varient
+      },
+    ])
+    setproductname('')
+    setselectedProduct([])
+    setquantity('')
+    setVarient('')
+  }
+
+  // useEffect(() => {
+  //   console.log("items is ", AllItems)
+  // }, [AllItems])
+
+  async function UpdateEntry(e) {
+    e.preventDefault()
+    if (AllItems.length === 0) {
+      alert("please add item into van")
+    } else {
+      try {
+        setLoaderstatus(true)
+        for (let items of AllItems) {
+          await addDoc(collection(db, `Delivery/${id}/Van`), items);
+        }
+        setLoaderstatus(false)
+        toast.success('Product added Successfully !', {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      } catch (error) {
+        setLoaderstatus(false)
+        console.log("Error in Adding Data to Van", error)
+      }
+    }
+  }
+
+
+
+
+
+
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
-  const [productname, setproductname] = useState('');
-  const [varient, setVarient] = useState('');
-  const [quantity, setquantity] = useState('');
+
   if (loaderstatus) {
     return <Loader></Loader>;
   } else {
@@ -50,9 +121,9 @@ const DeliveryBoyInventory = () => {
               </div>
             </div>
             <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
-              <Link className="update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
+              <button onClick={UpdateEntry} className=" outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
                 Update Entry
-              </Link>
+              </button>
             </div>
           </div>
           <div className="  gap-2 gap-sm-0  p-3 mt-3 bg-white product_shadow mt-4 ">
@@ -86,51 +157,28 @@ const DeliveryBoyInventory = () => {
                       </svg>
                     </div>
                   </button>
-                  <ul
-                    className="dropdown-menu delivery_man_dropdown w-100"
-                    aria-labelledby="dropdownMenuButton3">
-                    <li>
-                      <div
-                        onClick={() => setproductname('product')}
-                        className="dropdown-item py-2"
-                        href="#">
-                        <p className="fs-sm fw-400 balck m-0">Product</p>
-                      </div>
-                    </li>
-                    <li>
-                      <div
-                        onClick={() => setproductname('product')}
-                        className="dropdown-item py-2"
-                        href="#">
-                        <p className="fs-sm fw-400 balck m-0">Product</p>
-                      </div>
-                    </li>
-                    <li>
-                      <div
-                        onClick={() => setproductname('product')}
-                        className="dropdown-item py-2"
-                        href="#">
-                        <p className="fs-sm fw-400 balck m-0">Product</p>
-                      </div>
-                    </li>
-                    <li>
-                      <div
-                        onClick={() => setproductname('product')}
-                        className="dropdown-item py-2"
-                        href="#">
-                        <p className="fs-sm fw-400 balck m-0">Product</p>
-                      </div>
-                    </li>
+                  <ul className="dropdown-menu delivery_man_dropdown w-100" aria-labelledby="dropdownMenuButton3">
+                    {product_names.map((names) => {
+                      return (
+                        <li>
+                          <div
+                            onClick={() => setproductname(names)}
+                            className="dropdown-item py-2">
+                            <p className="fs-sm fw-400 balck m-0">{names}</p>
+                          </div>
+                        </li>
+                      )
+                    })}
                   </ul>
                 </div>
               </div>
               <div className="col-6">
                 <div className="d-flex align-items-center justify-content-between">
                   <div className="d-flex align-items-center gap-5 ms-5">
-                    <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">SKU : 9H8967H</p>
-                    <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">Brand : Brand Name</p>
+                    <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">SKU : {selectedproduct.length === 0 ? 'N/A' : selectedproduct[0].sku}</p>
+                    <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">Brand :{selectedproduct.length === 0 ? 'N/A' : selectedproduct[0].brand.name}</p>
                   </div>
-                  <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">Unit : KG</p>
+                  <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">Unit : {selectedproduct.length === 0 ? 'N/A' : selectedproduct[0].varients[0].unitType}</p>
                 </div>
               </div>
             </div>
@@ -167,38 +215,18 @@ const DeliveryBoyInventory = () => {
                   <ul
                     className="dropdown-menu delivery_man_dropdown w-100"
                     aria-labelledby="dropdownMenuButton3">
-                    <li>
-                      <div
-                        onClick={() => setVarient('product')}
-                        className="dropdown-item py-2"
-                        href="#">
-                        <p className="fs-sm fw-400 balck m-0">Product</p>
-                      </div>
-                    </li>
-                    <li>
-                      <div
-                        onClick={() => setVarient('product')}
-                        className="dropdown-item py-2"
-                        href="#">
-                        <p className="fs-sm fw-400 balck m-0">Product</p>
-                      </div>
-                    </li>
-                    <li>
-                      <div
-                        onClick={() => setVarient('product')}
-                        className="dropdown-item py-2"
-                        href="#">
-                        <p className="fs-sm fw-400 balck m-0">Product</p>
-                      </div>
-                    </li>
-                    <li>
-                      <div
-                        onClick={() => setVarient('product')}
-                        className="dropdown-item py-2"
-                        href="#">
-                        <p className="fs-sm fw-400 balck m-0">Product</p>
-                      </div>
-                    </li>
+                    {selectedproduct.length > 0 && selectedproduct[0].varients.map((name) => {
+                      return (
+                        <li>
+                          <div
+                            onClick={() => setVarient(name.VarientName)}
+                            className="dropdown-item py-2"
+                            href="#">
+                            <p className="fs-sm fw-400 balck m-0">{name.VarientName}</p>
+                          </div>
+                        </li>
+                      )
+                    })}
                   </ul>
                 </div>
                 {/* <div className="dropdown w-100">
@@ -270,13 +298,15 @@ const DeliveryBoyInventory = () => {
                   className="w-100 quantity_bg outline_none"
                   type="text"
                   placeholder="Quantity"
+                  value={quantity}
+                  onChange={(e) => setquantity(e.target.value)}
                 />
               </div>
               <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
-                <Link className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
+                <button onClick={HandleAddToVan} className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
                   <img className="me-1" width={20} src={addicon} alt="add-icon" />
                   Add to Van
-                </Link>
+                </button>
               </div>
             </div>
           </div>
@@ -292,8 +322,8 @@ const DeliveryBoyInventory = () => {
                           <label className="check1 fw-400 fs-sm black mb-0">
                             <input
                               type="checkbox"
-                              // checked={selectAll}
-                              // onChange={handleMainCheckboxChange}
+                            // checked={selectAll}
+                            // onChange={handleMainCheckboxChange}
                             />
                             <span className="checkmark"></span>
                           </label>
@@ -328,8 +358,8 @@ const DeliveryBoyInventory = () => {
                           <label className="check1 fw-400 fs-sm black mb-0">
                             <input
                               type="checkbox"
-                              // checked={data.checked || false}
-                              // onChange={() => handleCheckboxChange(index)}
+                            // checked={data.checked || false}
+                            // onChange={() => handleCheckboxChange(index)}
                             />
                             <span className="checkmark"></span>
                           </label>
