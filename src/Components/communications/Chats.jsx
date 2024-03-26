@@ -105,47 +105,47 @@ export default function Chats() {
             })}
           </div>
         </div>
-        {/* <div style={{ width: 'calc(100% - 500px)' }} className="bg-white">
-          <div className="chat_height">
-            <div className="d-flex flex-column align-items-center justify-content-center h-100">
-              <img className="w-50" src={chatBg} alt="chatBg" />
-              <p className="fs-lg fw-400 text-center mb-0">
-                Click to select a Conversation or,
-                <br />
-                <span className="color_blue">Start a New Conversation</span>
-              </p>
-            </div>
-          </div>
-        </div> */}
+
         <div style={{ width: 'calc(100% - 500px)', padding: '0 30px' }} className="bg-white">
           <div className="chat_height">
-            <div className="d-flex flex-column justify-content-end h-100 w-100">
-              {currentChat.length > 0 &&
-                currentChat[0].msg.map((msg, index) => {
-                  console.log(msg);
-                  if (msg.sender === 'admin') {
-                    return (
-                      <div className="d-flex justify-content-end mt-2">
-                        <Sender msg={msg} />
-                      </div>
-                    );
-                  } else {
-                    return <Reciver msg={msg} />;
-                  }
-                })}
-              <div className="w-100 d-flex align-items-center gap-2 justify-content-between mt-4 pt-1">
-                <input
-                  className="w-100 mb-2 msg_send_input fs-sm fw-400 black"
-                  placeholder="Enter your message"
-                  type="text"
-                />
-                <label htmlFor="chat">
-                  <img className="cursor_pointer" src={attechFile} alt="attechFile" />
-                </label>
-                <input id="chat" type="file" hidden />
-                <img className="cursor_pointer" src={sendMsg} alt="sendMsg" />
+            {currentChat.length === 0 ? (
+              <div className="d-flex flex-column align-items-center justify-content-center h-100">
+                <img className="w-50" src={chatBg} alt="chatBg" />
+                <p className="fs-lg fw-400 text-center mb-0">
+                  Click to select a Conversation or,
+                  <br />
+                  <span className="color_blue">Start a New Conversation</span>
+                </p>
               </div>
-            </div>
+            ) : (
+              <div className="d-flex flex-column justify-content-end h-100 w-100">
+                {currentChat.length > 0 &&
+                  currentChat[0].msg.map((msg, index) => {
+                    console.log(msg);
+                    if (msg.sender === 'admin') {
+                      return (
+                        <div className="d-flex justify-content-end mt-2">
+                          <Sender msg={msg} />
+                        </div>
+                      );
+                    } else {
+                      return <Reciver msg={msg} />;
+                    }
+                  })}
+                <div className="w-100 d-flex align-items-center gap-2 justify-content-between mt-4 pt-1">
+                  <input
+                    className="w-100 mb-2 msg_send_input fs-sm fw-400 black"
+                    placeholder="Enter your message"
+                    type="text"
+                  />
+                  <label htmlFor="chat">
+                    <img className="cursor_pointer" src={attechFile} alt="attechFile" />
+                  </label>
+                  <input id="chat" type="file" hidden />
+                  <img className="cursor_pointer" src={sendMsg} alt="sendMsg" />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
