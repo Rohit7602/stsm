@@ -38,6 +38,7 @@ import Coupons from './Components/marketing/Coupons';
 import InvoiceBill from './Components/invoices/InvoiceBill';
 import Chats from './Components/communications/Chats';
 import Complains from './Components/communications/Complains';
+import ComplainDetails from './Components/communications/ComplainDetails';
 
 function App() {
   const { logoutUser } = useUserAuth();
@@ -177,10 +178,11 @@ function App() {
                         <Route path="communications">
                           <Route path="chats" element={<Chats />} />
                           <Route path="complains" element={<Complains />} />
+                          <Route path="complaindetails" element={<ComplainDetails />} />
                         </Route>
                         <Route path="privacypolicy" element={<PrivacyPolicy />} />
                         <Route path="setting">
-                          <Route path="brands" element={<Brands/>} />
+                          <Route path="brands" element={<Brands />} />
                           {/* <Route path="products" element={< />} /> */}
                         </Route>
                         <Route path="term" element={<TermConditions />} />

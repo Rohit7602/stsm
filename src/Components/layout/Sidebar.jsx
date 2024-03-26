@@ -343,7 +343,11 @@ function Sidebar(props) {
                   onClick={() => toggleDropdown('communications')}
                   to="marketing"
                   className={`w-100 cursor_pointer ${
-                    path.pathname === '/communications/chats' ? 'active' : null
+                    path.pathname === '/communications/chats' ||
+                    path.pathname === '/communications/complains' ||
+                    path.pathname === '/communications/complaindetails'
+                      ? 'active'
+                      : null
                   }`}>
                   <div className="d-flex align-items-center w-100 dash_links ps-3">
                     <div className="d-flex align-items-center w-100">
@@ -369,6 +373,11 @@ function Sidebar(props) {
                     <li>
                       <NavLink className="dash_links_inner" to="communications/chats">
                         <h3 className="fs-xs fw-400  white mb-0">Chats</h3>
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink className="dash_links_inner" to="communications/complains">
+                        <h3 className="fs-xs fw-400  white mb-0">Complains</h3>
                       </NavLink>
                     </li>
                   </ul>

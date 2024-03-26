@@ -966,9 +966,18 @@ body {
 }
 
 .quantity_bg {
-  background-color: #f4f4f4;
-  padding: 10px 15px 10px 15px;
-  border-radius: 50px;
+  background-color: #f4f4f4 !important;
+  padding: 10px 15px 10px 15px !important;
+  border-radius: 50px !important;
+  border: 0;
+  width: 100% !important;
+}
+.delivery_man_dropdown {
+  max-height: 300px !important;
+  overflow-y: scroll;
+}
+delivery_man_dropdown::-webkit-scrollbar {
+  width: 4px !important;
 }
 
 .add_varient_btn {
@@ -2160,7 +2169,103 @@ min_width_230 {
   width: 100%;
   cursor: pointer;
 }
+.comm_details_btn {
+  padding: 10px;
+  width: 68px;
+  border-radius: 10px;
+  background-color: #41a41e;
+  border: 0;
+  margin-top: 10px;
+}
+.comm_resolve_btn {
+  padding: 10px;
+  width: 68px;
+  border-radius: 10px;
+  background-color: #3874ff;
+  border: 0;
+}
+.comm_delete_btn {
+  padding: 10px;
+  width: 68px;
+  border-radius: 10px;
+  background-color: #fd1010;
+  border: 0;
+  margin-top: 10px;
+}
+.complain_dd .dropdown-menu {
+  max-width: 88px !important;
+  --bs-dropdown-min-width: 5rem !important;
+  z-index: 1;
+  text-align: center;
+}
+.mx_580 {
+  min-width: 580px;
+}
+.mx_125 {
+  max-width: 125px;
+  width: 125px;
+}
+.complain_heading {
+  padding: 10px 20px;
+  background-color: #3874ff1a;
+}
+.complain_resolved {
+  padding: 5px 15px;
+  border: 0.71px solid var(--color-green);
+  border-radius: 5px;
+  background-color: #3ab5264d;
+  display: inline-block;
+}
+.complain_pending {
+  padding: 5px 15px;
+  border: 0.71px solid #8d8f94;
+  border-radius: 5px;
+  color: #8d8f94;
+  background-color: #8d8f944d;
+  display: inline-block;
+}
+.complain_table {
+  background-color: red !important;
+}
+.reply_btn {
+  border: 0;
+  outline: 0;
+  background-color: #d9d9d9;
+  padding: 10px;
+  border-radius: 8px;
+}
+.resolve_btn {
+  border: 0;
+  outline: 0;
+  background-color: var(--color-green);
+  padding: 10px;
+  border-radius: 8px;
+}
+.complian_Reply_input {
+  background-color: #dddddd;
+  padding: 15px 20px 39px 20px;
+  border-radius: 10px;
+  resize: none;
+  height: 120px;
+  width: 100%;
+  border: none;
+  outline: none;
+}
+.w_500 {
+  width: 500px;
+}
+.chat_profile {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+}
 /* ===========Medgitia-query========== */
+@media (max-width: 1400px) {
+  .mx_xxl_580 {
+    max-width: 580px !important;
+    width: 580px !important;
+  }
+}
 @media (max-width: 1199.98px) {
   :root {
     --fs-xxs: 12px;
