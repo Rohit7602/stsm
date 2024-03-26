@@ -84,7 +84,9 @@ const AddProduct = () => {
   const [previousCategoryParentId, setpreviousCategoryParentId] = useState(null);
   const [brandid, setbrandid] = useState(null)
   const [selectBrand, setSelectBrand] = useState(null)
-
+  const [previousbrandId, setPreviousbrandId] = useState(null)
+  const [previousbrandName, setPreviousbrandName] = useState(null)
+  const [previousbrandImage, setPreviousbrandImage] = useState(null)
   const handleSelectCategory = (category) => {
     setSearchvalue('');
     setSelectedCategory(category);
@@ -95,9 +97,6 @@ const AddProduct = () => {
     setSelectBrand(brand)
     setbrandid(brand.id)
   }
-
-
-
 
   const [addMoreArea, setAddMoreArea] = useState([
     {
@@ -457,52 +456,58 @@ const AddProduct = () => {
   useEffect(() => {
     if (filterdata) {
       filterdata.map((items) => {
-        setName(items.name);
-        setShortDes(items.shortDescription);
-        setLongDes(items.longDescription);
-        setStatus(items.status);
-        setTotalStock(items.totalStock);
-        setSku(items.sku);
-        // console.log(items.categories)
-        setisVarient(items.isMultipleVariant);
-        setVariantsNAME(items.varients.VarientName);
-        setSelectedCategory(items.categories.name);
-        setImageUpload22(items.productImages);
-        setDeliveryCharges(items.DeliveryCharge);
-        setServiceCharge(items.ServiceCharge);
-        setSalesmanComssion(items.SalesmanCommission);
-        setStockCount(items.stockAlert);
-        setStoreColors(items.colors);
-        setPreviousCategoryId(items.categories.id);
-        setpreviousCategoryParentId(items.categories.parent_id);
-        setpreviousCategoryname(items.categories.name);
-        setTax(items.Tax);
-
+        if (items.name) setName(items.name);
+        if (items.shortDescription) setShortDes(items.shortDescription);
+        if (items.longDescription) setLongDes(items.longDescription);
+        if (items.status) setStatus(items.status);
+        if (items.totalStock) setTotalStock(items.totalStock);
+        if (items.sku) setSku(items.sku);
+        if (items.isMultipleVariant) setisVarient(items.isMultipleVariant);
+        if (items.varients && items.varients.VarientName) setVariantsNAME(items.varients.VarientName);
+        if (items.categories && items.categories.name) setSelectedCategory(items.categories.name);
+        if (items.productImages) setImageUpload22(items.productImages);
+        if (items.DeliveryCharge) setDeliveryCharges(items.DeliveryCharge);
+        if (items.ServiceCharge) setServiceCharge(items.ServiceCharge);
+        if (items.SalesmanCommission) setSalesmanComssion(items.SalesmanCommission);
+        if (items.stockAlert) setStockCount(items.stockAlert);
+        if (items.colors) setStoreColors(items.colors);
+        if (items.categories && items.categories.id) setPreviousCategoryId(items.categories.id);
+        if (items.categories && items.categories.parent_id) setpreviousCategoryParentId(items.categories.parent_id);
+        if (items.categories && items.categories.name) setpreviousCategoryname(items.categories.name);
+        if (items.brand && items.brand.id) setPreviousbrandId(items.brand.id);
+        if (items.brand && items.brand.name) setPreviousbrandName(items.brand.name);
+        if (items.brand && items.brand.image) setPreviousbrandImage(items.brand.image);
+        if (items.brand && items.brand.name) setSelectBrand(items.brand.name);
+        if (items.Tax) setTax(items.Tax);
 
         const allVariants = [];
-        items.varients.map((itm) => {
-          allVariants.push({
-            VarientName: itm.VarientName,
-            originalPrice: itm.originalPrice,
-            discountType: itm.discountType,
-            discount: itm.discount,
-            unitType: itm.unitType,
+        if (items.varients) {
+          items.varients.map((itm) => {
+            allVariants.push({
+              VarientName: itm.VarientName,
+              originalPrice: itm.originalPrice,
+              discountType: itm.discountType,
+              discount: itm.discount,
+              unitType: itm.unitType,
+            });
           });
-        });
 
-        if (allVariants.length == 1) {
-          setUnitType(allVariants[0].unitType);
+          if (allVariants.length == 1) {
+            setUnitType(allVariants[0].unitType);
+          }
         }
 
-        // const allAreas = []
-        // items.serviceable_areas.map((item) => {
-        //   allAreas.push({
-        //     area_name: item.area_name,
-        //     pincode: item.pincode,
-        //     terretory: item.terretory
-        //   })
-        // })
-        // setAddMoreArea(allAreas)
+        const allAreas = []
+        if (items.serviceable_areas) {
+          items.serviceable_areas.map((item) => {
+            allAreas.push({
+              area_name: item.area_name,
+              pincode: item.pincode,
+              terretory: item.terretory
+            });
+          });
+          setAddMoreArea(allAreas);
+        }
         // Set the state with all the variants
         setVariants(allVariants);
       });
@@ -583,9 +588,9 @@ const AddProduct = () => {
         colors: storeColors,
         isMultipleVariant: isvarient === true,
         brand: {
-          id: selectBrand.id,
-          name: selectBrand.name,
-          image: selectBrand.image
+          id: previousbrandId,
+          name: previousbrandName,
+          image: previousbrandImage
         },
         Tax,
         ...(isvarient === false
@@ -603,6 +608,10 @@ const AddProduct = () => {
           : {
             varients: variants,
           }),
+
+        serviceable_areas: addMoreArea,
+
+
       };
 
       // Check if the selected category is different from the existing category
@@ -626,6 +635,23 @@ const AddProduct = () => {
         });
       }
 
+
+      if (brandid === null) {
+      } else {
+        updateDatas.brand = {
+          name: selectBrand.name,
+          image: selectBrand.image,
+          id: selectBrand.id
+        }
+
+        let existingBrandid = updateDatas.brand.id
+        await updateDoc(doc(db, 'Brands', previousbrandId), {
+          totalProducts: increment(-1),
+        });
+        await updateDoc(doc(db, 'Brands', existingBrandid), {
+          totalProducts: increment(1),
+        });
+      }
       await updateDoc(doc(db, 'products', ProductsID), updateDatas);
       updateProductData({
         ProductsID,
@@ -635,7 +661,6 @@ const AddProduct = () => {
       toast.success('Product updated Successfully !', {
         position: toast.POSITION.TOP_RIGHT,
       });
-
       navigate('/catalog/productlist');
     } catch (error) {
       setLoaderstatus(false);
