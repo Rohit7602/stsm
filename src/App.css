@@ -1084,6 +1084,14 @@ delivery_man_dropdown::-webkit-scrollbar {
   min-width: 1120px;
 }
 
+.msg_send_input {
+  padding: 20px;
+  background-color: #dddddd;
+  border: 0;
+  outline: 0;
+  border-radius: 50px;
+}
+
 /* CSS */
 .custom-select:hover {
   color: grey !important;
@@ -2258,6 +2266,16 @@ min_width_230 {
   width: 70px;
   height: 70px;
   border-radius: 50%;
+}
+.reciver_msg {
+  background-color: #dddddd;
+  border-radius: 15px 15px 15px 0px;
+  padding: 15px 20px;
+}
+.sender_msg {
+  background-color: #3d464d;
+  border-radius: 15px 15px 0 15px;
+  padding: 15px 20px;
 }
 /* ===========Medgitia-query========== */
 @media (max-width: 1400px) {

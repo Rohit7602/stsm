@@ -21,6 +21,7 @@ import { FaqProvider } from './context/Faq';
 import { UserAuthContextProvider } from './context/Authcontext';
 import { CouponContextProvider } from './context/CouponsGetter';
 import { BrandContextProvider } from './context/BrandsContext';
+import { ChatProvider } from './context/ChatRoom';
 // Put any other imports below so that CSS from your
 // components takes precedence over default styles.
 
@@ -41,7 +42,9 @@ root.render(
                           <DeliverManContextProvider>
                             <CouponContextProvider>
                               <BrandContextProvider>
-                                <App />
+                                <ChatProvider>
+                                  <App />
+                                </ChatProvider>
                               </BrandContextProvider>
                             </CouponContextProvider>
                           </DeliverManContextProvider>
