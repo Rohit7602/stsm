@@ -201,7 +201,7 @@ const DeliveryBoyInventory = () => {
                     </li>
                   </ul>
                 </div>
-                <div className="dropdown w-100">
+                {/* <div className="dropdown w-100">
                   <button
                     style={{ height: '44px' }}
                     className="btn dropdown-toggle w-100 quantity_bg"
@@ -265,7 +265,12 @@ const DeliveryBoyInventory = () => {
                       </div>
                     </li>
                   </ul>
-                </div>
+                </div> */}
+                <input
+                  className="w-100 quantity_bg outline_none"
+                  type="text"
+                  placeholder="Quantity"
+                />
               </div>
               <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
                 <Link className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
