@@ -396,8 +396,8 @@ const ProductList = () => {
                         <td className="p-3 mw_160">
                           <h3 className="fs-sm fw-400 black mb-0">
                             {value.brand ? (
-                              <span className="d-flex align-items-center gap-1">
-                                <img style={{ height: '20px', width: '20px' }} src={value.brand.image} alt="brandImg" />
+                              <span className="d-flex align-items-center gap-2">
+                                <img style={{ height: '40px', width: '40px' }} src={value.brand.image} alt="brandImg" />
                                 <p className="fs-sm fw-400 black m-0">{value.brand.name}</p>
                               </span>
                             ) : <span className="d-flex align-items-center gap-1">
