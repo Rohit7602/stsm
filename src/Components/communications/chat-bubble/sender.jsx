@@ -3,7 +3,7 @@ import { formatDistanceToNow } from 'date-fns';
 export default function sender(props) {
   const formattedDate = formatDistanceToNow(new Date(props.date), { addSuffix: true });
   return (
-    <div style={{ width: '70%' }}>
+    <div style={{ maxWidth: '70%' }}>
       <div className="sender_msg">
         <p className="text-white fs-sm fw-400 m-0">{props.msg}</p>
       </div>

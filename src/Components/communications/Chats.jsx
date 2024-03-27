@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import peopleIcon from '../../Images/svgs/people-icon.svg';
 import chatBg from '../../Images/svgs/chatting.svg';
 import attechFile from '../../Images/svgs/attech-file.svg';
@@ -28,13 +28,13 @@ export default function Chats() {
   const getCustomerData = (customerId) => {
     return customer.find((customer) => customer.id === customerId);
   };
-  const [currentChat, setCurrentChat] = useState([])
+  const [currentChat, setCurrentChat] = useState([]);
   useEffect(() => {
     if (selectedChatRoomId && chatrooms[selectedChatRoomId]) {
       const messages = Object.entries(chatrooms[selectedChatRoomId].Chats).map(([key, value]) => ({
         ...value,
         id: key,
-        chatroomid: selectedChatRoomId
+        chatroomid: selectedChatRoomId,
       }));
       setCurrentChat(messages);
     } else {
@@ -51,7 +51,7 @@ export default function Chats() {
         const message = {
           ...value,
           id: key,
-          chatroomid: chatroomId
+          chatroomid: chatroomId,
         };
         if (message.senderId === chatroomId.split('_')[0] && !message.seen) {
           updates[`/Chatrooms/${chatroomId}/Chats/${message.id}/seen`] = true;
@@ -85,56 +85,13 @@ export default function Chats() {
     setCurrentChat((prevChat) => [...prevChat, newMessage]);
   };
 
-  // const customerChatList = [
-  //   {
-  //     id: 1,
-  //     CustomerDp: peopleDp,
-  //     customerName: 'Vikram Swami',
-  //     msgCount: 4,
-  //     msg: [
-  //       {
-  //         massage: 'My Name is Vikram',
-  //         sender: 'admin',
-  //         read: true,
-  //       },
-  //       {
-  //         massage: 'dnalkdmnaslkdnald',
-  //         sender: 1,
-  //         read: true,
-  //       },
-  //       {
-  //         massage: 'I am fine, How are you',
-  //         sender: 1,
-  //         read: true,
-  //       },
-  //       {
-  //         massage: 'how are you',
-  //         sender: 'admin',
-  //         read: true,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 2,
-  //     CustomerDp: peopleDp,
-  //     customerName: 'Rohit Verma',
-  //     msgCount: 2,
-  //     msg: [
-  //       {
-  //         massage: 'Hii',
-  //         sender: 2,
-  //         read: true,
-  //       },
-  //       {
-  //         massage: 'Hello',
-  //         sender: 'admnin',
-  //         read: true,
-  //       },
-  //     ],
-  //   },
-  // ];
+  const chatContainerRef = useRef(null);
 
-  // let currentChat = customerChatList.filter((item) => activeChat === item.id);
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [currentChat]);
 
   return (
     <div className="chat_container">
@@ -189,7 +146,9 @@ export default function Chats() {
                     </div>
                     <div className="d-flex align-items-end justify-content-between mt-2">
                       <p className="fs-xs fw-400 black m-0">
-                        {lastMessage ? lastMessage.message : 'No Message Yet.'}
+                        {lastMessage
+                          ? lastMessage.message.substring(0, 40) + '...'
+                          : 'No Message Yet.'}
                       </p>
                       {unseenMessageCount > 0 && (
                         <p className="fs-sm fw-500 color_blue msg_count d-flex align-items-center justify-content-center m-0">
@@ -217,7 +176,10 @@ export default function Chats() {
               </div>
             ) : (
               <div className="d-flex flex-column justify-content-end h-100 w-100">
-                <div className='all_bubble' style={{ padding: '0 30px', overflowY: 'scroll'}}>
+                <div
+                  className="all_bubble"
+                  style={{ padding: '0 30px', overflowY: 'scroll' }}
+                  ref={chatContainerRef}>
                   {currentChat.length > 0 &&
                     currentChat.map((msg, index) => {
                       if (msg.senderId === userData.uuid) {
@@ -227,11 +189,17 @@ export default function Chats() {
                           </div>
                         );
                       } else {
-                        return <Reciver msg={msg.message} date={msg.createdAt} />;
+                        return (
+                          <div className="d-flex">
+                            <Reciver msg={msg.message} date={msg.createdAt} />
+                          </div>
+                        );
                       }
                     })}
                 </div>
-                <div className="w-100 d-flex align-items-center gap-2 justify-content-between mt-4 pt-1">
+                <div
+                  style={{ padding: '0 30px' }}
+                  className="w-100 d-flex align-items-center gap-2 justify-content-between mt-3 pt-1">
                   <input
                     className="w-100 mb-2 msg_send_input fs-sm fw-400 black"
                     placeholder="Enter your message"
