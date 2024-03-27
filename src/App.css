@@ -2112,18 +2112,17 @@ min_width_230 {
   border-radius: 5px;
 }
 .reject_delivery {
-  padding: 12px 15px;
+  padding: 10px 15px;
   background-color: var(--color-red);
   border-radius: 10px;
   border: 0;
   color: white;
 }
 .approve_btn {
-  padding: 12px 15px;
-  background-color: var(--color-brown);
+  padding: 10px 15px;
+  background-color: var(--color-green);
   border-radius: 10px;
   border: 0;
-  color: black;
 }
 .add_brand {
   position: fixed;
@@ -2276,6 +2275,48 @@ min_width_230 {
   background-color: #3d464d;
   border-radius: 15px 15px 0 15px;
   padding: 15px 20px;
+}
+.approve_popup {
+  width: 458px;
+  padding: 20px;
+  box-shadow: 0px 1px 3px 0px #00000033;
+  border-radius: 20px;
+  background-color: var(--color-white);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+.approve_popup .input {
+  padding: 10px 15px;
+  border: 0.5px solid #0000004d;
+  width: 100%;
+  margin-top: 10px;
+  outline: 0;
+}
+.approve_popup .input::-webkit-scrollbar {
+  width: 4px;
+}
+.employ_dropdown {
+  padding: 10px 15px !important;
+  border: 0.5px solid #0000004d !important;
+  width: 100% !important;
+  margin-top: 10px !important;
+  height: 46px;
+  border-radius: 0 !important;
+}
+.employ_dropdown.show {
+  border: 0.5px solid #0000004d !important;
+}
+.delivery_man_dropdown::-webkit-scrollbar {
+  width: 3px !important;
+}
+.delivery_man_dropdown::-webkit-scrollbar-track {
+  background-color: rgb(228, 228, 228);
+}
+.fw-600 {
+  font-weight: 600;
 }
 /* ===========Medgitia-query========== */
 @media (max-width: 1400px) {
