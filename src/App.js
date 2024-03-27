@@ -166,7 +166,7 @@ function App() {
                         </Route>
                         <Route path="deliveryman">
                           <Route index element={<DeliveryManList />} />
-                          <Route path="addnewdeliveryman" element={<AddDeliveryMan />} />
+                          <Route path="addnewdeliveryman/:id?" element={<AddDeliveryMan />} />
                           <Route path="deliverymanprofile/:id" element={<DeliverymanProfile />} />
                           {/* <Route path="deliveryorderlist" element={<DeliveryOrderList />} /> */}
                           <Route path="inventory/:id" element={<DeliveryBoyInventory />} />

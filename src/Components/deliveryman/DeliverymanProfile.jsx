@@ -4,7 +4,7 @@ import closeIcon from '../../Images/svgs/closeicon.svg';
 import blackCheck from '../../Images/svgs/check_black_icon.svg';
 import { Col, Row } from 'react-bootstrap';
 import profile_image from '../../Images/Png/customer_profile.png';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Loader from '../Loader';
 import { UseDeliveryManContext } from '../../context/DeliverymanGetter';
 import { updateDoc, doc } from 'firebase/firestore';
@@ -282,22 +282,24 @@ const DeliverymanProfile = () => {
                       Block Profile
                     </button>
                   </button>
-                  <svg
-                    className="cursor_pointer"
-                    width="44"
-                    height="48"
-                    viewBox="0 0 44 48"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <rect width="44" height="48" rx="10" fill="white" />
-                    <path
-                      d="M25 17.9997L28 20.9997M23 31.9997H31M15 27.9997L14 31.9997L18 30.9997L29.586 19.4137C29.9609 19.0386 30.1716 18.53 30.1716 17.9997C30.1716 17.4694 29.9609 16.9608 29.586 16.5857L29.414 16.4137C29.0389 16.0388 28.5303 15.8281 28 15.8281C27.4697 15.8281 26.9611 16.0388 26.586 16.4137L15 27.9997Z"
-                      stroke="black"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
+                  <Link to={`/deliveryman/addnewdeliveryman/${datas.d_id}`}>
+                    <svg
+                      className="cursor_pointer"
+                      width="44"
+                      height="48"
+                      viewBox="0 0 44 48"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <rect width="44" height="48" rx="10" fill="white" />
+                      <path
+                        d="M25 17.9997L28 20.9997M23 31.9997H31M15 27.9997L14 31.9997L18 30.9997L29.586 19.4137C29.9609 19.0386 30.1716 18.53 30.1716 17.9997C30.1716 17.4694 29.9609 16.9608 29.586 16.5857L29.414 16.4137C29.0389 16.0388 28.5303 15.8281 28 15.8281C27.4697 15.8281 26.9611 16.0388 26.586 16.4137L15 27.9997Z"
+                        stroke="black"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </Link>
                 </div>
               ) : (
                 <button className="reset_border">
