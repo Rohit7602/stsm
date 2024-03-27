@@ -69,7 +69,7 @@ export default function NewOrder() {
   }, [id, orders]);
 
 
-  
+
 
   // let DocumentId  = filterData[0].id
   if (!id || filterData.length === 0) {
@@ -156,6 +156,7 @@ export default function NewOrder() {
         status: newStatus,
         updated_at: new Date().toISOString(),
         updated_by: AdminId,
+        description: "Seller confirmed the order. Preparing items for shipment.",
       };
 
       await addDoc(collection(db, `order/${id}/logs`), logData);
@@ -165,6 +166,7 @@ export default function NewOrder() {
         status: 'PROCESSING',
         updated_at: new Date().toISOString(),
         updated_by: AdminId,
+        description: "Order assigned to the delivery partner for shipment. Preparing for dispatch.",
       };
       await addDoc(collection(db, `order/${id}/logs`), AssignDeliver);
       updateData({ id, status: newStatus, invoiceNumber: invoiceNumber });
@@ -190,9 +192,9 @@ export default function NewOrder() {
         status: newStatus,
         updated_at: new Date().toISOString(),
         updated_by: AdminId,
+        description: "Seller rejected the order due to unavailability of item or other reasons. Refund process initiated."
       };
       await addDoc(collection(db, `order/${id}/logs`), logData);
-
       updateData({ id, status: newStatus });
       setLoading(false);
     } catch (error) {
@@ -230,6 +232,7 @@ export default function NewOrder() {
         status: newStatus,
         updated_at: new Date().toISOString(),
         updated_by: AdminId,
+        description: "Order successfully delivered to the customer at the provided address.",
       };
       await addDoc(collection(db, `order/${id}/logs`), logData);
       updateData({ id, status: newStatus });
