@@ -2124,6 +2124,12 @@ min_width_230 {
   border-radius: 10px;
   border: 0;
 }
+.all_bubble::-webkit-scrollbar {
+  width: 6px;
+}
+.all_bubble::-webkit-scrollbar {
+  width: 6px;
+}
 .add_brand {
   position: fixed;
   width: 547px;
