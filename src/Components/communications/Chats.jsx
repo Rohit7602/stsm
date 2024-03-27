@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import peopleIcon from '../../Images/svgs/people-icon.svg';
 import chatBg from '../../Images/svgs/chatting.svg';
 import attechFile from '../../Images/svgs/attech-file.svg';
@@ -28,37 +28,37 @@ export default function Chats() {
   const getCustomerData = (customerId) => {
     return customer.find(customer => customer.id === customerId);
   };
-
-
-
-  const [currentChat, setCurrentChat] = useState([]);
+  const [currentChat, setCurrentChat] = useState([])
+  useEffect(() => {
+    if (selectedChatRoomId && chatrooms[selectedChatRoomId]) {
+      const messages = Object.entries(chatrooms[selectedChatRoomId].Chats).map(([key, value]) => ({
+        ...value,
+        id: key,
+        chatroomid: selectedChatRoomId
+      }));
+      setCurrentChat(messages);
+    } else {
+      setCurrentChat([]);
+    }
+  }, [selectedChatRoomId, chatrooms]);
 
   const selectChat = (chatroomId) => {
     setSelectedChatRoomID(chatroomId)
     const chatroom = chatrooms[chatroomId];
     if (chatroom) {
-      const messages = Object.entries(chatroom.Chats).map(([key, value]) => ({
-        ...value,
-        id: key,
-        chatroomid: chatroomId    // Assuming the message ID is the key in the Firebase database
-      }));
-
-      console.log("message is", messages)
-
-
       const updates = {};
-      messages.forEach((message) => {
+      Object.entries(chatroom.Chats).forEach(([key, value]) => {
+        const message = {
+          ...value,
+          id: key,
+          chatroomid: chatroomId
+        };
         if (message.senderId === chatroomId.split('_')[0] && !message.seen) {
           updates[`/Chatrooms/${chatroomId}/Chats/${message.id}/seen`] = true;
         }
       });
-
       // Update the Firebase database
       update(ref(database), updates);
-
-      setCurrentChat(messages);
-    } else {
-      setCurrentChat([]);
     }
   };
 
@@ -210,8 +210,8 @@ export default function Chats() {
               </div>
             ) : (
               <div className="d-flex flex-column justify-content-end h-100 w-100">
-                {currentChat.length > 0 &&
-
+                {
+                  currentChat.length > 0 &&
                   currentChat.map((msg, index) => {
                     if (msg.senderId === userData.uuid) {
                       return (
