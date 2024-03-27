@@ -13,11 +13,12 @@ import Deletepopup from '../popups/Deletepopup';
 import Updatepopup from '../popups/Updatepopup';
 import Loader from '../Loader';
 import { useParams } from 'react-router-dom';
-
-
+import { UseDeliveryManContext } from '../../context/DeliverymanGetter';
+import { getDocs, query, setDoc } from 'firebase/firestore';
 import { useProductsContext } from '../../context/productgetter';
 
 const DeliveryBoyInventory = () => {
+  const { DeliveryManData, deleteDeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
   const { id } = useParams()
   console.log(id)
   const { productData } = useProductsContext();
@@ -46,6 +47,27 @@ const DeliveryBoyInventory = () => {
     setselectedProduct(filterData)
   }, [productname])
 
+  useEffect(() => {
+    const Data = DeliveryManData.find((item) => item.id === id);
+    if (Data) {
+      const fetchVan = async () => {
+        const q = query(collection(db, `Delivery/${Data.id}/Van`));
+        const querySnapshot = await getDocs(q);
+        setAllItems(
+          querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+        );
+      };
+      fetchVan();
+    }
+  }, [id, DeliveryManData]);
+
+
+  console.log("all items", AllItems)
+
+
   // console.log("selected product is ", selectedproduct)
 
 
@@ -61,7 +83,7 @@ const DeliveryBoyInventory = () => {
         sku: selectedproduct.length > 0 && selectedproduct[0].sku,
         brand: selectedproduct.length > 0 && selectedproduct[0].brand.name,
         unitType: selectedproduct.length > 0 && selectedproduct[0].varients[0].unitType,
-        varient: varient
+        varient: varient,
       },
     ])
     setproductname('')
@@ -81,8 +103,9 @@ const DeliveryBoyInventory = () => {
     } else {
       try {
         setLoaderstatus(true)
-        for (let items of AllItems) {
-          await addDoc(collection(db, `Delivery/${id}/Van`), items);
+        const itemsToAdd = AllItems.filter((item) => !item.id);
+        for (let item of itemsToAdd) {
+          await addDoc(collection(db, `Delivery/${id}/Van`), item);
         }
         setLoaderstatus(false)
         toast.success('Product added Successfully !', {
@@ -93,6 +116,7 @@ const DeliveryBoyInventory = () => {
         console.log("Error in Adding Data to Van", error)
       }
     }
+
   }
 
 
@@ -352,32 +376,37 @@ const DeliveryBoyInventory = () => {
                     </tr>
                   </thead>
                   <tbody style={{ maxHeight: 'calc(100vh - 460px)' }} className="table_body">
-                    <tr className="product_borderbottom">
-                      <td className="py-3 ps-3 w-100">
-                        <div className="d-flex align-items-center gap-3 min_width_300">
-                          <label className="check1 fw-400 fs-sm black mb-0">
-                            <input
-                              type="checkbox"
-                            // checked={data.checked || false}
-                            // onChange={() => handleCheckboxChange(index)}
-                            />
-                            <span className="checkmark"></span>
-                          </label>
-                          <div className="d-flex align-items-center ms-1">
-                            <p className="fw-400 fs-sm color_green mb-0 ms-2">Ghee</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-2 mx_160">
-                        <h3 className="fs-sm fw-400 black mb-0">G587H69OJ</h3>
-                      </td>
-                      <td className="ps-4 mw-200">
-                        <h3 className="fs-sm fw-400 black mb-0">Brand Name</h3>
-                      </td>
-                      <td className="mx_140">
-                        <h3 className="fs-sm fw-400 black mb-0 color_green ms-3">10KG</h3>
-                      </td>
-                    </tr>
+                    {AllItems.length > 0 && AllItems.map((item, index) => {
+                      return (
+                        <tr className="product_borderbottom">
+                          <td className="py-3 ps-3 w-100">
+                            <div className="d-flex align-items-center gap-3 min_width_300">
+                              <label className="check1 fw-400 fs-sm black mb-0">
+                                <input
+                                  type="checkbox"
+                                // checked={data.checked || false}
+                                // onChange={() => handleCheckboxChange(index)}
+                                />
+                                <span className="checkmark"></span>
+                              </label>
+                              <div className="d-flex align-items-center ms-1">
+                                <p className="fw-400 fs-sm color_green mb-0 ms-2">{item.name}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-2 mx_160">
+                            <h3 className="fs-sm fw-400 black mb-0">{item.sku}</h3>
+                          </td>
+                          <td className="ps-4 mw-200">
+                            <h3 className="fs-sm fw-400 black mb-0">{item.brand}</h3>
+                          </td>
+                          <td className="mx_140">
+                            <h3 className="fs-sm fw-400 black mb-0 color_green ms-3">{item.quantity}</h3>
+                          </td>
+                        </tr>
+                      )
+                    })
+                    }
                   </tbody>
                 </table>
                 <ToastContainer />

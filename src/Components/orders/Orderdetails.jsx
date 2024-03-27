@@ -68,6 +68,9 @@ export default function NewOrder() {
     }
   }, [id, orders]);
 
+
+  
+
   // let DocumentId  = filterData[0].id
   if (!id || filterData.length === 0) {
     return <Loader> </Loader>;
@@ -263,7 +266,7 @@ export default function NewOrder() {
         );
       case "CANCELLED":
         return (
-          <img className="bg-white"  src={orderCanceled} alt="orderCanceled" />);
+          <img className="bg-white" src={orderCanceled} alt="orderCanceled" />);
       default:
         return null;
     }
