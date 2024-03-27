@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import peopleIcon from '../../Images/svgs/people-icon.svg';
 import chatBg from '../../Images/svgs/chatting.svg';
 import attechFile from '../../Images/svgs/attech-file.svg';
@@ -28,34 +28,37 @@ export default function Chats() {
   const getCustomerData = (customerId) => {
     return customer.find((customer) => customer.id === customerId);
   };
-
   const [currentChat, setCurrentChat] = useState([]);
+  useEffect(() => {
+    if (selectedChatRoomId && chatrooms[selectedChatRoomId]) {
+      const messages = Object.entries(chatrooms[selectedChatRoomId].Chats).map(([key, value]) => ({
+        ...value,
+        id: key,
+        chatroomid: selectedChatRoomId,
+      }));
+      setCurrentChat(messages);
+    } else {
+      setCurrentChat([]);
+    }
+  }, [selectedChatRoomId, chatrooms]);
 
   const selectChat = (chatroomId) => {
     setSelectedChatRoomID(chatroomId);
     const chatroom = chatrooms[chatroomId];
     if (chatroom) {
-      const messages = Object.entries(chatroom.Chats).map(([key, value]) => ({
-        ...value,
-        id: key,
-        chatroomid: chatroomId, // Assuming the message ID is the key in the Firebase database
-      }));
-
-      console.log('message is', messages);
-
       const updates = {};
-      messages.forEach((message) => {
+      Object.entries(chatroom.Chats).forEach(([key, value]) => {
+        const message = {
+          ...value,
+          id: key,
+          chatroomid: chatroomId,
+        };
         if (message.senderId === chatroomId.split('_')[0] && !message.seen) {
           updates[`/Chatrooms/${chatroomId}/Chats/${message.id}/seen`] = true;
         }
       });
-
       // Update the Firebase database
       update(ref(database), updates);
-
-      setCurrentChat(messages);
-    } else {
-      setCurrentChat([]);
     }
   };
 
@@ -143,7 +146,9 @@ export default function Chats() {
                     </div>
                     <div className="d-flex align-items-end justify-content-between mt-2">
                       <p className="fs-xs fw-400 black m-0">
-                        {lastMessage ? lastMessage.message : 'No Message Yet.'}
+                        {lastMessage
+                          ? lastMessage.message.substring(0, 40) + '...'
+                          : 'No Message Yet.'}
                       </p>
                       {unseenMessageCount > 0 && (
                         <p className="fs-sm fw-500 color_blue msg_count d-flex align-items-center justify-content-center m-0">
@@ -184,7 +189,11 @@ export default function Chats() {
                           </div>
                         );
                       } else {
-                        return <Reciver msg={msg.message} date={msg.createdAt} />;
+                        return (
+                          <div className="d-flex">
+                            <Reciver msg={msg.message} date={msg.createdAt} />
+                          </div>
+                        );
                       }
                     })}
                 </div>
