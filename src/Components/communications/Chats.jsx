@@ -17,16 +17,16 @@ export default function Chats() {
   const database = getDatabase(app);
   // const [customerChatList, setCustomerList] = useState([]);
   const { customer } = useCustomerContext();
-  const { chatrooms } = useChat()
-  const { userData } = useUserAuth()
+  const { chatrooms } = useChat();
+  const { userData } = useUserAuth();
   const [messageText, setMessageText] = useState('');
-  const [selectedChatRoomId, setSelectedChatRoomID] = useState('')
+  const [selectedChatRoomId, setSelectedChatRoomID] = useState('');
   // console.log("asdfasdf", customer)
 
   // console.log(chatrooms)
 
   const getCustomerData = (customerId) => {
-    return customer.find(customer => customer.id === customerId);
+    return customer.find((customer) => customer.id === customerId);
   };
   const [currentChat, setCurrentChat] = useState([])
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function Chats() {
   }, [selectedChatRoomId, chatrooms]);
 
   const selectChat = (chatroomId) => {
-    setSelectedChatRoomID(chatroomId)
+    setSelectedChatRoomID(chatroomId);
     const chatroom = chatrooms[chatroomId];
     if (chatroom) {
       const updates = {};
@@ -61,7 +61,6 @@ export default function Chats() {
       update(ref(database), updates);
     }
   };
-
 
   const sendMessage = (chatroomId) => {
     // Assuming you have a way to get the current user's ID
@@ -85,7 +84,6 @@ export default function Chats() {
     setMessageText('');
     setCurrentChat((prevChat) => [...prevChat, newMessage]);
   };
-
 
   // const customerChatList = [
   //   {
@@ -138,8 +136,6 @@ export default function Chats() {
 
   // let currentChat = customerChatList.filter((item) => activeChat === item.id);
 
-
-
   return (
     <div className="chat_container">
       <div className="d-flex">
@@ -164,26 +160,37 @@ export default function Chats() {
               const lastMessageKey = Object.keys(chatrooms[chatroomId].Chats).pop();
               const lastMessage = chatrooms[chatroomId].Chats[lastMessageKey];
               // Count messages where seen is not true
-              const unseenMessageCount = Object.values(chatrooms[chatroomId].Chats).reduce((count, message) => {
-                if (!message.seen && message.senderId === costumerid) {
-                  return count + 1;
-                }
-                return count;
-              }, 0);
+              const unseenMessageCount = Object.values(chatrooms[chatroomId].Chats).reduce(
+                (count, message) => {
+                  if (!message.seen && message.senderId === costumerid) {
+                    return count + 1;
+                  }
+                  return count;
+                },
+                0
+              );
 
               return (
                 <div
                   onClick={() => selectChat(chatroomId)}
                   className="d-flex align-content-center cursor_pointer"
                   key={index}>
-                  <img className="chat_profile" src={customer ? customer.image : manimage} alt="peopleDp" />
-                  <div className="w-100 ms-4 mt-2">
+                  <img
+                    className="chat_profile"
+                    src={customer ? customer.image : manimage}
+                    alt="peopleDp"
+                  />
+                  <div style={{ width: 'calc(100% - 85px)' }} className="ms-4 mt-2">
                     <div className="d-flex align-items-end justify-content-between">
                       <p className="fs-sm fw-500 black m-0">{customer ? customer.name : 'N/A'}</p>
-                      <p className="fs-xxs fw-400 black m-0">{lastMessage ? new Date(lastMessage.createdAt).toLocaleString() : ''}</p>
+                      <p className="fs-xxs fw-400 black m-0">
+                        {lastMessage ? new Date(lastMessage.createdAt).toLocaleString() : ''}
+                      </p>
                     </div>
                     <div className="d-flex align-items-end justify-content-between mt-2">
-                      <p className="fs-xs fw-400 black m-0">{lastMessage ? lastMessage.message : 'No Message Yet.'}</p>
+                      <p className="fs-xs fw-400 black m-0">
+                        {lastMessage ? lastMessage.message : 'No Message Yet.'}
+                      </p>
                       {unseenMessageCount > 0 && (
                         <p className="fs-sm fw-500 color_blue msg_count d-flex align-items-center justify-content-center m-0">
                           {unseenMessageCount}
@@ -197,7 +204,7 @@ export default function Chats() {
           </div>
         </div>
 
-        <div style={{ width: 'calc(100% - 500px)', padding: '0 30px' }} className="bg-white">
+        <div style={{ width: 'calc(100% - 500px)' }} className="bg-white">
           <div className="chat_height">
             {currentChat.length === 0 ? (
               <div className="d-flex flex-column align-items-center justify-content-center h-100">
@@ -210,19 +217,20 @@ export default function Chats() {
               </div>
             ) : (
               <div className="d-flex flex-column justify-content-end h-100 w-100">
-                {
-                  currentChat.length > 0 &&
-                  currentChat.map((msg, index) => {
-                    if (msg.senderId === userData.uuid) {
-                      return (
-                        <div key={msg.senderId} className="d-flex justify-content-end mt-2">
-                          <Sender msg={msg.message} date={msg.createdAt} />
-                        </div>
-                      );
-                    } else {
-                      return <Reciver msg={msg.message} date={msg.createdAt} />;
-                    }
-                  })}
+                <div className='all_bubble' style={{ padding: '0 30px', overflowY: 'scroll'}}>
+                  {currentChat.length > 0 &&
+                    currentChat.map((msg, index) => {
+                      if (msg.senderId === userData.uuid) {
+                        return (
+                          <div key={msg.senderId} className="d-flex justify-content-end mt-2">
+                            <Sender msg={msg.message} date={msg.createdAt} />
+                          </div>
+                        );
+                      } else {
+                        return <Reciver msg={msg.message} date={msg.createdAt} />;
+                      }
+                    })}
+                </div>
                 <div className="w-100 d-flex align-items-center gap-2 justify-content-between mt-4 pt-1">
                   <input
                     className="w-100 mb-2 msg_send_input fs-sm fw-400 black"
@@ -235,7 +243,12 @@ export default function Chats() {
                     <img className="cursor_pointer" src={attechFile} alt="attechFile" />
                   </label>
                   <input id="chat" type="file" hidden />
-                  <img className="cursor_pointer" src={sendMsg} onClick={() => sendMessage(selectedChatRoomId)} alt="sendMsg" />
+                  <img
+                    className="cursor_pointer"
+                    src={sendMsg}
+                    onClick={() => sendMessage(selectedChatRoomId)}
+                    alt="sendMsg"
+                  />
                 </div>
               </div>
             )}

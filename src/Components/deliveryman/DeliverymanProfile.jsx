@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import paymenticon from '../../Images/svgs/saveicon.svg';
+import closeIcon from '../../Images/svgs/closeicon.svg';
 import blackCheck from '../../Images/svgs/check_black_icon.svg';
 import { Col, Row } from 'react-bootstrap';
 import profile_image from '../../Images/Png/customer_profile.png';
@@ -16,7 +17,12 @@ const DeliverymanProfile = () => {
   const { id } = useParams();
   const [filterData, setfilterData] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [employTypeDropdown, setEmployTypeDropdown] = useState('');
+  const [approvePopup, setApprovePopup] = useState(false);
+  const [rejectPopup, setRejectPopup] = useState(false);
+  const [jobType, setJobType] = useState('');
+  const [joiningDate, setjoiningDate] = useState('')
+  const [rejectReason, setRejectReason] = useState('')
   useEffect(() => {
     const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
     setfilterData(DeliveryManDatas);
@@ -26,72 +32,213 @@ const DeliverymanProfile = () => {
     return <Loader> </Loader>;
   }
 
-
-
   async function ApprovedDelivermanProfile(id) {
     try {
-      setLoading(true)
+      setLoading(true);
       await updateDoc(doc(db, 'Delivery', id), {
         is_verified: true,
-        profile_status: "APPROVED",
-        updated_at: new Date().toISOString()
-      })
-      setLoading(false)
-      updateDeliveryManData({ id: id, is_verified: true, profile_status: "APPROVED" })
+        profile_status: 'APPROVED',
+        updated_at: new Date().toISOString(),
+        job_info: {
+          employement_type: employTypeDropdown,
+          joining_date: new Date(joiningDate).toISOString(),
+          shift: jobType,
+        }
+      });
+      setLoading(false);
+      updateDeliveryManData({
+        id: id, is_verified: true, profile_status: 'APPROVED', job_info: {
+          employement_type: employTypeDropdown,
+          joining_date: new Date(joiningDate).toISOString(),
+          shift: jobType,
+        }
+      });
       toast.success('Verified Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
-      setLoading(false)
-      console.log("error is ", error)
+      setLoading(false);
+      console.log('error is ', error);
     }
-
   }
-
-
   async function RejectDelivermanProfile(id) {
     try {
-      setLoading(true)
+      setLoading(true);
       await updateDoc(doc(db, 'Delivery', id), {
         is_verified: false,
-        profile_status: "REJECTED",
-        updated_at: new Date().toISOString()
-      })
-      setLoading(false)
-      updateDeliveryManData({ id: id, is_verified: true, profile_status: "REJECTED" })
+        profile_status: 'REJECTED',
+        updated_at: new Date().toISOString(),
+        Reason: rejectReason,
+      });
+      setLoading(false);
+      updateDeliveryManData({ id: id, is_verified: true, profile_status: 'REJECTED' });
       toast.success('Rejected Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
-      setLoading(false)
-      console.log("error is ", error)
+      setLoading(false);
+      console.log('error is ', error);
     }
-
   }
 
   if (loading) {
-    return (
-      <Loader />
-    )
+    return <Loader />;
   }
-
 
   return filterData.map((datas, index) => {
     return (
       <div className="my-4">
+        {approvePopup ? (
+          <div className="approve_popup">
+            <div className="d-flex align-items-center justify-content-between">
+              <p className="fs-2sm fw-400 black m-0">Approve Profile</p>
+              <img
+                onClick={() => setApprovePopup(false)}
+                className="cursor_pointer"
+                src={closeIcon}
+                alt="closeIcon"
+              />
+            </div>
+            <label className="fs-xs fw-400 black mt-3 pt-1" htmlFor="date">
+              Joining Date
+            </label>
+            <br />
+            <input id="date" onChange={(E) => setjoiningDate(E.target.value)} className="input w-100" type="date" />
+            <br />
+            <label className="fs-xs fw-400 black mt-3 pt-1" htmlFor="date">
+              Employment Type
+            </label>
+            <br />
+            <div className="dropdown w-100">
+              <button
+                className="btn dropdown-toggle w-100 employ_dropdown"
+                type="button"
+                id="dropdownMenuButton3"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <div className="d-flex align-items-center justify-content-between w-100">
+                  <p className="ff-outfit fw-400 fs_sm m-0 fade_grey">
+                    {employTypeDropdown ? employTypeDropdown : 'SALARIED'}
+                  </p>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M7 10L12 15L17 10"
+                      stroke="black"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+              </button>
+              <ul
+                className="dropdown-menu delivery_man_dropdown w-100"
+                aria-labelledby="dropdownMenuButton3">
+                <li>
+                  <div
+                    onClick={() => setEmployTypeDropdown('SALARIED')}
+                    className="dropdown-item py-2"
+                    href="#">
+                    <p className="fs-sm fw-400 balck m-0">SALARIED</p>
+                  </div>
+                </li>
+                <li>
+                  <div
+                    onClick={() => setEmployTypeDropdown('COMMISSION')}
+                    className="dropdown-item py-2"
+                    href="#">
+                    <p className="fs-sm fw-400 balck m-0">COMMISSION</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div className="d-flex align-items-center justify-content-between mt-4 pt-2 pb-2">
+              <div className="d-flex align-items-center w-100">
+                <label class="check1 fw-400 fs-sm black mb-0  ms-3">
+                  <input
+                    onChange={() => setJobType('PARTTIME')}
+                    checked={jobType === 'PARTTIME'}
+                    type="checkbox"
+                  />
+                  <span class="checkmark"></span>
+                </label>
+                <p className="fs-sm fw-400 black ms-3 ps-1 my-0">Part Time</p>
+              </div>
+              <div className="d-flex align-items-center w-100">
+                <label class="check1 fw-400 fs-sm black mb-0 ">
+                  <input
+                    onChange={() => setJobType('FULLTIME')}
+                    checked={jobType === 'FULLTIME'}
+                    type="checkbox"
+                  />
+                  <span class="checkmark"></span>
+                </label>
+                <p className="fs-sm fw-400 black ms-3 ps-1 my-0">Full Time</p>
+              </div>
+            </div>
+            <div className="text-end">
+              <button
+                onClick={() => {
+                  setApprovePopup(false);
+                  ApprovedDelivermanProfile(datas.id);
+                }}
+                className="approve_btn mt-4">
+                <p className="m-0 text-white">Approve Profile</p>
+              </button>
+            </div>
+          </div>
+        ) : null}
+        {rejectPopup ? (
+          <div className="approve_popup">
+            <div className="d-flex align-items-center justify-content-between">
+              <p className="fs-2sm fw-400 black m-0">Reject Profile</p>
+              <img
+                onClick={() => setRejectPopup(false)}
+                className="cursor_pointer"
+                src={closeIcon}
+                alt="closeIcon"
+              />
+            </div>
+            <label className="fs-xs fw-400 black mt-3 pt-1" htmlFor="date">
+              Reason for rejection
+            </label>
+            <br />
+            <textarea
+              style={{ maxHeight: '90px' }}
+              className="input w-100 outline_none resize_none"
+              onChange={(e) => setRejectReason(e.target.value)}
+              placeholder="Enter a proper reason here..."></textarea>
+            <div className="text-end mt-3 pt-1">
+              <button
+                onClick={() => {
+                  setRejectPopup(false);
+                  RejectDelivermanProfile(datas.id);
+                }}
+                className="reject_delivery">
+                Reject profile
+              </button>
+            </div>
+          </div>
+        ) : null}
         <div className="d-flex justify-content-between align-items-center mt-4 mx-2">
           <h1 className="fw-500  mb-0 black fs-lg">
             {datas.basic_info.name === '' ? 'N/A' : datas.basic_info.name} {datas.d_id}{' '}
           </h1>
           <div className="d-flex justify-content-center">
             <div className="d-flex  align-items-center flex-column flex-sm-row gap-2 gap-sm-0  justify-content-between">
-              {datas.profile_status === "NEW" ? (
+              {datas.profile_status === 'NEW' ? (
                 <div className="d-flex align-itmes-center gap-3">
-                  <button onClick={() => ApprovedDelivermanProfile(datas.id)} className="approve_btn  d-flex align-items-center gap-2">
-                    <img src={blackCheck} alt="blackCheck" />
-                    <p className="m-0">Approve</p>
+                  <button onClick={() => setApprovePopup(true)} className="approve_btn">
+                    <p className="m-0 text-white">Approve Profile</p>
                   </button>
-                  <button onClick={() => RejectDelivermanProfile(datas.id)} className="reject_delivery">Reject profile</button>
+                  <button onClick={() => setRejectPopup(true)} className="reject_delivery">
+                    Reject profile
+                  </button>
                   {/* <button className="reset_border">
                   <button className="fs-sm reset_btn border-0 fw-400  d-flex align-items-center gap-2 transition_04">
                     <svg
@@ -125,13 +272,26 @@ const DeliverymanProfile = () => {
                   />
                 </svg> */}
                 </div>
-              ) : datas.profile_status === "APPROVED" ? (
+              ) : datas.profile_status === 'APPROVED' ? (
                 <div className="d-flex align-itmes-center gap-3">
                   <button className="reset_border">
                     <button className="fs-sm reset_btn border-0 fw-400  d-flex align-items-center gap-2 transition_04">
-                      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7 10C6.73478 10 6.48043 10.1054 6.29289 10.2929C6.10536 10.4804 6 10.7348 6 11C6 11.2652 6.10536 11.5196 6.29289 11.7071C6.48043 11.8946 6.73478 12 7 12H15C15.2652 12 15.5196 11.8946 15.7071 11.7071C15.8946 11.5196 16 11.2652 16 11C16 10.7348 15.8946 10.4804 15.7071 10.2929C15.5196 10.1054 15.2652 10 15 10H7Z" fill="#D73A60" />
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M22 11C22 17.075 17.075 22 11 22C4.925 22 0 17.075 0 11C0 4.925 4.925 0 11 0C17.075 0 22 4.925 22 11ZM20 11C20 12.1819 19.7672 13.3522 19.3149 14.4442C18.8626 15.5361 18.1997 16.5282 17.364 17.364C16.5282 18.1997 15.5361 18.8626 14.4442 19.3149C13.3522 19.7672 12.1819 20 11 20C9.8181 20 8.64778 19.7672 7.55585 19.3149C6.46392 18.8626 5.47177 18.1997 4.63604 17.364C3.80031 16.5282 3.13738 15.5361 2.68508 14.4442C2.23279 13.3522 2 12.1819 2 11C2 8.61305 2.94821 6.32387 4.63604 4.63604C6.32387 2.94821 8.61305 2 11 2C13.3869 2 15.6761 2.94821 17.364 4.63604C19.0518 6.32387 20 8.61305 20 11Z" fill="black" />
+                      <svg
+                        width="22"
+                        height="22"
+                        viewBox="0 0 22 22"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M7 10C6.73478 10 6.48043 10.1054 6.29289 10.2929C6.10536 10.4804 6 10.7348 6 11C6 11.2652 6.10536 11.5196 6.29289 11.7071C6.48043 11.8946 6.73478 12 7 12H15C15.2652 12 15.5196 11.8946 15.7071 11.7071C15.8946 11.5196 16 11.2652 16 11C16 10.7348 15.8946 10.4804 15.7071 10.2929C15.5196 10.1054 15.2652 10 15 10H7Z"
+                          fill="#D73A60"
+                        />
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M22 11C22 17.075 17.075 22 11 22C4.925 22 0 17.075 0 11C0 4.925 4.925 0 11 0C17.075 0 22 4.925 22 11ZM20 11C20 12.1819 19.7672 13.3522 19.3149 14.4442C18.8626 15.5361 18.1997 16.5282 17.364 17.364C16.5282 18.1997 15.5361 18.8626 14.4442 19.3149C13.3522 19.7672 12.1819 20 11 20C9.8181 20 8.64778 19.7672 7.55585 19.3149C6.46392 18.8626 5.47177 18.1997 4.63604 17.364C3.80031 16.5282 3.13738 15.5361 2.68508 14.4442C2.23279 13.3522 2 12.1819 2 11C2 8.61305 2.94821 6.32387 4.63604 4.63604C6.32387 2.94821 8.61305 2 11 2C13.3869 2 15.6761 2.94821 17.364 4.63604C19.0518 6.32387 20 8.61305 20 11Z"
+                          fill="black"
+                        />
                       </svg>
                       Block Profile
                     </button>
@@ -156,9 +316,20 @@ const DeliverymanProfile = () => {
               ) : (
                 <button className="reset_border">
                   <button className="fs-sm reset_btn border-0 fw-400  d-flex align-items-center gap-2 transition_04">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M17.25 20.4L15.3 18.45L14.25 19.5L17.25 22.5L22.5 17.25L21.45 16.2L17.25 20.4ZM9 13.5H15V15H9V13.5ZM9 9.75H15V11.25H9V9.75ZM9 6H15V7.5H9V6Z" fill="#D73A60" />
-                      <path d="M12 21H4.5V18H6V16.5H4.5V12.75H6V11.25H4.5V7.5H6V6H4.5V3H18V15H19.5V3C19.5 2.175 18.825 1.5 18 1.5H4.5C3.675 1.5 3 2.175 3 3V6H1.5V7.5H3V11.25H1.5V12.75H3V16.5H1.5V18H3V21C3 21.825 3.675 22.5 4.5 22.5H12V21Z" fill="black" />
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M17.25 20.4L15.3 18.45L14.25 19.5L17.25 22.5L22.5 17.25L21.45 16.2L17.25 20.4ZM9 13.5H15V15H9V13.5ZM9 9.75H15V11.25H9V9.75ZM9 6H15V7.5H9V6Z"
+                        fill="#D73A60"
+                      />
+                      <path
+                        d="M12 21H4.5V18H6V16.5H4.5V12.75H6V11.25H4.5V7.5H6V6H4.5V3H18V15H19.5V3C19.5 2.175 18.825 1.5 18 1.5H4.5C3.675 1.5 3 2.175 3 3V6H1.5V7.5H3V11.25H1.5V12.75H3V16.5H1.5V18H3V21C3 21.825 3.675 22.5 4.5 22.5H12V21Z"
+                        fill="black"
+                      />
                     </svg>
                     Revise KYC
                   </button>
@@ -167,7 +338,6 @@ const DeliverymanProfile = () => {
             </div>
           </div>
         </div>
-
         <div className="d-flex align-items-center text-center gap-4 mt-4 pb-2 flex-wrap">
           <div className="d-flex align-items-center text-center bg_light_orange">
             <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
