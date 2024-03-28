@@ -1,6 +1,7 @@
-export const ActionIcon = () => {
+export const ActionIcon = (props) => {
   return (
     <svg
+      className={`${props.isActive && 'opacity-25'}`}
       width="25"
       height="16"
       viewBox="0 0 25 16"
@@ -91,7 +92,7 @@ export const TickIcon = () => {
 export const EditIcon = () => {
   return (
     <svg
-    className="cursor_pointer"
+      className="cursor_pointer"
       width="24"
       height="24"
       viewBox="0 0 24 24"
@@ -111,7 +112,7 @@ export const EditIcon = () => {
 export const DeleteIcon = () => {
   return (
     <svg
-    className="cursor_pointer"
+      className="cursor_pointer"
       width="24"
       height="24"
       viewBox="0 0 24 24"

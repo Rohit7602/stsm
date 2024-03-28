@@ -66,7 +66,7 @@ const DeliveryManList = () => {
     return result;
   };
 
-  
+
 
 
 
@@ -263,11 +263,11 @@ const DeliveryManList = () => {
                           <td className="text-center mx_100">
                             {data.is_verified === true && data.status === "online" ? (
                               <Link to={`inventory/${data.uid}`}>
-                                <ActionIcon />
+                                <ActionIcon  />
                               </Link>
                             ) : (
                               <div>
-                                <ActionIcon />
+                                  <ActionIcon isActive={true} />
                               </div>
                             )}
                           </td>

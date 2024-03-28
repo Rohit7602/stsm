@@ -44,12 +44,22 @@ export default function Chats() {
 
   useEffect(() => {
     if (selectedChatRoomId && chatrooms[selectedChatRoomId]) {
+      let chatroom = chatrooms[selectedChatRoomId]
+      const updates = {};
       const messages = Object.entries(chatrooms[selectedChatRoomId].Chats).map(([key, value]) => ({
         ...value,
         id: key,
         chatroomid: selectedChatRoomId,
       }));
       setCurrentChat(messages);
+      if (chatroom) {
+        Object.entries(chatroom.Chats).forEach(([key, value]) => {
+          if (!value.seen && value.senderId !== userData.uuid) {
+            updates[`/Chatrooms/${selectedChatRoomId}/Chats/${key}/seen`] = true;
+          }
+        });
+        update(ref(database), updates);
+      }
     } else {
       setCurrentChat([]);
     }
@@ -98,7 +108,6 @@ export default function Chats() {
 
     setMessageText('');
     setCurrentChat((prevChat) => [...prevChat, newMessage]);
-
     // const filename = Math.floor(Date.now() / 1000) + '-' + chatImages.name;
     // const storageRef = ref(storage, `/chat/${filename}`);
     // await uploadBytes(storageRef, chatImages);
@@ -161,23 +170,20 @@ export default function Chats() {
           </div>
           <div className="d-flex align-items-center chat_read_btn overflow-hidden">
             <button
-              className={`fs-sm fw-400 black w-100 ${
-                filterMode === 'All' ? 'active_chat_btn' : ''
-              }`}
+              className={`fs-sm fw-400 black w-100 ${filterMode === 'All' ? 'active_chat_btn' : ''
+                }`}
               onClick={() => handleFilterModeChange('All')}>
               All
             </button>
             <button
-              className={`fs-sm fw-400 black w-100 ${
-                filterMode === 'Read' ? 'active_chat_btn' : ''
-              }`}
+              className={`fs-sm fw-400 black w-100 ${filterMode === 'Read' ? 'active_chat_btn' : ''
+                }`}
               onClick={() => handleFilterModeChange('Read')}>
               Read
             </button>
             <button
-              className={`fs-sm fw-400 black w-100 ${
-                filterMode === 'Unread' ? ' active_chat_btn' : ''
-              }`}
+              className={`fs-sm fw-400 black w-100 ${filterMode === 'Unread' ? ' active_chat_btn' : ''
+                }`}
               onClick={() => handleFilterModeChange('Unread')}>
               Unread
             </button>

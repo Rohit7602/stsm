@@ -47,10 +47,9 @@ export const ChatProvider = ({ children }) => {
     // }, [chatrooms]);
 
 
-    // useEffect(() => {
-    //     console.log("chatrooms is ", chatrooms)
-    //     console.log("chat is ", chats)
-    // }, [chatrooms, chats]);
+    useEffect(() => {
+        console.log("chatrooms is ", chatrooms)
+    }, [chatrooms, chats]);
 
     return (
         <ChatContext.Provider value={{ chatrooms, chats }}>

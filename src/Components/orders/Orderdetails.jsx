@@ -488,6 +488,7 @@ export default function NewOrder() {
                                   : log.data.status}{' '}
                             </p>
                             <p className="fs-xxs fw-400 black ps-3 ms-1 mb-0">{log.data.name}</p>
+                            <p className="fs-xs fw-400 black ps-3 ms-1 mb-0 opacity-50">{log.data.description}</p>
                           </div>
                         </div>
                         <div>
