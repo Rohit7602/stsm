@@ -141,7 +141,7 @@ function App() {
             <>
               {!user ? (
                 <div className="d-flex">
-                  <Sidebar setDeletPopup={setDeletPopup} npm star />
+                  <Sidebar setDeletPopup={setDeletPopup} />
                   <div className="content d-flex flex-column  position-relative">
                     <Topbar />
                     <div className="h-100 px-3 bg_light_grey">
