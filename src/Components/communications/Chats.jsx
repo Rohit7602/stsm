@@ -255,7 +255,6 @@ export default function Chats() {
                       if (msg.senderId === userData.uuid) {
                         return (
                           <div key={msg.senderId} className="d-flex justify-content-end mt-2">
-                            {msg.imges && <img src={msg.chat_imges} alt="" />}
                             <Sender msg={msg.message} date={msg.createdAt} />
                           </div>
                         );
@@ -263,7 +262,6 @@ export default function Chats() {
                         return (
                           <div className="d-flex">
                             <Reciver msg={msg.message} date={msg.createdAt} />
-                            {msg.imges && <img src={msg.chat_imges} alt="" />}
                           </div>
                         );
                       }
