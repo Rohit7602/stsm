@@ -1,7 +1,7 @@
 export const ActionIcon = (props) => {
   return (
     <svg
-      className={`${props.isActive && 'opacity-25'}`}
+      className={`${props.isNotActive && 'opacity-25'}`}
       width="25"
       height="16"
       viewBox="0 0 25 16"

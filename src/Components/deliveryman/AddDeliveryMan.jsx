@@ -7,9 +7,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useRef } from 'react';
 import { useProductsContext } from '../../context/productgetter';
 import { useSubCategories } from '../../context/categoriesGetter';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../../firebase';
 import { addDoc, collection, setDoc, doc } from 'firebase/firestore';
+
+
 import {
   createUserWithEmailAndPassword,
   getAuth,
@@ -21,6 +23,7 @@ import { useUserAuth } from '../../context/Authcontext';
 
 const AddDeliveryMan = () => {
   const { userData } = useUserAuth();
+  const navigate = useNavigate();
 
   function RandomPasswordGenerator() {
     var chars = '0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -216,33 +219,100 @@ const AddDeliveryMan = () => {
     setfilterData(DeliveryManDatas);
     if (filterData) {
       filterData.map((item) => {
-        setKycType(item.kyc.document_type);
-        setPhnno(parseInt(item.basic_info.emergency_contact.phone_no));
-        setEmergencycontact(item.basic_info.emergency_contact.name);
-        setaddress(item.basic_info.address);
-        setName(item.basic_info.name);
-        setCity(item.basic_info.city);
-        setDate(item.job_info.joining_date);
+        setKycType(item.kyc.document_type || ''); // set to empty string if null
+        setPhnno(parseInt(item.basic_info.emergency_contact.phone_no) || 0); // set to 0 if null or NaN
+        setEmergencycontact(item.basic_info.emergency_contact.name || '');
+        setaddress(item.basic_info.address || '');
+        setName(item.basic_info.name || '');
+        setCity(item.basic_info.city || '');
+        setDate(new Date(item.job_info.joining_date).toISOString().split('T')[0] || '');
         setSocial('');
-        setGovt(item.kyc.document_number);
-        setBankname(item.bank.bank_name);
-        setRelationship(item.basic_info.emergency_contact.relationship);
-        setdl_number(item.vehicle.dl_number);
-        setVechileno(item.vehicle.vehicle_number);
-        setState(item.basic_info.state);
-        setDOB(Number(item.basic_info.dob));
-        setNameaccount(item.bank.account_holder_name);
-        setIfsc(item.bank.ifsc_code);
-        setVechiletype(item.vehicle.vehicle_type);
-        setEmploymentstatus(item.job_info.employement_type);
-        setAccountno(item.bank.account_no);
-        setConfirmaccountno(item.bank.account_no);
-        setMobile(parseInt(item.basic_info.phone_no));
-        setEmail(item.basic_info.email);
-        setEmploymentstatus(item.job_info.shift);
+        setGovt(item.kyc.document_number || '');
+        setBankname(item.bank.bank_name || '');
+        setRelationship(item.basic_info.emergency_contact.relationship || '');
+        setdl_number(item.vehicle.dl_number || '');
+        setVechileno(item.vehicle.vehicle_number || '');
+        setState(item.basic_info.state || '');
+        setDOB(new Date(item.basic_info.dob).toISOString().split('T')[0] || '');
+        setNameaccount(item.bank.account_holder_name || '');
+        setIfsc(item.bank.ifsc_code || '');
+        setVechiletype(item.vehicle.vehicle_type || '');
+        setEmploymentstatus(item.job_info.employement_type || '');
+        setAccountno(item.bank.account_no || '');
+        setConfirmaccountno(item.bank.account_no || '');
+        setMobile(parseInt(item.basic_info.phone_no) || 0); // set to 0 if null or NaN
+        setEmail(item.basic_info.email || '');
+        setEmploymentstatus(item.job_info.shift || '');
       });
     }
   }, [filterData]);
+
+
+  async function HandleUpdateDeliveryData() {
+    setLoaderstatus(true);
+    let DeliveryManUpdateData = {
+      basic_info: {
+        name: name,
+        dob: new Date(DOB).toISOString(),
+        phone_no: mobile,
+        address: address,
+        city: city,
+        state: state,
+        email: email,
+        emergency_contact: {
+          name: emergencycontact,
+          relationship: relationship,
+          phone_no: phnno,
+        },
+      },
+      bank: {
+        account_no: accountno,
+        bank_name: bankname,
+        ifsc_code: ifsc,
+        account_holder_name: nameaccount,
+      },
+      job_info: {
+        joining_date: new Date(date).toISOString(),
+        employement_type: selectedOption,
+        shift: employmentstatus,
+      },
+      kyc: {
+        document_type: kycType,
+        document_number: govt,
+      },
+      vehicle: {
+        dl_number: dl_number,
+        vehicle_number: vechileno,
+        vehicle_type: vechiletype,
+      },
+      updated_at: new Date().toISOString(),
+      is_verified: true,
+      signInMethod: 'email',
+      status: 'online',
+    };
+
+    // try {
+    //   await updateDoc(doc(db, 'Delivery', id), DeliveryManUpdateData);
+    //   updateProductData({
+    //     id,
+    //     ...DeliveryManUpdateData,
+    //   });
+    //   setLoaderstatus(false);
+    //   navigate('/deliveryman')
+    //   toast.success('Delivery Man  updated Successfully !', {
+    //     position: toast.POSITION.TOP_RIGHT,
+    //   });
+    // } catch (error) {
+    //   console.log("error in  update data ", error)
+    // }
+
+  }
+
+
+
+
+
+
 
   if (loaderstatus) {
     return (
@@ -272,8 +342,9 @@ const AddDeliveryMan = () => {
                 </button>
               ) : (
                 <button
+                  onClick={HandleUpdateDeliveryData}
                   className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
-                  type="submit">
+                >
                   Update Delivery Man
                 </button>
               )}

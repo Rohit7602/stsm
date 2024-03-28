@@ -267,7 +267,7 @@ const DeliveryManList = () => {
                               </Link>
                             ) : (
                               <div>
-                                  <ActionIcon isActive={true} />
+                                  <ActionIcon isNotActive={true} />
                               </div>
                             )}
                           </td>
