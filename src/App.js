@@ -189,7 +189,6 @@ function App() {
                         <Route path="FAQ" element={<Faqs />} />
                         <Route path="invoices" element={<Invoices />} />
                         <Route path="invoicesbill" element={<InvoiceBill />} />
-                        {/* <Route path='Addbanner' element={<AddBanner />} /> */}
                       </Routes>
                     </div>
                   </div>

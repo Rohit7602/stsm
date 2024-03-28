@@ -6,29 +6,42 @@ import peopleDp from '../../Images/Png/people-dp.png';
 import sendMsg from '../../Images/svgs/send-icon.svg';
 import Reciver from './chat-bubble/reciver';
 import Sender from './chat-bubble/sender';
+import closeIcon from '../../Images/svgs/closeicon.svg';
 import manimage from '../../Images/Png/manimage.jpg';
 import { useCustomerContext } from '../../context/Customergetters';
 import { useChat } from '../../context/ChatRoom';
 import { getDatabase, ref, update, push, set } from 'firebase/database';
 import { app } from '../../firebase';
 import { useUserAuth } from '../../context/Authcontext';
+import { storage } from '../../firebase';
+import { getDownloadURL, uploadBytes } from 'firebase/storage';
 
 export default function Chats() {
   const database = getDatabase(app);
-  // const [customerChatList, setCustomerList] = useState([]);
   const { customer } = useCustomerContext();
   const { chatrooms } = useChat();
   const { userData } = useUserAuth();
   const [messageText, setMessageText] = useState('');
-  const [selectedChatRoomId, setSelectedChatRoomID] = useState('');
-  // console.log("asdfasdf", customer)
+  const [selectedChatRoomId, setSelectedChatRoomID] = useState(null);
+  const [filterMode, setFilterMode] = useState('All');
+  const [activeChat, setActiveChat] = useState(null);
+  const [seenChatrooms, setSeenChatrooms] = useState([]);
+  const [chatImages, setChatImages] = useState([]);
+  function handleChatImgUpload(e) {
+    setChatImages([...chatImages, ...e.target.files]);
+  }
 
-  // console.log(chatrooms)
-
+  function handleChatImgDelete(index) {
+    let updatedImges = [...chatImages];
+    updatedImges.splice(index, 1);
+    setChatImages(updatedImges);
+  }
   const getCustomerData = (customerId) => {
     return customer.find((customer) => customer.id === customerId);
   };
+
   const [currentChat, setCurrentChat] = useState([]);
+
   useEffect(() => {
     if (selectedChatRoomId && chatrooms[selectedChatRoomId]) {
       const messages = Object.entries(chatrooms[selectedChatRoomId].Chats).map(([key, value]) => ({
@@ -42,47 +55,54 @@ export default function Chats() {
     }
   }, [selectedChatRoomId, chatrooms]);
 
-  const selectChat = (chatroomId) => {
-    setSelectedChatRoomID(chatroomId);
-    const chatroom = chatrooms[chatroomId];
-    if (chatroom) {
+  useEffect(() => {
+    markMessagesAsSeen(activeChat);
+  }, [activeChat]);
+
+  const markMessagesAsSeen = (chatroomId) => {
+    if (chatroomId === activeChat) {
       const updates = {};
-      Object.entries(chatroom.Chats).forEach(([key, value]) => {
-        const message = {
-          ...value,
-          id: key,
-          chatroomid: chatroomId,
-        };
-        if (message.senderId === chatroomId.split('_')[0] && !message.seen) {
-          updates[`/Chatrooms/${chatroomId}/Chats/${message.id}/seen`] = true;
-        }
-      });
-      // Update the Firebase database
-      update(ref(database), updates);
+      const chatroom = chatrooms[chatroomId];
+      if (chatroom) {
+        Object.entries(chatroom.Chats).forEach(([key, value]) => {
+          if (!value.seen && value.senderId !== userData.uuid) {
+            updates[`/Chatrooms/${chatroomId}/Chats/${key}/seen`] = true;
+          }
+        });
+        update(ref(database), updates);
+      }
     }
   };
 
-  const sendMessage = (chatroomId) => {
-    // Assuming you have a way to get the current user's ID
-    const senderId = userData.uuid;
+  const selectChat = (chatroomId) => {
+    setSelectedChatRoomID(chatroomId);
+    setActiveChat(chatroomId);
+    // Remove the chatroom from seenChatrooms list when the chat is selected
+    setSeenChatrooms(seenChatrooms.filter((roomId) => roomId !== chatroomId));
+  };
 
-    // Create a new message object
+  const sendMessage = async (chatroomId) => {
+    const senderId = userData.uuid;
     const newMessage = {
       message: messageText,
       createdAt: new Date().toISOString(),
       messageType: 'TEXT',
+      // chat_imges: images,
       seen: false,
       senderId,
     };
 
-    // Add the new message to the chatroom
     const chatRef = ref(database, `Chatrooms/${chatroomId}/Chats`);
     const newMessageRef = push(chatRef);
     set(newMessageRef, newMessage);
 
-    // Clear the message input
     setMessageText('');
     setCurrentChat((prevChat) => [...prevChat, newMessage]);
+
+    // const filename = Math.floor(Date.now() / 1000) + '-' + chatImages.name;
+    // const storageRef = ref(storage, `/chat/${filename}`);
+    // await uploadBytes(storageRef, chatImages);
+    // var images = await getDownloadURL(storageRef);
   };
 
   const chatContainerRef = useRef(null);
@@ -91,7 +111,41 @@ export default function Chats() {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [currentChat]);
+  }, [currentChat, chatImages]);
+
+  const handleFilterModeChange = (mode) => {
+    setFilterMode(mode);
+  };
+
+  const filterChatrooms = () => {
+    if (filterMode === 'All') {
+      return Object.keys(chatrooms);
+    } else if (filterMode === 'Read') {
+      return Object.keys(chatrooms).filter((chatroomId) => {
+        const room = chatrooms[chatroomId];
+        return room && room.Chats && Object.keys(room.Chats).length > 0 && isLastMessageSeen(room);
+      });
+    } else if (filterMode === 'Unread') {
+      return Object.keys(chatrooms).filter((chatroomId) => {
+        const room = chatrooms[chatroomId];
+        if (!room || !room.Chats) return false;
+        const costumerid = chatroomId.split('_')[0];
+        const unseenMessageCount = Object.values(room.Chats).reduce((count, message) => {
+          if (!message.seen && message.senderId === costumerid && chatroomId !== activeChat) {
+            return count + 1;
+          }
+          return count;
+        }, 0);
+        return unseenMessageCount > 0 && !seenChatrooms.includes(chatroomId);
+      });
+    }
+  };
+
+  const isLastMessageSeen = (room) => {
+    const lastMessageKey = Object.keys(room.Chats).pop();
+    const lastMessage = room.Chats[lastMessageKey];
+    return lastMessage && lastMessage.seen;
+  };
 
   return (
     <div className="chat_container">
@@ -105,27 +159,43 @@ export default function Chats() {
               placeholder="People, Groups and Messages"
             />
           </div>
-          <div className="d-flex align-items-center chat_read_btn">
-            <button className="fs-sm fw-400 black w-100">All</button>
-            <button className="fs-sm fw-400 black w-100">Read</button>
-            <button className="fs-sm fw-400 black w-100">Unread</button>
+          <div className="d-flex align-items-center chat_read_btn overflow-hidden">
+            <button
+              className={`fs-sm fw-400 black w-100 ${
+                filterMode === 'All' ? 'active_chat_btn' : ''
+              }`}
+              onClick={() => handleFilterModeChange('All')}>
+              All
+            </button>
+            <button
+              className={`fs-sm fw-400 black w-100 ${
+                filterMode === 'Read' ? 'active_chat_btn' : ''
+              }`}
+              onClick={() => handleFilterModeChange('Read')}>
+              Read
+            </button>
+            <button
+              className={`fs-sm fw-400 black w-100 ${
+                filterMode === 'Unread' ? ' active_chat_btn' : ''
+              }`}
+              onClick={() => handleFilterModeChange('Unread')}>
+              Unread
+            </button>
           </div>
           <div className="mt_20 customer_list_chat d-flex flex-column row-gap-3">
-            {Object.keys(chatrooms).map((chatroomId, index) => {
+            {filterChatrooms().map((chatroomId, index) => {
               let costumerid = chatroomId.split('_')[0];
               const customer = getCustomerData(costumerid);
-              const lastMessageKey = Object.keys(chatrooms[chatroomId].Chats).pop();
-              const lastMessage = chatrooms[chatroomId].Chats[lastMessageKey];
-              // Count messages where seen is not true
-              const unseenMessageCount = Object.values(chatrooms[chatroomId].Chats).reduce(
-                (count, message) => {
-                  if (!message.seen && message.senderId === costumerid) {
-                    return count + 1;
-                  }
-                  return count;
-                },
-                0
-              );
+              const room = chatrooms[chatroomId];
+              if (!room || !room.Chats) return null;
+              const lastMessageKey = Object.keys(room.Chats).pop();
+              const lastMessage = room.Chats[lastMessageKey];
+              const unseenMessageCount = Object.values(room.Chats).reduce((count, message) => {
+                if (!message.seen && message.senderId === costumerid && chatroomId !== activeChat) {
+                  return count + 1;
+                }
+                return count;
+              }, 0);
 
               return (
                 <div
@@ -185,6 +255,7 @@ export default function Chats() {
                       if (msg.senderId === userData.uuid) {
                         return (
                           <div key={msg.senderId} className="d-flex justify-content-end mt-2">
+                            {msg.imges && <img src={msg.chat_imges} alt="" />}
                             <Sender msg={msg.message} date={msg.createdAt} />
                           </div>
                         );
@@ -192,16 +263,34 @@ export default function Chats() {
                         return (
                           <div className="d-flex">
                             <Reciver msg={msg.message} date={msg.createdAt} />
+                            {msg.imges && <img src={msg.chat_imges} alt="" />}
                           </div>
                         );
                       }
                     })}
+                  <div className="d-flex gap-2 flex-wrap">
+                    {chatImages.map((imgs, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="position-relative"
+                          style={{ width: '100px', height: '100px' }}>
+                          <img className="w-100 h-100" src={URL.createObjectURL(imgs)} alt="" />
+                          <div
+                            onClick={() => handleChatImgDelete(index)}
+                            className="position-absolute top-0 end-0 z-1 cursor_pointer img_cut_icon">
+                            <img src={closeIcon} alt="closeIcon" />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
                 <div
                   style={{ padding: '0 30px' }}
-                  className="w-100 d-flex align-items-center gap-2 justify-content-between mt-3 pt-1">
+                  className="w-100 d-flex align-items-center gap-2 justify-content-between mt-3 pt-1 mb-2">
                   <input
-                    className="w-100 mb-2 msg_send_input fs-sm fw-400 black"
+                    className="w-100 msg_send_input fs-sm fw-400 black"
                     placeholder="Enter your message"
                     type="text"
                     value={messageText}
@@ -210,7 +299,7 @@ export default function Chats() {
                   <label htmlFor="chat">
                     <img className="cursor_pointer" src={attechFile} alt="attechFile" />
                   </label>
-                  <input id="chat" type="file" hidden />
+                  <input onChange={handleChatImgUpload} multiple id="chat" type="file" hidden />
                   <img
                     className="cursor_pointer"
                     src={sendMsg}

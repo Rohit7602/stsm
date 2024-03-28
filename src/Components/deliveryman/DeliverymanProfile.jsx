@@ -21,8 +21,8 @@ const DeliverymanProfile = () => {
   const [approvePopup, setApprovePopup] = useState(false);
   const [rejectPopup, setRejectPopup] = useState(false);
   const [jobType, setJobType] = useState('');
-  const [joiningDate, setjoiningDate] = useState('')
-  const [rejectReason, setRejectReason] = useState('')
+  const [joiningDate, setjoiningDate] = useState('');
+  const [rejectReason, setRejectReason] = useState('');
   useEffect(() => {
     const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
     setfilterData(DeliveryManDatas);
@@ -43,15 +43,18 @@ const DeliverymanProfile = () => {
           employement_type: employTypeDropdown,
           joining_date: new Date(joiningDate).toISOString(),
           shift: jobType,
-        }
+        },
       });
       setLoading(false);
       updateDeliveryManData({
-        id: id, is_verified: true, profile_status: 'APPROVED', job_info: {
+        id: id,
+        is_verified: true,
+        profile_status: 'APPROVED',
+        job_info: {
           employement_type: employTypeDropdown,
           joining_date: new Date(joiningDate).toISOString(),
           shift: jobType,
-        }
+        },
       });
       toast.success('Verified Successfully', {
         position: toast.POSITION.TOP_RIGHT,
@@ -88,6 +91,7 @@ const DeliverymanProfile = () => {
   return filterData.map((datas, index) => {
     return (
       <div className="my-4">
+        {approvePopup || rejectPopup ? <div className="bg_black_overlay"></div> : null}
         {approvePopup ? (
           <div className="approve_popup">
             <div className="d-flex align-items-center justify-content-between">
@@ -103,7 +107,12 @@ const DeliverymanProfile = () => {
               Joining Date
             </label>
             <br />
-            <input id="date" onChange={(E) => setjoiningDate(E.target.value)} className="input w-100" type="date" />
+            <input
+              id="date"
+              onChange={(E) => setjoiningDate(E.target.value)}
+              className="input w-100"
+              type="date"
+            />
             <br />
             <label className="fs-xs fw-400 black mt-3 pt-1" htmlFor="date">
               Employment Type
@@ -340,32 +349,34 @@ const DeliverymanProfile = () => {
             </div>
           </div>
         </div>
-        <div className="d-flex align-items-center text-center gap-4 mt-4 pb-2 flex-wrap">
-          <div className="d-flex align-items-center text-center bg_light_orange">
-            <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
-              <p className="fs-sm fw-400 black m-0">Total Delivery</p>
-              <p className="fs_24 fw_600 red m-0 mt-2">30</p>
+        {datas.profile_status === 'APPROVED' ? (
+          <div className="d-flex align-items-center text-center gap-4 mt-4 pb-2 flex-wrap">
+            <div className="d-flex align-items-center text-center bg_light_orange">
+              <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
+                <p className="fs-sm fw-400 black m-0">Total Delivery</p>
+                <p className="fs_24 fw_600 red m-0 mt-2">30</p>
+              </div>
+              <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
+                <p className="fs-sm fw-400 black m-0">On Site Orders</p>
+                <p className="fs_24 fw_600 black m-0 mt-2">12</p>
+              </div>
             </div>
-            <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
-              <p className="fs-sm fw-400 black m-0">On Site Orders</p>
-              <p className="fs_24 fw_600 black m-0 mt-2">12</p>
+            <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_sky">
+              <p className="fs-sm fw-400 black m-0">Attendance Count</p>
+              <p className="fs_24 fw_600 color_blue m-0 mt-2">16</p>
+            </div>
+            <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_green">
+              <p className="fs-sm fw-400 black m-0">Wallet Balance</p>
+              <p className="fs_24 fw_600 green m-0 mt-2">₹ 12,500</p>
+            </div>
+            <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_purple">
+              <p className="fs-sm fw-400 black m-0">Van Capacity</p>
+              <p className="progress_bar mb-0 mt-2">
+                <span></span>
+              </p>
             </div>
           </div>
-          <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_sky">
-            <p className="fs-sm fw-400 black m-0">Attendance Count</p>
-            <p className="fs_24 fw_600 color_blue m-0 mt-2">16</p>
-          </div>
-          <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_green">
-            <p className="fs-sm fw-400 black m-0">Wallet Balance</p>
-            <p className="fs_24 fw_600 green m-0 mt-2">₹ 12,500</p>
-          </div>
-          <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_purple">
-            <p className="fs-sm fw-400 black m-0">Van Capacity</p>
-            <p className="progress_bar mb-0 mt-2">
-              <span></span>
-            </p>
-          </div>
-        </div>
+        ) : null}
         <Row className="mt-3">
           <Col xl={6}>
             <div className="p-2 bg-white product_shadow">

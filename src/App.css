@@ -2292,7 +2292,7 @@ min_width_230 {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 1;
+  z-index: 3;
 }
 .approve_popup .input {
   padding: 10px 15px;
@@ -2323,6 +2323,19 @@ min_width_230 {
 }
 .fw-600 {
   font-weight: 600;
+}
+.active_chat_btn {
+  border-right: 0.8px solid #d9d9d9 !important;
+  background-color: #0215bdb9 !important;
+  color: white !important;
+}
+.img_cut_icon {
+  width: 20px;
+  height: 20px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 /* ===========Medgitia-query========== */
 @media (max-width: 1400px) {
