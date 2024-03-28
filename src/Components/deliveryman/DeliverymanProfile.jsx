@@ -21,7 +21,8 @@ const DeliverymanProfile = () => {
   const [approvePopup, setApprovePopup] = useState(false);
   const [rejectPopup, setRejectPopup] = useState(false);
   const [jobType, setJobType] = useState('');
-
+  const [joiningDate, setjoiningDate] = useState('')
+  const [rejectReason, setRejectReason] = useState('')
   useEffect(() => {
     const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
     setfilterData(DeliveryManDatas);
@@ -38,9 +39,20 @@ const DeliverymanProfile = () => {
         is_verified: true,
         profile_status: 'APPROVED',
         updated_at: new Date().toISOString(),
+        job_info: {
+          employement_type: employTypeDropdown,
+          joining_date: new Date(joiningDate).toISOString(),
+          shift: jobType,
+        }
       });
       setLoading(false);
-      updateDeliveryManData({ id: id, is_verified: true, profile_status: 'APPROVED' });
+      updateDeliveryManData({
+        id: id, is_verified: true, profile_status: 'APPROVED', job_info: {
+          employement_type: employTypeDropdown,
+          joining_date: new Date(joiningDate).toISOString(),
+          shift: jobType,
+        }
+      });
       toast.success('Verified Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -56,6 +68,7 @@ const DeliverymanProfile = () => {
         is_verified: false,
         profile_status: 'REJECTED',
         updated_at: new Date().toISOString(),
+        Reason: rejectReason,
       });
       setLoading(false);
       updateDeliveryManData({ id: id, is_verified: true, profile_status: 'REJECTED' });
@@ -90,7 +103,7 @@ const DeliverymanProfile = () => {
               Joining Date
             </label>
             <br />
-            <input id="date" className="input w-100" type="date" />
+            <input id="date" onChange={(E) => setjoiningDate(E.target.value)} className="input w-100" type="date" />
             <br />
             <label className="fs-xs fw-400 black mt-3 pt-1" htmlFor="date">
               Employment Type
@@ -105,7 +118,7 @@ const DeliverymanProfile = () => {
                 aria-expanded="false">
                 <div className="d-flex align-items-center justify-content-between w-100">
                   <p className="ff-outfit fw-400 fs_sm m-0 fade_grey">
-                    {employTypeDropdown ? employTypeDropdown : 'Salaried'}
+                    {employTypeDropdown ? employTypeDropdown : 'SALARIED'}
                   </p>
                   <svg
                     width="24"
@@ -128,18 +141,18 @@ const DeliverymanProfile = () => {
                 aria-labelledby="dropdownMenuButton3">
                 <li>
                   <div
-                    onClick={() => setEmployTypeDropdown('ABC')}
+                    onClick={() => setEmployTypeDropdown('SALARIED')}
                     className="dropdown-item py-2"
                     href="#">
-                    <p className="fs-sm fw-400 balck m-0">ABC</p>
+                    <p className="fs-sm fw-400 balck m-0">SALARIED</p>
                   </div>
                 </li>
                 <li>
                   <div
-                    onClick={() => setEmployTypeDropdown('DEF')}
+                    onClick={() => setEmployTypeDropdown('COMMISSION')}
                     className="dropdown-item py-2"
                     href="#">
-                    <p className="fs-sm fw-400 balck m-0">DEF</p>
+                    <p className="fs-sm fw-400 balck m-0">COMMISSION</p>
                   </div>
                 </li>
               </ul>
@@ -148,8 +161,8 @@ const DeliverymanProfile = () => {
               <div className="d-flex align-items-center w-100">
                 <label class="check1 fw-400 fs-sm black mb-0  ms-3">
                   <input
-                    onChange={() => setJobType('Part Time')}
-                    checked={jobType === 'Part Time'}
+                    onChange={() => setJobType('PARTTIME')}
+                    checked={jobType === 'PARTTIME'}
                     type="checkbox"
                   />
                   <span class="checkmark"></span>
@@ -159,8 +172,8 @@ const DeliverymanProfile = () => {
               <div className="d-flex align-items-center w-100">
                 <label class="check1 fw-400 fs-sm black mb-0 ">
                   <input
-                    onChange={() => setJobType('Full Time')}
-                    checked={jobType === 'Full Time'}
+                    onChange={() => setJobType('FULLTIME')}
+                    checked={jobType === 'FULLTIME'}
                     type="checkbox"
                   />
                   <span class="checkmark"></span>
@@ -198,6 +211,7 @@ const DeliverymanProfile = () => {
             <textarea
               style={{ maxHeight: '90px' }}
               className="input w-100 outline_none resize_none"
+              onChange={(e) => setRejectReason(e.target.value)}
               placeholder="Enter a proper reason here..."></textarea>
             <div className="text-end mt-3 pt-1">
               <button
