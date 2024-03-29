@@ -16,12 +16,81 @@ function DashbordCards() {
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1; // Handle January as special case
+  const last20DaysDate = new Date(currentDate.getTime() - (20 * 24 * 60 * 60 * 1000)); // Calculate date 20 days ago
+
+  const ordersLast20Days = orders.filter(order => new Date(order.created_at) >= last20DaysDate);
+
+  // Calculate the total number of orders per city
+  const ordersPerCity = ordersLast20Days.reduce((acc, order) => {
+    const { name, email, phone } = order.customer;
+    const { city } = order.shipping;
+
+    // Create a unique identifier for the customer
+    const customerIdentifier = `${name}_${email}_${phone}`;
+
+    // If the customer is not already counted for the city, increment the count
+    if (!acc[city] || !acc[city].includes(customerIdentifier)) {
+      acc[city] = acc[city] || [];
+      acc[city].push(customerIdentifier);
+    }
+
+    return acc;
+  }, {});
+
+  // Calculate the total length per city
+  const totalLengthPerCity = Object.keys(ordersPerCity).reduce((acc, city) => {
+    acc[city] = ordersPerCity[city].length;
+    return acc;
+  }, {});
+
+  // console.log(totalLengthPerCity);
+  const totalActiveUsers = Object.values(totalLengthPerCity).reduce((acc, count) => acc + count, 0);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // console.log("ORder of Last 20 days", ordersLast20Days);
 
   // Filter orders for the current month and last month
   const ordersThisMonth = orders.filter(order => new Date(order.created_at).getMonth() === currentMonth);
   const ordersLastMonth = orders.filter(order => new Date(order.created_at).getMonth() === lastMonth);
-  console.log("ordrethismonth", ordersThisMonth.length)
-  console.log("orderlastmonth", ordersLastMonth.length)
+  // console.log("ordrethismonth", ordersThisMonth.length)
+  // console.log("orderlastmonth", ordersLastMonth.length)
   // Calculate the average order value for each month
 
   const percentageChangeOfOrderMonth = ((ordersThisMonth.length - ordersLastMonth.length) / ordersLastMonth.length) * 100
@@ -61,7 +130,7 @@ function DashbordCards() {
  * ****************************************    */
 
   let DeliverdOrder = orders.filter((item) => item.status.toString().toLowerCase() === 'delivered')
-  console.log(DeliverdOrder)
+  // console.log(DeliverdOrder)
   const deliveredOrdersThisMonthValue = DeliverdOrder.filter(order => new Date(order.created_at).getMonth() === currentMonth).reduce((total, order) => total + order.order_price, 0);
   const deliveredOrdersLastMonthValue = DeliverdOrder.filter(order => new Date(order.created_at).getMonth() === lastMonth).reduce((total, order) => total + order.order_price, 0);
   // console.log("thismonthdeliverd", deliveredOrdersThisMonthValue)
@@ -77,7 +146,6 @@ function DashbordCards() {
     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric" };
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
     return formattedDate.replace('at', '|');
-    
   }
 
   return (
@@ -156,36 +224,18 @@ function DashbordCards() {
                   <h3 className="fw-400 fade_grey mb-0 fs-xs"> Active Users</h3>
                 </div>
                 <div className="grey_box my-2 text-center w-100 p-2">
-                  <h3 className="fw-500 black mb-0 fs-lg">56</h3>
+                  <h3 className="fw-500 black mb-0 fs-lg">{totalActiveUsers}</h3>
                 </div>
                 <div className="d-flex align-items-center py-1 bottom_border  justify-content-between">
                   <h4 className="fw-400 fade_grey mb-0 fs-xs"> City</h4>
                   <h4 className="fw-400 fade_grey mb-0 fs-xs"> Users</h4>
                 </div>
-                <div className="d-flex align-items-center py-1 bottom_border  justify-content-between">
-                  <h4 className="fw-400 black mb-0 fs-xs"> Hisar</h4>
-                  <h4 className="fw-400 black mb-0 fs-xs"> 12</h4>
-                </div>
-                <div className="d-flex align-items-center py-1 bottom_border  justify-content-between">
-                  <h4 className="fw-400 black mb-0 fs-xs"> Hansi</h4>
-                  <h4 className="fw-400 black mb-0 fs-xs"> 8</h4>
-                </div>
-                <div className="d-flex align-items-center py-1 bottom_border  justify-content-between">
-                  <h4 className="fw-400 black mb-0 fs-xs"> Fatehabad</h4>
-                  <h4 className="fw-400 black mb-0 fs-xs"> 4</h4>
-                </div>
-                <div className="d-flex align-items-center py-1 bottom_border  justify-content-between">
-                  <h4 className="fw-400 black mb-0 fs-xs"> Siwani</h4>
-                  <h4 className="fw-400 black mb-0 fs-xs"> 9</h4>
-                </div>
-                <div className="d-flex align-items-center py-1 bottom_border  justify-content-between">
-                  <h4 className="fw-400 black mb-0 fs-xs"> Agroha</h4>
-                  <h4 className="fw-400 black mb-0 fs-xs"> 10</h4>
-                </div>
-                <div className="d-flex align-items-center py-1 bottom_border  justify-content-between">
-                  <h4 className="fw-400 black mb-0 fs-xs"> Barwala</h4>
-                  <h4 className="fw-400 black mb-0 fs-xs"> 18</h4>
-                </div>
+                {Object.entries(totalLengthPerCity).map(([city, count]) => (
+                  <div key={city} className="d-flex align-items-center py-1 bottom_border justify-content-between">
+                    <h4 className="fw-400 black mb-0 fs-xs">{city}</h4>
+                    <h4 className="fw-400 black mb-0 fs-xs">{count}</h4>
+                  </div>
+                ))}
               </div>
             </div>
             <div className="col-xl-9 col-lg-7 col-12 h-100 mt-4 mt-lg-0">
@@ -233,7 +283,7 @@ function DashbordCards() {
                     {NewOrders.length === 0 ? (
                       <tr>
                         <td className="text-center py-2 fs-lg " colSpan="6">
-                          No new Orders 
+                          No new Orders
                         </td>
                       </tr>
                     ) : (
