@@ -2107,7 +2107,7 @@ min_width_230 {
 .service_area_show_btn {
   padding: 5px 15px;
   border: 0;
-  background-color: rgb(192, 188, 188);
+  background-color: #e0e0e0;
   color: black;
   border-radius: 5px;
 }
@@ -2336,6 +2336,56 @@ min_width_230 {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.add_resolution_popup {
+  padding: 10px 20px;
+  background-color: var(--color-white);
+  border-radius: 10px;
+  width: 456px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+.mark_resolve_btn {
+  margin-top: 10px;
+}
+.mark_resolve_btn button {
+  padding: 10px 20px;
+  background-color: var(--color-green);
+  border-radius: 8px;
+  border: 0;
+}
+.delivery_location_sidebar {
+  padding: 10px;
+  border-radius: 10px;
+  min-width: 300px;
+  margin-left: 20px;
+  background-color: var(--color-white);
+}
+.service_locations {
+  border: 1px solid #0000001a;
+  padding: 3px 10px;
+  background-color: #f4f4f4;
+  border-radius: 50px;
+}
+.delivery_service_area_popup {
+  padding: 20px;
+  background-color: var(--color-white);
+  border-radius: 10px;
+  width: 660px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+.save_service_data {
+  padding: 10px 15px;
+  background-color: var(--color-green);
+  border-radius: 10px;
+  border: 0;
 }
 /* ===========Medgitia-query========== */
 @media (max-width: 1400px) {
