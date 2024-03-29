@@ -11,14 +11,10 @@ import manimage from '../../Images/Png/manimage.jpg';
 import { useCustomerContext } from '../../context/Customergetters';
 import { useChat } from '../../context/ChatRoom';
 import { getDatabase, ref, update, push, set } from 'firebase/database';
-// import { ref } from 'firebase/storage';
 import { app } from '../../firebase';
 import { useUserAuth } from '../../context/Authcontext';
 import { storage } from '../../firebase';
 import { getDownloadURL, uploadBytes } from 'firebase/storage';
-import { ref as storageREf } from 'firebase/storage';
-
-
 
 export default function Chats() {
   const database = getDatabase(app);
@@ -31,6 +27,7 @@ export default function Chats() {
   const [activeChat, setActiveChat] = useState(null);
   const [seenChatrooms, setSeenChatrooms] = useState([]);
   const [chatImages, setChatImages] = useState([]);
+  const [search, setSearch] = useState('');
   function handleChatImgUpload(e) {
     setChatImages([...chatImages, ...e.target.files]);
   }
@@ -48,22 +45,12 @@ export default function Chats() {
 
   useEffect(() => {
     if (selectedChatRoomId && chatrooms[selectedChatRoomId]) {
-      let chatroom = chatrooms[selectedChatRoomId]
-      const updates = {};
       const messages = Object.entries(chatrooms[selectedChatRoomId].Chats).map(([key, value]) => ({
         ...value,
         id: key,
         chatroomid: selectedChatRoomId,
       }));
       setCurrentChat(messages);
-      if (chatroom) {
-        Object.entries(chatroom.Chats).forEach(([key, value]) => {
-          if (!value.seen && value.senderId !== userData.uuid) {
-            updates[`/Chatrooms/${selectedChatRoomId}/Chats/${key}/seen`] = true;
-          }
-        });
-        update(ref(database), updates);
-      }
     } else {
       setCurrentChat([]);
     }
@@ -95,45 +82,29 @@ export default function Chats() {
     setSeenChatrooms(seenChatrooms.filter((roomId) => roomId !== chatroomId));
   };
 
-
-  useEffect(() => {
-    console.log("chat images is ", chatImages)
-  }, [chatImages])
-
-
   const sendMessage = async (chatroomId) => {
-    if (messageText != "" || chatImages.length > 0) {
-      const senderId = userData.uuid;
-      let ImageURLs = [];
-      if (chatImages.length > 0) {
-        for await (let file of chatImages) {
-          const files = Math.floor(Date.now() / 1000) + '-' + file.name;
-          const storageRef = storageREf(storage, `/Chats/${files}`);
-          await uploadBytes(storageRef, file); // Use 'file' instead of 'chatImages'
-          const imageURL = await getDownloadURL(storageRef);
-          ImageURLs.push(imageURL);
-        };
-      }
-      const newMessage = {
-        message: messageText,
-        createdAt: new Date().toISOString(),
-        messageType: messageText ? "TEXT" : (messageText && ImageURLs.length > 0) ? 'TEXT / IMAGE' : "IMAGE",
-        seen: false,
-        image: ImageURLs.length > 0 ? ImageURLs : "",
-        senderId,
-      };
+    const senderId = userData.uuid;
+    const newMessage = {
+      message: messageText,
+      createdAt: new Date().toISOString(),
+      messageType: 'TEXT',
+      // chat_imges: images,
+      seen: false,
+      senderId,
+    };
 
-      const chatRef = ref(database, `Chatrooms/${chatroomId}/Chats`);
-      const newMessageRef = push(chatRef);
-      set(newMessageRef, newMessage);
+    const chatRef = ref(database, `Chatrooms/${chatroomId}/Chats`);
+    const newMessageRef = push(chatRef);
+    set(newMessageRef, newMessage);
 
-      setMessageText('');
-      setChatImages([])
-      setCurrentChat((prevChat) => [...prevChat, newMessage]);
-    } else {
-      alert("please enter something before send the message ")
-    }
-  }
+    setMessageText('');
+    setCurrentChat((prevChat) => [...prevChat, newMessage]);
+
+    // const filename = Math.floor(Date.now() / 1000) + '-' + chatImages.name;
+    // const storageRef = ref(storage, `/chat/${filename}`);
+    // await uploadBytes(storageRef, chatImages);
+    // var images = await getDownloadURL(storageRef);
+  };
 
   const chatContainerRef = useRef(null);
 
@@ -147,30 +118,43 @@ export default function Chats() {
     setFilterMode(mode);
   };
 
-  const filterChatrooms = () => {
-    if (filterMode === 'All') {
-      return Object.keys(chatrooms);
-    } else if (filterMode === 'Read') {
-      return Object.keys(chatrooms).filter((chatroomId) => {
-        const room = chatrooms[chatroomId];
-        return room && room.Chats && Object.keys(room.Chats).length > 0 && isLastMessageSeen(room);
-      });
-    } else if (filterMode === 'Unread') {
-      return Object.keys(chatrooms).filter((chatroomId) => {
-        const room = chatrooms[chatroomId];
-        if (!room || !room.Chats) return false;
-        const costumerid = chatroomId.split('_')[0];
-        const unseenMessageCount = Object.values(room.Chats).reduce((count, message) => {
-          if (!message.seen && message.senderId === costumerid && chatroomId !== activeChat) {
-            return count + 1;
-          }
-          return count;
-        }, 0);
-        return unseenMessageCount > 0 && !seenChatrooms.includes(chatroomId);
-      });
-    }
-  };
+const filterChatrooms = () => {
+  let filteredChatrooms = Object.keys(chatrooms);
 
+  // Filter based on search query
+  if (search.trim() !== '') {
+    filteredChatrooms = filteredChatrooms.filter((chatroomId) => {
+      const customer = getCustomerData(chatroomId.split('_')[0]);
+      return customer && customer.name.toLowerCase().includes(search.toLowerCase());
+    });
+  }
+
+  // Apply filter based on mode
+  if (filterMode === 'All') {
+    return filteredChatrooms;
+  } else if (filterMode === 'Read') {
+    return filteredChatrooms.filter((chatroomId) => {
+      const room = chatrooms[chatroomId];
+      return room && room.Chats && Object.keys(room.Chats).length > 0 && isLastMessageSeen(room);
+    });
+  } else if (filterMode === 'Unread') {
+    return filteredChatrooms.filter((chatroomId) => {
+      const room = chatrooms[chatroomId];
+      if (!room || !room.Chats) return false;
+      const costumerid = chatroomId.split('_')[0];
+      const unseenMessageCount = Object.values(room.Chats).reduce((count, message) => {
+        if (!message.seen && message.senderId === costumerid && chatroomId !== activeChat) {
+          return count + 1;
+        }
+        return count;
+      }, 0);
+      return unseenMessageCount > 0 && !seenChatrooms.includes(chatroomId);
+    });
+  }
+};
+
+
+  console.log(search);
   const isLastMessageSeen = (room) => {
     const lastMessageKey = Object.keys(room.Chats).pop();
     const lastMessage = room.Chats[lastMessageKey];
@@ -184,27 +168,31 @@ export default function Chats() {
           <div className="d-flex align-items-center chat_input mt-2">
             <img src={peopleIcon} alt="peopleIcon" />
             <input
-              className="fs-sm fw-400 black"
+              className="fs-sm fw-400 black w-100"
               type="text"
               placeholder="People, Groups and Messages"
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="d-flex align-items-center chat_read_btn overflow-hidden">
             <button
-              className={`fs-sm fw-400 black w-100 ${filterMode === 'All' ? 'active_chat_btn' : ''
-                }`}
+              className={`fs-sm fw-400 black w-100 ${
+                filterMode === 'All' ? 'active_chat_btn' : ''
+              }`}
               onClick={() => handleFilterModeChange('All')}>
               All
             </button>
             <button
-              className={`fs-sm fw-400 black w-100 ${filterMode === 'Read' ? 'active_chat_btn' : ''
-                }`}
+              className={`fs-sm fw-400 black w-100 ${
+                filterMode === 'Read' ? 'active_chat_btn' : ''
+              }`}
               onClick={() => handleFilterModeChange('Read')}>
               Read
             </button>
             <button
-              className={`fs-sm fw-400 black w-100 ${filterMode === 'Unread' ? ' active_chat_btn' : ''
-                }`}
+              className={`fs-sm fw-400 black w-100 ${
+                filterMode === 'Unread' ? ' active_chat_btn' : ''
+              }`}
               onClick={() => handleFilterModeChange('Unread')}>
               Unread
             </button>
@@ -282,13 +270,13 @@ export default function Chats() {
                       if (msg.senderId === userData.uuid) {
                         return (
                           <div key={msg.senderId} className="d-flex justify-content-end mt-2">
-                            <Sender msg={msg.message} date={msg.createdAt} images={msg.image} />
+                            <Sender msg={msg.message} date={msg.createdAt} />
                           </div>
                         );
                       } else {
                         return (
                           <div className="d-flex">
-                            <Reciver msg={msg.message} date={msg.createdAt} images={msg.image} />
+                            <Reciver msg={msg.message} date={msg.createdAt} />
                           </div>
                         );
                       }

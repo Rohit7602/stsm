@@ -3,17 +3,31 @@ import ComplainCusPic from '../../Images/Png/complain-pic.png';
 import DropdownBlack from '../../Images/svgs/dropdown-black.svg';
 import ReplyBtn from '../../Images/svgs/reply-icon.svg';
 import SendIcon from '../../Images/svgs/send-icon.svg';
+import closeIcon from '../../Images/svgs/closeicon.svg';
 
 export default function ComplainDetails() {
   const [reply, setReply] = useState(false);
   const [replyContent, setReplyContent] = useState(false);
+  const [addResolutionPopup, setAddResolutionPopup] = useState(true);
+  const [resolve, setResolve] = useState(false);
   const [replytext, setReplyText] = useState('');
+  const [resolutionValue, setResolutionValue] = useState('');
   function handelSubmitReply() {
     setReplyContent(true);
     setReply(false);
   }
+  const addResolutionData = [
+    { value: 'Replacement item shipped.' },
+    { value: 'Apology letter sent with compensation.' },
+    { value: 'Account credited with refund amount.' },
+    { value: 'Product exchange arranged.' },
+    { value: 'Issue escalated to senior support for further assistance.' },
+    { value: 'Partial refund issued for the inconvenience caused.' },
+    { value: 'Follow-up call scheduled for feedback.' },
+  ];
   return (
     <div className="complain_details mt-4 pe-3">
+      {addResolutionPopup ? <div className="bg_black_overlay"></div> : null}
       <div className="mt-2 p_20 complain_bg">
         <div>
           <div className="d-flex align-items-center">
@@ -92,7 +106,15 @@ export default function ComplainDetails() {
               <img src={ReplyBtn} alt="ReplyBtn" />
               <p className="fs_20 fw-400 black m-0">Reply</p>
             </button>
-            <button className="fs_20 fw-400 text-white resolve_btn ms-2">Resolve</button>
+            {!resolve ? (
+              <button
+                onClick={() => setAddResolutionPopup(true)}
+                className="fs_20 fw-400 text-white resolve_btn ms-2">
+                Add Resolution Log
+              </button>
+            ) : (
+              <button className="fs_20 fw-400 text-white resolve_btn ms-2">Resolve</button>
+            )}
           </div>
         ) : null}
 
@@ -113,6 +135,71 @@ export default function ComplainDetails() {
           </div>
         ) : null}
       </div>
+      {addResolutionPopup ? (
+        <div className="add_resolution_popup">
+          <div className="d-flex align-items-center justify-content-between">
+            <p className="fs-sm fw-400 black m-0">Add Resolution Log</p>
+            <img onClick={() => setAddResolutionPopup(false)} src={closeIcon} alt="closeIcon" />
+          </div>
+          <div className="dropdown w-100 mt-2 pt-1">
+            <button
+              style={{ height: '44px', borderRadius: '8px', backgroundColor: '#F4F4F4' }}
+              className="btn dropdown-toggle w-100"
+              type="button"
+              id="dropdownMenuButton3"
+              data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <div className="d-flex align-items-center justify-content-between w-100">
+                <p
+                  style={{ textAlign: 'start', width: '360px', overflow: 'hidden' }}
+                  className="ff-outfit fw-400 fs_sm mb-0 black">
+                  {resolutionValue ? resolutionValue : 'Select Your Resolution..'}
+                </p>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M7 10L12 15L17 10"
+                    stroke="black"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+            </button>
+            <ul
+              className="dropdown-menu delivery_man_dropdown w-100"
+              aria-labelledby="dropdownMenuButton3">
+              {addResolutionData.map((itmes) => {
+                return (
+                  <li>
+                    <div
+                      onClick={() => setResolutionValue(itmes.value)}
+                      className="dropdown-item py-2 cursor_pointer"
+                      href="#">
+                      <p className="fs-xs fw-400 balck m-0">{itmes.value}</p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          <div className="d-flex justify-content-end mark_resolve_btn">
+            <button
+              onClick={() => {
+                setResolve(true);
+                setAddResolutionPopup(false);
+              }}
+              className="fs-sm fw-400 white">
+              Mark Resolve
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
