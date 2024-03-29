@@ -19,7 +19,10 @@ const DeliveryManList = () => {
 
   const [showLocation, setShowLocation] = useState(false);
   const [searchvalue, setSearchvalue] = useState('');
-  console.log('delivery man data ', DeliveryManData);
+
+  const [selectedId, setSelectedId] = useState('')
+  const [filterData, setFilterData] = useState([])
+
   const [order, setorder] = useState('ASC');
   const sorting = (col) => {
     // Create a copy of the data array
@@ -84,6 +87,15 @@ const DeliveryManList = () => {
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
+
+  useEffect(() => {
+    if (selectedId) {
+      let Datas = DeliveryManData.filter((data) => data.id === selectedId);
+      setFilterData(Datas);
+    }
+  }, [selectedId, DeliveryManData]);
+
+
   if (loaderstatus) {
     return (
       <>
@@ -220,31 +232,41 @@ const DeliveryManList = () => {
                             </td>
                             <td className="px-2 mx_140">
                               <h3
-                                className={`fs-sm fw-400 ${
-                                  data.status === 'online' ? 'status_btn_green' : 'status_btn_red'
-                                } mb-0`}>
+                                className={`fs-sm fw-400 ${data.status === 'online' ? 'status_btn_green' : 'status_btn_red'
+                                  } mb-0`}>
                                 {data.status}
                               </h3>
                               {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">online</h3> */}
                             </td>
                             <td className="ps-3 mx_160">
                               <h3
-                                className={`fs-sm fw-400 status_btn_green mb-0  ${
-                                  data.profile_status === 'NEW'
-                                    ? ' on_credit_bg'
-                                    : data.profile_status === 'APPROVED'
+                                className={`fs-sm fw-400 status_btn_green mb-0  ${data.profile_status === 'NEW'
+                                  ? ' on_credit_bg'
+                                  : data.profile_status === 'APPROVED'
                                     ? 'green stock_bg '
                                     : 'status_btn_red'
-                                } `}>
+                                  } `}>
                                 {data.profile_status === 'NEW' ? 'PENDING' : data.profile_status}
                               </h3>
                               {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">Rejected</h3> */}
                             </td>
                             <td className="ps-3 mx_160">
-                              <h3
-                                onClick={() => setShowLocation(true)}
-                                className="fs-sm fw-400 black mb-0">
-                                <button className="service_area_show_btn fs-sm fw-400">Show</button>
+                              <h3 className="fs-sm fw-400 black mb-0">
+                                {data.is_verified === true && data.status === 'online' && data.profile_status === "APPROVED" ? (
+                                  <button
+                                    onClick={() => {
+                                      setSelectedId(data.id)
+                                      setShowLocation(true);
+                                    }}
+                                    className="service_area_show_btn fs-sm fw-400"
+                                  >
+                                    Show
+                                  </button>
+                                ) : (
+                                  <button className="service_area_show_btn fs-sm fw-400 opacity-25" disabled>
+                                    Show
+                                  </button>
+                                )}
                               </h3>
                             </td>
                             <td className=" mx_140 ps-3">
@@ -275,49 +297,55 @@ const DeliveryManList = () => {
             </div>
             {showLocation ? (
               <div className="delivery_location_sidebar">
-                <div className="d-flex align-items-center justify-content-between">
-                  <div>
-                    <p className="fs-sm fw-600 black m-0">John Doe</p>
-                    <p className="fs-xs fw-400 black m-0 mt-1">Service Area List</p>
-                  </div>
-                  <img
-                    onClick={() => setShowLocation(false)}
-                    style={{ transform: 'rotate(-180deg)' }}
-                    className="cursor_pointer"
-                    src={rightDubbleArrow}
-                    alt="rightDubbleArrow"
-                  />
-                </div>
-                <span
+                {filterData.map((data) => {
+                  return (
+                    <>
+                      <div className="d-flex align-items-center justify-content-between">
+                        <div>
+                          <p className="fs-sm fw-600 black m-0">{data.basic_info.name}</p>
+                          <p className="fs-xs fw-400 black m-0 mt-1">Service Area List</p>
+                        </div>
+                        <img
+                          onClick={() => setShowLocation(false)}
+                          style={{ transform: 'rotate(-180deg)' }}
+                          className="cursor_pointer"
+                          src={rightDubbleArrow}
+                          alt="rightDubbleArrow"
+                        />
+                      </div>
+
+                      <div>
+                        {data.serviceArea.map((area) => (
+
+                          <>
+                            <span
+                              style={{
+                                border: '1px solid #00000033',
+                                width: '100%',
+                                display: 'inline-block',
+                              }}></span>
+                            <p className="fs-xs fw-600 black mt-2">{area.area_name} ({area.pincode})</p>
+                            <div className="d-flex gap-2 flex-wrap">
+                              {area.terretory.map((territory) => (
+                                <div className="d-flex align-items-center service_locations gap-2">
+                                  <p className="fs-xxs fw-400 black m-0">{territory}</p>
+                                  <img className="ms-1 cursor_pointer" src={removeIcon} alt="removeIcon" />
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        ))}
+                      </div>
+                    </>
+                  )
+                })}
+                {/* <span
                   style={{
                     border: '1px solid #00000033',
                     width: '100%',
                     display: 'inline-block',
-                  }}></span>
-                <div>
-                  <p className="fs-xs fw-600 black mt-2">Hisar (125001)</p>
-                  <div className="d-flex gap-2 flex-wrap">
-                    <div className="d-flex align-items-center service_locations gap-2">
-                      <p className="fs-xxs fw-400 black m-0">Dabra Chowk</p>
-                      <img className="ms-1 cursor_pointer" src={removeIcon} alt="removeIcon" />
-                    </div>
-                    <div className="d-flex align-items-center service_locations gap-2">
-                      <p className="fs-xxs fw-400 black m-0">PLA</p>
-                      <img className="ms-1 cursor_pointer" src={removeIcon} alt="removeIcon" />
-                    </div>
-                    <div className="d-flex align-items-center service_locations gap-2">
-                      <p className="fs-xxs fw-400 black m-0">Red Square Market</p>
-                      <img className="ms-1 cursor_pointer" src={removeIcon} alt="removeIcon" />
-                    </div>
-                  </div>
-                </div>
-                <span
-                  style={{
-                    border: '1px solid #00000033',
-                    width: '100%',
-                    display: 'inline-block',
-                  }}></span>
-                <div>
+                  }}></span> */}
+                {/* <div>
                   <p className="fs-xs fw-600 black mt-2">Barwala (125121)</p>
                   <div className="d-flex gap-2 flex-wrap">
                     <div className="d-flex align-items-center service_locations gap-2">
@@ -333,7 +361,7 @@ const DeliveryManList = () => {
                       <img className="ms-1 cursor_pointer" src={removeIcon} alt="removeIcon" />
                     </div>
                   </div>
-                </div>
+                </div> <>*/}
               </div>
             ) : null}
           </div>
