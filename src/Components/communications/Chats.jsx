@@ -118,41 +118,40 @@ export default function Chats() {
     setFilterMode(mode);
   };
 
-const filterChatrooms = () => {
-  let filteredChatrooms = Object.keys(chatrooms);
+  const filterChatrooms = () => {
+    let filteredChatrooms = Object.keys(chatrooms);
 
-  // Filter based on search query
-  if (search.trim() !== '') {
-    filteredChatrooms = filteredChatrooms.filter((chatroomId) => {
-      const customer = getCustomerData(chatroomId.split('_')[0]);
-      return customer && customer.name.toLowerCase().includes(search.toLowerCase());
-    });
-  }
+    // Filter based on search query
+    if (search.trim() !== '') {
+      filteredChatrooms = filteredChatrooms.filter((chatroomId) => {
+        const customer = getCustomerData(chatroomId.split('_')[0]);
+        return customer && customer.name.toLowerCase().includes(search.toLowerCase());
+      });
+    }
 
-  // Apply filter based on mode
-  if (filterMode === 'All') {
-    return filteredChatrooms;
-  } else if (filterMode === 'Read') {
-    return filteredChatrooms.filter((chatroomId) => {
-      const room = chatrooms[chatroomId];
-      return room && room.Chats && Object.keys(room.Chats).length > 0 && isLastMessageSeen(room);
-    });
-  } else if (filterMode === 'Unread') {
-    return filteredChatrooms.filter((chatroomId) => {
-      const room = chatrooms[chatroomId];
-      if (!room || !room.Chats) return false;
-      const costumerid = chatroomId.split('_')[0];
-      const unseenMessageCount = Object.values(room.Chats).reduce((count, message) => {
-        if (!message.seen && message.senderId === costumerid && chatroomId !== activeChat) {
-          return count + 1;
-        }
-        return count;
-      }, 0);
-      return unseenMessageCount > 0 && !seenChatrooms.includes(chatroomId);
-    });
-  }
-};
-
+    // Apply filter based on mode
+    if (filterMode === 'All') {
+      return filteredChatrooms;
+    } else if (filterMode === 'Read') {
+      return filteredChatrooms.filter((chatroomId) => {
+        const room = chatrooms[chatroomId];
+        return room && room.Chats && Object.keys(room.Chats).length > 0 && isLastMessageSeen(room);
+      });
+    } else if (filterMode === 'Unread') {
+      return filteredChatrooms.filter((chatroomId) => {
+        const room = chatrooms[chatroomId];
+        if (!room || !room.Chats) return false;
+        const costumerid = chatroomId.split('_')[0];
+        const unseenMessageCount = Object.values(room.Chats).reduce((count, message) => {
+          if (!message.seen && message.senderId === costumerid && chatroomId !== activeChat) {
+            return count + 1;
+          }
+          return count;
+        }, 0);
+        return unseenMessageCount > 0 && !seenChatrooms.includes(chatroomId);
+      });
+    }
+  };
 
   console.log(search);
   const isLastMessageSeen = (room) => {
@@ -270,13 +269,13 @@ const filterChatrooms = () => {
                       if (msg.senderId === userData.uuid) {
                         return (
                           <div key={msg.senderId} className="d-flex justify-content-end mt-2">
-                            <Sender msg={msg.message} date={msg.createdAt} />
+                            <Sender msg={msg.message} date={msg.createdAt} imaages={msg.image} />
                           </div>
                         );
                       } else {
                         return (
                           <div className="d-flex">
-                            <Reciver msg={msg.message} date={msg.createdAt} />
+                            <Reciver msg={msg.message} date={msg.createdAt} imges={msg.image} />
                           </div>
                         );
                       }

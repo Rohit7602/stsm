@@ -66,7 +66,6 @@ const Categories = () => {
   const [editCatName, setEditCatName] = useState('');
   const [editCatImg, setEditCatImg] = useState('');
   const [editStatus, setEditStatus] = useState('');
-
   const [order, setorder] = useState('ASC');
 
   const handleSelectCategory = (category) => {
@@ -713,9 +712,9 @@ const Categories = () => {
                       <tbody className={`${selectAll.length > 1 ? 'table_body2' : 'table_body'}`}>
                         {data
                           .filter((item) => {
-                            const mainCategory = categoreis.find(
-                              (category) => category.id === item.cat_ID
-                            );
+                            // const mainCategory = categoreis.find(
+                            //   (category) => category.id === item.cat_ID
+                            // );
                             return search.toLowerCase() === ''
                               ? item
                               : item.title.toLowerCase().includes(searchvalue);

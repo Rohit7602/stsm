@@ -2387,6 +2387,19 @@ min_width_230 {
   border-radius: 10px;
   border: 0;
 }
+.receiver_msg {
+  padding: 15px 20px;
+  background-color: #dddddd;
+  border-radius: 15px 15px 15px 0;
+}
+.sender_msg {
+  padding: 15px 20px;
+  background-color: #3d464d;
+  border-radius: 15px 15px 0px 15px;
+}
+.sender_msg p {
+  color: white;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1400px) {
   .mx_xxl_580 {
