@@ -4,7 +4,7 @@ export default function sender(props) {
   const formattedDate = formatDistanceToNow(new Date(props.date), { addSuffix: true });
   return (
     <div style={{ maxWidth: '70%' }}>
-      <div className="receiver_msg">
+      <div className="sender_msg">
         {props.msg && (
           <p className="black fs-sm fw-400 m-0">{props.msg}</p>
         )}

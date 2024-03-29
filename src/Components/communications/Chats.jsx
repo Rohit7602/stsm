@@ -15,6 +15,7 @@ import { app } from '../../firebase';
 import { useUserAuth } from '../../context/Authcontext';
 import { storage } from '../../firebase';
 import { getDownloadURL, uploadBytes } from 'firebase/storage';
+import { ref as storageREf } from 'firebase/storage'
 
 export default function Chats() {
   const database = getDatabase(app);
@@ -83,28 +84,38 @@ export default function Chats() {
   };
 
   const sendMessage = async (chatroomId) => {
-    const senderId = userData.uuid;
-    const newMessage = {
-      message: messageText,
-      createdAt: new Date().toISOString(),
-      messageType: 'TEXT',
-      // chat_imges: images,
-      seen: false,
-      senderId,
-    };
+    if (messageText != "" || chatImages.length > 0) {
+      const senderId = userData.uuid;
+      let ImageURLs = [];
+      if (chatImages.length > 0) {
+        for await (let file of chatImages) {
+          const files = Math.floor(Date.now() / 1000) + '-' + file.name;
+          const storageRef = storageREf(storage, `/Chats/${files}`);
+          await uploadBytes(storageRef, file); // Use 'file' instead of 'chatImages'
+          const imageURL = await getDownloadURL(storageRef);
+          ImageURLs.push(imageURL);
+        };
+      }
+      const newMessage = {
+        message: messageText,
+        createdAt: new Date().toISOString(),
+        messageType: messageText ? "TEXT" : (messageText && ImageURLs.length > 0) ? 'TEXT / IMAGE' : "IMAGE",
+        seen: false,
+        image: ImageURLs.length > 0 ? ImageURLs : "",
+        senderId,
+      };
 
-    const chatRef = ref(database, `Chatrooms/${chatroomId}/Chats`);
-    const newMessageRef = push(chatRef);
-    set(newMessageRef, newMessage);
+      const chatRef = ref(database, `Chatrooms/${chatroomId}/Chats`);
+      const newMessageRef = push(chatRef);
+      set(newMessageRef, newMessage);
 
-    setMessageText('');
-    setCurrentChat((prevChat) => [...prevChat, newMessage]);
-
-    // const filename = Math.floor(Date.now() / 1000) + '-' + chatImages.name;
-    // const storageRef = ref(storage, `/chat/${filename}`);
-    // await uploadBytes(storageRef, chatImages);
-    // var images = await getDownloadURL(storageRef);
-  };
+      setMessageText('');
+      setChatImages([])
+      setCurrentChat((prevChat) => [...prevChat, newMessage]);
+    } else {
+      alert("please enter something before send the message ")
+    }
+  }
 
   const chatContainerRef = useRef(null);
 

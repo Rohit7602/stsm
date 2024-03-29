@@ -423,17 +423,13 @@ body {
 /*export_btn*/
 .export_btn {
   border-radius: 10px;
-  background: var(
-    --red_gradient,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
-  );
+  background: var(--red_gradient,
+      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
 }
 
 .export_btn:hover {
-  background: var(
-    --red_gradient,
-    linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
-  );
+  background: var(--red_gradient,
+      linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
 }
 
 .unit_type_input {
@@ -454,10 +450,8 @@ body {
   padding: 12px 15px;
   transition: 0.5s ease-in-out;
   background-color: transparent;
-  background: var(
-    --red_gradient,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
-  );
+  background: var(--red_gradient,
+      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -702,11 +696,11 @@ body {
 } */
 
 /* When the checkbox is checked, add a blue background */
-.check input:checked ~ .checkmark {
+.check input:checked~.checkmark {
   background-color: #000000;
 }
 
-.check1 input:checked ~ .checkmark {
+.check1 input:checked~.checkmark {
   background-color: transparent;
 }
 
@@ -718,11 +712,11 @@ body {
 }
 
 /* Show the checkmark when checked */
-.check input:checked ~ .checkmark:after {
+.check input:checked~.checkmark:after {
   display: block;
 }
 
-.check1 input:checked ~ .checkmark:after {
+.check1 input:checked~.checkmark:after {
   display: block;
 }
 
@@ -972,10 +966,12 @@ body {
   border: 0;
   width: 100% !important;
 }
+
 .delivery_man_dropdown {
   max-height: 300px !important;
   overflow-y: scroll;
 }
+
 delivery_man_dropdown::-webkit-scrollbar {
   width: 4px !important;
 }
@@ -1026,8 +1022,8 @@ delivery_man_dropdown::-webkit-scrollbar {
   cursor: pointer;
 }
 
-.btn-check:checked + .btn,
-:not(.btn-check) + .btn:active,
+.btn-check:checked+.btn,
+:not(.btn-check)+.btn:active,
 .btn:first-child:active,
 .btn.active,
 .btn.show {
@@ -1448,10 +1444,12 @@ delivery_man_dropdown::-webkit-scrollbar {
 .dash_links:hover svg path {
   fill: var(--color-brown);
 }
+
 .dash_links:hover .stroke path {
   fill: none !important;
   stroke: var(--color-brown);
 }
+
 .dash_links2:hover svg path {
   stroke: var(--color-brown);
   fill: transparent !important;
@@ -1512,6 +1510,7 @@ div.rich-text-editor .ql-editor {
   width: 100% !important;
   table-layout: fixed !important;
 }
+
 .table_head,
 .table_body2 tr {
   display: table !important;
@@ -1692,6 +1691,7 @@ div.rich-text-editor .ql-editor {
   border-radius: 50px;
   height: 47px;
 }
+
 .order_details_bill {
   position: absolute;
   right: 2%;
@@ -1723,6 +1723,7 @@ div.rich-text-editor .ql-editor {
   transform: translate(-50%, -50%);
   z-index: 3;
 }
+
 .ques_input {
   border: 0.5px solid #0000004d;
   padding: 5px 10px;
@@ -2030,11 +2031,13 @@ min_width_230 {
 .top_n_26 {
   top: -26px;
 }
+
 .profile_top_data_width {
   width: 150px;
   height: 128px;
   padding: 10px;
 }
+
 .profile_top_data_width .progress_bar {
   width: 100%;
   height: 20px;
@@ -2043,6 +2046,7 @@ min_width_230 {
   padding: 3px;
   display: flex;
 }
+
 .profile_top_data_width .progress_bar span {
   width: 70%;
   height: 100%;
@@ -2050,29 +2054,37 @@ min_width_230 {
   border-radius: 20px;
   display: inline-block;
 }
+
 .bg_light_orange {
   background-color: #f2712126;
 }
+
 .bg_light_sky {
   background-color: #01bbbd26;
 }
+
 .bg_light_green {
   background-color: #50b84826;
 }
+
 .bg_light_purple {
   background-color: #a259ff26;
 }
+
 .py_10 {
   padding: 10px;
 }
+
 .left_content_width {
   width: 170px;
 }
+
 .areas {
   border: 0.5px solid #0000004d;
   padding: 5px 10px;
   border-radius: 30px;
 }
+
 .change_to_draft {
   padding: 10px 15px;
   border-radius: 10px;
@@ -2080,6 +2092,7 @@ min_width_230 {
   outline: 0;
   background-color: #b5b5b5;
 }
+
 .change_to_live {
   padding: 10px 15px;
   border-radius: 10px;
@@ -2087,6 +2100,7 @@ min_width_230 {
   outline: 0;
   background-color: #54b435;
 }
+
 .delete_area {
   padding: 10px 15px;
   border-radius: 10px;
@@ -2094,16 +2108,20 @@ min_width_230 {
   outline: 0;
   background-color: #dd0000;
 }
+
 .dropdown-item:active {
   background-color: rgb(218, 218, 218) !important;
 }
+
 .costomer_order_table {
   max-height: 36vh;
   overflow-x: auto;
 }
+
 ::-webkit-scrollbar {
   height: 3px;
 }
+
 .service_area_show_btn {
   padding: 5px 15px;
   border: 0;
@@ -2111,6 +2129,7 @@ min_width_230 {
   color: black;
   border-radius: 5px;
 }
+
 .reject_delivery {
   padding: 10px 15px;
   background-color: var(--color-red);
@@ -2118,18 +2137,22 @@ min_width_230 {
   border: 0;
   color: white;
 }
+
 .approve_btn {
   padding: 10px 15px;
   background-color: var(--color-green);
   border-radius: 10px;
   border: 0;
 }
+
 .all_bubble::-webkit-scrollbar {
   width: 6px;
 }
+
 .all_bubble::-webkit-scrollbar {
   width: 6px;
 }
+
 .add_brand {
   position: fixed;
   width: 547px;
@@ -2141,30 +2164,35 @@ min_width_230 {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
 .brand_name {
   height: 44px;
   padding: 10px;
   border: 0.5px solid #0000004d;
   width: 100%;
 }
+
 .brand_image_upload {
   width: 100%;
   height: 157px;
   border: 0.5px solid #0000004d;
   cursor: pointer;
 }
+
 .brand_upload_btn {
   padding: 11px 15px;
   background-color: var(--color-brown);
   border-radius: 10px;
   border: 0;
 }
+
 .brand_rest_btn {
   padding: 10px 15px;
   border: 1px solid #000000;
   border-radius: 10px;
   background-color: transparent;
 }
+
 .area_dropdown {
   background-color: white;
   padding: 10px 15px;
@@ -2172,16 +2200,19 @@ min_width_230 {
   border: 1px solid rgb(170, 168, 168);
   border-top: 0;
 }
+
 .area_dropdown input {
   width: 15px;
   height: 15px;
   accent-color: var(--color-black);
   cursor: pointer;
 }
+
 .area_dropdown label {
   width: 100%;
   cursor: pointer;
 }
+
 .comm_details_btn {
   padding: 10px;
   width: 68px;
@@ -2190,6 +2221,7 @@ min_width_230 {
   border: 0;
   margin-top: 10px;
 }
+
 .comm_resolve_btn {
   padding: 10px;
   width: 68px;
@@ -2197,6 +2229,7 @@ min_width_230 {
   background-color: #3874ff;
   border: 0;
 }
+
 .comm_delete_btn {
   padding: 10px;
   width: 68px;
@@ -2205,23 +2238,47 @@ min_width_230 {
   border: 0;
   margin-top: 10px;
 }
+
 .complain_dd .dropdown-menu {
   max-width: 88px !important;
   --bs-dropdown-min-width: 5rem !important;
   z-index: 1;
   text-align: center;
 }
+
 .mx_580 {
   min-width: 580px;
 }
+
 .mx_125 {
   max-width: 125px;
   width: 125px;
 }
+
 .complain_heading {
   padding: 10px 20px;
   background-color: #3874ff1a;
 }
+
+
+.receiver_msg {
+  padding: 15px 20px;
+  background-color: #dddddd;
+  border-radius: 15px 15px 15px 0;
+}
+
+.sender_msg {
+  padding: 15px 20px;
+  background-color: #3d464d;
+  border-radius: 15px 15px 0px 15px;
+}
+
+
+
+.sender_msg p {
+  color: white;
+}
+
 .complain_resolved {
   padding: 5px 15px;
   border: 0.71px solid var(--color-green);
@@ -2229,6 +2286,7 @@ min_width_230 {
   background-color: #3ab5264d;
   display: inline-block;
 }
+
 .complain_pending {
   padding: 5px 15px;
   border: 0.71px solid #8d8f94;
@@ -2237,9 +2295,11 @@ min_width_230 {
   background-color: #8d8f944d;
   display: inline-block;
 }
+
 .complain_table {
   background-color: red !important;
 }
+
 .reply_btn {
   border: 0;
   outline: 0;
@@ -2247,6 +2307,7 @@ min_width_230 {
   padding: 10px;
   border-radius: 8px;
 }
+
 .resolve_btn {
   border: 0;
   outline: 0;
@@ -2254,6 +2315,7 @@ min_width_230 {
   padding: 10px;
   border-radius: 8px;
 }
+
 .complian_Reply_input {
   background-color: #dddddd;
   padding: 15px 20px 39px 20px;
@@ -2264,24 +2326,29 @@ min_width_230 {
   border: none;
   outline: none;
 }
+
 .w_500 {
   width: 500px;
 }
+
 .chat_profile {
   width: 70px;
   height: 70px;
   border-radius: 50%;
 }
+
 .reciver_msg {
   background-color: #dddddd;
   border-radius: 15px 15px 15px 0px;
   padding: 15px 20px;
 }
+
 .sender_msg {
   background-color: #3d464d;
   border-radius: 15px 15px 0 15px;
   padding: 15px 20px;
 }
+
 .approve_popup {
   width: 458px;
   padding: 20px;
@@ -2294,6 +2361,7 @@ min_width_230 {
   transform: translate(-50%, -50%);
   z-index: 3;
 }
+
 .approve_popup .input {
   padding: 10px 15px;
   border: 0.5px solid #0000004d;
@@ -2301,9 +2369,11 @@ min_width_230 {
   margin-top: 10px;
   outline: 0;
 }
+
 .approve_popup .input::-webkit-scrollbar {
   width: 4px;
 }
+
 .employ_dropdown {
   padding: 10px 15px !important;
   border: 0.5px solid #0000004d !important;
@@ -2312,23 +2382,29 @@ min_width_230 {
   height: 46px;
   border-radius: 0 !important;
 }
+
 .employ_dropdown.show {
   border: 0.5px solid #0000004d !important;
 }
+
 .delivery_man_dropdown::-webkit-scrollbar {
   width: 3px !important;
 }
+
 .delivery_man_dropdown::-webkit-scrollbar-track {
   background-color: rgb(228, 228, 228);
 }
+
 .fw-600 {
   font-weight: 600;
 }
+
 .active_chat_btn {
   border-right: 0.8px solid #d9d9d9 !important;
   background-color: #0215bdb9 !important;
   color: white !important;
 }
+
 .img_cut_icon {
   width: 20px;
   height: 20px;
@@ -2337,6 +2413,7 @@ min_width_230 {
   align-items: center;
   justify-content: center;
 }
+
 .add_resolution_popup {
   padding: 10px 20px;
   background-color: var(--color-white);
@@ -2348,15 +2425,18 @@ min_width_230 {
   transform: translate(-50%, -50%);
   z-index: 3;
 }
+
 .mark_resolve_btn {
   margin-top: 10px;
 }
+
 .mark_resolve_btn button {
   padding: 10px 20px;
   background-color: var(--color-green);
   border-radius: 8px;
   border: 0;
 }
+
 .delivery_location_sidebar {
   padding: 10px;
   border-radius: 10px;
@@ -2364,12 +2444,14 @@ min_width_230 {
   margin-left: 20px;
   background-color: var(--color-white);
 }
+
 .service_locations {
   border: 1px solid #0000001a;
   padding: 3px 10px;
   background-color: #f4f4f4;
   border-radius: 50px;
 }
+
 .delivery_service_area_popup {
   padding: 20px;
   background-color: var(--color-white);
@@ -2381,12 +2463,14 @@ min_width_230 {
   transform: translate(-50%, -50%);
   z-index: 3;
 }
+
 .save_service_data {
   padding: 10px 15px;
   background-color: var(--color-green);
   border-radius: 10px;
   border: 0;
 }
+
 /* ===========Medgitia-query========== */
 @media (max-width: 1400px) {
   .mx_xxl_580 {
@@ -2394,6 +2478,7 @@ min_width_230 {
     width: 580px !important;
   }
 }
+
 @media (max-width: 1199.98px) {
   :root {
     --fs-xxs: 12px;
