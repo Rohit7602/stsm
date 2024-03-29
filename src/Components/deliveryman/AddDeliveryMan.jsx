@@ -9,7 +9,7 @@ import { useProductsContext } from '../../context/productgetter';
 import { useSubCategories } from '../../context/categoriesGetter';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../../firebase';
-import { addDoc, collection, setDoc, doc } from 'firebase/firestore';
+import { addDoc, getDocs, collection, setDoc, doc, updateDoc } from 'firebase/firestore';
 
 
 import {
@@ -24,6 +24,7 @@ import { useUserAuth } from '../../context/Authcontext';
 const AddDeliveryMan = () => {
   const { userData } = useUserAuth();
   const navigate = useNavigate();
+  const { DeliveryManData, deleteDeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
 
   function RandomPasswordGenerator() {
     var chars = '0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -211,12 +212,14 @@ const AddDeliveryMan = () => {
     setMobile('');
     setEmail('');
   }
-  const { DeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
+
   const { id } = useParams();
   const [filterData, setfilterData] = useState([]);
+
   useEffect(() => {
     const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
     setfilterData(DeliveryManDatas);
+    // console.log("asdfasdfasdfdsaf", DeliveryManDatas)
     if (filterData) {
       filterData.map((item) => {
         setKycType(item.kyc.document_type || ''); // set to empty string if null
@@ -245,7 +248,7 @@ const AddDeliveryMan = () => {
         setEmploymentstatus(item.job_info.shift || '');
       });
     }
-  }, [filterData]);
+  }, [filterData.length != 0, id]);
 
 
   async function HandleUpdateDeliveryData() {
@@ -286,25 +289,35 @@ const AddDeliveryMan = () => {
         vehicle_type: vechiletype,
       },
       updated_at: new Date().toISOString(),
-      is_verified: true,
-      signInMethod: 'email',
-      status: 'online',
     };
+    try {
+      const querySnapshot = await getDocs(collection(db, 'Delivery'));
+      querySnapshot.forEach((doc) => {
+        const deliveryData = doc.data();
+        if (deliveryData.d_id === id) {
+          updateDoc(doc.ref, DeliveryManUpdateData);
+          updateDeliveryManData({
+            id: doc.id,
+            ...DeliveryManUpdateData,
+          });
 
-    // try {
-    //   await updateDoc(doc(db, 'Delivery', id), DeliveryManUpdateData);
-    //   updateProductData({
-    //     id,
-    //     ...DeliveryManUpdateData,
-    //   });
-    //   setLoaderstatus(false);
-    //   navigate('/deliveryman')
-    //   toast.success('Delivery Man  updated Successfully !', {
-    //     position: toast.POSITION.TOP_RIGHT,
-    //   });
-    // } catch (error) {
-    //   console.log("error in  update data ", error)
-    // }
+          // Set loader status to false
+          setLoaderstatus(false);
+
+          // Navigate to the '/deliveryman' route
+          navigate('/deliveryman');
+
+          // Show a success toast notification
+          toast.success('Delivery Man updated Successfully !', {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        }
+      });
+    } catch (error) {
+      // Log any errors that occur during the update
+      console.log("Error updating data:", error);
+    }
+
 
   }
 

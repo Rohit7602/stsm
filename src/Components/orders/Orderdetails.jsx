@@ -41,7 +41,7 @@ export default function NewOrder() {
 
 
 
-  console.log("selec bill is ", filterData)
+  // console.log("selec bill is ", filterData)
 
 
 
