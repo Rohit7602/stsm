@@ -253,7 +253,7 @@ const BannersAdvertisement = () => {
           if (
             image &&
             typeof image === 'object' &&
-            image.validatedImage instanceof File 
+            image.validatedImage instanceof File
           ) {
             const { validatedImage, categoryId, categoryTitle, priority } = image;
             const filename = Math.floor(Date.now() / 1000) + "-" + validatedImage.name;
@@ -267,7 +267,7 @@ const BannersAdvertisement = () => {
                 imgUrl: {
                   categoryId: categoryId || "",
                   categoryTitle: categoryTitle || "",
-                  priority: priority || "",
+                  priority: priority || "0",
                   img: imageUrl,
                 }
               });
@@ -416,16 +416,17 @@ const BannersAdvertisement = () => {
           });
         }
 
-        for (const { validatedImage, categoryId, categoryTitle, priority } of selectedImagesSmallPatii) {
-
-
-          if (validatedImage instanceof File) {
-            // Handle file upload
+        for (const image of selectedImagesSmallPatii) {
+          if (
+            image &&
+            typeof image === 'object' &&
+            image.validatedImage instanceof File
+          ) {
+            const { validatedImage, categoryId, categoryTitle, priority } = image;
             const filename = Math.floor(Date.now() / 1000) + "-" + validatedImage.name;
             const storageRef = ref(storage, `banner/${filename}`);
             await uploadBytes(storageRef, validatedImage);
-            let imageUrl = await getDownloadURL(storageRef);
-            // Only add new image URL (not in existingImageUrls)
+            const imageUrl = await getDownloadURL(storageRef);
             if (!existingImageUrls.includes(imageUrl)) {
               newImageData.push({
                 categoryTitle: "",
@@ -433,7 +434,7 @@ const BannersAdvertisement = () => {
                 imgUrl: {
                   categoryId: categoryId || "",
                   categoryTitle: categoryTitle || "",
-                  priority: priority || "", 
+                  priority: priority || "0",
                   img: imageUrl,
                 }
               });
@@ -583,25 +584,26 @@ const BannersAdvertisement = () => {
             existingImageUrls.push(existingUrls.img);
           });
         }
-        for await (let { validatedImage, categoryId, categoryTitle, priority } of BannerSaleImg) {
-          // const name = Math.floor(Date.now() / 1000) + '-' + files.name;
-          // const storageRef = ref(storage, `banner/${name}`);
-          if (validatedImage instanceof File) {
-            const name = Math.floor(Date.now() / 1000) + "-" + validatedImage.name;
-            console.log("name is", name);
-            const storageRef = ref(storage, `banner/${name}`);
+        for (const image of BannerSaleImg) {
+          if (
+            image &&
+            typeof image === 'object' &&
+            image.validatedImage instanceof File
+          ) {
+            const { validatedImage, categoryId, categoryTitle, priority } = image;
+            const filename = Math.floor(Date.now() / 1000) + "-" + validatedImage.name;
+            const storageRef = ref(storage, `banner/${filename}`);
             await uploadBytes(storageRef, validatedImage);
-            let url = await getDownloadURL(storageRef);
-
-            if (!existingImageUrls.includes(url)) {
+            const imageUrl = await getDownloadURL(storageRef);
+            if (!existingImageUrls.includes(imageUrl)) {
               newImageData.push({
                 categoryTitle: "",
                 categoryId: "",
                 imgUrl: {
                   categoryId: categoryId || "",
                   categoryTitle: categoryTitle || "",
-                  priority: priority || "", 
-                  img: url,
+                  priority: priority || "0",
+                  img: imageUrl,
                 }
               });
             }
@@ -736,18 +738,17 @@ const BannersAdvertisement = () => {
           });
         }
 
-        for await (let { validatedImage, categoryId, categoryTitle, priority } of AnimalSuplimentsImages) {
-
-
-          if (validatedImage instanceof File) {
-            // Handle file upload
+        for (const image of AnimalSuplimentsImages) {
+          if (
+            image &&
+            typeof image === 'object' &&
+            image.validatedImage instanceof File
+          ) {
+            const { validatedImage, categoryId, categoryTitle, priority } = image;
             const filename = Math.floor(Date.now() / 1000) + "-" + validatedImage.name;
             const storageRef = ref(storage, `banner/${filename}`);
             await uploadBytes(storageRef, validatedImage);
-            let imageUrl = await getDownloadURL(storageRef);
-
-
-            // Only add new image URL (not in existingImageUrls and not in newImageData)
+            const imageUrl = await getDownloadURL(storageRef);
             if (!existingImageUrls.includes(imageUrl)) {
               newImageData.push({
                 categoryTitle: "",
@@ -755,7 +756,7 @@ const BannersAdvertisement = () => {
                 imgUrl: {
                   categoryId: categoryId || "",
                   categoryTitle: categoryTitle || "",
-                  priority: priority || "",
+                  priority: priority || "0",
                   img: imageUrl,
                 }
               });
@@ -929,20 +930,29 @@ const BannersAdvertisement = () => {
           const imgUrls = [];
 
           // Handle file uploads for each category
-          for (let { validatedImage, categoryId, categoryTitle, priority } of files) {
-            if (validatedImage instanceof File) {
-              const name = Math.floor(Date.now() / 1000) + "-" + validatedImage.name;
-              const storageRef = ref(storage, `banner/${name}`);
+          for (const image of files) {
+            if (
+              image &&
+              typeof image === 'object' &&
+              image.validatedImage instanceof File
+            ) {
+              const { validatedImage, categoryId, categoryTitle, priority } = image;
+              const filename = Math.floor(Date.now() / 1000) + "-" + validatedImage.name;
+              const storageRef = ref(storage, `banner/${filename}`);
               await uploadBytes(storageRef, validatedImage);
               const imageUrl = await getDownloadURL(storageRef);
-
-              // Add new image URL to imgUrls array
-              imgUrls.push({
-                categoryId: categoryId  || "",
-                categoryTitle: categoryTitle || "" ,
-                priority: categoryTitle || "",
-                img: imageUrl,
-              });
+              if (!existingImageUrls.includes(imageUrl)) {
+                newImageData.push({
+                  categoryTitle: "",
+                  categoryId: "",
+                  imgUrl: {
+                    categoryId: categoryId || "",
+                    categoryTitle: categoryTitle || "",
+                    priority: priority || "",
+                    img: imageUrl,
+                  }
+                });
+              }
             }
           }
           // Find existing category index in existingData
