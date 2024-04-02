@@ -166,7 +166,7 @@ const BannersAdvertisement = () => {
     try {
       // Validate the image using the context function
       const validatedImage = await validateImage(file, 1, 720, 720);
-      console.log(validateImage)
+      // console.log(validateImage)
 
       // If validation succeeds, update the state
       const newImages = [...selectedImagesLargeBanner];
@@ -261,9 +261,9 @@ const BannersAdvertisement = () => {
                 categoryTitle: "",
                 categoryId: "",
                 imgUrl: {
-                  categoryId: categoryId,
-                  categoryTitle: categoryTitle,
-                  priority: priority,
+                  categoryId: categoryId || "",
+                  categoryTitle: categoryTitle || "",
+                  priority: priority || "",
                   img: imageUrl,
                 }
               });
@@ -276,9 +276,8 @@ const BannersAdvertisement = () => {
           let docSnapshot = await getDoc(docRef)
           const existingData = docSnapshot.exists() ? docSnapshot.data().data || [] : [];
           console.log(existingData)
-
           const updatedData = [...existingData, ...newImageData];
-
+          console.log("updated data is ", updatedData)
           await setDoc(docRef, { title: "LargeBanner", data: updatedData });
 
           SetBannerData([
@@ -428,9 +427,9 @@ const BannersAdvertisement = () => {
                 categoryTitle: "",
                 categoryId: "",
                 imgUrl: {
-                  categoryId: categoryId,
-                  categoryTitle: categoryTitle,
-                  priority: priority,
+                  categoryId: categoryId || "",
+                  categoryTitle: categoryTitle || "",
+                  priority: priority || "", 
                   img: imageUrl,
                 }
               });
@@ -595,9 +594,9 @@ const BannersAdvertisement = () => {
                 categoryTitle: "",
                 categoryId: "",
                 imgUrl: {
-                  categoryId: categoryId,
-                  categoryTitle: categoryTitle,
-                  priority: priority,
+                  categoryId: categoryId || "",
+                  categoryTitle: categoryTitle || "",
+                  priority: priority || "", 
                   img: url,
                 }
               });
@@ -750,9 +749,9 @@ const BannersAdvertisement = () => {
                 categoryTitle: "",
                 categoryId: "",
                 imgUrl: {
-                  categoryId: categoryId,
-                  categoryTitle: categoryTitle,
-                  priority: priority,
+                  categoryId: categoryId || "",
+                  categoryTitle: categoryTitle || "",
+                  priority: priority || "",
                   img: imageUrl,
                 }
               });
@@ -935,14 +934,13 @@ const BannersAdvertisement = () => {
 
               // Add new image URL to imgUrls array
               imgUrls.push({
-                categoryId,
-                categoryTitle,
-                priority,
+                categoryId: categoryId  || "",
+                categoryTitle: categoryTitle || "" ,
+                priority: categoryTitle || "",
                 img: imageUrl,
               });
             }
           }
-
           // Find existing category index in existingData
           const existingCategoryIndex = existingData.findIndex((item) => item.categoryId === categoryId_main);
 

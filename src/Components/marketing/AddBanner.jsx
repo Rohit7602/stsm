@@ -12,7 +12,6 @@ const AddBanner = (props) => {
         showdelPopup(false);
     }
 
-
     const [bannerPopupImg, setBannerPopupImg] = useState("");
     // const [uploadBannerPopup, setUploadBannerPopup] = useState(false);
     const [searchvalue, setSearchvalue] = useState("");

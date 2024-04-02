@@ -325,6 +325,7 @@ const Categories = () => {
   async function handleSaveParentCategory(e) {
     e.preventDefault();
     try {
+
       if (name === undefined || null) {
         alert('please enter the name of the category ');
       } else if (imageupload.length === 0) {
@@ -332,12 +333,11 @@ const Categories = () => {
       } else if (status === undefined || null) {
         alert('please Set the status ');
       } else {
-        setLoaderstatus(true);
+        setloading(true);
         const filename = Math.floor(Date.now() / 1000) + '-' + imageupload.name;
         const storageRef = ref(storage, `/Parent-category/${filename}`);
         const upload = await uploadBytes(storageRef, imageupload);
         const imageUrl = await getDownloadURL(storageRef);
-
         const docRef = await addDoc(collection(db, 'categories'), {
           title: name,
           status: status,
@@ -347,7 +347,7 @@ const Categories = () => {
           updated_at: Date.now(),
           noOfSubcateogry: 0,
         });
-        setLoaderstatus(false);
+        setloading(false);
         toast.success('Category added Successfully !', {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -431,7 +431,7 @@ const Categories = () => {
 
   /*  *******************************
 
-     Change status functionality start 
+      Change status functionality start 
   *********************************************   **/
 
   async function handleChangeStatus(id, status) {
@@ -601,9 +601,9 @@ const Categories = () => {
     }
   }
 
-  /*  *******************************
-     Edit  Parent  Category  functionality end 
-  *********************************************   **/
+  /*   *******************************
+      Edit  Parent  Category  functionality end 
+   *********************************************   **/
 
   if (loading) {
     return <Loader></Loader>;
