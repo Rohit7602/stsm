@@ -249,8 +249,13 @@ const BannersAdvertisement = () => {
           });
         }
 
-        for (const { validatedImage, categoryId, categoryTitle, priority } of selectedImagesLargeBanner) {
-          if (validatedImage && validatedImage instanceof File) {
+        for (const image of selectedImagesLargeBanner) {
+          if (
+            image &&
+            typeof image === 'object' &&
+            image.validatedImage instanceof File 
+          ) {
+            const { validatedImage, categoryId, categoryTitle, priority } = image;
             const filename = Math.floor(Date.now() / 1000) + "-" + validatedImage.name;
             const storageRef = ref(storage, `banner/${filename}`);
             await uploadBytes(storageRef, validatedImage);
