@@ -18,6 +18,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { UseServiceContext } from '../../context/ServiceAreasGetter';
 import Deletepopup from '../popups/Deletepopup';
 import Updatepopup from '../popups/Updatepopup';
+import Loader from '../Loader';
 
 const ServiceArea = () => {
   const { ServiceData, addServiceData, deleteServiceData, updateServiceData } = UseServiceContext();
@@ -133,6 +134,7 @@ const ServiceArea = () => {
   async function HandleEditSaveServiceAreas(e) {
     e.preventDefault();
     try {
+      setLoaderstatus(true)
       await updateDoc(doc(db, 'ServiceAreas', ServiceAreaId), {
         AreaName: AreaName,
         PostalCode: postalCode,
@@ -149,10 +151,16 @@ const ServiceArea = () => {
         ExpectedDelivery: selectedValue,
         AreaList: storeServiceArea,
       });
+
+      setLoaderstatus(false)
       toast.success('Service area Updated  Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
+      handleResetServiceArea()
+
+
     } catch (Error) {
+      setLoaderstatus(false)
       console.error(Error);
     }
   }
@@ -331,13 +339,7 @@ const ServiceArea = () => {
 
   let editServiceData = ServiceData.filter((item) => item.id === ServiceAreaId);
   if (loaderstatus) {
-    return (
-      <>
-        <div className="loader">
-          <h3 className="heading">Uploading Data... Please Wait</h3>
-        </div>
-      </>
-    );
+    return ( <Loader></Loader> );
   } else {
     return (
       <div className="main_panel_wrapper bg_light_grey w-100">

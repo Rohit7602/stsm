@@ -371,18 +371,18 @@ const AddProduct = () => {
             name: selectedCategory.title,
           },
           brand: {
-            id: selectBrand.id,
-            name: selectBrand.name,
-            image: selectBrand.image
+            id: (selectBrand) ? selectBrand.id : " ",
+            name: (selectBrand) ? selectBrand.name : " ",
+            image: (selectBrand) ? selectBrand.image : " "
           },
           productImages: imagelinks,
           created_at: Date.now(),
           updated_at: Date.now(),
-          SalesmanCommission,
-          ServiceCharge,
-          DeliveryCharge,
+          SalesmanCommission: SalesmanCommission || "0",
+          ServiceCharge: ServiceCharge || "0",
+          DeliveryCharge: DeliveryCharge || "0",
           colors: storeColors,
-          Tax,
+          Tax: Tax || 0,
           isMultipleVariant: isvarient === true,
           ...(isvarient === false
             ? {
@@ -408,15 +408,19 @@ const AddProduct = () => {
           noOfProducts: increment(1),
         });
 
-        await updateDoc(doc(db, 'Brands', brandid), {
-          totalProducts: increment(1)
-        })
+        if (brandid) {
+          await updateDoc(doc(db, 'Brands', brandid), {
+            totalProducts: increment(1)
+          })
+        }
+
         toast.success('Product added Successfully !', {
           position: toast.POSITION.TOP_RIGHT,
         });
         handleReset();
         addData(docRef);
       } catch (e) {
+        setLoaderstatus(false)
         toast.error(e, {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -582,17 +586,17 @@ const AddProduct = () => {
         },
         productImages: imagelinksupdate,
         updated_at: Date.now(),
-        SalesmanCommission,
-        ServiceCharge,
-        DeliveryCharge,
+        SalesmanCommission: SalesmanCommission || '0',
+        ServiceCharge: ServiceCharge || '0',
+        DeliveryCharge: DeliveryCharge || '0',
         colors: storeColors,
         isMultipleVariant: isvarient === true,
         brand: {
-          id: previousbrandId,
-          name: previousbrandName,
-          image: previousbrandImage
+          id: previousbrandId || "",
+          name: previousbrandName || "",
+          image: previousbrandImage || ""
         },
-        Tax,
+        Tax: Tax || 0,
         ...(isvarient === false
           ? {
             varients: [
@@ -1609,7 +1613,7 @@ const AddProduct = () => {
                     <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
                       <div className="product_input">
                         <div className="d-flex align-items-center justify-content-between">
-                          <p className="fade_grey fw-400 w-100 mb-0 text-start" required>
+                          <p className="fade_grey fw-400 w-100 mb-0 text-start" >
                             {selectBrand
                               ? selectBrand.name || selectBrand
                               : 'Select Brand'}

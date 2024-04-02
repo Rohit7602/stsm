@@ -139,7 +139,10 @@ const AddSmallPattiBanner = (props) => {
                                 >
                                     Exit
                                 </button>
-                                <button onClick={() => props.onSave(AllImageData)} className="save_baner_popup">Save</button>
+                                <button onClick={() => {
+                                    handehidePopup()
+                                    props.onSave(AllImageData)
+                                }} className="save_baner_popup">Save</button>
                             </div>
                         </div>
                     </div>

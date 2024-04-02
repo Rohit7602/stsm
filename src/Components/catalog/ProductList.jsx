@@ -397,8 +397,8 @@ const ProductList = () => {
                           <h3 className="fs-sm fw-400 black mb-0">
                             {value.brand ? (
                               <span className="d-flex align-items-center gap-2">
-                                <img style={{ height: '40px', width: '40px' }} src={value.brand.image} alt="brandImg" />
-                                <p className="fs-sm fw-400 black m-0">{value.brand.name}</p>
+                                <img style={{ height: '40px', width: '40px' }} src={value.brand.image !== "" ? value.brand.image : brandImg} alt="brandImg" />
+                                <p className="fs-sm fw-400 black m-0">{value.brand.name !== "" ? value.brand.name : "No Brand"}</p>
                               </span>
                             ) : <span className="d-flex align-items-center gap-1">
                               <img src={brandImg} alt="brandImg" />
@@ -408,16 +408,16 @@ const ProductList = () => {
                         </td>
                         <td className="p-3 mw_130">
                           <h3
-                            className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${value.totalStock === '0'
+                            className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${parseInt(value.totalStock) === 0
                               ? 'stock_bg_red text-white'
-                              : value.totalStock <= value.stockAlert
+                              : parseInt(value.totalStock) <= parseInt(value.stockAlert)
                                 ? 'stock_bg_orange'
                                 : 'px-2'
-                              } `}>
-                            {/* {value.totalStock === '0' ? `Out of Stock` : `${value.totalStock} Available `} */}
-                            {value.totalStock === '0'
+                              } `}
+                          >
+                            {parseInt(value.totalStock) === 0
                               ? `Out of Stock`
-                              : value.totalStock >= value.stockAlert
+                              : parseInt(value.totalStock) >= parseInt(value.stockAlert)
                                 ? `${value.totalStock} Available`
                                 : `${value.totalStock} Left`}
                           </h3>
