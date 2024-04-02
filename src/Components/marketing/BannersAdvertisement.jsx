@@ -250,12 +250,11 @@ const BannersAdvertisement = () => {
         }
 
         for (const { validatedImage, categoryId, categoryTitle, priority } of selectedImagesLargeBanner) {
-          if (validatedImage instanceof File) {
+          if (validatedImage && validatedImage instanceof File) {
             const filename = Math.floor(Date.now() / 1000) + "-" + validatedImage.name;
             const storageRef = ref(storage, `banner/${filename}`);
             await uploadBytes(storageRef, validatedImage);
             const imageUrl = await getDownloadURL(storageRef);
-
             if (!existingImageUrls.includes(imageUrl)) {
               newImageData.push({
                 categoryTitle: "",
