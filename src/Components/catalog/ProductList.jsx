@@ -417,9 +417,9 @@ const ProductList = () => {
                             {/* {value.totalStock === '0' ? `Out of Stock` : `${value.totalStock} Available `} */}
                             {value.totalStock === '0'
                               ? `Out of Stock`
-                              : value.totalStock <= value.stockAlert
-                                ? `${value.totalStock} Left`
-                                : `${value.totalStock} Available`}
+                              : value.totalStock >= value.stockAlert
+                                ? `${value.totalStock} Available`
+                                : `${value.totalStock} Left`}
                           </h3>
                         </td>
                         <td className="p-3 mw_130">

@@ -941,18 +941,12 @@ const BannersAdvertisement = () => {
               const storageRef = ref(storage, `banner/${filename}`);
               await uploadBytes(storageRef, validatedImage);
               const imageUrl = await getDownloadURL(storageRef);
-              if (!existingImageUrls.includes(imageUrl)) {
-                newImageData.push({
-                  categoryTitle: "",
-                  categoryId: "",
-                  imgUrl: {
-                    categoryId: categoryId || "",
-                    categoryTitle: categoryTitle || "",
-                    priority: priority || "",
-                    img: imageUrl,
-                  }
-                });
-              }
+              imgUrls.push({
+                categoryId: categoryId || "",
+                categoryTitle: categoryTitle || "",
+                priority: categoryTitle || "",
+                img: imageUrl,
+              });
             }
           }
           // Find existing category index in existingData
