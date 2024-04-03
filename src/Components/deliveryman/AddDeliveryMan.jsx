@@ -223,7 +223,7 @@ const AddDeliveryMan = () => {
     if (filterData) {
       filterData.map((item) => {
         setKycType(item.kyc.document_type || ''); // set to empty string if null
-        setPhnno(parseInt(item.basic_info.emergency_contact.phone_no) || 0); // set to 0 if null or NaN
+        setPhnno(item.basic_info.emergency_contact.phone_no || ''); // set to 0 if null or NaN
         setEmergencycontact(item.basic_info.emergency_contact.name || '');
         setaddress(item.basic_info.address || '');
         setName(item.basic_info.name || '');
@@ -243,7 +243,7 @@ const AddDeliveryMan = () => {
         setEmploymentstatus(item.job_info.employement_type || '');
         setAccountno(item.bank.account_no || '');
         setConfirmaccountno(item.bank.account_no || '');
-        setMobile(parseInt(item.basic_info.phone_no) || 0); // set to 0 if null or NaN
+        setMobile(item.basic_info.phone_no || ''); // set to 0 if null or NaN
         setEmail(item.basic_info.email || '');
         setEmploymentstatus(item.job_info.shift || '');
       });
@@ -257,7 +257,7 @@ const AddDeliveryMan = () => {
       basic_info: {
         name: name,
         dob: new Date(DOB).toISOString(),
-        phone_no: mobile,
+        phone_no: mobile.toString(),
         address: address,
         city: city,
         state: state,
@@ -265,7 +265,7 @@ const AddDeliveryMan = () => {
         emergency_contact: {
           name: emergencycontact,
           relationship: relationship,
-          phone_no: phnno,
+          phone_no: phnno.toString(),
         },
       },
       bank: {

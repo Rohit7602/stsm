@@ -20,7 +20,7 @@ import { useProductsContext } from '../../context/productgetter';
 const DeliveryBoyInventory = () => {
   const { DeliveryManData, deleteDeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
   const { id } = useParams()
-  console.log(id)
+  // console.log(id)
   const { productData } = useProductsContext();
   const product_names = productData.map((product) => product.name)
   // console.log("product name is ", product_names)
@@ -31,8 +31,17 @@ const DeliveryBoyInventory = () => {
   const [quantity, setquantity] = useState('');
   const [selectedproduct, setselectedProduct] = useState([]);
   const [AllItems, setAllItems] = useState([]);
+  const [delivryMan, setDeliveryMan] = useState([])
+  const [color, setColor] = useState('')
 
+  useEffect(() => {
+    const DeliveryManDatas = DeliveryManData.filter((item) => item.id === id);
+    setDeliveryMan(DeliveryManDatas);
+  }, [delivryMan.length != 0, id])
 
+  // useEffect(() => {
+  //   console.log("vairent is", selectedproduct.length > 0 && selectedproduct.map((data) => data.varients))
+  // }, [varient])
 
 
   // Function to handle the selection of an item
@@ -68,28 +77,44 @@ const DeliveryBoyInventory = () => {
   console.log("all items", AllItems)
 
 
+
+
   // console.log("selected product is ", selectedproduct)
 
 
   function HandleAddToVan(e) {
-    e.preventDefault()
-    // console.log("function working here ")
-    setAllItems((prevVariants) => [
-      ...prevVariants,
-      {
-        name: productname,
-        productid: selectedproduct.length > 0 && selectedproduct[0].id,
-        quantity: selectedproduct.length > 0 && quantity,
-        sku: selectedproduct.length > 0 && selectedproduct[0].sku,
-        brand: selectedproduct.length > 0 && selectedproduct[0].brand.name,
-        unitType: selectedproduct.length > 0 && selectedproduct[0].varients[0].unitType,
-        varient: varient,
-      },
-    ])
-    setproductname('')
-    setselectedProduct([])
-    setquantity('')
-    setVarient('')
+    if ((selectedproduct.length > 0) && varient && quantity) {
+      e.preventDefault()
+      // console.log("function working here ")
+      let allvarients = selectedproduct.length > 0 && selectedproduct.map((data) => data.varients)
+      // console.log("all vairents ", allvarients)
+      let currentvairent = allvarients.flat().filter((data) => data.VarientName === varient)
+      // console.log("currentvairent valie ", currentvairent[0])
+      setAllItems((prevVariants) => [
+        ...prevVariants,
+        {
+          name: productname,
+          productImage: selectedproduct.length > 0 && selectedproduct[0].productImages[0],
+          productid: selectedproduct.length > 0 && selectedproduct[0].id,
+          quantity: selectedproduct.length > 0 && quantity,
+          sku: selectedproduct.length > 0 && selectedproduct[0].sku,
+          brand: selectedproduct.length > 0 && selectedproduct[0].brand.name,
+          unitType: selectedproduct.length > 0 && selectedproduct[0].varients[0].unitType,
+          varient: currentvairent.length > 0 && currentvairent[0],
+          color: color,
+          tax: selectedproduct.length > 0 && selectedproduct[0].Tax,
+          DeliveryCharge: selectedproduct.length > 0 && selectedproduct[0].DeliveryCharge,
+          SalesmanCommission: selectedproduct.length > 0 && selectedproduct[0].SalesmanCommission,
+          ServiceCharge: selectedproduct.length > 0 && selectedproduct[0].ServiceCharge,
+        },
+      ])
+      setproductname('')
+      setselectedProduct([])
+      setquantity('')
+      setVarient('')
+    } else {
+      alert("Please Select each field")
+    }
   }
 
   // useEffect(() => {
@@ -135,15 +160,19 @@ const DeliveryBoyInventory = () => {
       <div className="main_panel_wrapper bg_light_grey w-100">
         <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
           <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between ">
-            <div className="d-flex align-items-center mw-300 p-2">
-              <div>
-                <img src={profile_image} alt="mobileicon" className="items_images" />
-              </div>
-              <div className="ps-3">
-                <p className="fs-sm fw-400 black mb-0">John Doe</p>
-                <p className="fs-xxs fw-400 fade_grey mb-0">john@example.com</p>
-              </div>
-            </div>
+            {delivryMan.length > 0 && delivryMan.map((data) => {
+              return (
+                <div className="d-flex align-items-center mw-300 p-2">
+                  <div>
+                    <img src={profile_image} alt="mobileicon" className="items_images" />
+                  </div>
+                  <div className="ps-3">
+                    <p className="fs-sm fw-400 black mb-0">{data.basic_info.name}</p>
+                    <p className="fs-xxs fw-400 fade_grey mb-0">{data.basic_info.email}</p>
+                  </div>
+                </div>
+              )
+            })}
             <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
               <button onClick={UpdateEntry} className=" outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
                 Update Entry
@@ -206,8 +235,8 @@ const DeliveryBoyInventory = () => {
                 </div>
               </div>
             </div>
-            <div className="d-flex align-items-center justify-content-between w-100">
-              <div className="w-50 d-flex align-items-center gap-3">
+            <div className="d-flex align-items-center justify-content-between w-100 gap-4">
+              <div className=" w-100 d-flex align-items-center gap-3">
                 <div className="dropdown w-100">
                   <button
                     style={{ height: '44px' }}
@@ -236,6 +265,7 @@ const DeliveryBoyInventory = () => {
                       </svg>
                     </div>
                   </button>
+
                   <ul
                     className="dropdown-menu delivery_man_dropdown w-100"
                     aria-labelledby="dropdownMenuButton3">
@@ -247,6 +277,52 @@ const DeliveryBoyInventory = () => {
                             className="dropdown-item py-2"
                             href="#">
                             <p className="fs-sm fw-400 balck m-0">{name.VarientName}</p>
+                          </div>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
+                <div className="dropdown w-100">
+                  <button
+                    style={{ height: '44px' }}
+                    className="btn dropdown-toggle w-100 quantity_bg"
+                    type="button"
+                    id="dropdownMenuButton3"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <div className="d-flex align-items-center justify-content-between w-100">
+                      <p className="ff-outfit fw-400 fs_sm mb-0 fade_grey">
+                        {color ? color : 'Select Colors'}
+                      </p>
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M7 10L12 15L17 10"
+                          stroke="black"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </button>
+
+                  <ul
+                    className="dropdown-menu delivery_man_dropdown w-100"
+                    aria-labelledby="dropdownMenuButton3">
+                    {selectedproduct.length > 0 && selectedproduct[0].colors.map((name) => {
+                      return (
+                        <li>
+                          <div
+                            onClick={() => setColor(name)}
+                            className="dropdown-item py-2"
+                            href="#">
+                            <p className="fs-sm fw-400 balck m-0">{name}</p>
                           </div>
                         </li>
                       )
@@ -327,7 +403,7 @@ const DeliveryBoyInventory = () => {
                 />
               </div>
               <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
-                <button onClick={HandleAddToVan} className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
+                <button onClick={HandleAddToVan} className="addnewproduct_btn white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
                   <img className="me-1" width={20} src={addicon} alt="add-icon" />
                   Add to Van
                 </button>

@@ -82,23 +82,50 @@ const OrderList = () => {
     *********************************************   **/
 
   const [order, setorder] = useState('ASC');
+  // const sorting = (col) => {
+  //   // Create a copy of the data array
+  //   const sortedData = [...orders];
+
+  //   if (order === 'ASC') {
+  //     sortedData.sort((a, b) => {
+  //       const valueA = a[col].toLowerCase();
+  //       const valueB = b[col].toLowerCase();
+  //       return valueA.localeCompare(valueB);
+  //     });
+  //   } else {
+  //     // If the order is not ASC, assume it's DESC
+  //     sortedData.sort((a, b) => {
+  //       const valueA = a[col].toLowerCase();
+  //       console.log('asdf', valueA);
+  //       const valueB = b[col].toLowerCase();
+  //       return valueB.localeCompare(valueA);
+  //     });
+  //   }
+
+  //   // Update the order state
+  //   const newOrder = order === 'ASC' ? 'DESC' : 'ASC';
+  //   setorder(newOrder);
+
+  //   // Update the data using the updateData function from your context
+  //   updateData(sortedData);
+  // };
+
   const sorting = (col) => {
     // Create a copy of the data array
     const sortedData = [...orders];
 
     if (order === 'ASC') {
       sortedData.sort((a, b) => {
-        const valueA = a[col].toLowerCase();
-        const valueB = b[col].toLowerCase();
-        return valueA.localeCompare(valueB);
+        const valueA = typeof getProperty(a, col) === 'number' ? getProperty(a, col) : getProperty(a, col).toLowerCase();
+        const valueB = typeof getProperty(b, col) === 'number' ? getProperty(b, col) : getProperty(b, col).toLowerCase();
+        return typeof valueA === 'number' ? valueA - valueB : valueA.localeCompare(valueB);
       });
     } else {
       // If the order is not ASC, assume it's DESC
       sortedData.sort((a, b) => {
-        const valueA = a[col].toLowerCase();
-        console.log('asdf', valueA);
-        const valueB = b[col].toLowerCase();
-        return valueB.localeCompare(valueA);
+        const valueA = typeof getProperty(a, col) === 'number' ? getProperty(a, col) : getProperty(a, col).toLowerCase();
+        const valueB = typeof getProperty(b, col) === 'number' ? getProperty(b, col) : getProperty(b, col).toLowerCase();
+        return typeof valueA === 'number' ? valueB - valueA : valueB.localeCompare(valueA);
       });
     }
 
@@ -109,6 +136,26 @@ const OrderList = () => {
     // Update the data using the updateData function from your context
     updateData(sortedData);
   };
+
+  const getProperty = (obj, path) => {
+    const keys = path.split('.');
+    let result = obj;
+    for (let key of keys) {
+      result = result[key];
+    }
+    return result;
+  };
+
+
+
+
+
+
+
+
+
+
+
 
   /*  *******************************
       Sorting Functionality end from here  
@@ -277,21 +324,45 @@ const OrderList = () => {
                     <th className="mw-200 p-3" onClick={() => sorting('customer.name')}>
                       <h3 className="fs-sm fw-400 black mb-0">Customer </h3>
                     </th>
-                    <th className="mw_160 p-3">
+                    <th onClick={() => sorting('transaction.status')} className="mw_160 p-3 cursor_pointer">
                       <span className="d-flex align-items-center">
                         <h3 className="fs-sm fw-400 black mb-0 white_space_nowrap">
                           Payment Status
+                          <span>
+                            <img
+                              className="ms-2 cursor_pointer"
+                              width={20}
+                              src={shortIcon}
+                              alt="short-icon"
+                            />
+                          </span>
                         </h3>
                       </span>
                     </th>
-                    <th className="mw_160 p-3">
-                      <h3 className="fs-sm fw-400 black mb-0">Order Status</h3>
+                    <th onClick={() => sorting('status')} className="mw_160 p-3 cursor_pointer">
+                      <h3 className="fs-sm fw-400 black mb-0">Order Status
+                        <span>
+                          <img
+                            className="ms-2 cursor_pointer"
+                            width={20}
+                            src={shortIcon}
+                            alt="short-icon"
+                          />
+                        </span></h3>
                     </th>
                     <th className="mw_140 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Items</h3>
                     </th>
-                    <th className="mw_160 p-3">
-                      <h3 className="fs-sm fw-400 black mb-0">Order Price</h3>
+                    <th onClick={() => sorting('order_price')} className="mw_160 p-3 cursor_pointer">
+                      <h3 className="fs-sm fw-400 black mb-0">Order Price
+                        <span>
+                          <img
+                            className="ms-2 cursor_pointer"
+                            width={20}
+                            src={shortIcon}
+                            alt="short-icon"
+                          />
+                        </span></h3>
                     </th>
                     <th className="mx_100 p-3 pe-4 text-center">
                       <h3 className="fs-sm fw-400 black mb-0">Action</h3>
@@ -360,15 +431,15 @@ const OrderList = () => {
                           <td className="p-3 mw_160">
                             <h3
                               className={`fs-sm fw-400 mb-0 d-inline-block ${orderTableData.transaction.status.toString().toLowerCase() ===
-                                  'paid'
-                                  ? 'black stock_bg'
+                                'paid'
+                                ? 'black stock_bg'
+                                : orderTableData.transaction.status.toString().toLowerCase() ===
+                                  'cod'
+                                  ? 'black cancel_gray'
                                   : orderTableData.transaction.status.toString().toLowerCase() ===
-                                    'cod'
-                                    ? 'black cancel_gray'
-                                    : orderTableData.transaction.status.toString().toLowerCase() ===
-                                      'refund'
-                                      ? 'new_order red'
-                                      : 'color_brown on_credit_bg'
+                                    'refund'
+                                    ? 'new_order red'
+                                    : 'color_brown on_credit_bg'
                                 }`}>
                               {orderTableData.transaction.status}
                             </h3>
@@ -376,11 +447,11 @@ const OrderList = () => {
                           <td className="p-3 mw_160">
                             <p
                               className={`d-inline-block ${orderTableData.status.toString().toLowerCase() === 'new'
-                                  ? 'fs-sm fw-400 red mb-0 new_order'
-                                  : orderTableData.status.toString().toLowerCase() === 'processing'
-                                    ? 'fs-sm fw-400 mb-0 processing_skyblue'
-                                    : orderTableData.status.toString().toLowerCase() === 'delivered'
-                                      ? 'fs-sm fw-400 mb-0 green stock_bg'
+                                ? 'fs-sm fw-400 red mb-0 new_order'
+                                : orderTableData.status.toString().toLowerCase() === 'processing'
+                                  ? 'fs-sm fw-400 mb-0 processing_skyblue'
+                                  : orderTableData.status.toString().toLowerCase() === 'delivered'
+                                    ? 'fs-sm fw-400 mb-0 green stock_bg'
                                     : 'fs-sm fw-400 mb-0 black cancel_gray'
                                 }`}>
                               {orderTableData.status}

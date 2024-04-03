@@ -153,7 +153,7 @@ export default function Chats() {
     }
   };
 
-  console.log(search);
+  // console.log(search);
   const isLastMessageSeen = (room) => {
     const lastMessageKey = Object.keys(room.Chats).pop();
     const lastMessage = room.Chats[lastMessageKey];
