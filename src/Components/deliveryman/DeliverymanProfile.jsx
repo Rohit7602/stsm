@@ -10,9 +10,13 @@ import { updateDoc, doc } from 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { db } from '../../firebase';
+import { UseServiceContext } from '../../context/ServiceAreasGetter';
+
+import { collection, getDocs } from 'firebase/firestore';
 
 const DeliverymanProfile = () => {
   const { DeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
+  const { ServiceData } = UseServiceContext();
   const { id } = useParams();
   const [filterData, setfilterData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -22,10 +26,50 @@ const DeliverymanProfile = () => {
   const [jobType, setJobType] = useState('');
   const [joiningDate, setjoiningDate] = useState('');
   const [rejectReason, setRejectReason] = useState('');
+  const [addMoreArea, setAddMoreArea] = useState([
+    {
+      pincode: '',
+      area_name: '',
+      terretory: [],
+    },
+  ]);
   const [addServiceAreaPopup, setAddServiceAreaPopup] = useState(false);
   const [selectarea, setSelectArea] = useState([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(Array(addMoreArea.length).fill(false));
   const dropdownRef = useRef(null);
+
+  function handlAddMoreAreas() {
+    setAddMoreArea((prevareas) => [
+      ...prevareas,
+      {
+        pincode: '',
+        area_name: '',
+        terretory: [],
+      },
+    ]);
+  }
+
+  function handleDeleteArea(index) {
+    // setVariants((prevVariants) => prevVariants.filter((_, i) => i !== index));
+    setAddMoreArea((Prevarareas) => Prevarareas.filter((_, i) => i !== index));
+  }
+
+  function handlePincodeChange(index, newPincode) {
+    const filterData = ServiceData.filter((datas) => datas.PostalCode === newPincode);
+    const areaName = filterData[0]?.AreaName || '';
+    setAddMoreArea((prevVariants) =>
+      prevVariants.map((v, i) =>
+        i === index ? { ...v, pincode: newPincode, area_name: areaName } : v
+      )
+    );
+  }
+
+  function handleSelectedAreasChange(index, newSelectedAreas) {
+    setAddMoreArea((prevVariants) =>
+      prevVariants.map((v, i) => (i === index ? { ...v, terretory: newSelectedAreas } : v))
+    );
+  }
+
   const cities = ['Jaipur', 'Sri Ganganagar', 'Bikaner', 'Jodhpur'];
   const handleCheckboxChange = (event) => {
     const { value, checked } = event.target;
@@ -36,25 +80,43 @@ const DeliverymanProfile = () => {
     }
   };
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen((prevState) => !prevState);
+  const toggleDropdown = (index) => {
+    setDropdownOpen((prevState) => {
+      if (Array.isArray(prevState)) {
+        const newState = [...prevState];
+        newState[index] = !newState[index];
+        return newState;
+      } else {
+        return !prevState;
+      }
+    });
   };
 
-  const closeDropdown = () => {
-    setIsDropdownOpen(false);
+  const closeDropdown = (index) => {
+    setDropdownOpen((prevState) => {
+      if (Array.isArray(prevState)) {
+        const newState = [...prevState];
+        newState[index] = false;
+        return newState;
+      } else {
+        return false;
+      }
+    });
   };
 
-  const handleProductInputClick = () => {
-    toggleDropdown();
+  const handleProductInputClick = (index) => {
+    if (dropdownOpen[index]) {
+      closeDropdown(index);
+    } else {
+      // Close other dropdowns before opening the clicked one
+      setDropdownOpen(Array(addMoreArea.length).fill(false));
+      toggleDropdown(index);
+    }
   };
 
   const handleClickOutside = (event) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target) &&
-      !event.target.classList.contains('product_input')
-    ) {
-      closeDropdown();
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setDropdownOpen(false);
     }
   };
 
@@ -65,14 +127,82 @@ const DeliverymanProfile = () => {
     };
   }, []);
 
+  async function updateServiceAreas() {
+    setLoading(true);
+    const { pincode, area_name, terretory } = addMoreArea[0];
+
+    if (!pincode || !area_name || terretory.length === 0) {
+      // Show an alert if any field in addMoreArea is empty
+      alert('Please fill in all fields for the service area');
+      setLoading(false);
+      return;
+    }
+    try {
+      setLoading(true);
+      const querySnapshot = await getDocs(collection(db, 'Delivery'));
+      querySnapshot.forEach((doc) => {
+        const deliveryData = doc.data();
+        if (deliveryData.d_id === id) {
+          updateDoc(doc.ref, { serviceArea: addMoreArea });
+          updateDeliveryManData({
+            id: doc.id,
+            ...{ serviceArea: addMoreArea },
+          });
+          // Set loader status to false
+          setLoading(false);
+          // Show a success toast notification
+          toast.success('Delivery Man ServiceArea  updated Successfully !', {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        }
+      });
+    } catch (error) {
+      // Log any errors that occur during the update
+      console.log('Error updating data:', error);
+    }
+  }
+
   useEffect(() => {
     const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
     setfilterData(DeliveryManDatas);
+    if (DeliveryManDatas.length > 0) {
+      const allAreas = [];
+      DeliveryManDatas.forEach((data) => {
+        if (data.serviceArea) {
+          data.serviceArea.forEach((item) => {
+            allAreas.push({
+              area_name: item.area_name,
+              pincode: item.pincode,
+              terretory: item.terretory,
+            });
+          });
+        }
+      });
+      setAddMoreArea(allAreas);
+    }
   }, [DeliveryManData, id]);
 
   if (!id || filterData.length === 0) {
     return <Loader> </Loader>;
   }
+
+  // useEffect(() => {
+  //   if (filterData.length > 0) {
+  //     const allAreas = [];
+  //     filterData.forEach((data) => {
+  //       if (data.serviceArea) {
+  //         data.serviceArea.forEach((item) => {
+  //           allAreas.push({
+  //             area_name: item.area_name,
+  //             pincode: item.pincode,
+  //             terretory: item.terretory
+  //           });
+  //         });
+  //       }
+  //     });
+  //     setAddMoreArea(allAreas);
+  //   }
+  // }, [filterData]);
 
   async function ApprovedDelivermanProfile(id) {
     try {
@@ -287,63 +417,113 @@ const DeliverymanProfile = () => {
                   Choose the areas for Delivery Man Services
                 </p>
               </div>
-              <button className="fs-2sm fw-400 color_green border-0 bg-white">+ Add More</button>
+              <button
+                className="fs-2sm fw-400 color_green border-0 bg-white"
+                onClick={handlAddMoreAreas}>
+                + Add More
+              </button>
             </div>
-            <div className="mt-3 pt-1 d-flex justify-content-between align-items-end gap-3">
-              <div style={{ minWidth: '180px' }}>
-                <p className="fs-xs fw-400 black m-0 pb-1">Enter Pin Code</p>
-                <input
-                  className="fs-xs fw-400 black product_input mt-2 w-100"
-                  type="text"
-                  placeholder="125001"
-                />
-              </div>
-              <div className="w-100 position-relative">
-                <p className="fs-xs fw-400 black m-0 pb-1">Select Area</p>
-                <div
-                  style={{ height: '43px' }}
-                  className="product_input d-flex align-items-center justify-content-between mt-2 cursor_pointer"
-                  onClick={handleProductInputClick}>
-                  <p className="fade_grey fs-xs fw-400 w-100 m-0 text-start" required>
-                    {selectarea.join(' , ')}
-                  </p>
-                  <img src={dropdownImg} alt="" />
-                </div>
-                {isDropdownOpen && (
-                  <div className="position-absolute area_dropdown" ref={dropdownRef}>
-                    {/* Render checkboxes */}
-                    {cities.map((city) => (
-                      <div className="d-flex align-items-center gap-3 py-1" key={city}>
-                        <input
-                          id={city}
-                          type="checkbox"
-                          value={city}
-                          onChange={handleCheckboxChange}
-                          checked={selectarea.includes(city)}
-                        />
-                        <label className="fs-xs fw-400 black w-100" htmlFor={city}>
-                          {city}
-                        </label>
-                      </div>
-                    ))}
+            {addMoreArea.map((area, index) => {
+              const pincode = area.pincode;
+              const areasForPincode = ServiceData.filter(
+                (service) => service.PostalCode === pincode
+              ).map((service) => service.AreaList);
+              return (
+                <div className="mt-3 pt-1 d-flex justify-content-between align-items-end gap-3">
+                  <div style={{ minWidth: '180px' }}>
+                    <p className="fs-xs fw-400 black m-0 pb-1">Enter Pin Code</p>
+                    <input
+                      style={{ height: '43px' }}
+                      required
+                      type="number"
+                      className="mt-2 product_input fade_grey fw-400"
+                      placeholder="125001"
+                      id="pinCode"
+                      value={area.pincode}
+                      onChange={(e) => handlePincodeChange(index, e.target.value)}
+                    />
                   </div>
-                )}
-              </div>
-              <img
-                height={43}
-                className="cursor_pointer"
-                src={deleteiconWithBg}
-                alt="deleteiconWithBg"
-              />
-            </div>
+                  <div className="w-100 position-relative">
+                    <label className="fs-xs fw-400 mt-2 black" htmlFor="">
+                      Select Area
+                    </label>
+                    <div
+                      style={{ height: '43px', width: '365px' }}
+                      className="product_input d-flex align-items-center justify-content-between mt-2 cursor_pointer"
+                      onClick={() => handleProductInputClick(index)}>
+                      <p
+                        className="fade_grey fs-xs fw-400 w-100 m-0 text-start  white_space_nowrap area_slider overflow-x-scroll"
+                        required>
+                        {area.terretory.join(' , ')}
+                      </p>
+                      <img src={dropdownImg} alt="" />
+                    </div>
+                    {dropdownOpen[index] && (
+                      <div
+                        ref={dropdownRef}
+                        className="position-absolute z-3 area_dropdown delivery_man_dropdown">
+                        {areasForPincode.map((cities, i) => (
+                          <div key={i}>
+                            {cities.map((city) => (
+                              <div className="d-flex align-items-center gap-3 py-1" key={city}>
+                                <input
+                                  id={city}
+                                  type="checkbox"
+                                  value={city}
+                                  onChange={(e) => {
+                                    const isChecked = e.target.checked;
+                                    const value = e.target.value;
+                                    const newSelectedAreas = isChecked
+                                      ? [...(area.terretory ?? []), value]
+                                      : (area.terretory ?? []).filter(
+                                          (selectedCity) => selectedCity !== value
+                                        );
+                                    handleSelectedAreasChange(index, newSelectedAreas);
+                                    // Log the selected areas
+                                    // console.log('Selected Areas:', newSelectedAreas);
+                                  }}
+                                  checked={(area.terretory ?? []).includes(city)}
+                                />
+                                <label className="fs-xs fw-400 black w-100" htmlFor={city}>
+                                  {city}
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <img
+                    height={43}
+                    className="cursor_pointer"
+                    src={deleteiconWithBg}
+                    alt="deleteiconWithBg"
+                    onClick={() => handleDeleteArea(index)}
+                  />
+                </div>
+              );
+            })}
             <div className="d-flex align-items-center justify-content-end gap-3 mt-3 pt-1">
               <button
-                onClick={() => setAddServiceAreaPopup(false)}
+                onClick={() => {
+                  // setAddMoreArea([{
+                  //   pincode: '',
+                  //   area_name: '',
+                  //   terretory: []
+                  // }])
+                  setAddServiceAreaPopup(false);
+                }}
                 className="save_service_data fs-sm fw-400 white">
                 Cancel
               </button>
               <button
-                onClick={() => setAddServiceAreaPopup(false)}
+                onClick={() => {
+                  {
+                    updateServiceAreas();
+                    setAddServiceAreaPopup(false);
+                  }
+                }}
                 className="save_service_data fs-sm fw-400 white">
                 Save Data
               </button>

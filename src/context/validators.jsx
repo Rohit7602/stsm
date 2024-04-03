@@ -28,8 +28,8 @@ export const ImageValidationProvider = ({ children }) => {
                     const actualAspectRatio = actualWidth / actualHeight;
                     if (
                         Math.abs(actualAspectRatio - desiredAspectRatio) < 0.01 && // Adjust the threshold as needed
-                        actualWidth >= desiredWidth &&
-                        actualHeight >= desiredHeight
+                        actualWidth <= desiredWidth &&
+                        actualHeight <= desiredHeight
                     ) {
                         // Image meets the desired criteria
                         resolve(file);

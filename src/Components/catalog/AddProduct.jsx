@@ -35,14 +35,11 @@ const AddProduct = () => {
   const navigate = useNavigate();
 
   const { productData, updateProductData } = useProductsContext();
-  const { allBrands } = useBrandcontext()
-  const { ServiceData } = UseServiceContext()
+  const { allBrands } = useBrandcontext();
+  const { ServiceData } = UseServiceContext();
 
-
-  const skuList = productData.map(product => product.sku);
+  const skuList = productData.map((product) => product.sku);
   // console.log("sku list is ", skuList)
-
-
 
   const productId = useParams();
 
@@ -82,11 +79,11 @@ const AddProduct = () => {
   const [previousCategoryId, setPreviousCategoryId] = useState(null);
   const [previousCategoryname, setpreviousCategoryname] = useState(null);
   const [previousCategoryParentId, setpreviousCategoryParentId] = useState(null);
-  const [brandid, setbrandid] = useState(null)
-  const [selectBrand, setSelectBrand] = useState(null)
-  const [previousbrandId, setPreviousbrandId] = useState(null)
-  const [previousbrandName, setPreviousbrandName] = useState(null)
-  const [previousbrandImage, setPreviousbrandImage] = useState(null)
+  const [brandid, setbrandid] = useState(null);
+  const [selectBrand, setSelectBrand] = useState(null);
+  const [previousbrandId, setPreviousbrandId] = useState(null);
+  const [previousbrandName, setPreviousbrandName] = useState(null);
+  const [previousbrandImage, setPreviousbrandImage] = useState(null);
   const handleSelectCategory = (category) => {
     setSearchvalue('');
     setSelectedCategory(category);
@@ -94,16 +91,16 @@ const AddProduct = () => {
   };
 
   const handleSelectBrand = (brand) => {
-    setSelectBrand(brand)
-    setbrandid(brand.id)
-  }
+    setSelectBrand(brand);
+    setbrandid(brand.id);
+  };
 
   const [addMoreArea, setAddMoreArea] = useState([
     {
       pincode: '',
       area_name: '',
-      terretory: []
-    }
+      terretory: [],
+    },
   ]);
   const [variants, setVariants] = useState([]);
   const [discount, setDiscount] = useState(null);
@@ -111,7 +108,6 @@ const AddProduct = () => {
   const [VarintName, setVariantsNAME] = useState('');
   const [Tax, setTax] = useState(null);
   const [discountType, setDiscountType] = useState('Amount');
-
 
   function HandleAddVarients() {
     setVariants((prevVariants) => [
@@ -150,7 +146,6 @@ const AddProduct = () => {
     }
   };
 
-
   const toggleDropdown = (index) => {
     setDropdownOpen((prevState) => {
       if (Array.isArray(prevState)) {
@@ -185,7 +180,6 @@ const AddProduct = () => {
     }
   };
 
-
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setDropdownOpen(false);
@@ -198,53 +192,38 @@ const AddProduct = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
-
-
-
-
-
-
-
+  const [areaPinCode, setAreaPinCode] = useState('');
   function handlAddMoreAreas() {
     setAddMoreArea((prevareas) => [
       ...prevareas,
       {
         pincode: '',
         area_name: '',
-        terretory: []
-      }
-    ])
-
+        terretory: [],
+      },
+    ]);
   }
-
 
   function handleDeleteArea(index) {
     // setVariants((prevVariants) => prevVariants.filter((_, i) => i !== index));
-    setAddMoreArea((Prevarareas) => Prevarareas.filter((_, i) => i !== index))
+    setAddMoreArea((Prevarareas) => Prevarareas.filter((_, i) => i !== index));
   }
 
-
-  function handlePincodeChange(index, newPincode) {
-    const filterData = ServiceData.filter((datas) => datas.PostalCode === newPincode);
+  function handlePincodeChange(index) {
+    const filterData = ServiceData.filter((datas) => datas.PostalCode === areaPinCode);
     const areaName = filterData[0]?.AreaName || '';
     setAddMoreArea((prevVariants) =>
       prevVariants.map((v, i) =>
-        i === index ? { ...v, pincode: newPincode, area_name: areaName } : v
+        i === index ? { ...v, pincode: areaPinCode, area_name: areaName, terretory: [] } : v
       )
     );
   }
 
   function handleSelectedAreasChange(index, newSelectedAreas) {
     setAddMoreArea((prevVariants) =>
-      prevVariants.map((v, i) =>
-        i === index ? { ...v, terretory: newSelectedAreas } : v
-      )
+      prevVariants.map((v, i) => (i === index ? { ...v, terretory: newSelectedAreas } : v))
     );
-
   }
-
-
 
   // const allPincodes = addMoreArea.map(area => area.pincode);
 
@@ -254,7 +233,6 @@ const AddProduct = () => {
   // }, []);
 
   // console.log("filtered service is ", filteredServices);
-
 
   // useEffect(() => {
   //   const latestPincode = addMoreArea[addMoreArea.length - 1]?.pincode;
@@ -268,21 +246,11 @@ const AddProduct = () => {
   //   }
   // }, [addMoreArea, ServiceData]);
 
-
-
-
-
   // stock popup save functionality
 
   // useEffect(() => {
   //   console.log("add more areas is", addMoreArea)
   // }, [addMoreArea])
-
-
-
-
-
-
 
   // get total amount functionality
   function handleTotalQunatity(e) {
@@ -371,34 +339,34 @@ const AddProduct = () => {
             name: selectedCategory.title,
           },
           brand: {
-            id: selectBrand.id,
-            name: selectBrand.name,
-            image: selectBrand.image
+            id: selectBrand ? selectBrand.id : ' ',
+            name: selectBrand ? selectBrand.name : ' ',
+            image: selectBrand ? selectBrand.image : ' ',
           },
           productImages: imagelinks,
           created_at: Date.now(),
           updated_at: Date.now(),
-          SalesmanCommission,
-          ServiceCharge,
-          DeliveryCharge,
+          SalesmanCommission: SalesmanCommission || '0',
+          ServiceCharge: ServiceCharge || '0',
+          DeliveryCharge: DeliveryCharge || '0',
           colors: storeColors,
-          Tax,
+          Tax: Tax || 0,
           isMultipleVariant: isvarient === true,
           ...(isvarient === false
             ? {
-              varients: [
-                {
-                  VarientName: VarintName,
-                  originalPrice: originalPrice,
-                  discountType: discountType,
-                  discount: discount,
-                  unitType,
-                },
-              ],
-            }
+                varients: [
+                  {
+                    VarientName: VarintName,
+                    originalPrice: originalPrice,
+                    discountType: discountType,
+                    discount: discount,
+                    unitType,
+                  },
+                ],
+              }
             : {
-              varients: variants,
-            }), // Include the actual list of variants if varient is true
+                varients: variants,
+              }), // Include the actual list of variants if varient is true
           serviceable_areas: addMoreArea,
         });
         setSearchdata([]);
@@ -408,15 +376,19 @@ const AddProduct = () => {
           noOfProducts: increment(1),
         });
 
-        await updateDoc(doc(db, 'Brands', brandid), {
-          totalProducts: increment(1)
-        })
+        if (brandid) {
+          await updateDoc(doc(db, 'Brands', brandid), {
+            totalProducts: increment(1),
+          });
+        }
+
         toast.success('Product added Successfully !', {
           position: toast.POSITION.TOP_RIGHT,
         });
         handleReset();
         addData(docRef);
       } catch (e) {
+        setLoaderstatus(false);
         toast.error(e, {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -463,7 +435,8 @@ const AddProduct = () => {
         if (items.totalStock) setTotalStock(items.totalStock);
         if (items.sku) setSku(items.sku);
         if (items.isMultipleVariant) setisVarient(items.isMultipleVariant);
-        if (items.varients && items.varients.VarientName) setVariantsNAME(items.varients.VarientName);
+        if (items.varients && items.varients.VarientName)
+          setVariantsNAME(items.varients.VarientName);
         if (items.categories && items.categories.name) setSelectedCategory(items.categories.name);
         if (items.productImages) setImageUpload22(items.productImages);
         if (items.DeliveryCharge) setDeliveryCharges(items.DeliveryCharge);
@@ -472,8 +445,10 @@ const AddProduct = () => {
         if (items.stockAlert) setStockCount(items.stockAlert);
         if (items.colors) setStoreColors(items.colors);
         if (items.categories && items.categories.id) setPreviousCategoryId(items.categories.id);
-        if (items.categories && items.categories.parent_id) setpreviousCategoryParentId(items.categories.parent_id);
-        if (items.categories && items.categories.name) setpreviousCategoryname(items.categories.name);
+        if (items.categories && items.categories.parent_id)
+          setpreviousCategoryParentId(items.categories.parent_id);
+        if (items.categories && items.categories.name)
+          setpreviousCategoryname(items.categories.name);
         if (items.brand && items.brand.id) setPreviousbrandId(items.brand.id);
         if (items.brand && items.brand.name) setPreviousbrandName(items.brand.name);
         if (items.brand && items.brand.image) setPreviousbrandImage(items.brand.image);
@@ -497,13 +472,13 @@ const AddProduct = () => {
           }
         }
 
-        const allAreas = []
+        const allAreas = [];
         if (items.serviceable_areas) {
           items.serviceable_areas.map((item) => {
             allAreas.push({
               area_name: item.area_name,
               pincode: item.pincode,
-              terretory: item.terretory
+              terretory: item.terretory,
             });
           });
           setAddMoreArea(allAreas);
@@ -530,7 +505,6 @@ const AddProduct = () => {
       setColor('');
     }
   }
-
 
   function handelColorDelete(index) {
     let updaedColor = [...storeColors];
@@ -582,36 +556,34 @@ const AddProduct = () => {
         },
         productImages: imagelinksupdate,
         updated_at: Date.now(),
-        SalesmanCommission,
-        ServiceCharge,
-        DeliveryCharge,
+        SalesmanCommission: SalesmanCommission || '0',
+        ServiceCharge: ServiceCharge || '0',
+        DeliveryCharge: DeliveryCharge || '0',
         colors: storeColors,
         isMultipleVariant: isvarient === true,
         brand: {
-          id: previousbrandId,
-          name: previousbrandName,
-          image: previousbrandImage
+          id: previousbrandId || '',
+          name: previousbrandName || '',
+          image: previousbrandImage || '',
         },
-        Tax,
+        Tax: Tax || 0,
         ...(isvarient === false
           ? {
-            varients: [
-              {
-                VarientName: variants[0].VarientName,
-                originalPrice: variants[0].originalPrice,
-                discountType: variants[0].discountType,
-                discount: variants[0].discount,
-                unitType: variants[0].unitType,
-              },
-            ],
-          }
+              varients: [
+                {
+                  VarientName: variants[0].VarientName,
+                  originalPrice: variants[0].originalPrice,
+                  discountType: variants[0].discountType,
+                  discount: variants[0].discount,
+                  unitType: variants[0].unitType,
+                },
+              ],
+            }
           : {
-            varients: variants,
-          }),
+              varients: variants,
+            }),
 
         serviceable_areas: addMoreArea,
-
-
       };
 
       // Check if the selected category is different from the existing category
@@ -635,16 +607,15 @@ const AddProduct = () => {
         });
       }
 
-
       if (brandid === null) {
       } else {
         updateDatas.brand = {
           name: selectBrand.name,
           image: selectBrand.image,
-          id: selectBrand.id
-        }
+          id: selectBrand.id,
+        };
 
-        let existingBrandid = updateDatas.brand.id
+        let existingBrandid = updateDatas.brand.id;
         await updateDoc(doc(db, 'Brands', previousbrandId), {
           totalProducts: increment(-1),
         });
@@ -668,19 +639,16 @@ const AddProduct = () => {
     }
   }
 
-
   function handleSkuChange(e) {
     const newSku = e.target.value;
     if (skuList.includes(newSku)) {
       // SKU already exists, show an error or handle the duplicate SKU
-      alert("SKU already exists please enter different sku");
+      alert('SKU already exists please enter different sku');
     } else {
       // SKU is unique, set the new SKU value
       setSku(newSku);
     }
   }
-
-
 
   if (loaderstatus) {
     return (
@@ -773,15 +741,6 @@ const AddProduct = () => {
                         Description
                       </label>{' '}
                       <br />
-                      {/* <textarea
-                        id="des"
-                        className="mt-2 product_input resize_none fade_grey fw-400"
-                        cols="30"
-                        rows="5"
-                        placeholder="Enter product name"
-                        value={longDes}
-                        onChange={(e) => setLongDes(e.target.value)}
-                      ></textarea> */}
                       <div className="add_product-text-editor mt-2">
                         <ReactQuill
                           className="rounded-lg  product_input outline-none "
@@ -804,16 +763,20 @@ const AddProduct = () => {
                         </p>
                       </div>
                       <div className="text-end">
-                        <button onClick={handlAddMoreAreas} type="button" className="fs-2sm fw-400 color_green add_varient_btn">
+                        <button
+                          onClick={handlAddMoreAreas}
+                          type="button"
+                          className="fs-2sm fw-400 color_green add_varient_btn">
                           + Add More
                         </button>
                       </div>
                       <div className="row align-items-end">
                         {addMoreArea.map((area, index) => {
                           const pincode = area.pincode;
-                          const areasForPincode = ServiceData
-                            .filter(service => service.PostalCode === pincode)
-                            .map(service => service.AreaList);
+                          console.log(pincode);
+                          const areasForPincode = ServiceData.filter(
+                            (service) => service.PostalCode === pincode
+                          ).map((service) => service.AreaList);
 
                           return (
                             <>
@@ -821,16 +784,24 @@ const AddProduct = () => {
                                 <label className="fs-xs fw-400 mt-3 black" htmlFor="pinCode">
                                   Enter Pin Code
                                 </label>
-                                <div className="d-flex align-items-center me-2">
+                                <div
+                                  style={{ height: '46px' }}
+                                  className="d-flex align-items-center me-2 product_input mt-2 pe-2">
                                   <input
                                     required
                                     type="number"
-                                    className="mt-2 product_input fade_grey fw-400"
+                                    className="  fade_grey fw-400 border-0 w-100 outline_none"
                                     placeholder="125001"
                                     id="pinCode"
-                                    value={area.pincode}
-                                    onChange={(e) => handlePincodeChange(index, e.target.value)}
+                                    value={areaPinCode}
+                                    onChange={(e) => setAreaPinCode(e.target.value)}
                                   />
+                                  <button
+                                    type="button"
+                                    onClick={() => handlePincodeChange(index)}
+                                    className="pincode_confirm_btn">
+                                    <img height={28} src={checkGreen} alt="checkGreen" />
+                                  </button>
                                 </div>
                               </div>
                               <div className="col-7 position-relative p-0">
@@ -840,17 +811,25 @@ const AddProduct = () => {
                                 <div
                                   className="product_input   d-flex align-items-center justify-content-between mt-2"
                                   onClick={() => handleProductInputClick(index)}>
-                                  <p className="fade_grey fw-400 w-100 mb-0 text-start" required>
-                                    {area.terretory.join(' , ')}
+                                  <p
+                                    className="fade_grey fw-400 w-100 mb-0 text-start white_space_nowrap area_slider overflow-x-scroll"
+                                    required>
+                                    {area.terretory.length !== 0
+                                      ? area.terretory.join(' , ')
+                                      : 'select area'}
                                   </p>
                                   <img src={dropdownImg} alt="" />
                                 </div>
                                 {dropdownOpen[index] && (
-                                  <div ref={dropdownRef} className="position-absolute z-3 area_dropdown">
+                                  <div
+                                    ref={dropdownRef}
+                                    className="position-absolute z-3 area_dropdown delivery_man_dropdown">
                                     {areasForPincode.map((cities, i) => (
                                       <div key={i}>
                                         {cities.map((city) => (
-                                          <div className="d-flex align-items-center gap-3 py-1" key={city}>
+                                          <div
+                                            className="d-flex align-items-center gap-3 py-1"
+                                            key={city}>
                                             <input
                                               id={city}
                                               type="checkbox"
@@ -860,14 +839,18 @@ const AddProduct = () => {
                                                 const value = e.target.value;
                                                 const newSelectedAreas = isChecked
                                                   ? [...(area.terretory ?? []), value]
-                                                  : (area.terretory ?? []).filter((selectedCity) => selectedCity !== value);
+                                                  : (area.terretory ?? []).filter(
+                                                      (selectedCity) => selectedCity !== value
+                                                    );
                                                 handleSelectedAreasChange(index, newSelectedAreas);
                                                 // Log the selected areas
                                                 // console.log('Selected Areas:', newSelectedAreas);
                                               }}
                                               checked={(area.terretory ?? []).includes(city)}
                                             />
-                                            <label className="fs-xs fw-400 black w-100" htmlFor={city}>
+                                            <label
+                                              className="fs-xs fw-400 black w-100"
+                                              htmlFor={city}>
                                               {city}
                                             </label>
                                           </div>
@@ -881,14 +864,14 @@ const AddProduct = () => {
                                 <img
                                   onClick={() => handleDeleteArea(index)}
                                   className="w-100 cursor_pointer"
-                                  height={48}
+                                  height={47}
                                   src={deleteiconWithBg}
                                   alt="deleteiconWithBg"
-                                // onClick={() => handleDeleteArea(index) }
+                                  // onClick={() => handleDeleteArea(index) }
                                 />
                               </div>
                             </>
-                          )
+                          );
                         })}
                       </div>
                     </div>
@@ -990,9 +973,9 @@ const AddProduct = () => {
                                                       prevVariants.map((v, i) =>
                                                         i === index
                                                           ? {
-                                                            ...v,
-                                                            unitType: e.target.innerHTML,
-                                                          }
+                                                              ...v,
+                                                              unitType: e.target.innerHTML,
+                                                            }
                                                           : v
                                                       )
                                                     );
@@ -1028,9 +1011,9 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                            ...v,
-                                            originalPrice: e.target.value,
-                                          }
+                                              ...v,
+                                              originalPrice: e.target.value,
+                                            }
                                           : v
                                       )
                                     )
@@ -1051,12 +1034,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                            ...v,
-                                            discountType: selectedDiscountType,
-                                            // Reset discount value when changing the discount type to "Amount"
-                                            discount:
-                                              selectedDiscountType === 'Amount' ? 0 : v.discount,
-                                          }
+                                              ...v,
+                                              discountType: selectedDiscountType,
+                                              // Reset discount value when changing the discount type to "Amount"
+                                              discount:
+                                                selectedDiscountType === 'Amount' ? 0 : v.discount,
+                                            }
                                           : v
                                       )
                                     );
@@ -1083,12 +1066,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === index
                                           ? {
-                                            ...v,
-                                            discount:
-                                              v.discountType === 'Percentage'
-                                                ? Math.min(e.target.value, 100)
-                                                : e.target.value,
-                                          }
+                                              ...v,
+                                              discount:
+                                                v.discountType === 'Percentage'
+                                                  ? Math.min(e.target.value, 100)
+                                                  : e.target.value,
+                                            }
                                           : v
                                       )
                                     )
@@ -1117,9 +1100,9 @@ const AddProduct = () => {
                                     prevVariants.map((v, i) =>
                                       i === 0
                                         ? {
-                                          ...v,
-                                          VarientName: e.target.value,
-                                        }
+                                            ...v,
+                                            VarientName: e.target.value,
+                                          }
                                         : v
                                     )
                                   );
@@ -1191,9 +1174,9 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === 0
                                           ? {
-                                            ...v,
-                                            originalPrice: e.target.value,
-                                          }
+                                              ...v,
+                                              originalPrice: e.target.value,
+                                            }
                                           : v
                                       )
                                     );
@@ -1224,12 +1207,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === 0
                                           ? {
-                                            ...v,
-                                            discountType: e.target.value,
-                                            // Reset discount value when changing the discount type to "Amount"
-                                            discount:
-                                              e.target.value === 'Amount' ? 0 : v.discount,
-                                          }
+                                              ...v,
+                                              discountType: e.target.value,
+                                              // Reset discount value when changing the discount type to "Amount"
+                                              discount:
+                                                e.target.value === 'Amount' ? 0 : v.discount,
+                                            }
                                           : v
                                       )
                                     );
@@ -1270,12 +1253,12 @@ const AddProduct = () => {
                                       prevVariants.map((v, i) =>
                                         i === 0
                                           ? {
-                                            ...v,
-                                            discount:
-                                              v.discountType === 'Percentage'
-                                                ? Math.min(e.target.value, 100)
-                                                : e.target.value,
-                                          }
+                                              ...v,
+                                              discount:
+                                                v.discountType === 'Percentage'
+                                                  ? Math.min(e.target.value, 100)
+                                                  : e.target.value,
+                                            }
                                           : v
                                       )
                                     );
@@ -1323,20 +1306,20 @@ const AddProduct = () => {
                           <div className=" d-flex align-items-center mt-3 pt-1 me-5 gap-3 flex-wrap">
                             {storeColors && storeColors.length !== 0
                               ? storeColors.map((items, index) => {
-                                return (
-                                  <div
-                                    key={index}
-                                    className="d-flex align-items-center gap-3 color_add_input">
-                                    <p className="m-0">{items}</p>
-                                    <img
-                                      onClick={() => handelColorDelete(index)}
-                                      className="cursor_pointer"
-                                      src={closeRed}
-                                      alt="closeRed"
-                                    />
-                                  </div>
-                                );
-                              })
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="d-flex align-items-center gap-3 color_add_input">
+                                      <p className="m-0">{items}</p>
+                                      <img
+                                        onClick={() => handelColorDelete(index)}
+                                        className="cursor_pointer"
+                                        src={closeRed}
+                                        alt="closeRed"
+                                      />
+                                    </div>
+                                  );
+                                })
                               : null}
 
                             {colorInput ? (
@@ -1609,10 +1592,8 @@ const AddProduct = () => {
                     <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
                       <div className="product_input">
                         <div className="d-flex align-items-center justify-content-between">
-                          <p className="fade_grey fw-400 w-100 mb-0 text-start" required>
-                            {selectBrand
-                              ? selectBrand.name || selectBrand
-                              : 'Select Brand'}
+                          <p className="fade_grey fw-400 w-100 mb-0 text-start">
+                            {selectBrand ? selectBrand.name || selectBrand : 'Select Brand'}
                           </p>
                           <img src={dropdownImg} alt="dropdownImg" />
                         </div>
@@ -1628,10 +1609,9 @@ const AddProduct = () => {
                           {allBrands.map((brand) => (
                             <Dropdown.Item>
                               <div
-                                className={`d-flex justify-content-between ${selectBrand && selectBrand.id === brand.id
-                                  ? 'selected'
-                                  : ''
-                                  }`}
+                                className={`d-flex justify-content-between ${
+                                  selectBrand && selectBrand.id === brand.id ? 'selected' : ''
+                                }`}
                                 onClick={() => handleSelectBrand(brand)}>
                                 <p className="fs-xs fw-400 black mb-0">{brand.name}</p>
                                 {selectBrand && selectBrand.id === brand.id && (
@@ -1680,10 +1660,11 @@ const AddProduct = () => {
                             .map((category) => (
                               <Dropdown.Item>
                                 <div
-                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                    ? 'selected'
-                                    : ''
-                                    }`}
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (

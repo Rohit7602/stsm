@@ -8,7 +8,7 @@ import closeIcon from '../../Images/svgs/closeicon.svg';
 export default function ComplainDetails() {
   const [reply, setReply] = useState(false);
   const [replyContent, setReplyContent] = useState(false);
-  const [addResolutionPopup, setAddResolutionPopup] = useState(true);
+  const [addResolutionPopup, setAddResolutionPopup] = useState(false);
   const [resolve, setResolve] = useState(false);
   const [replytext, setReplyText] = useState('');
   const [resolutionValue, setResolutionValue] = useState('');
