@@ -13,16 +13,21 @@ const PrivacyPolicy = () => {
   const [value, setValue] = useState('');
   const [loading, setloading] = useState(false);
 
-  const handleChange = (content, delta, source, editor) => {
-    const deltaOps = editor.getContents().ops;
-    const deltaHtml = convertDeltaToHtml(deltaOps);
-    setValue(deltaHtml);
-  };
+  // const handleChange = (content, delta, source, editor) => {
+  //   const deltaOps = editor.getContents().ops;
+  //   const deltaHtml = convertDeltaToHtml(deltaOps);
+  //   setValue(deltaHtml);
+  // };
 
-  const convertDeltaToHtml = (deltaOps) => {
-    const converter = new QuillDeltaToHtmlConverter(deltaOps, {});
-    return converter.convert();
-  };
+  function handleChange(editor) {
+    const content = editor.getContent();
+    setValue(content);
+  }
+
+  // const convertDeltaToHtml = (deltaOps) => {
+  //   const converter = new QuillDeltaToHtmlConverter(deltaOps, {});
+  //   return converter.convert();
+  // };
 
   useEffect(() => {
     setloading(true);
@@ -91,7 +96,9 @@ const PrivacyPolicy = () => {
               className="rounded-lg  product_input outline-none "
               apiKey="y0dtf4480oa45ebxji2fnpvejkapyz2na98m86zwrshcbt7h"
               value={value}
-              onChange={handleChange}
+              onEditorChange={(content, editor) => {
+                handleChange(editor); // Pass the editor object to your custom handler
+              }}
               init={{
                 placeholder: 'Write something...',
                 plugins:

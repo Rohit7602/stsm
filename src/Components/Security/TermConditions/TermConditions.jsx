@@ -8,7 +8,7 @@ import { db } from "../../../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { ToastContainer, toast } from 'react-toastify';
 import Loader from "../../Loader";
-
+import { Editor } from '@tinymce/tinymce-react';
 import 'react-toastify/dist/ReactToastify.css';
 
 const TermConditions = () => {
@@ -37,17 +37,22 @@ const TermConditions = () => {
 
 
 
-  const handleChange = (content, delta, source, editor) => {
-    const deltaOps = editor.getContents().ops;
-    const deltaHtml = convertDeltaToHtml(deltaOps);
-    setValue(deltaHtml);
-  };
+  // const handleChange = (content, delta, source, editor) => {
+  //   const deltaOps = editor.getContents().ops;
+  //   const deltaHtml = convertDeltaToHtml(deltaOps);
+  //   setValue(deltaHtml);
+  // };
+
+  function handleChange(editor) {
+    const content = editor.getContent();
+    setValue(content);
+  }
 
 
-  const convertDeltaToHtml = deltaOps => {
-    const converter = new QuillDeltaToHtmlConverter(deltaOps, {});
-    return converter.convert();
-  };
+  // const convertDeltaToHtml = deltaOps => {
+  //   const converter = new QuillDeltaToHtmlConverter(deltaOps, {});
+  //   return converter.convert();
+  // };
 
 
 
@@ -89,7 +94,7 @@ const TermConditions = () => {
             </button>
           </div>
           <div className="rich-text-editor mt-5">
-            <ReactQuill
+            {/* <ReactQuill
               style={{ height: "400px" }}
               className="rounded-lg border w-full mt-[30px] p-[10px] border-[#D9D9D9] border-solid outline-none h-100"
               modules={TermConditions.modules}
@@ -97,6 +102,29 @@ const TermConditions = () => {
               formats={TermConditions.formats}
               value={value}
               placeholder="Write something..."
+            /> */}
+            <Editor
+              className="rounded-lg  product_input outline-none "
+              apiKey="y0dtf4480oa45ebxji2fnpvejkapyz2na98m86zwrshcbt7h"
+              value={value}
+              onEditorChange={(content, editor) => {
+                handleChange(editor); // Pass the editor object to your custom handler
+              }}
+              init={{
+                placeholder: 'Write something...',
+                plugins:
+                  'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown',
+                toolbar:
+                  'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | spellcheckdialog | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                tinycomments_mode: 'embedded',
+                tinycomments_author: 'Author name',
+                mergetags_list: [
+                  { value: 'First.Name', title: 'First Name' },
+                  { value: 'Email', title: 'Email' },
+                ],
+                ai_request: (request, respondWith) =>
+                  respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+              }}
             />
           </div>
         </div>

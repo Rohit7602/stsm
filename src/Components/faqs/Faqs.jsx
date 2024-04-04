@@ -101,27 +101,36 @@ function Faqs() {
 
   async function handleDeleteQuestion(id) {
     try {
+      setloading(true)
       await deleteDoc(doc(db, 'FAQ', id));
       deletefaq(id);
       setDeleteQusPopup(false);
+      setloading(false)
       toast.success('Question Deleted Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
+      setloading(false)
       console.log('error in delte question', error);
     }
   }
 
-  const convertDeltaToHtml = (deltaops) => {
-    const converter = new QuillDeltaToHtmlConverter(deltaops, {});
-    return converter.convert();
-  };
+  // const convertDeltaToHtml = (deltaops) => {
+  //   const converter = new QuillDeltaToHtmlConverter(deltaops, {});
+  //   return converter.convert();
+  // };
 
-  function handleFaqChange(content, delta, source, editor) {
-    const deltaOps = editor.getContents().ops;
-    const deltaHtml = convertDeltaToHtml(deltaOps);
-    setAns(deltaHtml);
+  // function handleFaqChange(content, delta, source, editor) {
+  //   const deltaOps = editor.getContents().ops;
+  //   const deltaHtml = convertDeltaToHtml(deltaOps);
+  //   setAns(deltaHtml);
+  // }
+
+  function handleFaqChange(editor) {
+    const content = editor.getContent();
+    setAns(content);
   }
+
 
   if (loading) {
     return <Loader></Loader>;
@@ -165,7 +174,9 @@ function Faqs() {
                   className="rounded-lg  ques_input outline-none w-100 "
                   apiKey="y0dtf4480oa45ebxji2fnpvejkapyz2na98m86zwrshcbt7h"
                   value={ans}
-                  onChange={handleFaqChange}
+                  onEditorChange={(content, editor) => {
+                    handleFaqChange(editor); // Pass the editor object to your custom handler
+                  }}
                   init={{
                     placeholder: 'Write something...',
                     plugins:
