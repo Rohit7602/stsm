@@ -2459,7 +2459,7 @@ min_width_230 {
   padding: 20px;
   background-color: var(--color-white);
   border-radius: 10px;
-  width: 660px;
+  width: 751px;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -2497,7 +2497,32 @@ input[type='number']::-webkit-outer-spin-button {
 .pincode_confirm_btn {
   border: 0;
   background-color: transparent;
-  height: 100%;
+}
+.tox .tox-statusbar {
+  display: none !important;
+}
+.tox .tox-menubar {
+  display: none !important;
+}
+.tox .tox-edit-area::before {
+  border: 0 !important;
+}
+.tox-tinymce {
+  border: 0.5px solid rgba(0, 0, 0, 0.3) !important;
+  border-radius: 0 !important;
+  height: 300px !important;
+}
+.privacy_policy .tox-tinymce {
+  border: 0.5px solid rgba(0, 0, 0, 0.3) !important;
+  border-radius: 0 !important;
+  height: calc(100vh - 200px) !important;
+}
+.tox-tinymce ::-webkit-scrollbar {
+  height: 3px !important;
+  width: 3px !important;
+}
+.faq-text-editor {
+  width: 100%;
 }
 /* ===========Medgitia-query========== */
 @media (max-width: 1400px) {

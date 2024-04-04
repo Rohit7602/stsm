@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import closeIcon from '../../Images/svgs/closeicon.svg';
 import dropdownImg from '../../Images/svgs/dropdown_icon.svg';
+import checkGreen from '../../Images/svgs/check-green-btn.svg';
 import deleteiconWithBg from '../../Images/svgs/delete-icon-with-bg.svg';
 import { Col, Row } from 'react-bootstrap';
 import { Link, useParams } from 'react-router-dom';
@@ -26,6 +27,7 @@ const DeliverymanProfile = () => {
   const [jobType, setJobType] = useState('');
   const [joiningDate, setjoiningDate] = useState('');
   const [rejectReason, setRejectReason] = useState('');
+  const [areaPinCode, setAreaPinCode] = useState('');
   const [addMoreArea, setAddMoreArea] = useState([
     {
       pincode: '',
@@ -54,12 +56,12 @@ const DeliverymanProfile = () => {
     setAddMoreArea((Prevarareas) => Prevarareas.filter((_, i) => i !== index));
   }
 
-  function handlePincodeChange(index, newPincode) {
-    const filterData = ServiceData.filter((datas) => datas.PostalCode === newPincode);
+  function handlePincodeChange(index) {
+    const filterData = ServiceData.filter((datas) => datas.PostalCode === areaPinCode);
     const areaName = filterData[0]?.AreaName || '';
     setAddMoreArea((prevVariants) =>
       prevVariants.map((v, i) =>
-        i === index ? { ...v, pincode: newPincode, area_name: areaName } : v
+        i === index ? { ...v, pincode: areaPinCode, area_name: areaName, terretory: [] } : v
       )
     );
   }
@@ -430,18 +432,27 @@ const DeliverymanProfile = () => {
               ).map((service) => service.AreaList);
               return (
                 <div className="mt-3 pt-1 d-flex justify-content-between align-items-end gap-3">
-                  <div style={{ minWidth: '180px' }}>
+                  <div>
                     <p className="fs-xs fw-400 black m-0 pb-1">Enter Pin Code</p>
-                    <input
-                      style={{ height: '43px' }}
-                      required
-                      type="number"
-                      className="mt-2 product_input fade_grey fw-400"
-                      placeholder="125001"
-                      id="pinCode"
-                      value={area.pincode}
-                      onChange={(e) => handlePincodeChange(index, e.target.value)}
-                    />
+                    <div
+                      style={{ minWidth: '180px', height: '43px' }}
+                      className="product_input d-flex align-items-center mt-2 ">
+                      <input
+                        required
+                        type="number"
+                        className="fade_grey fw-400 border-0 outline_none"
+                        placeholder="125001"
+                        id="pinCode"
+                        value={areaPinCode}
+                        onChange={(e) => setAreaPinCode(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handlePincodeChange(index)}
+                        className="pincode_confirm_btn">
+                        <img height={28} src={checkGreen} alt="checkGreen" />
+                      </button>
+                    </div>
                   </div>
                   <div className="w-100 position-relative">
                     <label className="fs-xs fw-400 mt-2 black" htmlFor="">

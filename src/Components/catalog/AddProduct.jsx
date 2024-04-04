@@ -30,7 +30,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { increment } from 'firebase/firestore';
 import Loader from '../Loader';
 import { Units } from '../../Common/Helper';
-
+import { Editor } from '@tinymce/tinymce-react';
 const AddProduct = () => {
   const navigate = useNavigate();
 
@@ -742,13 +742,36 @@ const AddProduct = () => {
                       </label>{' '}
                       <br />
                       <div className="add_product-text-editor mt-2">
-                        <ReactQuill
+                        {/* <ReactQuill
                           className="rounded-lg  product_input outline-none "
                           modules={AddProduct.modules}
                           onChange={handleDescriptionChange}
                           formats={AddProduct.formats}
                           value={longDes}
                           placeholder="Write something..."
+                        /> */}
+                        <Editor
+                          className="rounded-lg  product_input outline-none "
+                          apiKey="y0dtf4480oa45ebxji2fnpvejkapyz2na98m86zwrshcbt7h"
+                          value={longDes}
+                          onChange={handleDescriptionChange}
+                          init={{
+                            placeholder: 'Write something...',
+                            plugins:
+                              'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown',
+                            toolbar:
+                              'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | spellcheckdialog | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                            tinycomments_mode: 'embedded',
+                            tinycomments_author: 'Author name',
+                            mergetags_list: [
+                              { value: 'First.Name', title: 'First Name' },
+                              { value: 'Email', title: 'Email' },
+                            ],
+                            ai_request: (request, respondWith) =>
+                              respondWith.string(() =>
+                                Promise.reject('See docs to implement AI Assistant')
+                              ),
+                          }}
                         />
                       </div>
                     </div>
