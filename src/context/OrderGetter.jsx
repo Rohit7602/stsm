@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { getDocs, collection } from 'firebase/firestore';
+import { getDocs, collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 
 
@@ -14,15 +14,23 @@ export const OrderContextProvider = ({ children }) => {
     const [isdatafetched, setIsDataFetched] = useState(false)
     useEffect(() => {
         const fetchOrders = async () => {
-            let list = []
             try {
-                const snapshot = await getDocs((collection(db, 'order')));
-                snapshot.forEach((doc) => {
-                    list.push({ id: doc.id, ...doc.data() });
-                    setorders([...list])
-                    setIsDataFetched(true)
+                // const snapshot = await getDocs((collection(db, 'order')));
+                // snapshot.forEach((doc) => {
+                //     list.push({ id: doc.id, ...doc.data() });
+                //     setorders([...list])
+                //     setIsDataFetched(true)
                     
-                })
+                // })
+                unsubscribe = onSnapshot(collection(db, 'order'), (querySnapshot) => {
+                    let list = [];
+                    querySnapshot.forEach((doc) => {
+                        list.push({ id: doc.id, ...doc.data() });
+                    });
+                    setorders([...list]);
+                    setIsDataFetched(true);
+                });
+
             } catch (error) {
                 console.error(error)
             }
