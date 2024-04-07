@@ -10,7 +10,7 @@ import orderPlaceed from '../../Images/svgs/order-placed.svg';
 import orderReject from '../../Images/svgs/order-reject.svg';
 import whitesaveicon from '../../Images/svgs/white_saveicon.svg';
 import orderCanceled from '../../Images/svgs/order_Canceled.svg'
-
+import { UseDeliveryManContext } from '../../context/DeliverymanGetter';
 import profile from '../../Images/Png/customer_profile.png';
 import manimage from '../../Images/Png/manimage.jpg';
 import { Col, Row } from 'react-bootstrap';
@@ -33,9 +33,12 @@ export default function NewOrder() {
   // console.log("Asmin ", AdminId)
 
   const { id } = useParams();
+  const { DeliveryManData } = UseDeliveryManContext();
   const { orders, updateData } = useOrdercontext();
   const [filterData, setfilterData] = useState([]);
   const [loading, setLoading] = useState(false);
+
+
 
 
 
@@ -122,8 +125,28 @@ export default function NewOrder() {
       const orderDoc = await getDoc(orderDocRef);
       const orderData = orderDoc.data();
       const invoiceNumber = await getInvoiceNo();
+      let area = orderData.shipping.area.toLowerCase()
+      console.log("Area is ", area)
+
+      // Filter the deliverymen whose service areas include the desired area
+      const deliverymenWithArea = DeliveryManData.filter(deliveryman =>
+        deliveryman.profile_status === "APPROVED" &&
+        deliveryman.is_verified === true &&
+        deliveryman.serviceArea && deliveryman.serviceArea.some(areas =>
+          areas.terretory && areas.terretory.some(t => t.toLowerCase() === area)
+        )
+      );
+
+      let selectedDeliveryManId = null;
+      if (deliverymenWithArea.length > 1) {
+        const randomIndex = Math.floor(Math.random() * deliverymenWithArea.length);
+        selectedDeliveryManId = deliverymenWithArea[randomIndex].id; // Assuming deliveryman object has an 'id' property
+      } else if (deliverymenWithArea.length === 1) {
+        selectedDeliveryManId = deliverymenWithArea[0].id; // Assuming deliveryman object has an 'id' property
+      }
 
       if (orderData && orderData.items) {
+        
         for (const item of orderData.items) {
           const productDocRef = doc(db, 'products', item.product_id);
           const productDoc = await getDoc(productDocRef);
@@ -135,17 +158,17 @@ export default function NewOrder() {
           }
         }
       }
-
       const newStatus = 'CONFIRMED';
-
       if (!orderData.hasOwnProperty('invoiceNumber')) {
         await updateDoc(orderDocRef, {
           status: newStatus,
           invoiceNumber: invoiceNumber,
+          assign_to : selectedDeliveryManId,
         });
       } else {
         await updateDoc(orderDocRef, {
           status: newStatus,
+          assign_to: selectedDeliveryManId,
         });
         setLoading(false);
       }
@@ -169,7 +192,7 @@ export default function NewOrder() {
         description: "Order assigned to the delivery partner for shipment. Preparing for dispatch.",
       };
       await addDoc(collection(db, `order/${id}/logs`), AssignDeliver);
-      updateData({ id, status: newStatus, invoiceNumber: invoiceNumber });
+      updateData({ id, status: newStatus, invoiceNumber: invoiceNumber, assign_to: selectedDeliveryManId });
 
       setLoading(false);
     } catch (error) {
@@ -195,7 +218,7 @@ export default function NewOrder() {
         description: "Seller rejected the order due to unavailability of item or other reasons. Refund process initiated."
       };
       await addDoc(collection(db, `order/${id}/logs`), logData);
-      updateData({ id, status: newStatus });
+      updateData({ id, status: newStatus, });
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -224,6 +247,7 @@ export default function NewOrder() {
       } else {
         await updateDoc(doc(db, 'order', id), {
           status: newStatus,
+          assign_to : ""
         });
       }
       // Add a new log entry to the logs collection
@@ -235,7 +259,7 @@ export default function NewOrder() {
         description: "Order successfully delivered to the customer at the provided address.",
       };
       await addDoc(collection(db, `order/${id}/logs`), logData);
-      updateData({ id, status: newStatus });
+      updateData({ id, status: newStatus,assign_to:"" });
       setLoading(false);
     } catch (error) {
       console.log(error);

@@ -376,7 +376,7 @@ const OrderList = () => {
                         searchvalue.toLowerCase() === '' ||
                         items.id.toLowerCase().includes(searchvalue)
                       );
-                    })
+                    }).sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                     .map((orderTableData, index) => {
                       return (
                         <tr>
@@ -398,23 +398,26 @@ const OrderList = () => {
                             </span>
                           </td>
                           <td className="p-2 mw-200">
-                            <button onClick={() => handleBillNumberClick(orderTableData.invoiceNumber)} className="border-0 bg-white">
-                              <ReactToPrint
-                                trigger={() => {
-                                  return (
-                                    <h3 className="fs-xs fw-400 color_blue mb-0">
-                                      #
-                                      {typeof orderTableData.invoiceNumber === 'undefined'
-                                        ? 'N/A'
-                                        : orderTableData.invoiceNumber}
-                                    </h3>
-                                  );
-                                }}
-                                content={() => componentRef.current}
-                                documentTitle="Invoice"
-                                pageStyle="print"
-                              />
-                            </button>
+                            {orderTableData.invoiceNumber !== undefined && (
+                              <button onClick={() => handleBillNumberClick(orderTableData.invoiceNumber)} className="border-0 bg-white">
+                                <ReactToPrint
+                                  trigger={() => {
+                                    return (
+                                      <h3 className="fs-xs fw-400 color_blue mb-0">
+                                        #
+                                        {orderTableData.invoiceNumber}
+                                      </h3>
+                                    );
+                                  }}
+                                  content={() => componentRef.current}
+                                  documentTitle="Invoice"
+                                  pageStyle="print"
+                                />
+                              </button>
+                            )}
+                            {orderTableData.invoiceNumber === undefined && (
+                              <h3 className="fs-xs fw-400 color_blue mb-0">#N/A</h3>
+                            )}
                           </td>
                           <td className="p-3 mw-200">
                             <h3 className="fs-xs fw-400 black mb-0">

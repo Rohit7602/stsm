@@ -252,7 +252,7 @@ const DeliveryManList = () => {
                             </td>
                             <td className="ps-3 mx_160">
                               <h3 className="fs-sm fw-400 black mb-0">
-                                {data.is_verified === true && data.status === 'online' && data.profile_status === "APPROVED" ? (
+                                {data.is_verified === true && data.status === 'online' && data.profile_status === "APPROVED"  ? (
                                   <button
                                     onClick={() => {
                                       setSelectedId(data.id)
@@ -275,7 +275,7 @@ const DeliveryManList = () => {
                               </h3>
                             </td>
                             <td className="text-center mx_100">
-                              {data.is_verified === true && data.status === 'online' ? (
+                              {data.is_verified === true && data.status === 'online' && data.profile_status === "APPROVED" && data.hasOwnProperty("serviceArea") ? (
                                 <Link to={`inventory/${data.uid}`}>
                                   <ActionIcon />
                                 </Link>
