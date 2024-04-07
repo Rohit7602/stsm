@@ -50,7 +50,7 @@ export const BannerDataProvider = ({ children }) => {
             return section;
         });
         SetBannerData(updatedData);
-        console.log("Object deleted from context");
+      
     };
 
     const memodata = useMemo(() => BannerData, [BannerData]);
