@@ -2524,6 +2524,10 @@ input[type='number']::-webkit-outer-spin-button {
 .faq-text-editor {
   width: 100%;
 }
+.tox-notifications-container{
+  display: none !important;
+  transform: scale(0) !important;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1400px) {
   .mx_xxl_580 {
