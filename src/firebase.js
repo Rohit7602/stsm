@@ -47,3 +47,4 @@ export function permissionHandler() {
 // auth.setPersistence(auth.Auth.Persistence.NONE);
 
 export { auth, firestore, storage, db, app, messaging };
+
