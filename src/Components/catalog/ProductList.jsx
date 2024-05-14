@@ -30,8 +30,8 @@ const ProductList = () => {
   const [ProductImage, setProductImage] = useState(null);
   const [deletepopup, setDeletePopup] = useState(false);
   const [statusPopup, setStatusPopup] = useState(false);
-  const [loading, setloading] = useState(false)
-
+  const [loading, setloading] = useState(false);
+  console.log(1000 / 20);
   const [order, setorder] = useState('ASC');
   const sorting = (col) => {
     // Create a copy of the data array
@@ -90,9 +90,6 @@ const ProductList = () => {
     }
   }
 
-
-
-
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
@@ -117,45 +114,39 @@ const ProductList = () => {
     }
   }
 
-
   async function HandleChangeToLiveBluck(e) {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setloading(true)
+      setloading(true);
       // Toggle the status between 'publish' and 'hidden'
-      const newStatus = 'published'
+      const newStatus = 'published';
       for (let id of selectAll) {
         await updateDoc(doc(db, 'products', id), {
           status: newStatus,
         });
         updateProductData({ id, status: newStatus });
       }
-      setloading(false)
+      setloading(false);
       toast.success('Status updated Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
-
     } catch (error) {
       console.log(error);
     }
   }
-
-
-
-
 
   async function HandleChangeToDraftBluck(e) {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setloading(true)
-      let newStatus = "hidden"
+      setloading(true);
+      let newStatus = 'hidden';
       for (let id of selectAll) {
         await updateDoc(doc(db, 'products', id), {
           status: newStatus,
         });
         updateProductData({ id, status: newStatus });
       }
-      setloading(false)
+      setloading(false);
       toast.success('Status updated Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -163,10 +154,6 @@ const ProductList = () => {
       console.log(error);
     }
   }
-
-
-
-
 
   /**
    ******************************************************
@@ -181,9 +168,8 @@ const ProductList = () => {
      */
 
   async function handleDeleteProduct(id, image) {
-
     try {
-      setloading(true)
+      setloading(true);
       var st = getStorage();
       await deleteDoc(doc(db, 'products', id)).then(() => {
         for (const images of image) {
@@ -194,13 +180,13 @@ const ProductList = () => {
         }
         deleteData(id);
       });
-      setloading(false)
+      setloading(false);
       toast.success('Product Deleted Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
       console.log(error);
-      setloading(false)
+      setloading(false);
     }
   }
 
@@ -221,7 +207,7 @@ const ProductList = () => {
         }
         await deleteDoc(productRef);
         // console.log(`Product with ID ${id} deleted from Firestore`);
-        deleteData(id)
+        deleteData(id);
       }
       setloading(false);
     } catch (error) {
@@ -230,19 +216,6 @@ const ProductList = () => {
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   /**
    ******************************************************
       Handle Delete functionality end  here 
@@ -250,9 +223,8 @@ const ProductList = () => {
  
      */
 
-
   if (loading) {
-    return <Loader />
+    return <Loader />;
   }
 
   return (
@@ -289,9 +261,19 @@ const ProductList = () => {
         </div>
         {selectAll.length >= 2 ? (
           <div className="d-flex align-items-center gap-3 mt-3 pt-1">
-            <button className="change_to_draft fs-sm fw-400 black" onClick={HandleChangeToDraftBluck}>Change To Draft</button>
-            <button className="change_to_live fs-sm fw-400 black" onClick={HandleChangeToLiveBluck}>Change To Live</button>
-            <button className="delete_area fs-sm fw-400 text-white" onClick={handleDeleteSelectedProducts}>Delete Product</button>
+            <button
+              className="change_to_draft fs-sm fw-400 black"
+              onClick={HandleChangeToDraftBluck}>
+              Change To Draft
+            </button>
+            <button className="change_to_live fs-sm fw-400 black" onClick={HandleChangeToLiveBluck}>
+              Change To Live
+            </button>
+            <button
+              className="delete_area fs-sm fw-400 text-white"
+              onClick={handleDeleteSelectedProducts}>
+              Delete Product
+            </button>
           </div>
         ) : null}
         {/* product details  */}
@@ -324,17 +306,27 @@ const ProductList = () => {
                         </p>
                       </div>
                     </th>
-                    <th className="mw_300 p-3">
-                      <h3 className="fs-sm fw-400 black mb-0">Short Discription </h3>
-                    </th>
+
                     <th className="mw_160 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Category</h3>
                     </th>
-                    <th className="mw_160 p-3">
-                      <h3 className="fs-sm fw-400 black mb-0">Brand</h3>
+                    <th className="mx_180 p-3">
+                      <h3 className="fs-sm fw-400 black mb-0">Unit Purchase Price</h3>
                     </th>
+                    <th className="mw_160 p-3">
+                      <h3 className="fs-sm fw-400 black mb-0">Unit Sale Price</h3>
+                    </th>
+                    {/* <th className="mw_160 p-3">
+                      <h3 className="fs-sm fw-400 black mb-0">Brand</h3>
+                    </th> */}
                     <th className="mw_130 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Stock</h3>
+                    </th>
+                    <th className="mw_160 p-3">
+                      <h3 className="fs-sm fw-400 black mb-0">Total Value</h3>
+                    </th>
+                    <th className=" mx_170 p-3">
+                      <h3 className="fs-sm fw-400 black mb-0">Stock Updated On</h3>
                     </th>
                     <th onClick={() => sorting('status')} className="mw_130 p-3 cursor_pointer">
                       <p className="fw-400 fs-sm black mb-0 ms-2">
@@ -349,9 +341,6 @@ const ProductList = () => {
                         </span>
                       </p>
                     </th>
-                    <th className="mx_100 p-3">
-                      <h3 className="fs-sm fw-400 black mb-0">Price</h3>
-                    </th>
                     <th className="mx_100 p-3 pe-4 text-center">
                       <h3 className="fs-sm fw-400 black mb-0">Action</h3>
                     </th>
@@ -359,6 +348,7 @@ const ProductList = () => {
                 </thead>
                 <tbody className={`${selectAll.length >= 2 ? 'table_body2' : 'table_body'}`}>
                   {productData.map((value, index) => {
+                    console.log(value);
                     return (
                       <tr key={index}>
                         <td className="p-3 d-flex align-items-center">
@@ -387,47 +377,62 @@ const ProductList = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="p-3 mw_300">
-                          <h3 className="fs-xs fw-400 black mb-0">{value.shortDescription}</h3>
-                        </td>
                         <td className="p-3 mw_160">
                           <h3 className="fs-sm fw-400 black mb-0">{value.categories.name}</h3>
                         </td>
+                        <td className="p-3 mx_180">
+                          <h3 className="fs-sm fw-400 black mb-0">₹ {value.perUnitPrice}</h3>
+                        </td>
                         <td className="p-3 mw_160">
                           <h3 className="fs-sm fw-400 black mb-0">
-                            {value.brand ? (
-                              <span className="d-flex align-items-center gap-2">
-                                <img style={{ height: '40px', width: '40px' }} src={value.brand.image !== "" ? value.brand.image : brandImg} alt="brandImg" />
-                                <p className="fs-sm fw-400 black m-0">{value.brand.name !== "" ? value.brand.name : "No Brand"}</p>
-                              </span>
-                            ) : <span className="d-flex align-items-center gap-1">
-                              <img src={brandImg} alt="brandImg" />
-                              <p className="fs-sm fw-400 black m-0">Brand name</p>
-                            </span>}
+                            ₹{' '}
+                            {value.varients.map((item) =>
+                              item.discountType === 'Amount'
+                                ? item.originalPrice - item.discount
+                                : item.originalPrice - (item.originalPrice * item.discount) / 100
+                            )}
                           </h3>
                         </td>
                         <td className="p-3 mw_130">
                           <h3
-                            className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${parseInt(value.totalStock) === 0
-                              ? 'stock_bg_red text-white'
-                              : parseInt(value.totalStock) <= parseInt(value.stockAlert)
+                            className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${
+                              parseInt(value.totalStock) === 0
+                                ? 'stock_bg_red text-white'
+                                : parseInt(value.totalStock) <= parseInt(value.stockAlert)
                                 ? 'stock_bg_orange'
-                                : 'px-2'
-                              } `}
-                          >
+                                : 'px-2 stock_bg'
+                            } `}>
                             {parseInt(value.totalStock) === 0
                               ? `Out of Stock`
                               : parseInt(value.totalStock) >= parseInt(value.stockAlert)
-                                ? `${value.totalStock} Available`
-                                : `${value.totalStock} Left`}
+                              ? `${value.totalStock} in Stock`
+                              : `${value.totalStock} Left`}
+                          </h3>
+                        </td>
+
+                        <td className="p-3 mw_160">
+                          <h3 className="fs-sm fw-400 black mb-0">
+                            ₹{' '}
+                            {value.varients.map(
+                              (item) =>
+                                (item.discountType === 'Amount'
+                                  ? item.originalPrice - item.discount
+                                  : item.originalPrice -
+                                    (item.originalPrice * item.discount) / 100) * value.totalStock
+                            )}
+                          </h3>
+                        </td>
+                        <td className="p-3 mx_170">
+                          <h3 className="fs-sm fw-400 black mb-0">
+                            {new Date(value.updated_at).toLocaleDateString('en-GB')}
                           </h3>
                         </td>
                         <td className="p-3 mw_130">
-                          <h3 className={`fs-sm fw-400 black mb-0 ms-2 ${value.status === 'hidden' ? 'text-danger' : null} `}>{value.status}</h3>
-                        </td>
-                        <td className="p-3 mx_100">
-                          <h3 className="fs-sm fw-400 black mb-0">
-                            ₹{value.varients[0].originalPrice}
+                          <h3
+                            className={`fs-sm fw-400 black mb-0 ms-2 ${
+                              value.status === 'hidden' ? 'text-danger' : null
+                            } `}>
+                            {value.status}
                           </h3>
                         </td>
                         <td className="text-center mx_100">

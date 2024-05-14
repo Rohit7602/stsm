@@ -84,6 +84,8 @@ const AddProduct = () => {
   const [previousbrandId, setPreviousbrandId] = useState(null);
   const [previousbrandName, setPreviousbrandName] = useState(null);
   const [previousbrandImage, setPreviousbrandImage] = useState(null);
+  const [stockUnitType, setStockUnitType] = useState('KG');
+  const [perUnitPrice, setPerUnitPrice] = useState('');
   const handleSelectCategory = (category) => {
     setSearchvalue('');
     setSelectedCategory(category);
@@ -258,15 +260,15 @@ const AddProduct = () => {
     return setTotalStock(value);
   }
 
-  function handleSetTotalPrice(e) {
-    let value = e.target.value;
-    return setStockPrice(value);
-  }
+  // function handleSetTotalPrice(e) {
+  //   let value = e.target.value;
+  //   return setStockPrice(value);
+  // }
 
   function HandleStockPopUpSave() {
+    setStockPrice(totalStock * perUnitPrice);
     setStockpopup(false);
   }
-
   // const convertDeltaToHtml = (deltaops) => {
   //   const converter = new QuillDeltaToHtmlConverter(deltaops, {});
   //   return converter.convert();
@@ -284,7 +286,7 @@ const AddProduct = () => {
     setName('');
     setShortDes('');
     setLongDes('');
-    setOriginalPrice(0);
+    setOriginalPrice('');
     setDiscountType('Amount');
     setDiscount(null);
     setVariants([]);
@@ -295,10 +297,15 @@ const AddProduct = () => {
     setImageUpload22([]);
     setSelectedCategory(null);
     setStockPrice('');
-    setDeliveryCharges(0);
-    setSalesmanComssion(0);
-    setServiceCharge(0);
-    // setSearchdata([]);
+    setDeliveryCharges('');
+    setSalesmanComssion('');
+    setServiceCharge('');
+    setPerUnitPrice('');
+    setAreaPinCode('');
+    setStoreColors([]);
+    setTotalStock('');
+    setStockCount('');
+    setTax('');
   }
 
   async function handlesave(e) {
@@ -332,6 +339,8 @@ const AddProduct = () => {
           sku: sku,
           totalStock: totalStock,
           stockAlert: StockCount,
+          stockUnitType: stockUnitType,
+          perUnitPrice: perUnitPrice,
           categories: {
             parent_id: selectedCategory.cat_ID,
             id: selectedCategory.id,
@@ -439,6 +448,8 @@ const AddProduct = () => {
         if (items.categories && items.categories.name) setSelectedCategory(items.categories.name);
         if (items.productImages) setImageUpload22(items.productImages);
         if (items.DeliveryCharge) setDeliveryCharges(items.DeliveryCharge);
+        if (items.perUnitPrice) setPerUnitPrice(items.perUnitPrice);
+        if (items.stockUnitType) setStockUnitType(items.stockUnitType);
         if (items.ServiceCharge) setServiceCharge(items.ServiceCharge);
         if (items.SalesmanCommission) setSalesmanComssion(items.SalesmanCommission);
         if (items.stockAlert) setStockCount(items.stockAlert);
@@ -793,7 +804,7 @@ const AddProduct = () => {
                       <div className="row align-items-end">
                         {addMoreArea.map((area, index) => {
                           const pincode = area.pincode;
-                          console.log(pincode);
+                          // console.log(pincode);
                           const areasForPincode = ServiceData.filter(
                             (service) => service.PostalCode === pincode
                           ).map((service) => service.AreaList);
@@ -1570,15 +1581,52 @@ const AddProduct = () => {
                             onChange={handleTotalQunatity}
                           />
                         </div>
-                        <div className="d-flex flex-column mt-2">
-                          <label className="fs-xs fw-400 black">Total Purchase Price</label>
-                          <input
-                            className="product_input fade_grey fw-400 mt-2"
-                            type="number"
-                            placeholder="₹ 0.00"
-                            value={stockPrice}
-                            onChange={handleSetTotalPrice}
-                          />
+                        <div className="d-flex align-items-center gap-3">
+                          <div className="d-flex flex-column mt-2 w-50">
+                            <label className="fs-xs fw-400 black">Unit Type</label>
+                            <Dropdown className="category_dropdown z-1 w-100">
+                              <Dropdown.Toggle
+                                id="dropdown-basic"
+                                className="mt-2 unit_type_input border-0">
+                                <div className="product_input d-flex align-items-center justify-content-between">
+                                  <p className="fade_grey fw-400 w-100 mb-0 text-start">
+                                    {stockUnitType}
+                                  </p>
+                                  <img src={dropdownImg} alt="" />
+                                </div>
+                              </Dropdown.Toggle>
+                              <Dropdown.Menu className="w-100 p-0">
+                                <div>
+                                  <Dropdown.Item>
+                                    {Units.map((itmes) => {
+                                      return (
+                                        <div className="d-flex justify-content-between">
+                                          <p
+                                            className="fs-xs fw-400 black mb-0 py-1 w-100"
+                                            onClick={() => setStockUnitType(itmes)}>
+                                            {itmes}
+                                          </p>
+                                          {stockUnitType === itmes && (
+                                            <img src={savegreenicon} alt="savegreenicon" />
+                                          )}
+                                        </div>
+                                      );
+                                    })}
+                                  </Dropdown.Item>
+                                </div>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          </div>
+                          <div className="d-flex flex-column mt-2 w-50">
+                            <label className="fs-xs fw-400 black">Price per unit</label>
+                            <input
+                              className="product_input fade_grey fw-400 mt-2"
+                              type="number"
+                              placeholder="₹ 0.00"
+                              value={perUnitPrice}
+                              onChange={(e) => setPerUnitPrice(e.target.value)}
+                            />
+                          </div>
                         </div>
                         <button
                           className="stock_save_btn d-flex align-items-center"
