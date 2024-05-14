@@ -170,7 +170,6 @@ const AddDeliveryMan = () => {
       const user = userCredential.user;
       console.log('user is ', user);
       DeliveryManData.uid = user.uid;
-
       let deliveryRef = doc(db, 'Delivery', user.uid);
       await setDoc(deliveryRef, DeliveryManData);
 

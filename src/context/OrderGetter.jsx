@@ -21,6 +21,8 @@ export const OrderContextProvider = ({ children }) => {
         //     setIsDataFetched(true)
 
         // })
+
+        // unsubscribe
         const unsubscribe = onSnapshot(collection(db, 'order'), (querySnapshot) => {
           let list = [];
           querySnapshot.forEach((doc) => {

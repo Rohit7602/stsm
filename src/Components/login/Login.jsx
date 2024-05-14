@@ -46,7 +46,6 @@ export default function Login(props) {
       toast.error("Invalid email or password", {
         position: toast.POSITION.TOP_CENTER,
       });
-
     }
   };
 
