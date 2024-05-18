@@ -33,16 +33,12 @@ import { Units } from '../../Common/Helper';
 import { Editor } from '@tinymce/tinymce-react';
 const AddProduct = () => {
   const navigate = useNavigate();
-
   const { productData, updateProductData } = useProductsContext();
   const { allBrands } = useBrandcontext();
   const { ServiceData } = UseServiceContext();
-
   const skuList = productData.map((product) => product.sku);
   // console.log("sku list is ", skuList)
-
   const productId = useParams();
-
   let ProductsID = productId.id;
   const [name, setName] = useState('');
   const [shortDes, setShortDes] = useState('');
@@ -71,7 +67,6 @@ const AddProduct = () => {
   const [DeliveryCharge, setDeliveryCharges] = useState();
   const [ServiceCharge, setServiceCharge] = useState();
   const [SalesmanCommission, setSalesmanComssion] = useState();
-
   //  search functionaltiy in categories and selected categories
   const [searchvalue, setSearchvalue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -89,12 +84,10 @@ const AddProduct = () => {
     setSelectedCategory(category);
     setSelectedCategoryId(category.id);
   };
-
   const handleSelectBrand = (brand) => {
     setSelectBrand(brand);
     setbrandid(brand.id);
   };
-
   const [addMoreArea, setAddMoreArea] = useState([
     {
       pincode: '',
@@ -648,7 +641,6 @@ const AddProduct = () => {
       setSku(newSku);
     }
   }
-
   if (loaderstatus) {
     return (
       <>
@@ -1510,7 +1502,6 @@ const AddProduct = () => {
                     </div>
                   </div>
                 </div>
-
                 {/* invertory */}
                 <div className="mt-4 product_shadow bg_white p-3">
                   <h2 className="fw-400 fs-2sm black mb-0">
