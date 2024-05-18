@@ -90,7 +90,7 @@ body {
 }
 
 .fade_grey {
-  color: #808080;
+  color: #070000;
 }
 
 .color_dark_grey {
@@ -1079,7 +1079,7 @@ delivery_man_dropdown::-webkit-scrollbar {
 }
 
 .min_width_1350 {
-  min-width: 1450px;
+  min-width: 1550px;
 }
 
 .min_width_1120 {
@@ -1250,7 +1250,8 @@ delivery_man_dropdown::-webkit-scrollbar {
 }
 
 .w_40 {
-  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
   height: 40px;
   border-radius: 5px;
 }
@@ -2524,7 +2525,7 @@ input[type='number']::-webkit-outer-spin-button {
 .faq-text-editor {
   width: 100%;
 }
-.tox-notifications-container{
+.tox-notifications-container {
   display: none !important;
   transform: scale(0) !important;
 }
