@@ -348,7 +348,6 @@ const ProductList = () => {
                 </thead>
                 <tbody className={`${selectAll.length >= 2 ? 'table_body2' : 'table_body'}`}>
                   {productData.map((value, index) => {
-                    console.log(value);
                     return (
                       <tr key={index}>
                         <td className="p-3 d-flex align-items-center">

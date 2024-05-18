@@ -20,8 +20,8 @@ const DeliveryManList = () => {
   const [showLocation, setShowLocation] = useState(false);
   const [searchvalue, setSearchvalue] = useState('');
 
-  const [selectedId, setSelectedId] = useState('')
-  const [filterData, setFilterData] = useState([])
+  const [selectedId, setSelectedId] = useState('');
+  const [filterData, setFilterData] = useState([]);
 
   const [order, setorder] = useState('ASC');
   const sorting = (col) => {
@@ -94,7 +94,6 @@ const DeliveryManList = () => {
       setFilterData(Datas);
     }
   }, [selectedId, DeliveryManData]);
-
 
   if (loaderstatus) {
     return (
@@ -232,39 +231,43 @@ const DeliveryManList = () => {
                             </td>
                             <td className="px-2 mx_140">
                               <h3
-                                className={`fs-sm fw-400 ${data.status === 'online' ? 'status_btn_green' : 'status_btn_red'
-                                  } mb-0`}>
+                                className={`fs-sm fw-400 ${
+                                  data.status === 'online' ? 'status_btn_green' : 'status_btn_red'
+                                } mb-0`}>
                                 {data.status}
                               </h3>
                               {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">online</h3> */}
                             </td>
                             <td className="ps-3 mx_160">
                               <h3
-                                className={`fs-sm fw-400 status_btn_green mb-0  ${data.profile_status === 'NEW'
-                                  ? ' on_credit_bg'
-                                  : data.profile_status === 'APPROVED'
+                                className={`fs-sm fw-400 status_btn_green mb-0  ${
+                                  data.profile_status === 'NEW'
+                                    ? ' on_credit_bg'
+                                    : data.profile_status === 'APPROVED'
                                     ? 'green stock_bg '
                                     : 'status_btn_red'
-                                  } `}>
+                                } `}>
                                 {data.profile_status === 'NEW' ? 'PENDING' : data.profile_status}
                               </h3>
                               {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">Rejected</h3> */}
                             </td>
                             <td className="ps-3 mx_160">
                               <h3 className="fs-sm fw-400 black mb-0">
-                                {data.is_verified === true && data.status === 'online' && data.profile_status === "APPROVED"  ? (
+                                {data.is_verified === true &&
+                                data.status === 'online' &&
+                                data.profile_status === 'APPROVED' &&
+                                data.hasOwnProperty('serviceArea') ? (
                                   <button
                                     onClick={() => {
-                                      setSelectedId(data.id)
+                                      setSelectedId(data.id);
                                       setShowLocation(true);
                                     }}
-                                    className="service_area_show_btn fs-sm fw-400"
-                                  >
+                                    className="service_area_show_btn fs-sm fw-400">
                                     Show
                                   </button>
                                 ) : (
-                                  <button className="service_area_show_btn fs-sm fw-400 opacity-25" disabled>
-                                    Show
+                                  <button className="service_area_show_btn fs-sm fw-400">
+                                    Not Available
                                   </button>
                                 )}
                               </h3>
@@ -275,7 +278,10 @@ const DeliveryManList = () => {
                               </h3>
                             </td>
                             <td className="text-center mx_100">
-                              {data.is_verified === true && data.status === 'online' && data.profile_status === "APPROVED" && data.hasOwnProperty("serviceArea") ? (
+                              {data.is_verified === true &&
+                              data.status === 'online' &&
+                              data.profile_status === 'APPROVED' &&
+                              data.hasOwnProperty('serviceArea') ? (
                                 <Link to={`inventory/${data.uid}`}>
                                   <ActionIcon />
                                 </Link>
@@ -316,7 +322,6 @@ const DeliveryManList = () => {
 
                       <div>
                         {data.serviceArea.map((area) => (
-
                           <>
                             <span
                               style={{
@@ -324,12 +329,18 @@ const DeliveryManList = () => {
                                 width: '100%',
                                 display: 'inline-block',
                               }}></span>
-                            <p className="fs-xs fw-600 black mt-2">{area.area_name} ({area.pincode})</p>
+                            <p className="fs-xs fw-600 black mt-2">
+                              {area.area_name} ({area.pincode})
+                            </p>
                             <div className="d-flex gap-2 flex-wrap">
                               {area.terretory.map((territory) => (
                                 <div className="d-flex align-items-center service_locations gap-2">
                                   <p className="fs-xxs fw-400 black m-0">{territory}</p>
-                                  <img className="ms-1 cursor_pointer" src={removeIcon} alt="removeIcon" />
+                                  <img
+                                    className="ms-1 cursor_pointer"
+                                    src={removeIcon}
+                                    alt="removeIcon"
+                                  />
                                 </div>
                               ))}
                             </div>
@@ -337,7 +348,7 @@ const DeliveryManList = () => {
                         ))}
                       </div>
                     </>
-                  )
+                  );
                 })}
                 {/* <span
                   style={{

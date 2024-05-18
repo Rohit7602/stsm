@@ -561,11 +561,6 @@ function Sidebar(props) {
                         <h3 className="fs-xs fw-400  white mb-0">Brands</h3>
                       </NavLink>
                     </li>
-                    <li>
-                      <NavLink className="dash_links_inner" to="setting/products">
-                        <h3 className="fs-xs fw-400  white mb-0">Products</h3>
-                      </NavLink>
-                    </li>
                   </ul>
                 )}
               </li>
