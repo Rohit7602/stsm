@@ -61,7 +61,9 @@ const DeliverymanProfile = () => {
     const areaName = filterData[0]?.AreaName || '';
     setAddMoreArea((prevVariants) =>
       prevVariants.map((v, i) =>
-        i === index ? { ...v, pincode: areaPinCode, area_name: areaName, terretory: [] } : v
+        i === index
+          ? { ...v, pincode: v.pincode, area_name: v.area_name, terretory: v.terretory }
+          : v
       )
     );
   }
@@ -441,10 +443,21 @@ const DeliverymanProfile = () => {
                         required
                         type="number"
                         className="fade_grey fw-400 border-0 outline_none"
-                        placeholder="125001"
+                        placeholder="Enter pin code"
                         id="pinCode"
-                        value={areaPinCode}
-                        onChange={(e) => setAreaPinCode(e.target.value)}
+                        value={area.pincode}
+                        onChange={(e) =>
+                          setAddMoreArea((prevsArareas) =>
+                            prevsArareas.map((v, i) =>
+                              i === index
+                                ? {
+                                    ...v,
+                                    pincode: e.target.value,
+                                  }
+                                : v
+                            )
+                          )
+                        }
                       />
                       <button
                         type="button"
@@ -465,7 +478,7 @@ const DeliverymanProfile = () => {
                       <p
                         className="fade_grey fs-xs fw-400 w-100 m-0 text-start  white_space_nowrap area_slider overflow-x-scroll"
                         required>
-                        {area.terretory.join(' , ')}
+                        {area.terretory.length !== 0 ? area.terretory.join(' , ') : 'Select area'}
                       </p>
                       <img src={dropdownImg} alt="" />
                     </div>
