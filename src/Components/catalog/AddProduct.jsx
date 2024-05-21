@@ -96,7 +96,7 @@ const AddProduct = () => {
     setSelectBrand(brand);
     setbrandid(brand.id);
   };
-
+  const [areaPinCode, setAreaPinCode] = useState('');
   const [addMoreArea, setAddMoreArea] = useState([
     {
       pincode: '',
@@ -194,7 +194,7 @@ const AddProduct = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-  const [areaPinCode, setAreaPinCode] = useState('');
+
   function handlAddMoreAreas() {
     setAddMoreArea((prevareas) => [
       ...prevareas,
@@ -216,7 +216,9 @@ const AddProduct = () => {
     const areaName = filterData[0]?.AreaName || '';
     setAddMoreArea((prevVariants) =>
       prevVariants.map((v, i) =>
-        i === index ? { ...v, pincode: areaPinCode, area_name: areaName, terretory: [] } : v
+        i === index
+          ? { ...v, pincode: v.pincode, area_name: v.area_name, terretory: v.terretory }
+          : v
       )
     );
   }
@@ -490,6 +492,7 @@ const AddProduct = () => {
               pincode: item.pincode,
               terretory: item.terretory,
             });
+            setAreaPinCode(item.pincode);
           });
           setAddMoreArea(allAreas);
         }
@@ -808,7 +811,6 @@ const AddProduct = () => {
                           const areasForPincode = ServiceData.filter(
                             (service) => service.PostalCode === pincode
                           ).map((service) => service.AreaList);
-
                           return (
                             <>
                               <div className=" col-4">
@@ -822,10 +824,21 @@ const AddProduct = () => {
                                     required
                                     type="number"
                                     className="  fade_grey fw-400 border-0 w-100 outline_none"
-                                    placeholder="125001"
+                                    placeholder="Enter Pincode "
                                     id="pinCode"
-                                    value={areaPinCode}
-                                    onChange={(e) => setAreaPinCode(e.target.value)}
+                                    value={area.pincode}
+                                    onChange={(e) =>
+                                      setAddMoreArea((prevsArareas) =>
+                                        prevsArareas.map((v, i) =>
+                                          i === index
+                                            ? {
+                                                ...v,
+                                                pincode: e.target.value,
+                                              }
+                                            : v
+                                        )
+                                      )
+                                    }
                                   />
                                   <button
                                     type="button"
@@ -847,7 +860,7 @@ const AddProduct = () => {
                                     required>
                                     {area.terretory.length !== 0
                                       ? area.terretory.join(' , ')
-                                      : 'select area'}
+                                      : 'Select area'}
                                   </p>
                                   <img src={dropdownImg} alt="" />
                                 </div>
@@ -1537,7 +1550,7 @@ const AddProduct = () => {
                       required
                       type="text"
                       className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
-                      placeholder="6HK3I5"
+                      placeholder="Enter SKU"
                       value={sku}
                       id="sku"
                       onChange={handleSkuChange}
