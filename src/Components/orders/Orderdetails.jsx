@@ -43,9 +43,10 @@ export default function NewOrder() {
 
   console.log(customSelectDeliveryManId);
   // console.log("selec bill is ", filterData)
-  function handleChoseDeliveryMan() {
+  function handleChoseDeliveryMan(id) {
     setSelectedDeliveryManId(customSelectDeliveryManId);
     setIssDeliverymanPopup(false);
+    // handleAcceptOrder(id);
   }
 
   useEffect(() => {
@@ -133,6 +134,7 @@ export default function NewOrder() {
           (areas) => areas.terretory && areas.terretory.some((t) => t.toLowerCase() === area)
         )
     );
+    console.log(deliverymenWithArea.length + '#########dddddddddddd');
     if (deliverymenWithArea.length !== 0 || customSelectDeliveryManId !== null) {
       try {
         const orderDocRef = doc(db, 'order', id);
@@ -140,7 +142,6 @@ export default function NewOrder() {
         const orderData = orderDoc.data();
         const invoiceNumber = await getInvoiceNo();
         let area = orderData.shipping.area.toLowerCase();
-        console.log('Area is ', area);
 
         // Filter the deliverymen whose service areas include the desired area
         const deliverymenWithArea = DeliveryManData.filter(
@@ -155,13 +156,12 @@ export default function NewOrder() {
         // if (deliverymenWithArea.length === 0) {
 
         // }
+        let autoSelectedDeliveryManId = null;
         if (deliverymenWithArea.length > 1) {
           const randomIndex = Math.floor(Math.random() * deliverymenWithArea.length);
-          setSelectedDeliveryManId(deliverymenWithArea[randomIndex].id); // Assuming deliveryman object has an 'id' property
+          autoSelectedDeliveryManId = deliverymenWithArea[randomIndex].id; // Assuming deliveryman object has an 'id' property
         } else if (deliverymenWithArea.length === 1) {
-          setSelectedDeliveryManId(deliverymenWithArea[0].id); // Assuming deliveryman object has an 'id' property
-        } else {
-          setSelectedDeliveryManId(customSelectDeliveryManId);
+          autoSelectedDeliveryManId = deliverymenWithArea[0].id; // Assuming deliveryman object has an 'id' property
         }
 
         if (orderData && orderData.items) {
@@ -181,12 +181,14 @@ export default function NewOrder() {
           await updateDoc(orderDocRef, {
             status: newStatus,
             invoiceNumber: invoiceNumber,
-            assign_to: selectedDeliveryManId,
+            assign_to:
+              deliverymenWithArea.length !== 0 ? autoSelectedDeliveryManId : selectedDeliveryManId,
           });
         } else {
           await updateDoc(orderDocRef, {
             status: newStatus,
-            assign_to: selectedDeliveryManId,
+            assign_to:
+              deliverymenWithArea.length !== 0 ? autoSelectedDeliveryManId : selectedDeliveryManId,
           });
           setLoading(false);
         }
@@ -215,7 +217,8 @@ export default function NewOrder() {
           id,
           status: newStatus,
           invoiceNumber: invoiceNumber,
-          assign_to: selectedDeliveryManId,
+          assign_to:
+            deliverymenWithArea.length !== 0 ? autoSelectedDeliveryManId : selectedDeliveryManId,
         });
 
         setLoading(false);
@@ -223,6 +226,7 @@ export default function NewOrder() {
         console.log(error);
         setLoading(false);
       }
+      console.log('first');
     } else {
       setLoading(false);
       setIssDeliverymanPopup(true);
@@ -321,65 +325,7 @@ export default function NewOrder() {
   return (
     <div className="overflow-hidden">
       {isDeliverymanPopup && <div className="bg_black_overlay"></div>}
-      {isDeliverymanPopup && (
-        <div className="deliveryman_popup_list">
-          <div className="d-flex align-items-center justify-content-between mb-3">
-            <p className=" fs-5 mb-0">Chosse a delivery man</p>
-            <img
-              onClick={() => setIssDeliverymanPopup(false)}
-              className="cursor_pointer"
-              src={CloseIcon}
-              alt="closeicon"
-            />
-          </div>
-          <div className="deliveryman_list">
-            <table className="w-100">
-              <tr>
-                <th className="w-50 pb-2">Name</th>
-                <th className="w-50 pb-2">Pincode</th>
-              </tr>
-              {DeliveryManData.map((items, index) => {
-                console.log('ok', items);
-                return (
-                  <tr key={index}>
-                    <td className="d-flex align-items-center py-1 w-100">
-                      <input
-                        onChange={() => setCustomSelectDeliveryManId(items.uid)}
-                        type="checkbox"
-                        name=""
-                        id=""
-                        checked={customSelectDeliveryManId === items.uid}
-                      />
-                      <p className="ms-2 mb-0 w-100">{items.basic_info.name}</p>
-                    </td>
 
-                    {items.serviceArea && items.serviceArea.length > 0 ? (
-                      items.serviceArea.map((itm, ind) => {
-                        console.log(itm + ' asfdasfasfsafafa');
-                        return (
-                          <td key={ind} className="w-100">
-                            {itm.area_name} ({itm.pincode})
-                          </td>
-                        );
-                      })
-                    ) : (
-                      <td className="w-100">Not available</td>
-                    )}
-                  </tr>
-                );
-              })}
-            </table>
-          </div>
-          <div className="d-flex justify-content-end gap-3 mt-3">
-            <button onClick={() => setIssDeliverymanPopup(false)} className="cancel_btn">
-              Cancel
-            </button>
-            <button onClick={handleChoseDeliveryMan} className="save_btn">
-              Save
-            </button>
-          </div>
-        </div>
-      )}
       {filterData.map((item, index) => {
         return (
           <div
@@ -419,6 +365,68 @@ export default function NewOrder() {
                       <img src={saveicon} alt="saveicon" />
                       ACCEPT ORDER
                     </button>
+                    {isDeliverymanPopup && (
+                      <div className="deliveryman_popup_list">
+                        <div className="d-flex align-items-center justify-content-between mb-3">
+                          <p className=" fs-5 mb-0">Chosse a delivery man</p>
+                          <img
+                            onClick={() => setIssDeliverymanPopup(false)}
+                            className="cursor_pointer"
+                            src={CloseIcon}
+                            alt="closeicon"
+                          />
+                        </div>
+                        <div className="deliveryman_list">
+                          <table className="w-100">
+                            <tr>
+                              <th className="w-50 pb-2">Name</th>
+                              <th className="w-50 pb-2">Pincode</th>
+                            </tr>
+                            {DeliveryManData.map((items, index) => {
+                              console.log('ok', items);
+                              return (
+                                <tr key={index}>
+                                  {items.serviceArea && items.serviceArea.length > 0 ? (
+                                    <>
+                                      <td className="d-flex align-items-center py-1 w-100">
+                                        <input
+                                          onChange={() => setCustomSelectDeliveryManId(items.uid)}
+                                          type="checkbox"
+                                          checked={customSelectDeliveryManId === items.uid}
+                                        />
+                                        <p className="ms-2 mb-0 w-100">{items.basic_info.name}</p>
+                                      </td>
+                                      {items.serviceArea.map((itm, ind) => {
+                                        console.log(itm + ' asfdasfasfsafafa');
+                                        return (
+                                          <td key={ind} className="w-100">
+                                            {itm.area_name} ({itm.pincode})
+                                          </td>
+                                        );
+                                      })}
+                                    </>
+                                  ) : null}
+                                </tr>
+                              );
+                            })}
+                          </table>
+                        </div>
+                        <div className="d-flex justify-content-end gap-3 mt-3">
+                          <button
+                            onClick={() => setIssDeliverymanPopup(false)}
+                            className="cancel_btn">
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleChoseDeliveryMan(item.id);
+                            }}
+                            className="save_btn">
+                            Save
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : item.status === 'CANCELLED' ? (
