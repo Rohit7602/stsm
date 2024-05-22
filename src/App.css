@@ -2529,6 +2529,42 @@ input[type='number']::-webkit-outer-spin-button {
   display: none !important;
   transform: scale(0) !important;
 }
+
+.deliveryman_popup_list {
+  position: fixed;
+  padding: 20px;
+  background-color: #fff;
+  overflow-y: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 7px;
+  z-index: 3;
+}
+.deliveryman_list {
+  width: 500px;
+  height: 400px;
+  overflow-y: auto;
+}
+
+.deliveryman_list::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.deliveryman_popup_list .save_btn {
+  padding: 7px 0;
+  width: 70px;
+}
+.deliveryman_popup_list .cancel_btn {
+  padding: 6px 0;
+  padding: 0;
+  width: 70px;
+}
+.deliveryman_popup_list .close_icon {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1400px) {
   .mx_xxl_580 {
