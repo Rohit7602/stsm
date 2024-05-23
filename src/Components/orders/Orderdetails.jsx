@@ -41,14 +41,6 @@ export default function NewOrder() {
   const [customSelectDeliveryManId, setCustomSelectDeliveryManId] = useState(null);
   const [isDeliverymanPopup, setIssDeliverymanPopup] = useState(false);
 
-  console.log(customSelectDeliveryManId);
-  // console.log("selec bill is ", filterData)
-  function handleChoseDeliveryMan(id) {
-    setSelectedDeliveryManId(customSelectDeliveryManId);
-    setIssDeliverymanPopup(false);
-    // handleAcceptOrder(id);
-  }
-
   useEffect(() => {
     const orderData = orders.filter((item) => item.order_id === id);
     setfilterData(orderData);
@@ -135,7 +127,7 @@ export default function NewOrder() {
         )
     );
     console.log(deliverymenWithArea.length + '#########dddddddddddd');
-    if (deliverymenWithArea.length !== 0 || customSelectDeliveryManId !== null) {
+    if (deliverymenWithArea.length !== 0 || selectedDeliveryManId !== null) {
       try {
         const orderDocRef = doc(db, 'order', id);
         const orderDoc = await getDoc(orderDocRef);
@@ -226,7 +218,6 @@ export default function NewOrder() {
         console.log(error);
         setLoading(false);
       }
-      console.log('first');
     } else {
       setLoading(false);
       setIssDeliverymanPopup(true);
@@ -383,16 +374,15 @@ export default function NewOrder() {
                               <th className="w-50 pb-2">Pincode</th>
                             </tr>
                             {DeliveryManData.map((items, index) => {
-                              console.log('ok', items);
                               return (
                                 <tr key={index}>
                                   {items.serviceArea && items.serviceArea.length > 0 ? (
                                     <>
                                       <td className="d-flex align-items-center py-1 w-100">
                                         <input
-                                          onChange={() => setCustomSelectDeliveryManId(items.uid)}
+                                          onChange={() => setSelectedDeliveryManId(items.uid)}
                                           type="checkbox"
-                                          checked={customSelectDeliveryManId === items.uid}
+                                          checked={selectedDeliveryManId === items.uid}
                                         />
                                         <p className="ms-2 mb-0 w-100">{items.basic_info.name}</p>
                                       </td>
@@ -419,7 +409,8 @@ export default function NewOrder() {
                           </button>
                           <button
                             onClick={() => {
-                              handleChoseDeliveryMan(item.id);
+                              handleAcceptOrder(item.id);
+                              setIssDeliverymanPopup(false);
                             }}
                             className="save_btn">
                             Save
