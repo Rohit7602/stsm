@@ -66,13 +66,13 @@ const NewCategory = () => {
 
     try {
       if (name == undefined) {
-        alert('Please enter the name');
+        toast.error('Please enter the name');
       } else if (status === undefined) {
-        alert('Please Set the status');
+        toast.error('Please Set the status');
       } else if (category === undefined) {
-        alert('please select category');
+        toast.error('please select category');
       } else if (imageupload.length === 0) {
-        alert('Please Set an image for the product');
+        toast.error('Please Set an image for the product');
       } else {
         setLoaderstatus(true);
         const filename = Math.floor(Date.now() / 1000) + '-' + imageupload.name;
@@ -87,10 +87,10 @@ const NewCategory = () => {
           cat_ID: category.id,
           created_at: Date.now(),
           updated_at: Date.now(),
-          noOfProducts: 0
+          noOfProducts: 0,
         });
         await updateDoc(doc(db, 'categories', category.id), {
-          'noOfSubcateogry': increment(1)
+          noOfSubcateogry: increment(1),
         });
 
         setLoaderstatus(false);
@@ -112,7 +112,7 @@ const NewCategory = () => {
     const selectedFile = e.target.files[0];
 
     if (!ImageisValidOrNot(selectedFile)) {
-      toast.error('Please select a valid image file within 1.5 MB.')
+      toast.error('Please select a valid image file within 1.5 MB.');
       setImageupload(null);
     } else {
       setImageupload(selectedFile);
@@ -166,14 +166,12 @@ const NewCategory = () => {
   async function handleSaveParentCategory(e) {
     e.preventDefault();
     try {
-
       if (perName === undefined || null) {
-        alert('please enter the name of the category ');
+        toast.error('please enter the name of the category  ');
       } else if (imageupload2.length === 0) {
-        alert('please upload image of the category ');
+        toast.error('please upload image of the category');
       } else if (perStatus === undefined || null) {
-
-        alert('please Set the status ');
+        toast.error('please Set the status');
       } else {
         setLoaderstatus(true);
         const filename = Math.floor(Date.now() / 1000) + '-' + imageupload2.name;
@@ -199,9 +197,8 @@ const NewCategory = () => {
         // context
         addDataParent(docRef);
       }
-    }
-    catch (e) {
-      setLoaderstatus(false)
+    } catch (e) {
+      setLoaderstatus(false);
       toast.error(e, {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -214,9 +211,7 @@ const NewCategory = () => {
       *********************************************   **/
 
   if (loaderstatus) {
-    return (
-      <Loader></Loader>
-    );
+    return <Loader></Loader>;
   } else {
     return (
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
@@ -384,10 +379,11 @@ const NewCategory = () => {
                             .map((category) => (
                               <Dropdown.Item key={category.id}>
                                 <div
-                                  className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                    ? 'selected'
-                                    : ''
-                                    }`}
+                                  className={`d-flex justify-content-between ${
+                                    selectedCategory && selectedCategory.id === category.id
+                                      ? 'selected'
+                                      : ''
+                                  }`}
                                   onClick={() => handleSelectCategory(category)}>
                                   <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                   {selectedCategory && selectedCategory.id === category.id && (

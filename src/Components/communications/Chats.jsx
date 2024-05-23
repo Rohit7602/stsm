@@ -8,6 +8,8 @@ import Reciver from './chat-bubble/reciver';
 import Sender from './chat-bubble/sender';
 import closeIcon from '../../Images/svgs/closeicon.svg';
 import manimage from '../../Images/Png/manimage.jpg';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useCustomerContext } from '../../context/Customergetters';
 import { useChat } from '../../context/ChatRoom';
 import { getDatabase, ref, update, push, set } from 'firebase/database';
@@ -15,7 +17,7 @@ import { app } from '../../firebase';
 import { useUserAuth } from '../../context/Authcontext';
 import { storage } from '../../firebase';
 import { getDownloadURL, uploadBytes } from 'firebase/storage';
-import { ref as storageREf } from 'firebase/storage'
+import { ref as storageREf } from 'firebase/storage';
 
 export default function Chats() {
   const database = getDatabase(app);
@@ -84,7 +86,7 @@ export default function Chats() {
   };
 
   const sendMessage = async (chatroomId) => {
-    if (messageText != "" || chatImages.length > 0) {
+    if (messageText != '' || chatImages.length > 0) {
       const senderId = userData.uuid;
       let ImageURLs = [];
       if (chatImages.length > 0) {
@@ -94,14 +96,18 @@ export default function Chats() {
           await uploadBytes(storageRef, file); // Use 'file' instead of 'chatImages'
           const imageURL = await getDownloadURL(storageRef);
           ImageURLs.push(imageURL);
-        };
+        }
       }
       const newMessage = {
         message: messageText,
         createdAt: new Date().toISOString(),
-        messageType: messageText ? "TEXT" : (messageText && ImageURLs.length > 0) ? 'TEXT / IMAGE' : "IMAGE",
+        messageType: messageText
+          ? 'TEXT'
+          : messageText && ImageURLs.length > 0
+          ? 'TEXT / IMAGE'
+          : 'IMAGE',
         seen: false,
-        image: ImageURLs.length > 0 ? ImageURLs : "",
+        image: ImageURLs.length > 0 ? ImageURLs : '',
         senderId,
       };
 
@@ -110,12 +116,12 @@ export default function Chats() {
       set(newMessageRef, newMessage);
 
       setMessageText('');
-      setChatImages([])
+      setChatImages([]);
       setCurrentChat((prevChat) => [...prevChat, newMessage]);
     } else {
-      alert("please enter something before send the message ")
+      toast.error('please enter something before send the message ');
     }
-  }
+  };
 
   const chatContainerRef = useRef(null);
 
@@ -335,6 +341,7 @@ export default function Chats() {
           </div>
         </div>
       </div>
+      <ToastContainer></ToastContainer>
     </div>
   );
 }

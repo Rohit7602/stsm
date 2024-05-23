@@ -93,7 +93,7 @@ const ServiceArea = () => {
   async function HandleSaveServiceAreas(e) {
     e.preventDefault();
     if (!AreaName && !postalCode && !status) {
-      alert('Please Fill All Field');
+      toast.error('Please Fill All Field');
     } else {
       setLoaderstatus(true);
       try {
@@ -134,7 +134,7 @@ const ServiceArea = () => {
   async function HandleEditSaveServiceAreas(e) {
     e.preventDefault();
     try {
-      setLoaderstatus(true)
+      setLoaderstatus(true);
       await updateDoc(doc(db, 'ServiceAreas', ServiceAreaId), {
         AreaName: AreaName,
         PostalCode: postalCode,
@@ -152,15 +152,13 @@ const ServiceArea = () => {
         AreaList: storeServiceArea,
       });
 
-      setLoaderstatus(false)
+      setLoaderstatus(false);
       toast.success('Service area Updated  Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
-      handleResetServiceArea()
-
-
+      handleResetServiceArea();
     } catch (Error) {
-      setLoaderstatus(false)
+      setLoaderstatus(false);
       console.error(Error);
     }
   }
@@ -210,83 +208,66 @@ const ServiceArea = () => {
     }
   }
 
-
   async function handleChangeLiveSelectedAread(e) {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setLoaderstatus(true)
-      let newStatus = "live"
+      setLoaderstatus(true);
+      let newStatus = 'live';
       for (let ids of selectAll) {
         await updateDoc(doc(db, 'ServiceAreas', ids), {
           ServiceStatus: newStatus,
         });
         updateServiceData({ ids, ServiceStatus: newStatus });
       }
-      setSelectAll([])
-      setLoaderstatus(false)
+      setSelectAll([]);
+      setLoaderstatus(false);
       toast.success('Status Changed Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (e) {
-      console.log("error ", e)
+      console.log('error ', e);
     }
   }
-
 
   async function handleChangeDarftSelectedAread(e) {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setLoaderstatus(true)
-      let newStatus = "draft"
+      setLoaderstatus(true);
+      let newStatus = 'draft';
       for (let ids of selectAll) {
         await updateDoc(doc(db, 'ServiceAreas', ids), {
           ServiceStatus: newStatus,
         });
         updateServiceData({ ids, ServiceStatus: newStatus });
       }
-      setSelectAll([])
-      setLoaderstatus(false)
+      setSelectAll([]);
+      setLoaderstatus(false);
       toast.success('Status Changed Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (e) {
-      console.log("error ", e)
+      console.log('error ', e);
     }
-
   }
 
-
   async function handleDeleteSelectedAread(e) {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setLoaderstatus(true)
+      setLoaderstatus(true);
       for (let ids of selectAll) {
         await deleteDoc(doc(db, 'ServiceAreas', ids)).then(() => {
           deleteServiceData(ids);
         });
       }
-      setLoaderstatus(false)
-      selectAll([])
+      setLoaderstatus(false);
+      selectAll([]);
       toast.success('Deleted  Successfully', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
-      console.log("error", error)
+      console.log('error', error);
     }
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /*  *******************************
       Change service  status functionality end 
@@ -339,7 +320,7 @@ const ServiceArea = () => {
 
   let editServiceData = ServiceData.filter((item) => item.id === ServiceAreaId);
   if (loaderstatus) {
-    return ( <Loader></Loader> );
+    return <Loader></Loader>;
   } else {
     return (
       <div className="main_panel_wrapper bg_light_grey w-100">
@@ -364,9 +345,21 @@ const ServiceArea = () => {
           {/* categories details  */}
           {selectAll.length > 1 ? (
             <div className="d-flex align-items-center gap-3 mt-3 pt-1">
-              <button className="change_to_draft fs-sm fw-400 black" onClick={handleChangeDarftSelectedAread}>Change To Draft</button>
-              <button className="change_to_live fs-sm fw-400 black" onClick={handleChangeLiveSelectedAread} >Change To Live</button>
-              <button className="delete_area fs-sm fw-400 text-white" onClick={handleDeleteSelectedAread}>Delete Area</button>
+              <button
+                className="change_to_draft fs-sm fw-400 black"
+                onClick={handleChangeDarftSelectedAread}>
+                Change To Draft
+              </button>
+              <button
+                className="change_to_live fs-sm fw-400 black"
+                onClick={handleChangeLiveSelectedAread}>
+                Change To Live
+              </button>
+              <button
+                className="delete_area fs-sm fw-400 text-white"
+                onClick={handleDeleteSelectedAread}>
+                Delete Area
+              </button>
             </div>
           ) : null}
           <div className="row mt-4">

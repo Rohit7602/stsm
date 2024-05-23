@@ -202,7 +202,7 @@ const ParentCategories = () => {
       await updateDoc(doc(db, 'categories', id), {
         status: newStatus,
       });
-      alert('status Change succesffuly ');
+      toast.error('status Change succesffuly');
       updateData({ id, status: newStatus });
     } catch (error) {
       console.log(error);

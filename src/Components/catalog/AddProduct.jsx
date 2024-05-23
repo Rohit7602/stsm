@@ -86,6 +86,7 @@ const AddProduct = () => {
   const [previousbrandImage, setPreviousbrandImage] = useState(null);
   const [stockUnitType, setStockUnitType] = useState('KG');
   const [perUnitPrice, setPerUnitPrice] = useState('');
+  const [totalStockQun, setTotalStockQun] = useState('');
   const handleSelectCategory = (category) => {
     setSearchvalue('');
     setSelectedCategory(category);
@@ -257,10 +258,11 @@ const AddProduct = () => {
   // }, [addMoreArea])
 
   // get total amount functionality
-  function handleTotalQunatity(e) {
-    let value = e.target.value;
-    return setTotalStock(value);
-  }
+  // function handleTotalQunatity(e) {
+  //   let value = e.target.value;
+  //   setTotalStockQun(value);
+  //   return setTotalStock(totalStock + totalStockQun);
+  // }
 
   // function handleSetTotalPrice(e) {
   //   let value = e.target.value;
@@ -269,6 +271,8 @@ const AddProduct = () => {
 
   function HandleStockPopUpSave() {
     setStockPrice(totalStock * perUnitPrice);
+    setTotalStock(Number(totalStock) + Number(totalStockQun));
+    setTotalStockQun('');
     setStockpopup(false);
   }
   // const convertDeltaToHtml = (deltaops) => {
@@ -314,13 +318,15 @@ const AddProduct = () => {
     e.preventDefault();
 
     if (imageUpload22.length === 0 && status === undefined) {
-      alert('set status');
+      toast.error('set status');
     } else if (imageUpload22.length === 0) {
-      alert('set image ');
+      toast.error('set image ');
     } else if (!name || !shortDes || !totalStock) {
-      alert('Please enter name  or ShortDescription or TotalStock ');
+      toast.error('Please enter TotalStock');
     } else if (!selectedCategory) {
-      alert('please select category ');
+      toast.error('please select category ');
+    } else if (perUnitPrice === '') {
+      toast.error('please select Per Unit Price ');
     } else {
       try {
         setLoaderstatus(true);
@@ -656,7 +662,7 @@ const AddProduct = () => {
     const newSku = e.target.value;
     if (skuList.includes(newSku)) {
       // SKU already exists, show an error or handle the duplicate SKU
-      alert('SKU already exists please enter different sku');
+      toast.error('SKU already exists please enter different sku');
     } else {
       // SKU is unique, set the new SKU value
       setSku(newSku);
@@ -1590,8 +1596,8 @@ const AddProduct = () => {
                             className="product_input fade_grey fw-400 mt-2"
                             type="number"
                             placeholder="0.00"
-                            value={totalStock}
-                            onChange={handleTotalQunatity}
+                            value={totalStockQun}
+                            onChange={(e) => setTotalStockQun(e.target.value)}
                           />
                         </div>
                         <div className="d-flex align-items-center gap-3">

@@ -250,8 +250,6 @@ const Categories = () => {
     }
   }
 
-
-
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
@@ -324,13 +322,12 @@ const Categories = () => {
   async function handleSaveParentCategory(e) {
     e.preventDefault();
     try {
-
       if (name === undefined || null) {
-        alert('please enter the name of the category ');
+        toast.error('please enter the name of the category ');
       } else if (imageupload.length === 0) {
-        alert('please upload image of the category ');
+        toast.error('please upload image of the category ');
       } else if (status === undefined || null) {
-        alert('please Set the status ');
+        toast.error('please Set the status');
       } else {
         setloading(true);
         const filename = Math.floor(Date.now() / 1000) + '-' + imageupload.name;
@@ -444,63 +441,56 @@ const Categories = () => {
         position: toast.POSITION.TOP_RIGHT,
       });
       updateData({ id, status: newStatus });
-
     } catch (error) {
       console.log(error);
     }
   }
 
-
   async function HandleChangeToDraft(e) {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setloading(true)
-      const newStatus = "hidden"
+      setloading(true);
+      const newStatus = 'hidden';
       for (let ids of selectAll) {
         await updateDoc(doc(db, 'sub_categories', ids), {
-          status: newStatus
-        })
+          status: newStatus,
+        });
 
-        updateData({ ids, status: newStatus })
+        updateData({ ids, status: newStatus });
       }
-      setloading(false)
+      setloading(false);
       toast.success('Status  Changed Successfully !', {
         position: toast.POSITION.TOP_RIGHT,
       });
-      setSelectAll([])
+      setSelectAll([]);
     } catch (error) {
-      setloading(false)
-      console.log("Error in change status", error)
+      setloading(false);
+      console.log('Error in change status', error);
     }
   }
-
 
   async function HandleChangeToLive(e) {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setloading(true)
-      const newStatus = "published"
+      setloading(true);
+      const newStatus = 'published';
       for (let ids of selectAll) {
         await updateDoc(doc(db, 'sub_categories', ids), {
-          status: newStatus
-        })
+          status: newStatus,
+        });
 
-        updateData({ ids, status: newStatus })
+        updateData({ ids, status: newStatus });
       }
-      setloading(false)
+      setloading(false);
       toast.success('Status  Changed Successfully !', {
         position: toast.POSITION.TOP_RIGHT,
       });
-      setSelectAll([])
+      setSelectAll([]);
     } catch (error) {
-      setloading(false)
-      console.log("Error in change status", error)
+      setloading(false);
+      console.log('Error in change status', error);
     }
-
   }
-
-
-
 
   /*  *******************************
         Change status functionality end 
@@ -587,7 +577,6 @@ const Categories = () => {
         updated_at: Date.now(),
       });
 
-      // alert("Updated Successfully");
       setLoaderstatus(false);
       toast.success('Parent Category updated Successfully', {
         position: toast.POSITION.TOP_RIGHT,
@@ -638,8 +627,12 @@ const Categories = () => {
           {/* categories details  */}
           {selectAll.length > 1 ? (
             <div className="d-flex align-items-center gap-3 mt-3 pt-1">
-              <button className="change_to_draft fs-sm fw-400 black" onClick={HandleChangeToDraft}>Change To Draft</button>
-              <button className="change_to_live fs-sm fw-400 black" onClick={HandleChangeToLive} >Change To Live</button>
+              <button className="change_to_draft fs-sm fw-400 black" onClick={HandleChangeToDraft}>
+                Change To Draft
+              </button>
+              <button className="change_to_live fs-sm fw-400 black" onClick={HandleChangeToLive}>
+                Change To Live
+              </button>
             </div>
           ) : null}
           <div className="p-3 mt-4">
@@ -1128,8 +1121,8 @@ const Categories = () => {
                                             // src={URL.createObjectURL(editImg)}
                                             src={
                                               editImg &&
-                                                typeof editImg === 'string' &&
-                                                editImg.startsWith('http')
+                                              typeof editImg === 'string' &&
+                                              editImg.startsWith('http')
                                                 ? editImg
                                                 : URL.createObjectURL(editImg)
                                             }
@@ -1436,8 +1429,8 @@ const Categories = () => {
                           className="mobile_image object-fit-cover"
                           src={
                             editCatImg &&
-                              typeof editCatImg === 'string' &&
-                              editCatImg.startsWith('http')
+                            typeof editCatImg === 'string' &&
+                            editCatImg.startsWith('http')
                               ? editCatImg
                               : URL.createObjectURL(editCatImg)
                           }
@@ -1531,10 +1524,11 @@ const Categories = () => {
                               .map((category) => (
                                 <Dropdown.Item key={category.id}>
                                   <div
-                                    className={`d-flex justify-content-between ${selectedCategory && selectedCategory.id === category.id
-                                      ? 'selected'
-                                      : ''
-                                      }`}
+                                    className={`d-flex justify-content-between ${
+                                      selectedCategory && selectedCategory.id === category.id
+                                        ? 'selected'
+                                        : ''
+                                    }`}
                                     onClick={() => handleSelectCategory(category)}>
                                     <p className="fs-xs fw-400 black mb-0">{category.title}</p>
                                     {selectedCategory && selectedCategory.id === category.id && (
