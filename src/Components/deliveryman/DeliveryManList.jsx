@@ -201,6 +201,7 @@ const DeliveryManList = () => {
                           ? data
                           : data.basic_info.name.toLowerCase().includes(searchvalue);
                       }).map((data, index) => {
+                        console.log(data);
                         return (
                           <tr className="product_borderbottom">
                             <td className="py-3 ps-3 ">
@@ -256,7 +257,7 @@ const DeliveryManList = () => {
                                 {data.is_verified === true &&
                                 data.status === 'online' &&
                                 data.profile_status === 'APPROVED' &&
-                                data.hasOwnProperty('serviceArea') ? (
+                                data.serviceArea ? (
                                   <button
                                     onClick={() => {
                                       setSelectedId(data.id);

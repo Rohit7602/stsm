@@ -59,11 +59,10 @@ const DeliverymanProfile = () => {
   function handlePincodeChange(index) {
     const filterData = ServiceData.filter((datas) => datas.PostalCode === areaPinCode);
     const areaName = filterData[0]?.AreaName || '';
+    console.log(areaName);
     setAddMoreArea((prevVariants) =>
       prevVariants.map((v, i) =>
-        i === index
-          ? { ...v, pincode: v.pincode, area_name: v.area_name, terretory: v.terretory }
-          : v
+        i === index ? { ...v, pincode: v.pincode, area_name: areaName, terretory: v.terretory } : v
       )
     );
   }
@@ -134,7 +133,7 @@ const DeliverymanProfile = () => {
   async function updateServiceAreas() {
     setLoading(true);
     const { pincode, area_name, terretory } = addMoreArea[0];
-
+    console.log(addMoreArea);
     if (!pincode || !area_name || terretory.length === 0) {
       // Show an alert if any field in addMoreArea is empty
       alert('Please fill in all fields for the service area');
@@ -446,7 +445,7 @@ const DeliverymanProfile = () => {
                         placeholder="Enter pin code"
                         id="pinCode"
                         value={area.pincode}
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setAddMoreArea((prevsArareas) =>
                             prevsArareas.map((v, i) =>
                               i === index
@@ -456,8 +455,9 @@ const DeliverymanProfile = () => {
                                   }
                                 : v
                             )
-                          )
-                        }
+                          );
+                          setAreaPinCode(e.target.value);
+                        }}
                       />
                       <button
                         type="button"
