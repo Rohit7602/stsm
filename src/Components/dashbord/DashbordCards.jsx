@@ -211,7 +211,7 @@ function DashbordCards() {
             </div>
           </div>
         </div>
-        <button onClick={() => sendNotification('orderAccepted')}>send</button>
+        {/* <button onClick={() => sendNotification('orderAccepted')}>send</button> */}
         {/* Chart-section-bar  */}
         <div className="chat_wrapper px-3">
           <div className="row  justify-content-between ">
