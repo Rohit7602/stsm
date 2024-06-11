@@ -22,43 +22,46 @@ import { UserAuthContextProvider } from './context/Authcontext';
 import { CouponContextProvider } from './context/CouponsGetter';
 import { BrandContextProvider } from './context/BrandsContext';
 import { ChatProvider } from './context/ChatRoom';
+import { NotificationProvider } from './context/NotificationContext';
 // Put any other imports below so that CSS from your
 // components takes precedence over default styles.
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
-    <UserAuthContextProvider>
-      <ImageValidationProvider>
-        <SubCategoriesProvider>
-          <MainCategoriesProvider>
-            <ProductsProvider>
-              <ImageHandleProvider>
-                <BannerDataProvider>
-                  <OrderContextProvider>
-                    <CustomersProvider>
-                      <ServiceContextProvider>
-                        <FaqProvider>
-                          <DeliverManContextProvider>
-                            <CouponContextProvider>
-                              <BrandContextProvider>
-                                <ChatProvider>
-                                  <App />
-                                </ChatProvider>
-                              </BrandContextProvider>
-                            </CouponContextProvider>
-                          </DeliverManContextProvider>
-                        </FaqProvider>
-                      </ServiceContextProvider>
-                    </CustomersProvider>
-                  </OrderContextProvider>
-                </BannerDataProvider>
-              </ImageHandleProvider>
-            </ProductsProvider>
-          </MainCategoriesProvider>
-        </SubCategoriesProvider>
-      </ImageValidationProvider>
-    </UserAuthContextProvider>
+    <NotificationProvider>
+      <UserAuthContextProvider>
+        <ImageValidationProvider>
+          <SubCategoriesProvider>
+            <MainCategoriesProvider>
+              <ProductsProvider>
+                <ImageHandleProvider>
+                  <BannerDataProvider>
+                    <OrderContextProvider>
+                      <CustomersProvider>
+                        <ServiceContextProvider>
+                          <FaqProvider>
+                            <DeliverManContextProvider>
+                              <CouponContextProvider>
+                                <BrandContextProvider>
+                                  <ChatProvider>
+                                    <App />
+                                  </ChatProvider>
+                                </BrandContextProvider>
+                              </CouponContextProvider>
+                            </DeliverManContextProvider>
+                          </FaqProvider>
+                        </ServiceContextProvider>
+                      </CustomersProvider>
+                    </OrderContextProvider>
+                  </BannerDataProvider>
+                </ImageHandleProvider>
+              </ProductsProvider>
+            </MainCategoriesProvider>
+          </SubCategoriesProvider>
+        </ImageValidationProvider>
+      </UserAuthContextProvider>
+    </NotificationProvider>
   </BrowserRouter>
 );
 

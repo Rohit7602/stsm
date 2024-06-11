@@ -215,11 +215,10 @@ const AddProduct = () => {
   function handlePincodeChange(index) {
     const filterData = ServiceData.filter((datas) => datas.PostalCode === areaPinCode);
     const areaName = filterData[0]?.AreaName || '';
+    console.log(areaName);
     setAddMoreArea((prevVariants) =>
       prevVariants.map((v, i) =>
-        i === index
-          ? { ...v, pincode: v.pincode, area_name: v.area_name, terretory: v.terretory }
-          : v
+        i === index ? { ...v, pincode: v.pincode, area_name: areaName, terretory: v.terretory } : v
       )
     );
   }
@@ -833,7 +832,7 @@ const AddProduct = () => {
                                     placeholder="Enter Pincode "
                                     id="pinCode"
                                     value={area.pincode}
-                                    onChange={(e) =>
+                                    onChange={(e) => {
                                       setAddMoreArea((prevsArareas) =>
                                         prevsArareas.map((v, i) =>
                                           i === index
@@ -843,13 +842,12 @@ const AddProduct = () => {
                                               }
                                             : v
                                         )
-                                      )
-                                    }
+                                      );
+                                      setAreaPinCode(e.target.value);
+                                      console.log(e.target.value,"bkhgjhvbj")
+                                    }}
                                   />
-                                  <button
-                                    type="button"
-                                    onClick={() => handlePincodeChange(index)}
-                                    className="pincode_confirm_btn">
+                                  <button type="button" className="pincode_confirm_btn">
                                     <img height={28} src={checkGreen} alt="checkGreen" />
                                   </button>
                                 </div>
@@ -860,7 +858,10 @@ const AddProduct = () => {
                                 </label>
                                 <div
                                   className="product_input   d-flex align-items-center justify-content-between mt-2"
-                                  onClick={() => handleProductInputClick(index)}>
+                                  onClick={() => {
+                                    handleProductInputClick(index);
+                                    handlePincodeChange(index);
+                                  }}>
                                   <p
                                     className="fade_grey fw-400 w-100 mb-0 text-start white_space_nowrap area_slider overflow-x-scroll"
                                     required>

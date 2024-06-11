@@ -888,7 +888,13 @@ body {
   border-radius: 10px !important;
   box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2);
 }
-
+.active_user {
+  height: 291px;
+  overflow-y: auto;
+}
+.chart_content_wrapper::-webkit-scrollbar {
+  width: 3px;
+}
 .img_height {
   height: 232px !important;
 }

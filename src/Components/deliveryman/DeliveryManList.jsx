@@ -201,7 +201,6 @@ const DeliveryManList = () => {
                           ? data
                           : data.basic_info.name.toLowerCase().includes(searchvalue);
                       }).map((data, index) => {
-                        console.log(data);
                         return (
                           <tr className="product_borderbottom">
                             <td className="py-3 ps-3 ">

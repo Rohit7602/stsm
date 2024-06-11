@@ -52,7 +52,6 @@ export const DeliverManContextProvider = ({ children }) => {
                     newData[existingProductIndex] = { ...newData[existingProductIndex], ...DeliveryManData };
                     return newData;
                 } else {
-
                     return [...prevData, DeliveryManData];
                 }
             });

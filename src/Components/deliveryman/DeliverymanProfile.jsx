@@ -59,7 +59,7 @@ const DeliverymanProfile = () => {
   function handlePincodeChange(index) {
     const filterData = ServiceData.filter((datas) => datas.PostalCode === areaPinCode);
     const areaName = filterData[0]?.AreaName || '';
-    console.log(areaName);
+    console.log(areaName, 'jhgfhgc');
     setAddMoreArea((prevVariants) =>
       prevVariants.map((v, i) =>
         i === index ? { ...v, pincode: v.pincode, area_name: areaName, terretory: v.terretory } : v
@@ -122,7 +122,6 @@ const DeliverymanProfile = () => {
       setDropdownOpen(false);
     }
   };
-
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -132,25 +131,44 @@ const DeliverymanProfile = () => {
 
   async function updateServiceAreas() {
     setLoading(true);
-    const { pincode, area_name, terretory } = addMoreArea[0];
-    console.log(addMoreArea);
-    if (!pincode || !area_name || terretory.length === 0) {
-      // Show an alert if any field in addMoreArea is empty
-      alert('Please fill in all fields for the service area');
-      setLoading(false);
-      return;
-    }
-    try {
-      setLoading(true);
+    if (addMoreArea.length !== 0) {
+      const { pincode, area_name, terretory } = addMoreArea[0];
+      if (!pincode || !area_name || terretory.length === 0) {
+        // Show an alert if any field in addMoreArea is empty
+        alert('Please fill in all fields for the service area');
+        setLoading(false);
+        return;
+      }
+      try {
+        setLoading(true);
+        const querySnapshot = await getDocs(collection(db, 'Delivery'));
+        querySnapshot.forEach((doc) => {
+          const deliveryData = doc.data();
+          if (deliveryData.d_id === id) {
+            updateDoc(doc.ref, { serviceArea: addMoreArea });
+            updateDeliveryManData({
+              id: doc.id,
+              ...{ serviceArea: addMoreArea },
+            });
+            // Set loader status to false
+            setLoading(false);
+            // Show a success toast notification
+            toast.success('Delivery Man ServiceArea  updated Successfully !', {
+              position: toast.POSITION.TOP_RIGHT,
+            });
+          }
+        });
+      } catch (error) {
+        // Log any errors that occur during the update
+        console.log('Error updating data:', error);
+      }
+    } else {
       const querySnapshot = await getDocs(collection(db, 'Delivery'));
       querySnapshot.forEach((doc) => {
         const deliveryData = doc.data();
         if (deliveryData.d_id === id) {
-          updateDoc(doc.ref, { serviceArea: addMoreArea });
-          updateDeliveryManData({
-            id: doc.id,
-            ...{ serviceArea: addMoreArea },
-          });
+          console.log(deliveryData);
+          updateDoc(doc.ref, { serviceArea: [] });
           // Set loader status to false
           setLoading(false);
           // Show a success toast notification
@@ -159,9 +177,6 @@ const DeliverymanProfile = () => {
           });
         }
       });
-    } catch (error) {
-      // Log any errors that occur during the update
-      console.log('Error updating data:', error);
     }
   }
 
@@ -459,10 +474,7 @@ const DeliverymanProfile = () => {
                           setAreaPinCode(e.target.value);
                         }}
                       />
-                      <button
-                        type="button"
-                        onClick={() => handlePincodeChange(index)}
-                        className="pincode_confirm_btn">
+                      <button type="button" className="pincode_confirm_btn">
                         <img height={28} src={checkGreen} alt="checkGreen" />
                       </button>
                     </div>
@@ -474,7 +486,10 @@ const DeliverymanProfile = () => {
                     <div
                       style={{ height: '43px', width: '365px' }}
                       className="product_input d-flex align-items-center justify-content-between mt-2 cursor_pointer"
-                      onClick={() => handleProductInputClick(index)}>
+                      onClick={() => {
+                        handleProductInputClick(index);
+                        handlePincodeChange(index);
+                      }}>
                       <p
                         className="fade_grey fs-xs fw-400 w-100 m-0 text-start  white_space_nowrap area_slider overflow-x-scroll"
                         required>
