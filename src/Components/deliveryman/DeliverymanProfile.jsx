@@ -1,37 +1,42 @@
-import React, { useState, useEffect, useRef } from 'react';
-import closeIcon from '../../Images/svgs/closeicon.svg';
-import dropdownImg from '../../Images/svgs/dropdown_icon.svg';
-import checkGreen from '../../Images/svgs/check-green-btn.svg';
-import deleteiconWithBg from '../../Images/svgs/delete-icon-with-bg.svg';
-import { Col, Row } from 'react-bootstrap';
-import { Link, useParams } from 'react-router-dom';
-import Loader from '../Loader';
-import { UseDeliveryManContext } from '../../context/DeliverymanGetter';
-import { updateDoc, doc } from 'firebase/firestore';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { db } from '../../firebase';
-import { UseServiceContext } from '../../context/ServiceAreasGetter';
+import React, { useState, useEffect, useRef } from "react";
+import closeIcon from "../../Images/svgs/closeicon.svg";
+import dropdownImg from "../../Images/svgs/dropdown_icon.svg";
+import checkGreen from "../../Images/svgs/check-green-btn.svg";
+import deleteiconWithBg from "../../Images/svgs/delete-icon-with-bg.svg";
+import { Col, Row } from "react-bootstrap";
+import { Link, useParams } from "react-router-dom";
+import Loader from "../Loader";
+import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
+import { updateDoc, doc } from "firebase/firestore";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { db } from "../../firebase";
+import { UseServiceContext } from "../../context/ServiceAreasGetter";
 
-import { collection, getDocs } from 'firebase/firestore';
-
+import { collection, getDocs } from "firebase/firestore";
+import { useOrdercontext } from "../../context/OrderGetter";
+// import { collection, getDocs } from 'firebase/firestore';
 const DeliverymanProfile = () => {
   const { DeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
   const { ServiceData } = UseServiceContext();
   const { id } = useParams();
   const [filterData, setfilterData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [employTypeDropdown, setEmployTypeDropdown] = useState('');
+  const [employTypeDropdown, setEmployTypeDropdown] = useState("");
   const [approvePopup, setApprovePopup] = useState(false);
   const [rejectPopup, setRejectPopup] = useState(false);
-  const [jobType, setJobType] = useState('');
-  const [joiningDate, setjoiningDate] = useState('');
-  const [rejectReason, setRejectReason] = useState('');
-  const [areaPinCode, setAreaPinCode] = useState('');
+  const [jobType, setJobType] = useState("");
+  const [joiningDate, setjoiningDate] = useState("");
+  const [rejectReason, setRejectReason] = useState("");
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [onSiteOrders, setOnSiteOrders] = useState(0);
+  const [wallet, setWallet] = useState(0);
+  const [areaPinCode, setAreaPinCode] = useState(null);
+  const { orders } = useOrdercontext();
   const [addMoreArea, setAddMoreArea] = useState([
     {
-      pincode: '',
-      area_name: '',
+      pincode: "",
+      area_name: "",
       terretory: [],
     },
   ]);
@@ -44,8 +49,8 @@ const DeliverymanProfile = () => {
     setAddMoreArea((prevareas) => [
       ...prevareas,
       {
-        pincode: '',
-        area_name: '',
+        pincode: "",
+        area_name: "",
         terretory: [],
       },
     ]);
@@ -57,23 +62,30 @@ const DeliverymanProfile = () => {
   }
 
   function handlePincodeChange(index) {
-    const filterData = ServiceData.filter((datas) => datas.PostalCode === areaPinCode);
-    const areaName = filterData[0]?.AreaName || '';
-    console.log(areaName, 'jhgfhgc');
+    console.log(areaPinCode);
+    const filterData = ServiceData.filter(
+      (datas) =>
+        datas.PostalCode ===  addMoreArea[index].pincode)
+  
+    const areaName = filterData[0]?.AreaName || "";
+    console.log(addMoreArea[index].pincode);
+    console.log(filterData[0].AreaName);
     setAddMoreArea((prevVariants) =>
       prevVariants.map((v, i) =>
         i === index ? { ...v, pincode: v.pincode, area_name: areaName, terretory: v.terretory } : v
       )
     );
+    // console.log("first");
   }
 
   function handleSelectedAreasChange(index, newSelectedAreas) {
     setAddMoreArea((prevVariants) =>
       prevVariants.map((v, i) => (i === index ? { ...v, terretory: newSelectedAreas } : v))
     );
+    console.log(addMoreArea);
   }
 
-  const cities = ['Jaipur', 'Sri Ganganagar', 'Bikaner', 'Jodhpur'];
+  const cities = ["Jaipur", "Sri Ganganagar", "Bikaner", "Jodhpur"];
   const handleCheckboxChange = (event) => {
     const { value, checked } = event.target;
     if (checked) {
@@ -123,9 +135,9 @@ const DeliverymanProfile = () => {
     }
   };
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -135,13 +147,14 @@ const DeliverymanProfile = () => {
       const { pincode, area_name, terretory } = addMoreArea[0];
       if (!pincode || !area_name || terretory.length === 0) {
         // Show an alert if any field in addMoreArea is empty
-        alert('Please fill in all fields for the service area');
+        alert("Please fill in all fields for the service area");
+        console.log("asdadfasf", pincode, area_name, terretory);
         setLoading(false);
         return;
       }
       try {
         setLoading(true);
-        const querySnapshot = await getDocs(collection(db, 'Delivery'));
+        const querySnapshot = await getDocs(collection(db, "Delivery"));
         querySnapshot.forEach((doc) => {
           const deliveryData = doc.data();
           if (deliveryData.d_id === id) {
@@ -153,17 +166,17 @@ const DeliverymanProfile = () => {
             // Set loader status to false
             setLoading(false);
             // Show a success toast notification
-            toast.success('Delivery Man ServiceArea  updated Successfully !', {
+            toast.success("Delivery Man ServiceArea  updated Successfully !", {
               position: toast.POSITION.TOP_RIGHT,
             });
           }
         });
       } catch (error) {
         // Log any errors that occur during the update
-        console.log('Error updating data:', error);
+        console.log("Error updating data:", error);
       }
     } else {
-      const querySnapshot = await getDocs(collection(db, 'Delivery'));
+      const querySnapshot = await getDocs(collection(db, "Delivery"));
       querySnapshot.forEach((doc) => {
         const deliveryData = doc.data();
         if (deliveryData.d_id === id) {
@@ -172,7 +185,7 @@ const DeliverymanProfile = () => {
           // Set loader status to false
           setLoading(false);
           // Show a success toast notification
-          toast.success('Delivery Man ServiceArea  updated Successfully !', {
+          toast.success("Delivery Man ServiceArea  updated Successfully !", {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
@@ -182,6 +195,11 @@ const DeliverymanProfile = () => {
 
   useEffect(() => {
     const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
+    const DeliveryManId = DeliveryManData.filter((item) => {
+      if (item.d_id === id) {
+        return item.id;
+      }
+    });
     setfilterData(DeliveryManDatas);
     if (DeliveryManDatas.length > 0) {
       const allAreas = [];
@@ -198,8 +216,25 @@ const DeliverymanProfile = () => {
       });
       setAddMoreArea(allAreas);
     }
+    let ordersCount = 0;
+    orders.forEach((order) => {
+      if (order.assign_to === DeliveryManId[0].id) {
+        ordersCount++;
+      }
+    });
+    setTotalOrders(ordersCount);
+    let onSiteOrdersCount = 0;
+    orders.forEach((order) => {
+      if (order.assign_to === DeliveryManId[0].id && order.order_created_by === "Van") {
+        onSiteOrdersCount++;
+      }
+    });
+    setOnSiteOrders(onSiteOrdersCount);
+    DeliveryManDatas.map((item) => {
+      setWallet(item.wallet);
+    });
+    // setWallet(DeliveryManDatas[0].wallet);
   }, [DeliveryManData, id]);
-
   if (!id || filterData.length === 0) {
     return <Loader> </Loader>;
   }
@@ -225,9 +260,9 @@ const DeliverymanProfile = () => {
   async function ApprovedDelivermanProfile(id) {
     try {
       setLoading(true);
-      await updateDoc(doc(db, 'Delivery', id), {
+      await updateDoc(doc(db, "Delivery", id), {
         is_verified: true,
-        profile_status: 'APPROVED',
+        profile_status: "APPROVED",
         updated_at: new Date().toISOString(),
         job_info: {
           employement_type: employTypeDropdown,
@@ -239,39 +274,49 @@ const DeliverymanProfile = () => {
       updateDeliveryManData({
         id: id,
         is_verified: true,
-        profile_status: 'APPROVED',
+        profile_status: "APPROVED",
         job_info: {
           employement_type: employTypeDropdown,
           joining_date: new Date(joiningDate).toISOString(),
           shift: jobType,
         },
       });
-      toast.success('Verified Successfully', {
+      toast.success("Verified Successfully", {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
       setLoading(false);
-      console.log('error is ', error);
+      console.log("error is ", error);
     }
   }
   async function RejectDelivermanProfile(id) {
     try {
       setLoading(true);
-      await updateDoc(doc(db, 'Delivery', id), {
+      await updateDoc(doc(db, "Delivery", id), {
         is_verified: false,
-        profile_status: 'REJECTED',
+        profile_status: "REJECTED",
         updated_at: new Date().toISOString(),
         Reason: rejectReason,
       });
       setLoading(false);
-      updateDeliveryManData({ id: id, is_verified: true, profile_status: 'REJECTED' });
-      toast.success('Rejected Successfully', {
+      updateDeliveryManData({ id: id, is_verified: true, profile_status: "REJECTED" });
+      toast.success("Rejected Successfully", {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
       setLoading(false);
-      console.log('error is ', error);
+      console.log("error is ", error);
     }
+  }
+
+  async function handleCollectBalance() {
+    const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
+    setLoading(true);
+    const washingtonRef = doc(db, "Delivery", DeliveryManDatas[0].id);
+    await updateDoc(washingtonRef, {
+      wallet: 0,
+    });
+    setLoading(false);
   }
 
   if (loading) {
@@ -319,7 +364,7 @@ const DeliverymanProfile = () => {
                 aria-expanded="false">
                 <div className="d-flex align-items-center justify-content-between w-100">
                   <p className="ff-outfit fw-400 fs_sm m-0 fade_grey">
-                    {employTypeDropdown ? employTypeDropdown : 'SALARIED'}
+                    {employTypeDropdown ? employTypeDropdown : "SALARIED"}
                   </p>
                   <svg
                     width="24"
@@ -342,7 +387,7 @@ const DeliverymanProfile = () => {
                 aria-labelledby="dropdownMenuButton3">
                 <li>
                   <div
-                    onClick={() => setEmployTypeDropdown('SALARIED')}
+                    onClick={() => setEmployTypeDropdown("SALARIED")}
                     className="dropdown-item py-2"
                     href="#">
                     <p className="fs-sm fw-400 balck m-0">SALARIED</p>
@@ -350,7 +395,7 @@ const DeliverymanProfile = () => {
                 </li>
                 <li>
                   <div
-                    onClick={() => setEmployTypeDropdown('COMMISSION')}
+                    onClick={() => setEmployTypeDropdown("COMMISSION")}
                     className="dropdown-item py-2"
                     href="#">
                     <p className="fs-sm fw-400 balck m-0">COMMISSION</p>
@@ -362,8 +407,8 @@ const DeliverymanProfile = () => {
               <div className="d-flex align-items-center w-100">
                 <label class="check1 fw-400 fs-sm black mb-0  ms-3">
                   <input
-                    onChange={() => setJobType('PARTTIME')}
-                    checked={jobType === 'PARTTIME'}
+                    onChange={() => setJobType("PARTTIME")}
+                    checked={jobType === "PARTTIME"}
                     type="checkbox"
                   />
                   <span class="checkmark"></span>
@@ -373,8 +418,8 @@ const DeliverymanProfile = () => {
               <div className="d-flex align-items-center w-100">
                 <label class="check1 fw-400 fs-sm black mb-0 ">
                   <input
-                    onChange={() => setJobType('FULLTIME')}
-                    checked={jobType === 'FULLTIME'}
+                    onChange={() => setJobType("FULLTIME")}
+                    checked={jobType === "FULLTIME"}
                     type="checkbox"
                   />
                   <span class="checkmark"></span>
@@ -410,7 +455,7 @@ const DeliverymanProfile = () => {
             </label>
             <br />
             <textarea
-              style={{ maxHeight: '90px' }}
+              style={{ maxHeight: "90px" }}
               className="input w-100 outline_none resize_none"
               onChange={(e) => setRejectReason(e.target.value)}
               placeholder="Enter a proper reason here..."></textarea>
@@ -451,7 +496,7 @@ const DeliverymanProfile = () => {
                   <div>
                     <p className="fs-xs fw-400 black m-0 pb-1">Enter Pin Code</p>
                     <div
-                      style={{ minWidth: '180px', height: '43px' }}
+                      style={{ minWidth: "180px", height: "43px" }}
                       className="product_input d-flex align-items-center mt-2 ">
                       <input
                         required
@@ -484,7 +529,7 @@ const DeliverymanProfile = () => {
                       Select Area
                     </label>
                     <div
-                      style={{ height: '43px', width: '365px' }}
+                      style={{ height: "43px", width: "365px" }}
                       className="product_input d-flex align-items-center justify-content-between mt-2 cursor_pointer"
                       onClick={() => {
                         handleProductInputClick(index);
@@ -493,7 +538,7 @@ const DeliverymanProfile = () => {
                       <p
                         className="fade_grey fs-xs fw-400 w-100 m-0 text-start  white_space_nowrap area_slider overflow-x-scroll"
                         required>
-                        {area.terretory.length !== 0 ? area.terretory.join(' , ') : 'Select area'}
+                        {area.terretory.length !== 0 ? area.terretory.join(" , ") : "Select area"}
                       </p>
                       <img src={dropdownImg} alt="" />
                     </div>
@@ -571,11 +616,11 @@ const DeliverymanProfile = () => {
         ) : null}
         <div className="d-flex justify-content-between align-items-center mt-4 mx-2">
           <h1 className="fw-500  mb-0 black fs-lg">
-            {datas.basic_info.name === '' ? 'N/A' : datas.basic_info.name} {datas.d_id}{' '}
+            {datas.basic_info.name === "" ? "N/A" : datas.basic_info.name} {datas.d_id}{" "}
           </h1>
           <div className="d-flex justify-content-center">
             <div className="d-flex  align-items-center flex-column flex-sm-row gap-2 gap-sm-0  justify-content-between">
-              {datas.profile_status === 'NEW' ? (
+              {datas.profile_status === "NEW" ? (
                 <div className="d-flex align-itmes-center gap-3">
                   <button onClick={() => setApprovePopup(true)} className="approve_btn">
                     <p className="m-0 text-white">Approve Profile</p>
@@ -616,7 +661,7 @@ const DeliverymanProfile = () => {
                   />
                 </svg> */}
                 </div>
-              ) : datas.profile_status === 'APPROVED' ? (
+              ) : datas.profile_status === "APPROVED" ? (
                 <div className="d-flex align-itmes-center gap-3">
                   <button className="reset_border">
                     <button className="fs-sm reset_btn border-0 fw-400  d-flex align-items-center gap-2 transition_04">
@@ -700,25 +745,26 @@ const DeliverymanProfile = () => {
             </div>
           </div>
         </div>
-        {datas.profile_status === 'APPROVED' ? (
+        {datas.profile_status === "APPROVED" ? (
           <div className="d-flex align-items-center text-center gap-4 mt-4 pb-2 flex-wrap">
             <div className="d-flex align-items-center text-center bg_light_orange">
               <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
                 <p className="fs-sm fw-400 black m-0">Total Delivery</p>
-                <p className="fs_24 fw_600 red m-0 mt-2">30</p>
+                <p className="fs_24 fw_600 red m-0 mt-2">{totalOrders}</p>
               </div>
               <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
                 <p className="fs-sm fw-400 black m-0">On Site Orders</p>
-                <p className="fs_24 fw_600 black m-0 mt-2">12</p>
+                <p className="fs_24 fw_600 black m-0 mt-2">{onSiteOrders}</p>
               </div>
-            </div>
-            <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_sky">
-              <p className="fs-sm fw-400 black m-0">Attendance Count</p>
-              <p className="fs_24 fw_600 color_blue m-0 mt-2">16</p>
             </div>
             <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_green">
               <p className="fs-sm fw-400 black m-0">Wallet Balance</p>
-              <p className="fs_24 fw_600 green m-0 mt-2">₹ 12,500</p>
+              <p className="fs_24 fw_600 green m-0 mt-2">₹ {wallet}</p>
+              <button
+                onClick={handleCollectBalance}
+                className="fs_sm fw_600 color_blue m-0 mt-2 bg-transparent border-0">
+                Collect
+              </button>
             </div>
             <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_purple">
               <p className="fs-sm fw-400 black m-0">Van Capacity</p>
@@ -734,45 +780,45 @@ const DeliverymanProfile = () => {
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Name</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.basic_info.name === '' ? 'N/A' : datas.basic_info.name}
+                  {datas.basic_info.name === "" ? "N/A" : datas.basic_info.name}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Date of Birth</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.basic_info.dob === ''
-                    ? 'N/A'
+                  {datas.basic_info.dob === ""
+                    ? "N/A"
                     : new Date(datas.basic_info.dob).toLocaleDateString()}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Phone</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.basic_info.phone_no === '' ? 'N/A' : datas.basic_info.phone_no}
+                  {datas.basic_info.phone_no === "" ? "N/A" : datas.basic_info.phone_no}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Email</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.basic_info.email === '' ? 'N/A' : datas.basic_info.email}
+                  {datas.basic_info.email === "" ? "N/A" : datas.basic_info.email}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Address</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.basic_info.address === '' ? 'N/A' : datas.basic_info.address}
+                  {datas.basic_info.address === "" ? "N/A" : datas.basic_info.address}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">City</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.basic_info.city === '' ? 'N/A' : datas.basic_info.city}
+                  {datas.basic_info.city === "" ? "N/A" : datas.basic_info.city}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">State </p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.basic_info.state === '' ? 'N/A' : datas.basic_info.state}
+                  {datas.basic_info.state === "" ? "N/A" : datas.basic_info.state}
                 </p>
               </div>
             </div>
@@ -780,24 +826,24 @@ const DeliverymanProfile = () => {
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Emergency Number</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.basic_info.emergency_contact.phone_no === ''
-                    ? 'N/A'
+                  {datas.basic_info.emergency_contact.phone_no === ""
+                    ? "N/A"
                     : datas.basic_info.emergency_contact.phone_no}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Relative Name</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.basic_info.emergency_contact.name === ''
-                    ? 'N/A'
+                  {datas.basic_info.emergency_contact.name === ""
+                    ? "N/A"
                     : datas.basic_info.emergency_contact.name}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Relation</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.basic_info.emergency_contact.relationship === ''
-                    ? 'N/A'
+                  {datas.basic_info.emergency_contact.relationship === ""
+                    ? "N/A"
                     : datas.basic_info.emergency_contact.relationship}
                 </p>
               </div>
@@ -812,45 +858,45 @@ const DeliverymanProfile = () => {
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Date of Joining</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.job_info.joining_date === ''
-                    ? 'N/A'
+                  {datas.job_info.joining_date === ""
+                    ? "N/A"
                     : new Date(datas.job_info.joining_date).toLocaleDateString()}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Employment Type</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.job_info.employement_type === '' ? 'N/A' : datas.job_info.employement_type}
+                  {datas.job_info.employement_type === "" ? "N/A" : datas.job_info.employement_type}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Time Schedule</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.job_info.shift === '' ? 'N/A' : datas.job_info.shift}
+                  {datas.job_info.shift === "" ? "N/A" : datas.job_info.shift}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Document Number</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.kyc.document_number === '' ? 'N/A' : datas.kyc.document_number}
+                  {datas.kyc.document_number === "" ? "N/A" : datas.kyc.document_number}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Driving License </p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.vehicle.dl_number === '' ? 'N/A' : datas.vehicle.dl_number}
+                  {datas.vehicle.dl_number === "" ? "N/A" : datas.vehicle.dl_number}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Vehicle Reg. No. </p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.vehicle.vehicle_number === '' ? 'N/A' : datas.vehicle.vehicle_number}
+                  {datas.vehicle.vehicle_number === "" ? "N/A" : datas.vehicle.vehicle_number}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Vehicle Type</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.vehicle.vehicle_type === '' ? 'N/A' : datas.vehicle.vehicle_type}
+                  {datas.vehicle.vehicle_type === "" ? "N/A" : datas.vehicle.vehicle_type}
                 </p>
               </div>
             </div>
@@ -858,25 +904,25 @@ const DeliverymanProfile = () => {
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Bank Name</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.bank.bank_name === '' ? 'N/A' : datas.bank.bank_name}
+                  {datas.bank.bank_name === "" ? "N/A" : datas.bank.bank_name}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">IFSC</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.bank.ifsc_code === '' ? 'N/A' : datas.bank.ifsc_code}
+                  {datas.bank.ifsc_code === "" ? "N/A" : datas.bank.ifsc_code}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Account Number</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.bank.account_no === '' ? 'N/A' : datas.bank.account_no}
+                  {datas.bank.account_no === "" ? "N/A" : datas.bank.account_no}
                 </p>
               </div>
               <div className="d-flex py_10">
                 <p className="left_content_width fs-16 fw-400 black m-0">Name in Account</p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.bank.account_holder_name === '' ? 'N/A' : datas.bank.account_holder_name}
+                  {datas.bank.account_holder_name === "" ? "N/A" : datas.bank.account_holder_name}
                 </p>
               </div>
             </div>

@@ -1,29 +1,29 @@
-import React, { useRef } from 'react';
-import saveicon from '../../Images/svgs/saveicon.svg';
-import mobileicon from '../../Images/Png/mobile_icon_40.png';
-import billicon from '../../Images/svgs/bill_icon.svg';
-import orderAccepted from '../../Images/svgs/order-accepted.svg';
-import billLogo from '../../Images/svgs/bill-logo.svg';
-import orderDelevered from '../../Images/svgs/order-delivered.svg';
-import orderDeliveryAssign from '../../Images/svgs/order-delivery-assign.svg';
-import orderPlaceed from '../../Images/svgs/order-placed.svg';
-import orderReject from '../../Images/svgs/order-reject.svg';
-import whitesaveicon from '../../Images/svgs/white_saveicon.svg';
-import orderCanceled from '../../Images/svgs/order_Canceled.svg';
-import CloseIcon from '../../Images/svgs/closeicon.svg';
-import profile from '../../Images/Png/customer_profile.png';
-import manimage from '../../Images/Png/manimage.jpg';
-import { Col, Row } from 'react-bootstrap';
-import { Link, useParams } from 'react-router-dom';
-import { useOrdercontext } from '../../context/OrderGetter';
-import { ReactToPrint } from 'react-to-print';
-import { UseDeliveryManContext } from '../../context/DeliverymanGetter';
-import { doc, updateDoc, getDocs, addDoc, collection, query, getDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
-import { useState, useEffect } from 'react';
+import React, { useRef } from "react";
+import saveicon from "../../Images/svgs/saveicon.svg";
+import mobileicon from "../../Images/Png/mobile_icon_40.png";
+import billicon from "../../Images/svgs/bill_icon.svg";
+import orderAccepted from "../../Images/svgs/order-accepted.svg";
+import billLogo from "../../Images/svgs/bill-logo.svg";
+import orderDelevered from "../../Images/svgs/order-delivered.svg";
+import orderDeliveryAssign from "../../Images/svgs/order-delivery-assign.svg";
+import orderPlaceed from "../../Images/svgs/order-placed.svg";
+import orderReject from "../../Images/svgs/order-reject.svg";
+import whitesaveicon from "../../Images/svgs/white_saveicon.svg";
+import orderCanceled from "../../Images/svgs/order_Canceled.svg";
+import CloseIcon from "../../Images/svgs/closeicon.svg";
+import profile from "../../Images/Png/customer_profile.png";
+import manimage from "../../Images/Png/manimage.jpg";
+import { Col, Row } from "react-bootstrap";
+import { Link, useParams } from "react-router-dom";
+import { useOrdercontext } from "../../context/OrderGetter";
+import { ReactToPrint } from "react-to-print";
+import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
+import { doc, updateDoc, getDocs, addDoc, collection, query, getDoc } from "firebase/firestore";
+import { db } from "../../firebase";
+import { useState, useEffect } from "react";
 
-import { useUserAuth } from '../../context/Authcontext';
-import Loader from '../Loader';
+import { useUserAuth } from "../../context/Authcontext";
+import Loader from "../Loader";
 
 export default function NewOrder() {
   const componentRef = useRef();
@@ -71,14 +71,14 @@ export default function NewOrder() {
 
   function formatDate(dateString) {
     const options = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
     };
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
-    return formattedDate.replace('at', '|');
+    return formattedDate.replace("at", "|");
   }
 
   const calculateSubtotal = () => {
@@ -100,8 +100,8 @@ export default function NewOrder() {
   //  generate invoiceNumber
   const getInvoiceNo = async () => {
     const year = new Date().getFullYear() % 100; // Get the last two digits of the current year
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let randomDigits = '';
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let randomDigits = "";
     for (let i = 0; i < 6; i++) {
       randomDigits += characters.charAt(Math.floor(Math.random() * characters.length));
     }
@@ -110,26 +110,27 @@ export default function NewOrder() {
 
   const handleAcceptOrder = async (id) => {
     setLoading(true);
-    const orderDocRef = doc(db, 'order', id);
+    const orderDocRef = doc(db, "order", id);
     const orderDoc = await getDoc(orderDocRef);
     const orderData = orderDoc.data();
     let area = orderData.shipping.area.toLowerCase();
-    console.log('Area is ', area);
+    console.log("Area is ", area);
 
     // Filter the deliverymen whose service areas include the desired area
     const deliverymenWithArea = DeliveryManData.filter(
       (deliveryman) =>
-        deliveryman.profile_status === 'APPROVED' &&
+        deliveryman.profile_status === "APPROVED" &&
         deliveryman.is_verified === true &&
         deliveryman.serviceArea &&
         deliveryman.serviceArea.some(
           (areas) => areas.terretory && areas.terretory.some((t) => t.toLowerCase() === area)
         )
     );
-    console.log(deliverymenWithArea.length + '#########dddddddddddd');
+
+    // console.log(deliverymenWithArea);
     if (deliverymenWithArea.length !== 0 || selectedDeliveryManId !== null) {
       try {
-        const orderDocRef = doc(db, 'order', id);
+        const orderDocRef = doc(db, "order", id);
         const orderDoc = await getDoc(orderDocRef);
         const orderData = orderDoc.data();
         const invoiceNumber = await getInvoiceNo();
@@ -138,27 +139,122 @@ export default function NewOrder() {
         // Filter the deliverymen whose service areas include the desired area
         const deliverymenWithArea = DeliveryManData.filter(
           (deliveryman) =>
-            deliveryman.profile_status === 'APPROVED' &&
+            deliveryman.profile_status === "APPROVED" &&
             deliveryman.is_verified === true &&
             deliveryman.serviceArea &&
             deliveryman.serviceArea.some(
               (areas) => areas.terretory && areas.terretory.some((t) => t.toLowerCase() === area)
             )
         );
-        // if (deliverymenWithArea.length === 0) {
-
-        // }
         let autoSelectedDeliveryManId = null;
         if (deliverymenWithArea.length > 1) {
-          const randomIndex = Math.floor(Math.random() * deliverymenWithArea.length);
-          autoSelectedDeliveryManId = deliverymenWithArea[randomIndex].id; // Assuming deliveryman object has an 'id' property
+          let orderProductsIds = [];
+          let deliverymanIds = [];
+          // Collect product IDs from filterData
+          filterData.forEach((item) =>
+            item.items.forEach((product) => orderProductsIds.push(product.product_id))
+          );
+          // console.log('ordered p id', orderProductsIds);
+          // Iterate over each deliveryman to fetch their van data
+          for (let deliveryman of deliverymenWithArea) {
+            const q = query(collection(db, `Delivery/${deliveryman.id}/Van`));
+            const querySnapshot = await getDocs(q);
+            const vans = querySnapshot.docs.map((doc) => doc.data());
+            // Check if this van contains all orderProductsIds and has sufficient quantity
+            if (
+              orderProductsIds.every((id) =>
+                vans.some(
+                  (van) =>
+                    van.productid === id &&
+                    van.quantity >= orderData.items.find((item) => item.product_id === id).quantity
+                )
+              )
+            ) {
+              deliverymanIds.push(deliveryman.id);
+            }
+          }
+
+          // Find deliveryman with fewest orders
+
+          if (deliverymanIds.length > 1) {
+            let minOrderCount = Infinity;
+            let deliverymanWithFewestOrders = null;
+            // Count orders per deliveryman
+            const ordersCount = {};
+            let lowOrder;
+            orders.forEach((order) => {
+              if (order.status === "CONFIRMED" && deliverymanIds.includes(order.assign_to)) {
+                if (!ordersCount[order.assign_to]) {
+                  ordersCount[order.assign_to] = 0;
+                }
+                ordersCount[order.assign_to]++;
+              }
+            });
+            for (let noOrder in ordersCount) {
+              lowOrder = deliverymanIds.filter((id) => id !== noOrder);
+            }
+            // Find deliveryman with the fewest orders
+            let randomdeliveryMan;
+            if (Array.isArray(lowOrder) && lowOrder.length > 0) {
+              randomdeliveryMan = Math.floor(Math.random() * lowOrder.length);
+            }
+            // Find deliveryman with the fewest orders
+            if (Array.isArray(lowOrder) && lowOrder.length === 0) {
+              deliverymanIds.forEach((deliverymanId) => {
+                const orderCount = ordersCount[deliverymanId] || 0;
+                if (orderCount < minOrderCount) {
+                  minOrderCount = orderCount;
+                  deliverymanWithFewestOrders = deliverymanId;
+                }
+              });
+              console.log("Deliveryman with the fewest orders1:", deliverymanWithFewestOrders);
+              autoSelectedDeliveryManId = deliverymanWithFewestOrders;
+            } else if (Array.isArray(lowOrder) && lowOrder.length !== 0) {
+              console.log("random1", lowOrder[randomdeliveryMan]);
+              autoSelectedDeliveryManId = lowOrder[randomdeliveryMan];
+            } else {
+              let randomdeliveryManid = Math.floor(Math.random() * deliverymanIds.length);
+              console.log(deliverymanIds[randomdeliveryManid]);
+              autoSelectedDeliveryManId = deliverymanIds[randomdeliveryManid];
+            }
+          } else if (deliverymanIds.length === 0) {
+            let minOrderCount = Infinity;
+            let deliverymanWithFewestOrders = null;
+            // Count orders per deliveryman
+            const ordersCount = {};
+            let lowOrder = [];
+            orders.forEach((order) => {
+              if (order.status === "CONFIRMED") {
+                if (!ordersCount[order.assign_to]) {
+                  ordersCount[order.assign_to] = 0;
+                }
+                ordersCount[order.assign_to]++;
+              }
+            });
+            // Find deliveryman with the fewest orders
+            deliverymenWithArea.forEach((deliverymanId) => {
+              const orderCount = ordersCount[deliverymanId.id] ?? lowOrder.push(deliverymanId.id);
+              if (orderCount < minOrderCount && lowOrder.length == 0) {
+                minOrderCount = orderCount;
+                deliverymanWithFewestOrders = deliverymanId.id;
+              }
+            });
+            if (Array.isArray(lowOrder) && lowOrder.length !== 0) {
+              let idIndex = Math.floor(Math.random() * lowOrder.length);
+              deliverymanWithFewestOrders = lowOrder[idIndex];
+            }
+            console.log("Deliveryman with the fewest orders2:", deliverymanWithFewestOrders);
+             autoSelectedDeliveryManId = deliverymanWithFewestOrders;
+            // console.log(lowOrder);
+          }
         } else if (deliverymenWithArea.length === 1) {
-          autoSelectedDeliveryManId = deliverymenWithArea[0].id; // Assuming deliveryman object has an 'id' property
+           autoSelectedDeliveryManId = deliverymenWithArea[0].id;
+          console.log("only one deliveryman", deliverymenWithArea[0].id); // Assuming deliveryman object has an 'id' property
         }
 
         if (orderData && orderData.items) {
           for (const item of orderData.items) {
-            const productDocRef = doc(db, 'products', item.product_id);
+            const productDocRef = doc(db, "products", item.product_id);
             const productDoc = await getDoc(productDocRef);
             const productData = productDoc.data();
 
@@ -168,8 +264,8 @@ export default function NewOrder() {
             }
           }
         }
-        const newStatus = 'CONFIRMED';
-        if (!orderData.hasOwnProperty('invoiceNumber')) {
+        const newStatus = "CONFIRMED";
+        if (!orderData.hasOwnProperty("invoiceNumber")) {
           await updateDoc(orderDocRef, {
             status: newStatus,
             invoiceNumber: invoiceNumber,
@@ -187,22 +283,22 @@ export default function NewOrder() {
 
         // Add a new log entry to the logs collection
         const logData = {
-          name: 'Admin',
+          name: "Admin",
           status: newStatus,
           updated_at: new Date().toISOString(),
           updated_by: AdminId,
-          description: 'Seller confirmed the order. Preparing items for shipment.',
+          description: "Seller confirmed the order. Preparing items for shipment.",
         };
 
         await addDoc(collection(db, `order/${id}/logs`), logData);
 
         const AssignDeliver = {
-          name: 'Admin',
-          status: 'PROCESSING',
+          name: "Admin",
+          status: "PROCESSING",
           updated_at: new Date().toISOString(),
           updated_by: AdminId,
           description:
-            'Order assigned to the delivery partner for shipment. Preparing for dispatch.',
+            "Order assigned to the delivery partner for shipment. Preparing for dispatch.",
         };
         await addDoc(collection(db, `order/${id}/logs`), AssignDeliver);
         updateData({
@@ -227,18 +323,18 @@ export default function NewOrder() {
     setLoading(true);
     try {
       // Toggle the status between 'publish' and 'hidden'
-      const newStatus = 'REJECTED';
-      await updateDoc(doc(db, 'order', id), {
+      const newStatus = "REJECTED";
+      await updateDoc(doc(db, "order", id), {
         status: newStatus,
       });
       // Add a new log entry to the logs collection
       const logData = {
-        name: 'Admin',
+        name: "Admin",
         status: newStatus,
         updated_at: new Date().toISOString(),
         updated_by: AdminId,
         description:
-          'Seller rejected the order due to unavailability of item or other reasons. Refund process initiated.',
+          "Seller rejected the order due to unavailability of item or other reasons. Refund process initiated.",
       };
       await addDoc(collection(db, `order/${id}/logs`), logData);
       updateData({ id, status: newStatus });
@@ -256,33 +352,33 @@ export default function NewOrder() {
       // Toggle the status between 'publish' and 'hidden'
       let transaction = {
         date: new Date().toISOString(),
-        mode: 'Cash on Delivery',
-        status: 'Paid',
-        tx_id: '',
+        mode: "Cash on Delivery",
+        status: "Paid",
+        tx_id: "",
       };
-      const newStatus = 'DELIVERED';
+      const newStatus = "DELIVERED";
 
-      if (transcationmode === 'Cash on Delivery') {
-        await updateDoc(doc(db, 'order', id), {
+      if (transcationmode === "Cash on Delivery") {
+        await updateDoc(doc(db, "order", id), {
           status: newStatus,
           transaction,
         });
       } else {
-        await updateDoc(doc(db, 'order', id), {
+        await updateDoc(doc(db, "order", id), {
           status: newStatus,
-          assign_to: '',
+          assign_to: "",
         });
       }
       // Add a new log entry to the logs collection
       const logData = {
-        name: 'Store',
+        name: "Store",
         status: newStatus,
         updated_at: new Date().toISOString(),
         updated_by: AdminId,
-        description: 'Order successfully delivered to the customer at the provided address.',
+        description: "Order successfully delivered to the customer at the provided address.",
       };
       await addDoc(collection(db, `order/${id}/logs`), logData);
-      updateData({ id, status: newStatus, assign_to: '' });
+      updateData({ id, status: newStatus, assign_to: "" });
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -292,17 +388,17 @@ export default function NewOrder() {
 
   const renderLogIcon = (status) => {
     switch (status) {
-      case 'NEW':
+      case "NEW":
         return <img src={orderPlaceed} alt="orderPlaced" />;
-      case 'CONFIRMED':
+      case "CONFIRMED":
         return <img src={orderAccepted} className="bg-white" alt="orderAccepted" />;
-      case 'REJECTED':
+      case "REJECTED":
         return <img src={orderReject} className="bg-white" alt="orderRejected" />;
-      case 'PROCESSING':
+      case "PROCESSING":
         return <img className="bg-white" src={orderDeliveryAssign} alt="orderDeliveryAssign" />;
-      case 'DELIVERED':
+      case "DELIVERED":
         return <img className="bg-white" src={orderDelevered} alt="orderDelivered" />;
-      case 'CANCELLED':
+      case "CANCELLED":
         return <img className="bg-white" src={orderCanceled} alt="orderCanceled" />;
       default:
         return null;
@@ -327,18 +423,18 @@ export default function NewOrder() {
                 <h1 className="fs-lg fw-500 black mb-0 me-1">#{item.order_id}</h1>
                 <p
                   className={`d-inline-block ms-3 ${
-                    item.status.toString().toLowerCase() === 'new'
-                      ? 'fs-sm fw-400 red mb-0 new_order'
-                      : item.status.toString().toLowerCase() === 'confirmed'
-                      ? 'fs-sm fw-400 mb-0 processing_skyblue'
-                      : item.status.toString().toLowerCase() === 'delivered'
-                      ? 'fs-sm fw-400 mb-0 green stock_bg'
-                      : 'fs-sm fw-400 mb-0 black status_btn_red'
+                    item.status.toString().toLowerCase() === "new"
+                      ? "fs-sm fw-400 red mb-0 new_order"
+                      : item.status.toString().toLowerCase() === "confirmed"
+                      ? "fs-sm fw-400 mb-0 processing_skyblue"
+                      : item.status.toString().toLowerCase() === "delivered"
+                      ? "fs-sm fw-400 mb-0 green stock_bg"
+                      : "fs-sm fw-400 mb-0 black status_btn_red"
                   }`}>
                   {item.status}
                 </p>
               </div>
-              {item.status === 'NEW' ? (
+              {item.status === "NEW" ? (
                 <div className="d-flex align-items-center">
                   <div className="d-flex align-itmes-center gap-3">
                     <button className="reset_border">
@@ -387,7 +483,7 @@ export default function NewOrder() {
                                         <p className="ms-2 mb-0 w-100">{items.basic_info.name}</p>
                                       </td>
                                       {items.serviceArea.map((itm, ind) => {
-                                        console.log(itm + ' asfdasfasfsafafa');
+                                        console.log(itm, " asfdasfasfsafafa");
                                         return (
                                           <td key={ind} className="w-100">
                                             {itm.area_name} ({itm.pincode})
@@ -420,7 +516,7 @@ export default function NewOrder() {
                     )}
                   </div>
                 </div>
-              ) : item.status === 'CANCELLED' ? (
+              ) : item.status === "CANCELLED" ? (
                 <div className="d-flex align-items-center">
                   <button
                     className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black"
@@ -429,11 +525,11 @@ export default function NewOrder() {
                     Mark as Refunded
                   </button>
                 </div>
-              ) : item.status === 'RETURNED' ? (
+              ) : item.status === "RETURNED" ? (
                 <div></div>
-              ) : item.status === 'DISPATCHED' ? (
+              ) : item.status === "DISPATCHED" ? (
                 <div></div>
-              ) : item.status === 'CONFIRMED' ? (
+              ) : item.status === "CONFIRMED" ? (
                 <div className="d-flex align-items-center">
                   <div className="d-flex align-itmes-center gap-3">
                     <button
@@ -446,7 +542,7 @@ export default function NewOrder() {
                   </div>
                 </div>
               ) : (
-                ''
+                ""
               )}
             </div>
             <div className="d-flex align-items-center gap-4 py-3 px-2 mt-2 mb-3">
@@ -459,7 +555,7 @@ export default function NewOrder() {
               <p className="fs-xs fw-400 black mb-0 paid stock_bg">
                 {item.transaction.status.toUpperCase()}
               </p>
-              {item.status != 'NEW' ? (
+              {item.status != "NEW" ? (
                 <ReactToPrint
                   trigger={() => {
                     return (
@@ -491,8 +587,8 @@ export default function NewOrder() {
                             </div>
                             <div className="ps-3">
                               <p className="fs-sm fw-400 black mb-0">
-                                {products.title}{' '}
-                                {products.varient_name.toString().toLowerCase() !== 'not found' && (
+                                {products.title}{" "}
+                                {products.varient_name.toString().toLowerCase() !== "not found" && (
                                   <span className="fs-sm fw-400 black mb-0 ms-3">
                                     {products.varient_name}
                                   </span>
@@ -501,7 +597,7 @@ export default function NewOrder() {
                               <p className="fs-xxs fw-400 fade_grey mb-0">
                                 ID :{products.product_id}
                               </p>
-                              {products.color.toString().toLowerCase() != '' && (
+                              {products.color.toString().toLowerCase() != "" && (
                                 <p className="fs-xxs fw-400 fade_grey mb-0">
                                   color :{products.color}
                                 </p>
@@ -520,7 +616,7 @@ export default function NewOrder() {
                             </p>
                           </div>
                           <p className="fs-sm fw-400 black mb-0 p-3">
-                            ₹{' '}
+                            ₹{" "}
                             {products.varient_price * products.quantity -
                               products.varient_discount * products.quantity}
                           </p>
@@ -585,12 +681,12 @@ export default function NewOrder() {
                             {renderLogIcon(log.data.status)}
                             <div className="ps-2 ms-1">
                               <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">
-                                {' '}
-                                {log.data.status === 'PROCESSING'
-                                  ? 'ASSIGN TO DELIVERY '
-                                  : log.data.status === 'NEW'
-                                  ? 'ORDER PLACED'
-                                  : log.data.status}{' '}
+                                {" "}
+                                {log.data.status === "PROCESSING"
+                                  ? "ASSIGN TO DELIVERY "
+                                  : log.data.status === "NEW"
+                                  ? "ORDER PLACED"
+                                  : log.data.status}{" "}
                               </p>
                               <p className="fs-xxs fw-400 black ps-3 ms-1 mb-0">{log.data.name}</p>
                               <p className="fs-xs fw-400 black ps-3 ms-1 mb-0 opacity-50">
@@ -694,7 +790,7 @@ export default function NewOrder() {
                     <div className="ps-3">
                       <p className="fs-sm fw-400 black mb-0">{item.customer.name}</p>
                       <p className="fs-xxs fw-400 fade_grey mb-0">
-                        {item.customer.email === '' ? 'N/A' : item.customer.email}
+                        {item.customer.email === "" ? "N/A" : item.customer.email}
                       </p>
                     </div>
                   </div>
@@ -713,10 +809,10 @@ export default function NewOrder() {
                   <p className="fs-xs fw-400 black mb-0 pt-1">{item.shipping.address}</p>
                   <p className="fs-xs fw-400 black mb-0 pt-1">{item.shipping.contact_no}</p>
                 </div>
-                {(item.transaction.mode === 'Cash on Delivery' ||
-                  item.transaction.mode === 'UPI / Bank Transfer' ||
-                  item.transaction.mode === 'Pay Later / Credit') &&
-                (item.transaction.status === 'Paid' || item.status === 'DELIVERED') ? (
+                {(item.transaction.mode === "Cash on Delivery" ||
+                  item.transaction.mode === "UPI / Bank Transfer" ||
+                  item.transaction.mode === "Pay Later / Credit") &&
+                (item.transaction.status === "Paid" || item.status === "DELIVERED") ? (
                   <div className="p-3 bg-white product_shadow mt-4">
                     <p className="fs-2sm fw-400 black mb-0">Transactions</p>
                     <div className="d-flex flex-column mt-3">
@@ -727,7 +823,7 @@ export default function NewOrder() {
                           {item.transaction.tx_id && <> tx : {item.transaction.tx_id} </>}
                           {item.transaction.date && (
                             <>
-                              {'  '} | {formatDate(item.transaction.date)}
+                              {"  "} | {formatDate(item.transaction.date)}
                             </>
                           )}
                         </p>
@@ -780,7 +876,7 @@ export default function NewOrder() {
                           <p className="fs-xxs fw-700 black mb-0">{items.customer.name}</p>
                           <p className="fs-xs fw-400 black mb-0 mt-1">{items.shipping.address}</p>
                           <p className="fs-xs fw-400 black mb-0 mt-1">
-                            {items.shipping.city} {items.shipping.state}{' '}
+                            {items.shipping.city} {items.shipping.state}{" "}
                           </p>
                           <p className="fs-xs fw-400 black mb-0 mt-4 text-end">
                             Invoice Date : {formatDate(items.created_at)}
@@ -812,7 +908,7 @@ export default function NewOrder() {
                                       </p>
                                       <p
                                         className={`fs-xxxs fw-400 black mb-0  ${
-                                          data.varient_discount !== '0' ? 'strikethrough' : null
+                                          data.varient_discount !== "0" ? "strikethrough" : null
                                         }`}>
                                         MRP : {data.varient_price}
                                       </p>
@@ -832,12 +928,12 @@ export default function NewOrder() {
                                   {data.final_price}
                                 </td>
                                 <td className="fs-xxs fw-400 black p_5_10 text-center">
-                                  {typeof data.Tax === 'undefined' ? '0' : data.Tax}%
+                                  {typeof data.Tax === "undefined" ? "0" : data.Tax}%
                                 </td>
                                 <td className="fs-xxs fw-400 black p_5_10 text-end">
                                   ₹
                                   {data.quantity * data.final_price +
-                                    (typeof data.text === 'undefined'
+                                    (typeof data.text === "undefined"
                                       ? 0
                                       : data.quantity * data.final_price * (data.Tax / 100))}
                                 </td>
@@ -869,7 +965,7 @@ export default function NewOrder() {
                       Note : You Saved <span className="fw-700"> ₹{savedDiscount} </span> on product
                       discount.
                     </p>
-                    {items.transaction.status === 'Paid' ? (
+                    {items.transaction.status === "Paid" ? (
                       <div>
                         <p className="fs_xxs fw-400 black mb-0 mt-3">Transactions:</p>
                         <table className="mt-3 w-100">
@@ -884,7 +980,7 @@ export default function NewOrder() {
                           <tbody>
                             <tr className="bill_border">
                               <td className="fs-xxs fw-400 black py-1">
-                                {items.transaction.tx_id === '' ? 'N/A' : items.transaction.tx_id}
+                                {items.transaction.tx_id === "" ? "N/A" : items.transaction.tx_id}
                               </td>
                               <td className="fs-xxs fw-400 black py-1">{items.transaction.mode}</td>
                               <td className="fs-xxs fw-400 black py-1">

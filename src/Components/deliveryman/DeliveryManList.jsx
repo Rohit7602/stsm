@@ -1,34 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import addicon from '../../Images/svgs/addicon.svg';
-import search from '../../Images/svgs/search.svg';
-import shortIcon from '../../Images/svgs/short-icon.svg';
-import removeIcon from '../../Images/svgs/remove-icon.svg';
-import rightDubbleArrow from '../../Images/svgs/dubble-arrow.svg';
-import { doc, deleteDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
-import { db } from '../../firebase';
-import { Link } from 'react-router-dom';
-import { useRef } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { UseServiceContext } from '../../context/ServiceAreasGetter';
-import { ActionIcon } from '../../Common/Icon';
-import { UseDeliveryManContext } from '../../context/DeliverymanGetter';
+import React, { useState, useEffect } from "react";
+import addicon from "../../Images/svgs/addicon.svg";
+import search from "../../Images/svgs/search.svg";
+import shortIcon from "../../Images/svgs/short-icon.svg";
+import removeIcon from "../../Images/svgs/remove-icon.svg";
+import rightDubbleArrow from "../../Images/svgs/dubble-arrow.svg";
+import { doc, deleteDoc, updateDoc, addDoc, collection } from "firebase/firestore";
+import { auth, db } from "../../firebase";
+import { Link } from "react-router-dom";
+import { useRef } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { UseServiceContext } from "../../context/ServiceAreasGetter";
+import { ActionIcon } from "../../Common/Icon";
+import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
+import axios from "axios";
+import { useOrdercontext } from "../../context/OrderGetter";
 const DeliveryManList = () => {
   const { DeliveryManData, deleteDeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
+  const { orders } = useOrdercontext();
   const [loaderstatus, setLoaderstatus] = useState(false);
 
   const [showLocation, setShowLocation] = useState(false);
-  const [searchvalue, setSearchvalue] = useState('');
+  const [searchvalue, setSearchvalue] = useState("");
 
-  const [selectedId, setSelectedId] = useState('');
+  const [selectedId, setSelectedId] = useState("");
   const [filterData, setFilterData] = useState([]);
 
-  const [order, setorder] = useState('ASC');
+  const [order, setorder] = useState("ASC");
   const sorting = (col) => {
     // Create a copy of the data array
     const sortedData = [...DeliveryManData];
 
-    if (order === 'ASC') {
+    if (order === "ASC") {
       sortedData.sort((a, b) => {
         const valueA = getProperty(a, col).toLowerCase();
         const valueB = getProperty(b, col).toLowerCase();
@@ -44,7 +47,7 @@ const DeliveryManList = () => {
     }
 
     // Update the order state
-    const newOrder = order === 'ASC' ? 'DESC' : 'ASC';
+    const newOrder = order === "ASC" ? "DESC" : "ASC";
     setorder(newOrder);
 
     // Update the data using the updateData function from your context
@@ -52,7 +55,7 @@ const DeliveryManList = () => {
   };
 
   const getProperty = (obj, path) => {
-    const keys = path.split('.');
+    const keys = path.split(".");
     let result = obj;
     for (let key of keys) {
       result = result[key];
@@ -86,7 +89,7 @@ const DeliveryManList = () => {
   };
   /*  *******************************
       Checbox  functionality end 
-    *********************************************   **/
+    ***********************************************/
 
   useEffect(() => {
     if (selectedId) {
@@ -130,15 +133,18 @@ const DeliveryManList = () => {
             </div>
           </div>
           {/* categories details  */}
-          <div className="d-flex mt-4">
+          {/* <button onClick={handelDelete} className="btn btn-danger mt-3">
+            Delete
+          </button> */}
+          <div className="d-flex mt-3">
             <div className="p-3 bg-white product_shadow line_scroll">
               <div className="overflow_xl_scroll ">
-                <div style={{ minWidth: '1240px' }}>
+                <div style={{ minWidth: "1240px" }}>
                   <table className="w-100">
                     <thead className="w-100 table_head">
                       <tr className="product_borderbottom">
                         <th
-                          onClick={() => sorting('basic_info.name')}
+                          onClick={() => sorting("basic_info.name")}
                           className="py-3 ps-3  cursor_pointer ">
                           <div className="d-flex align-items-center gap-3 ">
                             <label class="check1 fw-400 fs-sm black mb-0">
@@ -168,7 +174,7 @@ const DeliveryManList = () => {
                         <th className="mx_140 ps-3">
                           <h3 className="fs-sm fw-400 black mb-0">Total Order’s</h3>
                         </th>
-                        <th onClick={() => sorting('status')} className="mx_140 cursor_pointer">
+                        <th onClick={() => sorting("status")} className="mx_140 cursor_pointer">
                           <p className="fw-400 fs-sm black mb-0 ms-2">
                             Status
                             <span>
@@ -197,12 +203,22 @@ const DeliveryManList = () => {
                     </thead>
                     <tbody className="table_body">
                       {DeliveryManData.filter((data) => {
-                        return searchvalue.toLowerCase() === ''
+                        return searchvalue.toLowerCase() === ""
                           ? data
                           : data.basic_info.name.toLowerCase().includes(searchvalue);
                       }).map((data, index) => {
+                        let orderCount = {};
+                        for (let asignedOrder of orders) {
+                          if (asignedOrder.status === "CONFIRMED") {
+                            if (!orderCount[asignedOrder.assign_to]) {
+                              orderCount[asignedOrder.assign_to] = 0;
+                            }
+                            orderCount[asignedOrder.assign_to]++;
+                          }
+                        }
+                        console.log(orderCount);
                         return (
-                          <tr className="product_borderbottom">
+                          <tr key={index} className="product_borderbottom">
                             <td className="py-3 ps-3 ">
                               <div className="d-flex align-items-center gap-3 ">
                                 <label class="check1 fw-400 fs-sm black mb-0">
@@ -227,12 +243,12 @@ const DeliveryManList = () => {
                               <h3 className="fs-sm fw-400 black mb-0">{data.job_info.shift}</h3>
                             </td>
                             <td className="mx_140 ps-5">
-                              <h3 className="fs-sm fw-400 black ">10</h3>
+                              <h3 className="fs-sm fw-400 black ">{orderCount[data.id] ?? 0}</h3>
                             </td>
                             <td className="px-2 mx_140">
                               <h3
                                 className={`fs-sm fw-400 ${
-                                  data.status === 'online' ? 'status_btn_green' : 'status_btn_red'
+                                  data.status === "online" ? "status_btn_green" : "status_btn_red"
                                 } mb-0`}>
                                 {data.status}
                               </h3>
@@ -241,22 +257,23 @@ const DeliveryManList = () => {
                             <td className="ps-3 mx_160">
                               <h3
                                 className={`fs-sm fw-400 status_btn_green mb-0  ${
-                                  data.profile_status === 'NEW'
-                                    ? ' on_credit_bg'
-                                    : data.profile_status === 'APPROVED'
-                                    ? 'green stock_bg '
-                                    : 'status_btn_red'
+                                  data.profile_status === "NEW"
+                                    ? " on_credit_bg"
+                                    : data.profile_status === "APPROVED"
+                                    ? "green stock_bg "
+                                    : "status_btn_red"
                                 } `}>
-                                {data.profile_status === 'NEW' ? 'PENDING' : data.profile_status}
+                                {data.profile_status === "NEW" ? "PENDING" : data.profile_status}
                               </h3>
                               {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">Rejected</h3> */}
                             </td>
                             <td className="ps-3 mx_160">
                               <h3 className="fs-sm fw-400 black mb-0">
                                 {data.is_verified === true &&
-                                data.status === 'online' &&
-                                data.profile_status === 'APPROVED' &&
-                                data.serviceArea ? (
+                                data.status === "online" &&
+                                data.profile_status === "APPROVED" &&
+                                data.serviceArea &&
+                                data.serviceArea.length !== 0 ? (
                                   <button
                                     onClick={() => {
                                       setSelectedId(data.id);
@@ -279,9 +296,9 @@ const DeliveryManList = () => {
                             </td>
                             <td className="text-center mx_100">
                               {data.is_verified === true &&
-                              data.status === 'online' &&
-                              data.profile_status === 'APPROVED' &&
-                              data.hasOwnProperty('serviceArea') ? (
+                              data.status === "online" &&
+                              data.profile_status === "APPROVED" &&
+                              data.hasOwnProperty("serviceArea") ? (
                                 <Link to={`inventory/${data.uid}`}>
                                   <ActionIcon />
                                 </Link>
@@ -313,7 +330,7 @@ const DeliveryManList = () => {
                         </div>
                         <img
                           onClick={() => setShowLocation(false)}
-                          style={{ transform: 'rotate(-180deg)' }}
+                          style={{ transform: "rotate(-180deg)" }}
                           className="cursor_pointer"
                           src={rightDubbleArrow}
                           alt="rightDubbleArrow"
@@ -325,9 +342,9 @@ const DeliveryManList = () => {
                           <>
                             <span
                               style={{
-                                border: '1px solid #00000033',
-                                width: '100%',
-                                display: 'inline-block',
+                                border: "1px solid #00000033",
+                                width: "100%",
+                                display: "inline-block",
                               }}></span>
                             <p className="fs-xs fw-600 black mt-2">
                               {area.area_name} ({area.pincode})

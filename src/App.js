@@ -178,7 +178,7 @@ function App() {
                         <Route path="communications">
                           <Route path="chats" element={<Chats />} />
                           <Route path="complains" element={<Complains />} />
-                          <Route path="complaindetails" element={<ComplainDetails />} />
+                          <Route path="complaindetails/:complainId" element={<ComplainDetails />} />
                         </Route>
                         <Route path="privacypolicy" element={<PrivacyPolicy />} />
                         <Route path="setting">

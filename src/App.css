@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;500;600;700;800;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;500;600;700;800;900&display=swap");
 
 .App {
   text-align: center;
@@ -17,7 +17,7 @@
   padding: 0;
   margin: 0;
   list-style: none;
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   /* text-decoration: none !important; */
@@ -49,7 +49,7 @@ body {
   --light-blue: #01bbbd;
   --color-green: #54b435;
   --color-blue: #0019ff;
-  --ff-outfit: 'Outfit', sans-serif;
+  --ff-outfit: "Outfit", sans-serif;
 
   --fw-300: 300;
   --fw-400: 400;
@@ -349,7 +349,7 @@ body {
 }
 
 .accordion-button::after {
-  background-image: url('./Images/svgs/arrow.svg') !important;
+  background-image: url("./Images/svgs/arrow.svg") !important;
 }
 
 .accordion-header:hover {
@@ -412,7 +412,7 @@ body {
 }
 
 .banner_advertisement .accordion-button::after {
-  background-image: url('./Images/svgs/dropdown_icon.svg') !important;
+  background-image: url("./Images/svgs/dropdown_icon.svg") !important;
   background-position: right center;
 }
 
@@ -712,7 +712,7 @@ body {
 
 /* Create the checkmark/indicator (hidden when not checked) */
 .checkmark:after {
-  content: '';
+  content: "";
   position: absolute;
   display: none;
 }
@@ -1245,7 +1245,7 @@ delivery_man_dropdown::-webkit-scrollbar {
 }
 
 .order_logs_line::after {
-  content: '';
+  content: "";
   position: absolute;
   height: 100%;
   width: 2px;
@@ -1357,7 +1357,7 @@ delivery_man_dropdown::-webkit-scrollbar {
 }
 
 .login-side-bg {
-  background-image: url('../src/Images/Png/login-side-img.png');
+  background-image: url("../src/Images/Png/login-side-img.png");
   min-height: 100vh;
   background-repeat: no-repeat;
   object-fit: cover;
@@ -1788,7 +1788,7 @@ div.rich-text-editor .ql-editor {
 }
 
 .side_invoice_view::after {
-  content: '';
+  content: "";
   background-color: #f5f7fa;
   position: absolute;
   width: 20px;
@@ -1799,7 +1799,7 @@ div.rich-text-editor .ql-editor {
 }
 
 .side_invoice_view::before {
-  content: '';
+  content: "";
   background-color: #f5f7fa;
   position: absolute;
   width: 100%;
@@ -2232,7 +2232,6 @@ min_width_230 {
   border-radius: 10px;
   background-color: #41a41e;
   border: 0;
-  margin-top: 10px;
 }
 
 .comm_resolve_btn {
@@ -2493,8 +2492,8 @@ min_width_230 {
 .sender_msg p {
   color: white;
 }
-input[type='number']::-webkit-inner-spin-button,
-input[type='number']::-webkit-outer-spin-button {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
 }
 .area_slider::-webkit-scrollbar {
@@ -2570,6 +2569,44 @@ input[type='number']::-webkit-outer-spin-button {
   position: absolute;
   right: 10px;
   top: 10px;
+}
+.reply_close_btn {
+  right: 75px;
+  top: 5px;
+}
+.complain_head_bg {
+  padding: 14px 50px;
+  background-color: #eaeaea;
+  margin-top: 20px;
+}
+.deliverd_btn {
+  border: 0;
+  padding: 5px 10px;
+  background-color: #54b43533;
+  color: #54b435;
+  border-radius: 5px;
+  margin-left: 20px;
+}
+.on_credit_btn {
+  border: 0;
+  padding: 5px 10px;
+  background-color: #ffae0033;
+  color: #ffae00;
+  border-radius: 5px;
+}
+.w_179 {
+  min-width: 179px;
+}
+.mark_resolved_btn {
+  border: 0;
+  background-color: #00a015;
+  padding: 11px 16px;
+  color: white;
+  border-radius: 10px;
+}
+.mx_250 {
+  min-width: 250px;
+  width: 250px;
 }
 /* ===========Medgitia-query========== */
 @media (max-width: 1400px) {
