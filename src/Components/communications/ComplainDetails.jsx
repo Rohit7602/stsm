@@ -1,29 +1,29 @@
-import React, { useState } from 'react';
-import ComplainCusPic from '../../Images/Png/complain-pic.png';
-import DropdownBlack from '../../Images/svgs/dropdown-black.svg';
-import ReplyBtn from '../../Images/svgs/reply-icon.svg';
-import SendIcon from '../../Images/svgs/send-icon.svg';
-import closeIcon from '../../Images/svgs/closeicon.svg';
+import React, { useState } from "react";
+import ComplainCusPic from "../../Images/Png/complain-pic.png";
+import DropdownBlack from "../../Images/svgs/dropdown-black.svg";
+import ReplyBtn from "../../Images/svgs/reply-icon.svg";
+import SendIcon from "../../Images/svgs/send-icon.svg";
+import closeIcon from "../../Images/svgs/closeicon.svg";
 
 export default function ComplainDetails() {
   const [reply, setReply] = useState(false);
   const [replyContent, setReplyContent] = useState(false);
   const [addResolutionPopup, setAddResolutionPopup] = useState(false);
   const [resolve, setResolve] = useState(false);
-  const [replytext, setReplyText] = useState('');
-  const [resolutionValue, setResolutionValue] = useState('');
+  const [replytext, setReplyText] = useState("");
+  const [resolutionValue, setResolutionValue] = useState("");
   function handelSubmitReply() {
     setReplyContent(true);
     setReply(false);
   }
   const addResolutionData = [
-    { value: 'Replacement item shipped.' },
-    { value: 'Apology letter sent with compensation.' },
-    { value: 'Account credited with refund amount.' },
-    { value: 'Product exchange arranged.' },
-    { value: 'Issue escalated to senior support for further assistance.' },
-    { value: 'Partial refund issued for the inconvenience caused.' },
-    { value: 'Follow-up call scheduled for feedback.' },
+    { value: "Replacement item shipped." },
+    { value: "Apology letter sent with compensation." },
+    { value: "Account credited with refund amount." },
+    { value: "Product exchange arranged." },
+    { value: "Issue escalated to senior support for further assistance." },
+    { value: "Partial refund issued for the inconvenience caused." },
+    { value: "Follow-up call scheduled for feedback." },
   ];
   return (
     <div className="complain_details mt-4 pe-3">
@@ -143,7 +143,7 @@ export default function ComplainDetails() {
           </div>
           <div className="dropdown w-100 mt-2 pt-1">
             <button
-              style={{ height: '44px', borderRadius: '8px', backgroundColor: '#F4F4F4' }}
+              style={{ height: "44px", borderRadius: "8px", backgroundColor: "#F4F4F4" }}
               className="btn dropdown-toggle w-100"
               type="button"
               id="dropdownMenuButton3"
@@ -151,9 +151,9 @@ export default function ComplainDetails() {
               aria-expanded="false">
               <div className="d-flex align-items-center justify-content-between w-100">
                 <p
-                  style={{ textAlign: 'start', width: '360px', overflow: 'hidden' }}
+                  style={{ textAlign: "start", width: "360px", overflow: "hidden" }}
                   className="ff-outfit fw-400 fs_sm mb-0 black">
-                  {resolutionValue ? resolutionValue : 'Select Your Resolution..'}
+                  {resolutionValue ? resolutionValue : "Select Your Resolution.."}
                 </p>
                 <svg
                   width="24"

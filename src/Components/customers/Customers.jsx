@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import filtericon from '../../Images/svgs/filtericon.svg';
-import manicon from '../../Images/svgs/manicon.svg';
-import threedot from '../../Images/svgs/threedot.svg';
-import search from '../../Images/svgs/search.svg';
-import eye_icon from '../../Images/svgs/eye.svg';
-import pencil_icon from '../../Images/svgs/pencil.svg';
-import delete_icon from '../../Images/svgs/delte.svg';
-import updown_icon from '../../Images/svgs/arross.svg';
-import manimage from '../../Images/Png/manimage.jpg';
-import shortIcon from '../../Images/svgs/short-icon.svg';
-import { Link } from 'react-router-dom';
-import { useCustomerContext } from '../../context/Customergetters';
-import { set } from 'date-fns';
-import { useOrdercontext } from '../../context/OrderGetter';
+import React, { useState } from "react";
+import filtericon from "../../Images/svgs/filtericon.svg";
+import manicon from "../../Images/svgs/manicon.svg";
+import threedot from "../../Images/svgs/threedot.svg";
+import search from "../../Images/svgs/search.svg";
+import eye_icon from "../../Images/svgs/eye.svg";
+import pencil_icon from "../../Images/svgs/pencil.svg";
+import delete_icon from "../../Images/svgs/delte.svg";
+import updown_icon from "../../Images/svgs/arross.svg";
+import manimage from "../../Images/Png/manimage.jpg";
+import shortIcon from "../../Images/svgs/short-icon.svg";
+import { Link } from "react-router-dom";
+import { useCustomerContext } from "../../context/Customergetters";
+import { set } from "date-fns";
+import { useOrdercontext } from "../../context/OrderGetter";
 
 const Customers = () => {
-  const [searchvalue, setSearchvalue] = useState('');
+  const [searchvalue, setSearchvalue] = useState("");
   const [selectAll, setSelectAll] = useState([]);
   const { orders } = useOrdercontext();
   const { customer } = useCustomerContext();
@@ -124,7 +124,7 @@ const Customers = () => {
                 <tbody className="table_body">
                   {customer
                     .filter((data) => {
-                      return searchvalue.toLowerCase() === ''
+                      return searchvalue.toLowerCase() === ""
                         ? data
                         : data.name.toLowerCase().includes(searchvalue);
                     })
@@ -142,14 +142,14 @@ const Customers = () => {
                         created_at,
                       } = item;
                       const formatNumbers = function (num) {
-                        return num < 10 ? '0' + num : num;
+                        return num < 10 ? "0" + num : num;
                       };
                       const formatDate = function (date) {
                         let day = formatNumbers(date.getDate());
                         let month = formatNumbers(date.getMonth() + 1);
                         let year = date.getFullYear();
 
-                        return day + '-' + month + '-' + year;
+                        return day + "-" + month + "-" + year;
                       };
                       const newval = new Date(created_at);
                       const newDate = formatDate(newval);

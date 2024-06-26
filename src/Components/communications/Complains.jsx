@@ -1,7 +1,7 @@
-import React from 'react';
-import starIcon from '../../Images/svgs/star-icon.svg';
-import threeDots from '../../Images/svgs/dots2.svg';
-import { NavLink } from 'react-router-dom';
+import React from "react";
+import starIcon from "../../Images/svgs/star-icon.svg";
+import threeDots from "../../Images/svgs/dots2.svg";
+import { NavLink } from "react-router-dom";
 
 export default function Complain() {
   return (
@@ -24,7 +24,7 @@ export default function Complain() {
         </div>
       </div>
       <div className="line_scroll mt-4">
-        <div style={{ minWidth: '1500px', height: 'calc(100vh - 254px)' }} className="bg-white">
+        <div style={{ minWidth: "1500px", height: "calc(100vh - 254px)" }} className="bg-white">
           <table className="w-100">
             <tbody>
               <tr className="bg-white">
