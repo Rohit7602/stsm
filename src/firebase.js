@@ -21,7 +21,6 @@ const auth = getAuth(app);
 const firestore = getFirestore(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
-
 const messaging = getMessaging(app);
 
 export function permissionHandler() {

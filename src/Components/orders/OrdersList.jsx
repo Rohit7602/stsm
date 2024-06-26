@@ -40,35 +40,51 @@ const OrderList = () => {
   /*  *******************************
   checkbox functionality start 
 *********************************************   **/
-  const [selectAll, setSelectAll] = useState(false);
-
-  useEffect(() => {
-    // Check if all checkboxes are checked
-    const allChecked = orders.every((item) => item.checked);
-    setSelectAll(allChecked);
-  }, [orders]);
+  const [selectAll, setSelectAll] = useState([]);
 
   // Main checkbox functionality start from here
-
-  const handleMainCheckboxChange = () => {
-    const updatedData = orders.map((item) => ({
-      ...item,
-      checked: !selectAll,
-    }));
-    updateData(updatedData);
-    setSelectAll(!selectAll);
-  };
+  function handleSelectAll() {
+    if (orders.length === selectAll.length) {
+      setSelectAll([]);
+    } else {
+      let allCheck = orders.map((item) => {
+        return item.id;
+      });
+      setSelectAll(allCheck);
+    }
+  }
+  function handleSelect(e) {
+    let isChecked = e.target.checked;
+    let value = e.target.value;
+    if (isChecked) {
+      setSelectAll([...selectAll, value]);
+    } else {
+      setSelectAll((prev) =>
+        prev.filter((id) => {
+          return id != value;
+        })
+      );
+    }
+  }
+  // const handleMainCheckboxChange = () => {
+  //   const updatedData = orders.map((item) => ({
+  //     ...item,
+  //     checked: !selectAll,
+  //   }));
+  //   updateData(updatedData);
+  //   setSelectAll(!selectAll);
+  // };
 
   // Datacheckboxes functionality strat from here
-  const handleCheckboxChange = (index) => {
-    const updatedData = [...orders];
-    updatedData[index].checked = !orders[index].checked;
-    updateData(updatedData);
+  // const handleCheckboxChange = (index) => {
+  //   const updatedData = [...orders];
+  //   updatedData[index].checked = !orders[index].checked;
+  //   updateData(updatedData);
 
-    // Check if all checkboxes are checked
-    const allChecked = updatedData.every((item) => item.checked);
-    setSelectAll(allChecked);
-  };
+  //   // Check if all checkboxes are checked
+  //   const allChecked = updatedData.every((item) => item.checked);
+  //   setSelectAll(allChecked);
+  // };
 
   /*  *******************************
       Checbox  functionality end 
@@ -292,8 +308,8 @@ const OrderList = () => {
                         <label className="check1 fw-400 fs-sm black mb-0">
                           <input
                             type="checkbox"
-                            checked={selectAll}
-                            onChange={handleMainCheckboxChange}
+                            checked={selectAll.length === orders.length}
+                            onChange={handleSelectAll}
                           />
                           <span className="checkmark"></span>
                         </label>
@@ -389,8 +405,9 @@ const OrderList = () => {
                               <label className="check1 fw-400 fs-sm black mb-0">
                                 <input
                                   type="checkbox"
-                                  checked={orderTableData.checked || false}
-                                  onChange={() => handleCheckboxChange(index)}
+                                  value={orderTableData.id}
+                                  checked={selectAll.includes(orderTableData.id)}
+                                  onChange={handleSelect}
                                 />
                                 <span className="checkmark"></span>
                               </label>
