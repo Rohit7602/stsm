@@ -74,10 +74,16 @@ const DeliveryBoyInventory = () => {
   // console.log("selected product is ", selectedproduct)
 
   function HandleAddToVan(e) {
-    if (selectedproduct.length > 0 && varient && quantity) {
+    if (
+      selectedproduct.length > 0 &&
+      varient &&
+      quantity &&
+      selectedproduct[0].totalStock >= quantity
+    ) {
       e.preventDefault();
-      // console.log("function working here ")
       let allvarients = selectedproduct.length > 0 && selectedproduct.map((data) => data.varients);
+      console.log("added");
+      console.log("function working here ");
       // console.log("all vairents ", allvarients)
       let currentvairent = allvarients.flat().filter((data) => data.VarientName === varient);
       // console.log("currentvairent valie ", currentvairent[0])
@@ -103,8 +109,15 @@ const DeliveryBoyInventory = () => {
       setselectedProduct([]);
       setquantity("");
       setVarient("");
+    } else if (varient === "" || quantity === "" || selectedproduct.length < 0) {
+      // alert("Please Select each field");
+      toast.error("Please Select each field", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     } else {
-      alert("Please Select each field");
+      toast.warning("Prodcut stock not available", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     }
   }
 

@@ -1,44 +1,30 @@
-// if ('serviceWorker' in navigator) {
-//     navigator.serviceWorker.register('../firebase-messaging-sw.js')
-//         .then(function (registration) {
-//             console.log('Registration successful, scope is:', registration.scope);
-//         }).catch(function (err) {
-//             console.log('Service worker registration failed, error:', err);
-//         });
-// }
+// firebase-messaging-sw.js
+importScripts("https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.12.3/firebase-messaging-compat.js");
 
-// navigator.serviceWorker.register(workerFileName, { scope: "/" })
-//     .then(
-//         function (reg) {
-//             var serviceWorker;
-//             if (reg.installing) {
-//                 serviceWorker = reg.installing;
-//                 // console.log('Service worker installing');
-//             } else if (reg.waiting) {
-//                 serviceWorker = reg.waiting;
-//                 // console.log('Service worker installed & waiting');
-//             } else if (reg.active) {
-//                 serviceWorker = reg.active;
-//                 // console.log('Service worker active');
-//             }
+const firebaseConfig = {
+  apiKey: "AIzaSyAnDazUpRDmNMYIF5V5GAZZeBO2Ovn0v6Q",
+  authDomain: "save-time-save-money-a36f2.firebaseapp.com",
+  databaseURL:
+    "https://save-time-save-money-a36f2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "save-time-save-money-a36f2",
+  storageBucket: "save-time-save-money-a36f2.appspot.com",
+  messagingSenderId: "103361561282",
+  appId: "1:103361561282:web:b0b5b63d581d2cfacaf15b",
+  measurementId: "G-QTCFPJ5FPC",
+};
 
-//             if (serviceWorker) {
-//                 console.log("sw current state", serviceWorker.state);
-//                 if (serviceWorker.state == "activated") {
-//                     //If push subscription wasnt done yet have to do here
-//                     console.log("sw already activated - Do watever needed here");
-//                 }
-//                 serviceWorker.addEventListener("statechange", function (e) {
-//                     console.log("sw statechange : ", e.target.state);
-//                     if (e.target.state == "activated") {
-//                         // use pushManger for subscribing here.
-//                         console.log("Just now activated. now we can subscribe for push notification")
-//                         subscribeForPushNotification(reg);
-//                     }
-//                 });
-//             }
-//         },
-//         function (err) {
-//             console.error('unsuccessful registration with ', workerFileName, err);
-//         }
-//     );
+firebase.initializeApp(firebaseConfig);
+
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage((payload) => {
+  console.log("Received background message ", payload);
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: "/firebase-logo.png",
+  };
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
+});

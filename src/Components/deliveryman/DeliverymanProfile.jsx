@@ -64,12 +64,12 @@ const DeliverymanProfile = () => {
   function handlePincodeChange(index) {
     console.log(areaPinCode);
     const filterData = ServiceData.filter(
-      (datas) =>
-        datas.PostalCode ===  addMoreArea[index].pincode)
-  
+      (datas) => datas.PostalCode === addMoreArea[index].pincode
+    );
+
     const areaName = filterData[0]?.AreaName || "";
     console.log(addMoreArea[index].pincode);
-    console.log(filterData[0].AreaName);
+    console.log(filterData[0]?.AreaName);
     setAddMoreArea((prevVariants) =>
       prevVariants.map((v, i) =>
         i === index ? { ...v, pincode: v.pincode, area_name: areaName, terretory: v.terretory } : v

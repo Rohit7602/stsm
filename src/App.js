@@ -1,45 +1,45 @@
-import './App.css';
-import CategoriesView from './Components/catalog/Categories';
-import { Route, Routes, useLocation, useParams } from 'react-router-dom';
-import Sidebar from './Components/layout/Sidebar';
-import DashbordCards from './Components/dashbord/DashbordCards';
-import ProductList from './Components/catalog/ProductList';
-import NewCategory from './Components/catalog/NewCategory';
-import AddProduct from './Components/catalog/AddProduct';
-import Customers from './Components/customers/Customers';
-import OrdersList from './Components/orders/OrdersList';
-import ViewCustomerDetails from './Components/customers/ViewCustomerDetails';
-import BannersAdvertisement from './Components/marketing/BannersAdvertisement';
-import Topbar from './Components/layout/Topbar';
-import Orderdetails from './Components/orders/Orderdetails';
-import ParentCategories from './Components/catalog/ParentCategories';
-import ServiceAreas from './Components/catalog/SearviceAreas';
-import Login from './Components/login/Login';
-import AccountDelete from './Components/AccountDelete';
-import { useEffect, useRef, useState } from 'react';
-import { auth, messaging } from './firebase';
-import HashLoader from 'react-spinners/HashLoader';
-import CheckConnection from './Components/CheckConnection';
-import Brands from './Components/brands/Brands';
-import Invoices from './Components/invoices/Invoices';
-import { permissionHandler } from './firebase';
-import DeliveryManList from './Components/deliveryman/DeliveryManList';
-
-import PrivacyPolicy from './Components/PrivacyPolicy/PrivacyPolicy';
-import TermConditions from './Components/Security/TermConditions/TermConditions';
-import AddDeliveryMan from './Components/deliveryman/AddDeliveryMan';
-import Faqs from './Components/faqs/Faqs';
-import Logout from './Components/login/Logout';
-import DeliverymanProfile from './Components/deliveryman/DeliverymanProfile';
-import DeliveryOrderList from './Components/deliveryman/DeliveryOrderList';
-import DeliveryBoyInventory from './Components/deliveryman/DeliveryBoyInventory';
-import { useUserAuth } from './context/Authcontext';
-import Coupons from './Components/marketing/Coupons';
-import InvoiceBill from './Components/invoices/InvoiceBill';
-import Chats from './Components/communications/Chats';
-import Complains from './Components/communications/Complains';
-import ComplainDetails from './Components/communications/ComplainDetails';
-
+import "./App.css";
+import CategoriesView from "./Components/catalog/Categories";
+import { Route, Routes, useLocation, useParams } from "react-router-dom";
+import Sidebar from "./Components/layout/Sidebar";
+import DashbordCards from "./Components/dashbord/DashbordCards";
+import ProductList from "./Components/catalog/ProductList";
+import NewCategory from "./Components/catalog/NewCategory";
+import AddProduct from "./Components/catalog/AddProduct";
+import Customers from "./Components/customers/Customers";
+import OrdersList from "./Components/orders/OrdersList";
+import ViewCustomerDetails from "./Components/customers/ViewCustomerDetails";
+import BannersAdvertisement from "./Components/marketing/BannersAdvertisement";
+import Topbar from "./Components/layout/Topbar";
+import Orderdetails from "./Components/orders/Orderdetails";
+import ParentCategories from "./Components/catalog/ParentCategories";
+import ServiceAreas from "./Components/catalog/SearviceAreas";
+import Login from "./Components/login/Login";
+import AccountDelete from "./Components/AccountDelete";
+import { useEffect, useRef, useState } from "react";
+import { auth, messaging, onMessageListener } from "./firebase";
+import HashLoader from "react-spinners/HashLoader";
+import CheckConnection from "./Components/CheckConnection";
+import Brands from "./Components/brands/Brands";
+import Invoices from "./Components/invoices/Invoices";
+import { permissionHandler } from "./firebase";
+import DeliveryManList from "./Components/deliveryman/DeliveryManList";
+import { ToastContainer, toast } from "react-toastify";
+import PrivacyPolicy from "./Components/PrivacyPolicy/PrivacyPolicy";
+import TermConditions from "./Components/Security/TermConditions/TermConditions";
+import AddDeliveryMan from "./Components/deliveryman/AddDeliveryMan";
+import Faqs from "./Components/faqs/Faqs";
+import Logout from "./Components/login/Logout";
+import DeliverymanProfile from "./Components/deliveryman/DeliverymanProfile";
+import DeliveryOrderList from "./Components/deliveryman/DeliveryOrderList";
+import DeliveryBoyInventory from "./Components/deliveryman/DeliveryBoyInventory";
+import { useUserAuth } from "./context/Authcontext";
+import Coupons from "./Components/marketing/Coupons";
+import InvoiceBill from "./Components/invoices/InvoiceBill";
+import Chats from "./Components/communications/Chats";
+import Complains from "./Components/communications/Complains";
+import ComplainDetails from "./Components/communications/ComplainDetails";
+import firebase from "./firebase";
 function App() {
   const { logoutUser } = useUserAuth();
   const [user, setUser] = useState(null);
@@ -48,40 +48,42 @@ function App() {
   const [deletPopup, setDeletPopup] = useState(false);
   useEffect(() => {
     permissionHandler();
-    window.addEventListener('load', () => {
+    onMessageListener();
+
+    window.addEventListener("load", () => {
       setloading(false); // Set loading to false when the page has finished loading
     });
 
     return () => {
-      window.removeEventListener('load', () => {
+      window.removeEventListener("load", () => {
         setloading(false);
       });
     };
   }, []);
 
   // Check if '/orders/orderdetails/' is one of the segments
-  var pathSegments = location.pathname.split('/');
+  var pathSegments = location.pathname.split("/");
   // console.log(pathSegments[1]);
 
   // Check if '/orders/orderdetails/' is one of the segments
-  if (pathSegments.includes('orders') && pathSegments.includes('orderdetails')) {
-    document.body.classList.add('overflow_hidden');
+  if (pathSegments.includes("orders") && pathSegments.includes("orderdetails")) {
+    document.body.classList.add("overflow_hidden");
   }
 
-  if (location.pathname === '/invoices' || location.pathname === '/orders') {
-    document.body.classList.add('overflow-hidden');
+  if (location.pathname === "/invoices" || location.pathname === "/orders") {
+    document.body.classList.add("overflow-hidden");
   } else {
-    document.body.classList.remove('overflow-hidden');
+    document.body.classList.remove("overflow-hidden");
   }
   const handleLogout = async () => {
     try {
       // Sign out the user from Firebase Authentication
       await logoutUser();
       // Update the user state to trigger the rendering of the Login component
-      localStorage.removeItem('isAdmin', 'true');
+      localStorage.removeItem("isAdmin", "true");
       setUser(true);
     } catch (error) {
-      console.error('Error signing out:', error.message);
+      console.error("Error signing out:", error.message);
       // Handle logout error (e.g., display an error message)
     }
   };
@@ -112,18 +114,18 @@ function App() {
       {loading ? (
         <div
           style={{
-            position: 'fixed',
+            position: "fixed",
             top: 0,
             left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}>
           <HashLoader
-            color={'#ffae00'}
+            color={"#ffae00"}
             loading={loading}
             height={100}
             width={3}
@@ -133,7 +135,7 @@ function App() {
         </div>
       ) : (
         <div>
-          {location.pathname === '/deleteAcount' ? (
+          {location.pathname === "/deleteAcount" ? (
             <Routes>
               <Route path="/deleteAcount" element={<AccountDelete />} />
             </Routes>
