@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import addicon from "../../Images/svgs/addicon.svg";
+import closeIcon from "../../Images/svgs/closeicon.svg";
 import search from "../../Images/svgs/search.svg";
 import shortIcon from "../../Images/svgs/short-icon.svg";
 import removeIcon from "../../Images/svgs/remove-icon.svg";
@@ -11,10 +12,12 @@ import { useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { UseServiceContext } from "../../context/ServiceAreasGetter";
-import { ActionIcon } from "../../Common/Icon";
+import { ActionIcon, DeleteIcon } from "../../Common/Icon";
 import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
 import axios from "axios";
 import { useOrdercontext } from "../../context/OrderGetter";
+import Deletepopup from "../popups/Deletepopup";
+
 const DeliveryManList = () => {
   const { DeliveryManData, deleteDeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
   const { orders } = useOrdercontext();
@@ -22,10 +25,10 @@ const DeliveryManList = () => {
 
   const [showLocation, setShowLocation] = useState(false);
   const [searchvalue, setSearchvalue] = useState("");
-
+  const [deletePopup, setDeletePopup] = useState(false);
   const [selectedId, setSelectedId] = useState("");
   const [filterData, setFilterData] = useState([]);
-
+  const [deliveryManId, setDeliveryManId] = useState(null);
   const [order, setorder] = useState("ASC");
   const sorting = (col) => {
     // Create a copy of the data array
@@ -90,7 +93,14 @@ const DeliveryManList = () => {
   /*  *******************************
       Checbox  functionality end 
     ***********************************************/
-
+  async function handleDelete() {
+    try {
+      await deleteDoc(doc(db, "Delivery", `${deliveryManId}`));
+    } catch (error) {
+      console.log(error);
+    }
+    setDeletePopup(false);
+  }
   useEffect(() => {
     if (selectedId) {
       let Datas = DeliveryManData.filter((data) => data.id === selectedId);
@@ -109,6 +119,7 @@ const DeliveryManList = () => {
   } else {
     return (
       <div className="main_panel_wrapper bg_light_grey w-100">
+        {deletePopup ? <div className="bg_black_overlay"></div> : null}
         <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
           <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
             <div className="d-flex">
@@ -196,7 +207,7 @@ const DeliveryManList = () => {
                         <th className="mx_140 ps-3">
                           <h3 className="fs-sm fw-400 black mb-0">Contact</h3>
                         </th>
-                        <th className="mx_100 p-3 me-1 text-center">
+                        <th className="mx_140 p-3 me-1 text-center">
                           <h3 className="fs-sm fw-400 black mb-0">Action</h3>
                         </th>
                       </tr>
@@ -294,17 +305,35 @@ const DeliveryManList = () => {
                                 +91 {data.basic_info.phone_no}
                               </h3>
                             </td>
-                            <td className="text-center mx_100">
+                            <td className="text-center mx_140">
                               {data.is_verified === true &&
                               data.status === "online" &&
                               data.profile_status === "APPROVED" &&
                               data.hasOwnProperty("serviceArea") ? (
-                                <Link to={`inventory/${data.uid}`}>
-                                  <ActionIcon />
-                                </Link>
+                                <div>
+                                  <Link to={`inventory/${data.uid}`}>
+                                    <ActionIcon />
+                                  </Link>
+                                  <button
+                                    onClick={() => {
+                                      setDeletePopup(true);
+                                      setDeliveryManId(data.uid);
+                                    }}
+                                    className="ms-3 bg-white border-0">
+                                    <DeleteIcon />
+                                  </button>
+                                </div>
                               ) : (
                                 <div>
                                   <ActionIcon isNotActive={true} />
+                                  <button
+                                    onClick={() => {
+                                      setDeletePopup(true);
+                                      setDeliveryManId(data.uid);
+                                    }}
+                                    className="ms-3 bg-white border-0">
+                                    <DeleteIcon />
+                                  </button>
                                 </div>
                               )}
                             </td>
@@ -392,6 +421,13 @@ const DeliveryManList = () => {
                 </div> <>*/}
               </div>
             ) : null}
+            {deletePopup && (
+              <Deletepopup
+                itemName={"Deleveryman"}
+                handleDelete={handleDelete}
+                showPopup={setDeletePopup}
+              />
+            )}
           </div>
         </div>
       </div>

@@ -2608,6 +2608,15 @@ input[type="number"]::-webkit-outer-spin-button {
   min-width: 250px;
   width: 250px;
 }
+
+.deliveryman_delete_popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  border-radius: 20px;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1400px) {
   .mx_xxl_580 {
