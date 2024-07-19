@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
-import { ToastContainer, toast } from "react-toastify";
+import { doc, updateDoc, getDoc, arrayUnion } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAnDazUpRDmNMYIF5V5GAZZeBO2Ovn0v6Q",
@@ -25,30 +25,42 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 const messaging = getMessaging(app);
 
-export function permissionHandler() {
+export async function permissionHandler() {
   console.log("Permission handler working");
 
-  Notification.requestPermission()
-    .then((permission) => {
-      if (permission === "granted") {
-        console.log("Permission granted");
-        return getToken(messaging, {
-          vapidKey:
-            "BAo2r-3i9R7lLolDnY2C5EoRVnFzgNQnbECTIrQeoEbStEJyM9mcTXGHg0_BYpng6lrD3FD6V2j4MbQIJAE8F0A",
-        })
-          .then((currentToken) => {
-            if (currentToken) {
-              console.log("Client Token:", currentToken);
-            } else {
-              console.log("Failed to generate token");
-            }
-          })
-          .catch((err) => console.error("Error getting token:", err));
+  try {
+    const permission = await Notification.requestPermission();
+
+    if (permission === "granted") {
+      console.log("Permission granted");
+
+      const currentToken = await getToken(messaging, {
+        vapidKey:
+          "BAo2r-3i9R7lLolDnY2C5EoRVnFzgNQnbECTIrQeoEbStEJyM9mcTXGHg0_BYpng6lrD3FD6V2j4MbQIJAE8F0A",
+      });
+
+      if (currentToken) {
+        console.log("Client Token:", currentToken);
+
+        const docRef = doc(db, "User", "ti5NJbZ865UFK6iNb431iiHqCox1");
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+
+          if (!userData.token.includes(currentToken)) {
+            await updateDoc(docRef, {
+              token: arrayUnion(currentToken),
+            });
+          }
+        }
       } else {
-        console.log("User denied permission");
+        console.log("Failed to generate token");
       }
-    })
-    .catch((err) => console.error("Error requesting permission:", err));
+    }
+  } catch (err) {
+    console.error("Error:", err);
+  }
 }
 
 export function onMessageListener() {

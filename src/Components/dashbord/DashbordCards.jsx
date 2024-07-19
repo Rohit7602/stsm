@@ -222,7 +222,7 @@ function DashbordCards() {
                     <h3 className="fw-400 fade_grey mb-0 fs-xs"> Active Users</h3>
                   </div>
                   <div className="grey_box my-2 text-center w-100 p-2">
-                    <h3 className="fw-500 black mb-0 fs-lg">{totalActiveUsers}</h3>
+                    <h3 className="fw-500 black mb-0 fs-lg">{totalActiveUsers}0</h3>
                   </div>
                   <div className="d-flex align-items-center py-1 bottom_border  justify-content-between">
                     <h4 className="fw-400 fade_grey mb-0 fs-xs"> City</h4>
