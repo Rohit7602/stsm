@@ -281,7 +281,7 @@ export default function NewOrder() {
         description: `Order #${order_id} is sent for packaging. We’re working to ensure it’s carefully prepared for delivery.`,
       };
       await addDoc(collection(db, `order/${id}/logs`), logData);
-      updateData({ id, status: newStatus, });
+      updateData({ id, status: newStatus });
       await updateDoc(doc(db, "order", id), {
         status: newStatus,
       });
@@ -312,14 +312,9 @@ export default function NewOrder() {
             areas.terretory.some((t) => t.toLowerCase() === area)
         )
     );
-  
-
-
 
     // console.log(deliverymenWithArea);
     if (deliverymenWithArea.length !== 0 || selectedDeliveryManId !== null) {
-
-
       try {
         const orderDocRef = doc(db, "order", id);
         const orderDoc = await getDoc(orderDocRef);
@@ -382,7 +377,6 @@ export default function NewOrder() {
               deliverymanIds.push(deliveryman.id);
             }
           }
-          
 
           // Find deliveryman with fewest orders
           if (deliverymanIds.length > 1) {
@@ -488,9 +482,11 @@ export default function NewOrder() {
         }
 
         const newStatus = "OUT_FOR_DELIVERY";
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
         if (!orderData.hasOwnProperty("invoiceNumber")) {
           await updateDoc(orderDocRef, {
             status: newStatus,
+            OTP: otp,
             invoiceNumber: invoiceNumber,
             tokens: customertoken,
             assign_to:
@@ -501,6 +497,7 @@ export default function NewOrder() {
         } else {
           await updateDoc(orderDocRef, {
             status: newStatus,
+            OTP: otp,
             assign_to:
               deliverymenWithArea.length !== 0
                 ? autoSelectedDeliveryManId
@@ -518,6 +515,7 @@ export default function NewOrder() {
         updateData({
           id,
           status: newStatus,
+          OTP: otp,
           invoiceNumber: invoiceNumber,
           assign_to:
             deliverymenWithArea.length !== 0
@@ -530,26 +528,20 @@ export default function NewOrder() {
           status: newStatus,
           updated_at: new Date().toISOString(),
           updated_by: AdminId,
-          tokens: token,
           description: `Great news! order #${order_id} now being packed and out for delivery and should arrive soon.
          Your delivery person, ${selecteddeliveryData[0].basic_info.name}, is on their way and can be reached at ${selecteddeliveryData[0].basic_info.phone_no} if you have any questions or need to provide additional instructions. Stay tuned for further updates!`,
         };
         await addDoc(collection(db, `order/${id}/logs`), logData);
         console.log("object");
         setLoading(false);
-        
-      }
-      
-      catch (error) {
+      } catch (error) {
         console.log(error);
         setLoading(false);
       }
     } else {
-      
       setLoading(false);
       setIssDeliverymanPopup(true);
     }
-    
   }
 
   const renderLogIcon = (status) => {
