@@ -159,14 +159,14 @@ export default function NewOrder() {
       }
 
       // Add a new log entry to the logs collection
-      const logData = {
-        name: "Admin",
-        status: newStatus,
-        updated_at: new Date().toISOString(),
-        updated_by: AdminId,
-        tokens: customertoken,
-        description: `order #${order_id} has been confirmed! we will notify you once it's on its way."`,
-      };
+      // const logData = {
+      //   name: "Admin",
+      //   status: newStatus,
+      //   updated_at: new Date().toISOString(),
+      //   updated_by: AdminId,
+      //   tokens: customertoken,
+      //   description: `order #${order_id} has been confirmed! we will notify you once it's on its way."`,
+      // };
 
       // await addDoc(collection(db, `order/${id}/logs`), logData);
 
@@ -205,14 +205,14 @@ export default function NewOrder() {
         status: newStatus,
       });
       // Add a new log entry to the logs collection
-      const logData = {
-        name: "Admin",
-        status: newStatus,
-        updated_at: new Date().toISOString(),
-        updated_by: AdminId,
-        description:
-          "Seller rejected the order due to unavailability of item or other reasons. Refund process initiated.",
-      };
+      // const logData = {
+      //   name: "Admin",
+      //   status: newStatus,
+      //   updated_at: new Date().toISOString(),
+      //   updated_by: AdminId,
+      //   description:
+      //     "Seller rejected the order due to unavailability of item or other reasons. Refund process initiated.",
+      // };
       // await addDoc(collection(db, `order/${id}/logs`), logData);
       updateData({ id, status: newStatus });
       setLoading(false);
@@ -251,14 +251,14 @@ export default function NewOrder() {
         });
       }
       // Add a new log entry to the logs collection
-      const logData = {
-        name: "Store",
-        status: newStatus,
-        updated_at: new Date().toISOString(),
-        updated_by: AdminId,
-        tokens: tokens,
-        description: `Order #${order_id}  has been successfully delivered! We hope you’re happy with your purchase. If you need any assistance, feel free to contact us. We’d love to hear your feedback – please take a moment to rate our service and help us improve! ${"https://play.google.com/store/apps/details?id=com.hexabird.stsm&hl=en"}`,
-      };
+      // const logData = {
+      //   name: "Store",
+      //   status: newStatus,
+      //   updated_at: new Date().toISOString(),
+      //   updated_by: AdminId,
+      //   tokens: tokens,
+      //   description: `Order #${order_id}  has been successfully delivered! We hope you’re happy with your purchase. If you need any assistance, feel free to contact us. We’d love to hear your feedback – please take a moment to rate our service and help us improve! ${"https://play.google.com/store/apps/details?id=com.hexabird.stsm&hl=en"}`,
+      // };
       // await addDoc(collection(db, `order/${id}/logs`), logData);
       updateData({ id, status: newStatus, assign_to: "" });
       setLoading(false);
@@ -272,14 +272,14 @@ export default function NewOrder() {
     setLoading(true);
     try {
       const newStatus = "PROCESSING";
-      const logData = {
-        name: "Store",
-        status: newStatus,
-        updated_at: new Date().toISOString(),
-        updated_by: AdminId,
-        tokens: customertoken,
-        description: `Order #${order_id} is sent for packaging. We’re working to ensure it’s carefully prepared for delivery.`,
-      };
+      // const logData = {
+      //   name: "Store",
+      //   status: newStatus,
+      //   updated_at: new Date().toISOString(),
+      //   updated_by: AdminId,
+      //   tokens: customertoken,
+      //   description: `Order #${order_id} is sent for packaging. We’re working to ensure it’s carefully prepared for delivery.`,
+      // };
       // await addDoc(collection(db, `order/${id}/logs`), logData);
       updateData({ id, status: newStatus });
       await updateDoc(doc(db, "order", id), {
@@ -523,14 +523,14 @@ export default function NewOrder() {
               : selectedDeliveryManId,
         });
 
-        const logData = {
-          name: "Store",
-          status: newStatus,
-          updated_at: new Date().toISOString(),
-          updated_by: AdminId,
-          description: `Great news! order #${order_id} now being packed and out for delivery and should arrive soon.
-         Your delivery person, ${selecteddeliveryData[0].basic_info.name}, is on their way and can be reached at ${selecteddeliveryData[0].basic_info.phone_no} if you have any questions or need to provide additional instructions. Stay tuned for further updates!`,
-        };
+        // const logData = {
+        //   name: "Store",
+        //   status: newStatus,
+        //   updated_at: new Date().toISOString(),
+        //   updated_by: AdminId,
+        //   description: `Great news! order #${order_id} now being packed and out for delivery and should arrive soon.
+        //  Your delivery person, ${selecteddeliveryData[0].basic_info.name}, is on their way and can be reached at ${selecteddeliveryData[0].basic_info.phone_no} if you have any questions or need to provide additional instructions. Stay tuned for further updates!`,
+        // };
         // await addDoc(collection(db, `order/${id}/logs`), logData);
         console.log("object");
         setLoading(false);
