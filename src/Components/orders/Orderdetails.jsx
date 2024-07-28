@@ -41,6 +41,8 @@ export default function NewOrder() {
   const [selectedDeliveryManId, setSelectedDeliveryManId] = useState(null);
   const [customSelectDeliveryManId, setCustomSelectDeliveryManId] = useState(null);
   const [isDeliverymanPopup, setIssDeliverymanPopup] = useState(false);
+  const [rejectResionPopup, setRejectResionPopup] = useState(false);
+  const [rejectResion, setRejectResion] = useState("");
   const { customer } = useCustomerContext();
   const [customertoken, setCustomertoken] = useState(null);
   const { productData } = useProductsContext();
@@ -185,17 +187,9 @@ export default function NewOrder() {
       const newStatus = "REJECTED";
       await updateDoc(doc(db, "order", id), {
         status: newStatus,
+        rejected_reason: rejectResion,
       });
-      // Add a new log entry to the logs collection
-      const logData = {
-        name: "Admin",
-        status: newStatus,
-        updated_at: new Date().toISOString(),
-        updated_by: AdminId,
-        description:
-          "Seller rejected the order due to unavailability of item or other reasons. Refund process initiated.",
-      };
-      // await addDoc(collection(db, `order/${id}/logs`), logData);
+
       updateData({ id, status: newStatus });
       setLoading(false);
     } catch (error) {
@@ -524,7 +518,7 @@ export default function NewOrder() {
   }
   return (
     <div className="overflow-hidden">
-      {isDeliverymanPopup && <div className="bg_black_overlay"></div>}
+      {(isDeliverymanPopup || rejectResionPopup) && <div className="bg_black_overlay"></div>}
 
       {filterData.map((item, index) => {
         return (
@@ -540,6 +534,8 @@ export default function NewOrder() {
                       ? "fs-sm fw-400 red mb-0 new_order"
                       : item.status.toString().toLowerCase() === "confirmed"
                       ? "fs-sm fw-400 mb-0 processing_skyblue"
+                      : item.status.toString().toLowerCase() === "rejected"
+                      ? "fs-sm fw-400 mb-0 new_order red"
                       : item.status.toString().toLowerCase() === "delivered"
                       ? "fs-sm fw-400 mb-0 green stock_bg"
                       : "fs-sm fw-400 mb-0 black processing_skyblue"
@@ -607,12 +603,30 @@ export default function NewOrder() {
                   </div>
                 </div>
               )}
+              {rejectResionPopup && (
+                <div className="reject_reason_popup">
+                  <p> Why are you rejecting this order ?</p>
+                  <textarea
+                    onChange={(e) => setRejectResion(e.target.value)}
+                    placeholder="type something ..."></textarea>
+                  <div className="d-flex align-items-center justify-content-evenly gap-4 mt-3">
+                    <button
+                      onClick={() => setRejectResionPopup(false)}
+                      className="reject_cancel_btn">
+                      Cancel
+                    </button>
+                    <button onClick={() => handleRejectOrder(item.id)} className="proceed_btn">
+                      Proceed
+                    </button>
+                  </div>
+                </div>
+              )}
               {item.status === "NEW" ? (
                 <div className="d-flex align-items-center">
                   <div className="d-flex align-itmes-center gap-3">
                     <button className="reset_border">
                       <button
-                        onClick={() => handleRejectOrder(item.id)}
+                        onClick={() => setRejectResionPopup(true)}
                         className="fs-sm reset_btn  border-0 fw-400">
                         Reject Order
                       </button>

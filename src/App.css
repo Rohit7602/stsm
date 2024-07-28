@@ -2617,6 +2617,40 @@ input[type="number"]::-webkit-outer-spin-button {
   width: 400px;
   border-radius: 20px;
 }
+.reject_reason_popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 500px;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  z-index: 3;
+  padding: 20px;
+  border-radius: 12px;
+}
+.reject_reason_popup textarea {
+  width: 100%;
+  height: 130px;
+  resize: none;
+  outline: none;
+  border: 1px solid rgb(161, 160, 160);
+  padding: 5px 10px;
+}
+
+.proceed_btn {
+  background-color: var(--color-brown);
+  border: 0;
+  height: 35px;
+  width: 100px;
+  border-radius: 5px;
+}
+.reject_cancel_btn {
+  border: 1px solid black;
+  height: 35px;
+  width: 100px;
+  border-radius: 5px;
+  background-color: transparent;
+}
 /* ===========Medgitia-query========== */
 @media (max-width: 1400px) {
   .mx_xxl_580 {
