@@ -191,6 +191,7 @@ export default function NewOrder() {
       });
 
       updateData({ id, status: newStatus });
+      setRejectResionPopup(false);
       setLoading(false);
     } catch (error) {
       console.log(error);
