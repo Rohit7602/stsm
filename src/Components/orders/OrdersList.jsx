@@ -406,14 +406,17 @@ const OrderList = () => {
                                 <input
                                   type="checkbox"
                                   value={orderTableData.id}
-                                  checked={selectAll.includes(orderTableData.id)}
+                                  checked={selectAll.includes(
+                                    orderTableData.id
+                                  )}
                                   onChange={handleSelect}
                                 />
                                 <span className="checkmark"></span>
                               </label>
                               <Link
                                 className="fw-400 fs-sm color_blue ms-2"
-                                to={`orderdetails/${orderTableData.order_id}`}>
+                                to={`orderdetails/${orderTableData.order_id}`}
+                              >
                                 # {orderTableData.order_id}
                               </Link>
                             </span>
@@ -421,8 +424,13 @@ const OrderList = () => {
                           <td className="p-2 mw-200">
                             {orderTableData.invoiceNumber !== undefined && (
                               <button
-                                onClick={() => handleBillNumberClick(orderTableData.invoiceNumber)}
-                                className="border-0 bg-white">
+                                onClick={() =>
+                                  handleBillNumberClick(
+                                    orderTableData.invoiceNumber
+                                  )
+                                }
+                                className="border-0 bg-white"
+                              >
                                 <ReactToPrint
                                   trigger={() => {
                                     return (
@@ -438,7 +446,9 @@ const OrderList = () => {
                               </button>
                             )}
                             {orderTableData.invoiceNumber === undefined && (
-                              <h3 className="fs-xs fw-400 color_blue mb-0">#N/A</h3>
+                              <h3 className="fs-xs fw-400 color_blue mb-0">
+                                #N/A
+                              </h3>
                             )}
                           </td>
                           <td className="p-3 mw-200">
@@ -449,10 +459,11 @@ const OrderList = () => {
                           <td className="p-3 mw-200">
                             <Link
                               to={
-                                orderTableData.order_created_by === 'Van'
-                                  ? ''
+                                orderTableData.order_created_by === "Van"
+                                  ? ""
                                   : `/customer/viewcustomerdetails/${orderTableData.uid}`
-                              }>
+                              }
+                            >
                               <h3 className="fs-sm fw-400 color_blue mb-0">
                                 {orderTableData.customer.name}
                               </h3>
@@ -461,31 +472,42 @@ const OrderList = () => {
                           <td className="p-3 mw_160">
                             <h3
                               className={`fs-sm fw-400 mb-0 d-inline-block ${
-                                orderTableData.transaction.status.toString().toLowerCase() ===
-                                'paid'
-                                  ? 'black stock_bg'
-                                  : orderTableData.transaction.status.toString().toLowerCase() ===
-                                    'cod'
-                                  ? 'black cancel_gray'
-                                  : orderTableData.transaction.status.toString().toLowerCase() ===
-                                    'refund'
-                                  ? 'new_order red'
-                                  : 'color_brown on_credit_bg'
-                              }`}>
+                                orderTableData.transaction.status
+                                  .toString()
+                                  .toLowerCase() === "paid"
+                                  ? "black stock_bg"
+                                  : orderTableData.transaction.status
+                                      .toString()
+                                      .toLowerCase() === "cod"
+                                  ? "black cancel_gray"
+                                  : orderTableData.transaction.status
+                                      .toString()
+                                      .toLowerCase() === "refund"
+                                  ? "new_order red"
+                                  : "color_brown on_credit_bg"
+                              }`}
+                            >
                               {orderTableData.transaction.status}
                             </h3>
                           </td>
-                          <td className="p-3 mw_160">
+                          <td className="p-3 mw_190">
                             <p
                               className={`d-inline-block ${
-                                orderTableData.status.toString().toLowerCase() === 'new'
-                                  ? 'fs-sm fw-400 red mb-0 new_order'
-                                  : orderTableData.status.toString().toLowerCase() === 'processing'
-                                  ? 'fs-sm fw-400 mb-0 processing_skyblue'
-                                  : orderTableData.status.toString().toLowerCase() === 'delivered'
-                                  ? 'fs-sm fw-400 mb-0 green stock_bg'
-                                  : 'fs-sm fw-400 mb-0 black cancel_gray'
-                              }`}>
+                                orderTableData.status
+                                  .toString()
+                                  .toLowerCase() === "new"
+                                  ? "fs-sm fw-400 red mb-0 new_order"
+                                  : orderTableData.status
+                                      .toString()
+                                      .toLowerCase() === "processing"
+                                  ? "fs-sm fw-400 mb-0 processing_skyblue"
+                                  : orderTableData.status
+                                      .toString()
+                                      .toLowerCase() === "delivered"
+                                  ? "fs-sm fw-400 mb-0 green stock_bg"
+                                  : "fs-sm fw-400 mb-0 black cancel_gray"
+                              }`}
+                            >
                               {orderTableData.status}
                             </p>
                           </td>
@@ -506,18 +528,24 @@ const OrderList = () => {
                                 type="button"
                                 id="dropdownMenuButton3"
                                 data-bs-toggle="dropdown"
-                                aria-expanded="false">
+                                aria-expanded="false"
+                              >
                                 <img src={dropdownDots} alt="dropdownDots" />
                               </button>
                               <ul
                                 class="dropdown-menu categories_dropdown"
-                                aria-labelledby="dropdownMenuButton3">
+                                aria-labelledby="dropdownMenuButton3"
+                              >
                                 <li>
                                   <div class="dropdown-item" href="#">
                                     <div className="d-flex align-items-center categorie_dropdown_options">
                                       <img src={eye_icon} alt="" />
-                                      <Link to={`orderdetails/${orderTableData.order_id}`}>
-                                        <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
+                                      <Link
+                                        to={`orderdetails/${orderTableData.order_id}`}
+                                      >
+                                        <p className="fs-sm fw-400 black mb-0 ms-2">
+                                          View Details
+                                        </p>
                                       </Link>
                                     </div>
                                   </div>

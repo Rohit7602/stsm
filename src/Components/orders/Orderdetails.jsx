@@ -168,7 +168,7 @@ export default function NewOrder() {
         description: `order #${order_id} has been confirmed! we will notify you once it's on its way."`,
       };
 
-      await addDoc(collection(db, `order/${id}/logs`), logData);
+      // await addDoc(collection(db, `order/${id}/logs`), logData);
 
       // const AssignDeliver = {
       //   name: "Admin",
@@ -213,7 +213,7 @@ export default function NewOrder() {
         description:
           "Seller rejected the order due to unavailability of item or other reasons. Refund process initiated.",
       };
-      await addDoc(collection(db, `order/${id}/logs`), logData);
+      // await addDoc(collection(db, `order/${id}/logs`), logData);
       updateData({ id, status: newStatus });
       setLoading(false);
     } catch (error) {
@@ -259,7 +259,7 @@ export default function NewOrder() {
         tokens: tokens,
         description: `Order #${order_id}  has been successfully delivered! We hope you’re happy with your purchase. If you need any assistance, feel free to contact us. We’d love to hear your feedback – please take a moment to rate our service and help us improve! ${"https://play.google.com/store/apps/details?id=com.hexabird.stsm&hl=en"}`,
       };
-      await addDoc(collection(db, `order/${id}/logs`), logData);
+      // await addDoc(collection(db, `order/${id}/logs`), logData);
       updateData({ id, status: newStatus, assign_to: "" });
       setLoading(false);
     } catch (error) {
@@ -280,7 +280,7 @@ export default function NewOrder() {
         tokens: customertoken,
         description: `Order #${order_id} is sent for packaging. We’re working to ensure it’s carefully prepared for delivery.`,
       };
-      await addDoc(collection(db, `order/${id}/logs`), logData);
+      // await addDoc(collection(db, `order/${id}/logs`), logData);
       updateData({ id, status: newStatus });
       await updateDoc(doc(db, "order", id), {
         status: newStatus,
@@ -531,7 +531,7 @@ export default function NewOrder() {
           description: `Great news! order #${order_id} now being packed and out for delivery and should arrive soon.
          Your delivery person, ${selecteddeliveryData[0].basic_info.name}, is on their way and can be reached at ${selecteddeliveryData[0].basic_info.phone_no} if you have any questions or need to provide additional instructions. Stay tuned for further updates!`,
         };
-        await addDoc(collection(db, `order/${id}/logs`), logData);
+        // await addDoc(collection(db, `order/${id}/logs`), logData);
         console.log("object");
         setLoading(false);
       } catch (error) {
