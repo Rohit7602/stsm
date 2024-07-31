@@ -140,7 +140,7 @@ function DashbordCards() {
             <div className="d-flex">
               <h1 className="fs-400   black fs-lg">Dashboard</h1>
             </div>
-            <button className="export_btn  white fs-xxs px-3 py-2 fw-400 border-0">Export</button>
+            {/* <button className="export_btn  white fs-xxs px-3 py-2 fw-400 border-0">Export</button> */}
           </div>
           <div className="row justify-content-star  mt-3">
             <div className="col-xl col-lg-4 col-md-6 mr-3  ">

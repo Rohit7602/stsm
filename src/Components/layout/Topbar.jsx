@@ -1,7 +1,12 @@
 import React from 'react';
 import SearchIcon from '../../Images/svgs/search.svg';
+import { useNotification } from '../../context/NotificationContext';
 
 export default function Topbar({ setOpen, open }) {
+
+  const { ToggleNotification, currentNotifications, CheckNotification } =
+    useNotification();
+
   return (
     <nav className="top_bar  bg-white py-2 position-sticky">
       <div className="d-flex align-items-center  justify-content-between px-3 bg-white py-2">
@@ -13,7 +18,8 @@ export default function Topbar({ setOpen, open }) {
             height="24"
             viewBox="0 0 24 24"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg">
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
               fill-rule="evenodd"
               clip-rule="evenodd"
@@ -21,19 +27,33 @@ export default function Topbar({ setOpen, open }) {
               fill="black"
             />
           </svg>
-
         </div>
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M5 18H19V11.031C19 7.148 15.866 4 12 4C8.134 4 5 7.148 5 11.031V18ZM12 2C16.97 2 21 6.043 21 11.031V20H3V11.031C3 6.043 7.03 2 12 2ZM9.5 21H14.5C14.5 21.663 14.2366 22.2989 13.7678 22.7678C13.2989 23.2366 12.663 23.5 12 23.5C11.337 23.5 10.7011 23.2366 10.2322 22.7678C9.76339 22.2989 9.5 21.663 9.5 21Z"
-            fill="black"
-          />
-        </svg>
+        <div className=" pe-3">
+          <button
+            className=" border-0 bg-white position-relative"
+            onClick={() => (ToggleNotification(), CheckNotification())}
+          >
+            {
+              currentNotifications.length > 0?  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              {currentNotifications.length >= 99
+                ? `${currentNotifications.length}+`
+                : currentNotifications.length}
+            </span>:null
+          }
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 18H19V11.031C19 7.148 15.866 4 12 4C8.134 4 5 7.148 5 11.031V18ZM12 2C16.97 2 21 6.043 21 11.031V20H3V11.031C3 6.043 7.03 2 12 2ZM9.5 21H14.5C14.5 21.663 14.2366 22.2989 13.7678 22.7678C13.2989 23.2366 12.663 23.5 12 23.5C11.337 23.5 10.7011 23.2366 10.2322 22.7678C9.76339 22.2989 9.5 21.663 9.5 21Z"
+                fill="black"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
     </nav>
   );

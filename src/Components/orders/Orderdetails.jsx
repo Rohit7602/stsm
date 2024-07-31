@@ -11,6 +11,7 @@ import orderReject from "../../Images/svgs/order-reject.svg";
 import whitesaveicon from "../../Images/svgs/white_saveicon.svg";
 import orderCanceled from "../../Images/svgs/order_Canceled.svg";
 import CloseIcon from "../../Images/svgs/closeicon.svg";
+import proccesing from "../../Images/svgs/proccesing.svg";
 import profile from "../../Images/Png/customer_profile.png";
 import manimage from "../../Images/Png/manimage.jpg";
 import { Col, Row } from "react-bootstrap";
@@ -45,6 +46,7 @@ export default function NewOrder() {
   const { DeliveryManData } = UseDeliveryManContext();
   const { orders, updateData } = useOrdercontext();
   const [filterData, setfilterData] = useState([]);
+  const [orderid, setOrderid] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedDeliveryManId, setSelectedDeliveryManId] = useState(null);
   const [customSelectDeliveryManId, setCustomSelectDeliveryManId] =
@@ -59,14 +61,16 @@ export default function NewOrder() {
       let filtercustomerid = customer.filter(
         (value) => value.uid === filterData[0].uid
       );
-
-      setCustomertoken(filtercustomerid[0].devices_token);
+      setCustomertoken(filtercustomerid[0]?.devices_token);
     }
   }, [filterData]);
 
   useEffect(() => {
-    const orderData = orders.filter((item) => item.order_id === id);
-    setfilterData(orderData);
+    if (orders.length !== 0) {
+      const orderData = orders.filter((item) => item.order_id === id);
+      setOrderid(orderData[0].id);
+      setfilterData(orderData);
+    }
   }, [orders, id]);
 
   const [logs, setLogs] = useState([]);
@@ -86,6 +90,19 @@ export default function NewOrder() {
       fetchLogs();
     }
   }, [id, orders]);
+console.log(logs)
+  // useEffect(() => {
+  //   async function getlogs() {
+  //     try {
+  //       const getlogs = query(collection(db, `order/${orderid}`));
+  //       const querySnapshot = await getDocs(getlogs);
+  //       console.log(querySnapshot);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  //   getlogs();
+  // }, [id]);
 
   // let DocumentId  = filterData[0].id
   if (!id || filterData.length === 0) {
@@ -560,7 +577,7 @@ export default function NewOrder() {
         return (
           <img
             className="bg-white"
-            src={orderDeliveryAssign}
+            src={proccesing}
             alt="orderDeliveryAssign"
           />
         );
@@ -931,6 +948,7 @@ export default function NewOrder() {
                           <p className="fs-xxs fw-400 black mb-0">By: {log.data.by}</p>
                         </div>
                       </div> */}
+
                           <div className="d-flex align-items-start">
                             {renderLogIcon(log.data.status)}
                             <div className="ps-2 ms-1">
