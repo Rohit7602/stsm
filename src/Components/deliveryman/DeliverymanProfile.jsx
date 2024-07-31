@@ -228,30 +228,47 @@ const DeliverymanProfile = () => {
       });
       setAddMoreArea(allAreas);
     }
+    // let ordersCount = 0;
+    // orders.forEach((order) => {
+    //   if (order.assign_to === DeliveryManId[0].id) {
+    //     ordersCount++;
+    //   }
+    // });
+    // setTotalOrders(ordersCount);
+
+    // let todayordersCount = 0;
+    // orders.forEach((order) => {
+    //   if (order.assign_to === DeliveryManId[0].id) {
+    //     todayordersCount++;
+    //   }
+    //   const dateToCompare = new Date(order.transaction.date);
+    //   const currentDate = new Date();
+    //   if (dateToCompare.getTime() === currentDate.getTime()) {
+    //    todayordersCount++;
+    //   }
+    // });
+    // setTotalDailyOrders(todayordersCount);
+
     let ordersCount = 0;
+    let todayordersCount = 0;
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
     orders.forEach((order) => {
       if (order.assign_to === DeliveryManId[0].id) {
         ordersCount++;
+
+        const dateToCompare = new Date(order.transaction.date);
+        dateToCompare.setHours(0, 0, 0, 0);
+
+        if (dateToCompare.getTime() === currentDate.getTime()) {
+          todayordersCount++;
+        }
       }
     });
+
     setTotalOrders(ordersCount);
-
-
-
-    let todayordersCount = 0;
-    orders.forEach((order) => {
-      if (order.assign_to === DeliveryManId[0].id) {
-        todayordersCount++;
-      }
-      const dateToCompare = new Date(order.transaction.date);
-      const currentDate = new Date();
-      if (dateToCompare.getTime() === currentDate.getTime()) {
-       todayordersCount++;
-      }
-    });
     setTotalDailyOrders(todayordersCount);
-
-
 
     let onSiteOrdersCount = 0;
     orders.forEach((order) => {
@@ -844,10 +861,10 @@ const DeliverymanProfile = () => {
                 <p className="fs-sm fw-400 black m-0">Total Delivery</p>
                 <p className="fs_24 fw_600 red m-0 mt-2">{totalOrders}</p>
               </div>
-              <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
+              {/* <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
                 <p className="fs-sm fw-400 black m-0">On Site Orders</p>
                 <p className="fs_24 fw_600 black m-0 mt-2">{onSiteOrders}</p>
-              </div>
+              </div> */}
             </div>
             <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_green">
               <p className="fs-sm fw-400 black m-0">Wallet Balance</p>

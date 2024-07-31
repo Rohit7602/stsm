@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import loginSideimg from "../../Images/Png/login-side-img.png";
 import openEye from "../../Images/svgs/eye-open-icon.svg";
 import colseEye from "../../Images/svgs/eye-close-icon.svg";
@@ -48,6 +48,8 @@ export default function Login(props) {
       });
     }
   };
+
+
 
   if (loading) {
     return <Loader></Loader>

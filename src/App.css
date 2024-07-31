@@ -1092,6 +1092,13 @@ delivery_man_dropdown::-webkit-scrollbar {
   border: 0.5px solid #00000033;
 }
 
+.proccesing_icon{
+  height: 44px;
+  width: 44px;
+  background-color: #FFAE001A;
+  border-radius: 50%;
+}
+
 .mw_300 {
   max-width: 300px;
   width: 300px;

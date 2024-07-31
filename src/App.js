@@ -39,8 +39,10 @@ import InvoiceBill from "./Components/invoices/InvoiceBill";
 import Chats from "./Components/communications/Chats";
 import Complains from "./Components/communications/Complains";
 import ComplainDetails from "./Components/communications/ComplainDetails";
-import firebase from "./firebase";
+import { firebase, db } from "./firebase";
 import Notification from "./Components/layout/Notification";
+import { getDocs, collection, query } from "firebase/firestore";
+
 function App() {
   const { logoutUser } = useUserAuth();
   const [user, setUser] = useState(null);
@@ -60,6 +62,25 @@ function App() {
         setloading(false);
       });
     };
+  }, []);
+
+  useEffect(() => {
+    const admain_id = async () => {
+      try {
+        const getadmainid = query(collection(db, "User"));
+        const querySnapshot = await getDocs(getadmainid);
+        querySnapshot.forEach((doc) => {
+          const admainid = doc.id;
+          if (admainid) {
+            localStorage.setItem("isAdminId", admainid);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    admain_id();
   }, []);
 
   // Check if '/orders/orderdetails/' is one of the segments

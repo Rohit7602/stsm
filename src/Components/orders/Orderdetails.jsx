@@ -41,7 +41,6 @@ export default function NewOrder() {
   // console.log("user data ", userData)
   let AdminId = userData.uuid;
   // console.log("Asmin ", AdminId)
-
   const { id } = useParams();
   const { DeliveryManData } = UseDeliveryManContext();
   const { orders, updateData } = useOrdercontext();
@@ -49,13 +48,12 @@ export default function NewOrder() {
   const [orderid, setOrderid] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedDeliveryManId, setSelectedDeliveryManId] = useState(null);
-  const [customSelectDeliveryManId, setCustomSelectDeliveryManId] =
-    useState(null);
+  const [customSelectDeliveryManId, setCustomSelectDeliveryManId] = useState(null);
   const [isDeliverymanPopup, setIssDeliverymanPopup] = useState(false);
   const { customer } = useCustomerContext();
   const [customertoken, setCustomertoken] = useState(null);
   const { productData } = useProductsContext();
-
+  const adminId = localStorage.getItem("isAdminId");
   useEffect(() => {
     if (filterData.length === 1) {
       let filtercustomerid = customer.filter(
@@ -88,23 +86,10 @@ export default function NewOrder() {
         setLogs(logsData);
       };
       fetchLogs();
+      // console.log("message===============================")
     }
-  }, [id, orders]);
-console.log(logs)
-  // useEffect(() => {
-  //   async function getlogs() {
-  //     try {
-  //       const getlogs = query(collection(db, `order/${orderid}`));
-  //       const querySnapshot = await getDocs(getlogs);
-  //       console.log(querySnapshot);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-  //   getlogs();
-  // }, [id]);
+  }, [id, orders, setLogs]);
 
-  // let DocumentId  = filterData[0].id
   if (!id || filterData.length === 0) {
     return <Loader> </Loader>;
   }
@@ -239,10 +224,10 @@ console.log(logs)
     }
   };
 
-  async function handleMarkAsDelivered(id, order_id) {
+  async function handleMarkAsDelivered(id) {
     setLoading(true);
     try {
-      const usetoken = doc(db, "User", "ti5NJbZ865UFK6iNb431iiHqCox1");
+      const usetoken = doc(db, "User", adminId);
       const Getusertoken = await getDoc(usetoken);
       const usertoken = Getusertoken.data();
       // console.log("Getusertoken", usertoken.token);
@@ -575,11 +560,9 @@ console.log(logs)
         );
       case "PROCESSING":
         return (
-          <img
-            className="bg-white"
-            src={proccesing}
-            alt="orderDeliveryAssign"
-          />
+          <div className="proccesing_icon d-flex align-items-center justify-content-center">
+            <img src={proccesing} alt="orderDeliveryAssign" />
+          </div>
         );
 
       case "OUT_FOR_DELIVERY":
@@ -933,8 +916,8 @@ console.log(logs)
                     {logs
                       .sort(
                         (a, b) =>
-                          new Date(a.data.updated_at) -
-                          new Date(b.data.updated_at)
+                          new Date(a.data.updated_at.toDate()) -
+                          new Date(b.data.updated_at.toDate())
                       )
                       .map((log, index) => (
                         <div
@@ -970,7 +953,7 @@ console.log(logs)
                           </div>
                           <div>
                             <p className="fs-xs fw-400 black mb-0 text-nowrap ps-3">
-                              {formatDate(log.data.updated_at)}
+                              {formatDate(log.data.updated_at.toDate())}
                             </p>
                           </div>
                         </div>

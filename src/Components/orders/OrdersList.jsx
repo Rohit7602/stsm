@@ -232,9 +232,9 @@ const OrderList = () => {
         width: 20,
       },
       {
-        header: "items",
+        header: "Items",
         key: "items",
-        width: 50,
+        width: 30,
       },
       {
         header: "Address",
@@ -270,10 +270,7 @@ const OrderList = () => {
         Customer: order.customer.name,
         PaymentStatus: order.transaction.status,
         OrderStatus: order.status,
-        items: {
-          itemsize: order.items.map((v) => v.size),
-          itemtitle: order.items.map((v) => v.title),
-        },
+        items: order.items.map((v) => `${v.title} - ${v.size}`).join(","),
         OrderPrice: order.order_price,
         Address: order.shipping.address,
         phoneNo: order.customer.phone,

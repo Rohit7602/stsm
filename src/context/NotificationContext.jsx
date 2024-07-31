@@ -61,22 +61,25 @@ const NotificationProvider = ({ children }) => {
       alert("Failed to send notification");
     }
   };
+  const adminId = localStorage.getItem("isAdminId");
+
   const fetchNotifications = async () => {
   
-    try {
-      const q = query(
-        collection(db, "Notifications"),
-        where("read", "==", false).where("receiverId"==="")
-      );
-      const querySnapshot = await getDocs(q);
-      const notificationsArray = [];
-      querySnapshot.forEach((doc) => {
-        notificationsArray.push({ id: doc.id, ...doc.data() });
-      });
-      setCurrentNotifications(notificationsArray);
-    } catch (error) {
-      console.log(error);
-    }
+   try {
+     const q = query(
+       collection(db, "Notifications"),
+       where("read", "==", false),
+       where("receiverId", "==", adminId)
+     );
+     const querySnapshot = await getDocs(q);
+     const notificationsArray = [];
+     querySnapshot.forEach((doc) => {
+       notificationsArray.push({ id: doc.id, ...doc.data() });
+     });
+     setCurrentNotifications(notificationsArray);
+   } catch (error) {
+     console.log(error);
+   }
   };
   useEffect(() => {
     fetchNotifications();
