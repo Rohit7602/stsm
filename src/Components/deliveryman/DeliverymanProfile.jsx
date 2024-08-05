@@ -373,6 +373,7 @@ const DeliverymanProfile = () => {
     await updateDoc(washingtonRef, {
       wallet: 0,
     });
+    setShowpop(!showpop);
     setLoading(false);
   }
 
@@ -395,7 +396,7 @@ const DeliverymanProfile = () => {
               </h2>
               <button
                 className=" border-0 bg-white"
-                onClick={() => setShowpop(showpop ? false : true)}
+                onClick={() => setShowpop(!showpop)}
               >
                 {" "}
                 <CrossIcons />
@@ -908,7 +909,7 @@ const DeliverymanProfile = () => {
               <p className="fs-sm fw-400 black m-0">Wallet Balance</p>
               <p className="fs_24 fw_600 green m-0 mt-2">₹ {wallet}</p>
               <button
-                onClick={() => setShowpop(showpop ? false : true)}
+                onClick={() => setShowpop(!showpop)}
                 className="fs_sm fw_600 color_blue m-0 mt-2 bg-transparent border-0"
               >
                 Collect
