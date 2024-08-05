@@ -11,6 +11,7 @@ import orderReject from "../../Images/svgs/order-reject.svg";
 import whitesaveicon from "../../Images/svgs/white_saveicon.svg";
 import orderCanceled from "../../Images/svgs/order_Canceled.svg";
 import CloseIcon from "../../Images/svgs/closeicon.svg";
+import proccesing from "../../Images/svgs/proccesing.svg";
 import profile from "../../Images/Png/customer_profile.png";
 import manimage from "../../Images/Png/manimage.jpg";
 import { Col, Row } from "react-bootstrap";
@@ -27,11 +28,21 @@ import {
   query,
   getDoc,
 } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  getDocs,
+  addDoc,
+  collection,
+  query,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 import { useState, useEffect } from "react";
-
 import { useUserAuth } from "../../context/Authcontext";
 import Loader from "../Loader";
+import { useCustomerContext } from "../../context/Customergetters";
+import { useProductsContext } from "../../context/productgetter";
 
 export default function NewOrder() {
   const componentRef = useRef();
@@ -39,20 +50,35 @@ export default function NewOrder() {
   // console.log("user data ", userData)
   let AdminId = userData.uuid;
   // console.log("Asmin ", AdminId)
-
   const { id } = useParams();
   const { DeliveryManData } = UseDeliveryManContext();
   const { orders, updateData } = useOrdercontext();
   const [filterData, setfilterData] = useState([]);
+  const [orderid, setOrderid] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedDeliveryManId, setSelectedDeliveryManId] = useState(null);
   const [customSelectDeliveryManId, setCustomSelectDeliveryManId] =
     useState(null);
   const [isDeliverymanPopup, setIssDeliverymanPopup] = useState(false);
+  const { customer } = useCustomerContext();
+  const [customertoken, setCustomertoken] = useState(null);
+  const { productData } = useProductsContext();
+  const adminId = localStorage.getItem("isAdminId");
+  useEffect(() => {
+    if (filterData.length === 1) {
+      let filtercustomerid = customer.filter(
+        (value) => value.uid === filterData[0].uid
+      );
+      setCustomertoken(filtercustomerid[0]?.devices_token);
+    }
+  }, [filterData]);
 
   useEffect(() => {
-    const orderData = orders.filter((item) => item.order_id === id);
-    setfilterData(orderData);
+    if (orders.length !== 0) {
+      const orderData = orders.filter((item) => item.order_id === id);
+      setOrderid(orderData[0].id);
+      setfilterData(orderData);
+    }
   }, [orders, id]);
 
   const [logs, setLogs] = useState([]);
@@ -70,10 +96,11 @@ export default function NewOrder() {
         setLogs(logsData);
       };
       fetchLogs();
+
+      // console.log("message=====================")
     }
   }, [id, orders]);
 
-  // let DocumentId  = filterData[0].id
   if (!id || filterData.length === 0) {
     return <Loader> </Loader>;
   }
@@ -129,8 +156,161 @@ export default function NewOrder() {
     const orderDocRef = doc(db, "order", id);
     const orderDoc = await getDoc(orderDocRef);
     const orderData = orderDoc.data();
+    try {
+      const invoiceNumber = await getInvoiceNo();
+      const newStatus = "CONFIRMED";
+      if (!orderData.hasOwnProperty("invoiceNumber")) {
+        await updateDoc(orderDocRef, {
+          status: newStatus,
+          invoiceNumber: invoiceNumber,
+        });
+      } else {
+        await updateDoc(orderDocRef, {
+          status: newStatus,
+        });
+        setLoading(false);
+      }
+
+      // Add a new log entry to the logs collection
+      // const logData = {
+      //   name: "Admin",
+      //   status: newStatus,
+      //   updated_at: new Date().toISOString(),
+      //   updated_by: AdminId,
+      //   tokens: customertoken,
+      //   description: `order #${order_id} has been confirmed! we will notify you once it's on its way."`,
+      // };
+
+      // await addDoc(collection(db, `order/${id}/logs`), logData);
+
+      // const AssignDeliver = {
+      //   name: "Admin",
+      //   status: "PROCESSING",
+      //   updated_at: new Date().toISOString(),
+      //   updated_by: AdminId,
+      //   description:
+      //     "Order assigned to the delivery partner for shipment. Preparing for dispatch.",
+      // };
+      // await addDoc(collection(db, `order/${id}/logs`), AssignDeliver);
+      // updateData({
+      //   id,
+      //   status: newStatus,
+      //   invoiceNumber: invoiceNumber,
+      //   assign_to:
+      //     deliverymenWithArea.length !== 0
+      //       ? autoSelectedDeliveryManId
+      //       : selectedDeliveryManId,
+      // });
+
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
+  const handleRejectOrder = async (id) => {
+    setLoading(true);
+    try {
+      // Toggle the status between 'publish' and 'hidden'
+      const newStatus = "REJECTED";
+      await updateDoc(doc(db, "order", id), {
+        status: newStatus,
+      });
+      // Add a new log entry to the logs collection
+      // const logData = {
+      //   name: "Admin",
+      //   status: newStatus,
+      //   updated_at: new Date().toISOString(),
+      //   updated_by: AdminId,
+      //   description:
+      //     "Seller rejected the order due to unavailability of item or other reasons. Refund process initiated.",
+      // };
+      // await addDoc(collection(db, `order/${id}/logs`), logData);
+      updateData({ id, status: newStatus });
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
+  async function handleMarkAsDelivered(id) {
+    setLoading(true);
+    try {
+      const usetoken = doc(db, "User", adminId);
+      const Getusertoken = await getDoc(usetoken);
+      const usertoken = Getusertoken.data();
+      // console.log("Getusertoken", usertoken.token);
+      const tokens = [...customertoken, ...usertoken.token];
+      let transcationmode = filterData[0].transaction.mode;
+      // Toggle the status between 'publish' and 'hidden'
+      let transaction = {
+        date: new Date().toISOString(),
+        mode: "Cash on Delivery",
+        status: "Paid",
+        tx_id: "",
+      };
+      const newStatus = "DELIVERED";
+      if (transcationmode === "Cash on Delivery") {
+        await updateDoc(doc(db, "order", id), {
+          status: newStatus,
+          transaction,
+        });
+      } else {
+        await updateDoc(doc(db, "order", id), {
+          status: newStatus,
+        });
+      }
+      // Add a new log entry to the logs collection
+      // const logData = {
+      //   name: "Store",
+      //   status: newStatus,
+      //   updated_at: new Date().toISOString(),
+      //   updated_by: AdminId,
+      //   tokens: tokens,
+      //   description: `Order #${order_id}  has been successfully delivered! We hope you’re happy with your purchase. If you need any assistance, feel free to contact us. We’d love to hear your feedback – please take a moment to rate our service and help us improve! ${"https://play.google.com/store/apps/details?id=com.hexabird.stsm&hl=en"}`,
+      // };
+      // await addDoc(collection(db, `order/${id}/logs`), logData);
+      updateData({ id, status: newStatus });
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  }
+
+  async function handlePreparedPacking(id, order_id) {
+    setLoading(true);
+    try {
+      const newStatus = "PROCESSING";
+      // const logData = {
+      //   name: "Store",
+      //   status: newStatus,
+      //   updated_at: new Date().toISOString(),
+      //   updated_by: AdminId,
+      //   tokens: customertoken,
+      //   description: `Order #${order_id} is sent for packaging. We’re working to ensure it’s carefully prepared for delivery.`,
+      // };
+      // await addDoc(collection(db, `order/${id}/logs`), logData);
+      updateData({ id, status: newStatus });
+      await updateDoc(doc(db, "order", id), {
+        status: newStatus,
+      });
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  }
+
+  async function handlePreparedDelivery(id, order_id) {
+    setLoading(true);
+    const orderDocRef = doc(db, "order", id);
+    const orderDoc = await getDoc(orderDocRef);
+    const orderData = orderDoc.data();
     let area = orderData.shipping.area.toLowerCase();
-    console.log("Area is ", area);
+    // console.log("Area is ", area);
 
     // Filter the deliverymen whose service areas include the desired area
     const deliverymenWithArea = DeliveryManData.filter(
@@ -153,7 +333,6 @@ export default function NewOrder() {
         const orderData = orderDoc.data();
         const invoiceNumber = await getInvoiceNo();
         let area = orderData.shipping.area.toLowerCase();
-
         // Filter the deliverymen whose service areas include the desired area
         const deliverymenWithArea = DeliveryManData.filter(
           (deliveryman) =>
@@ -176,7 +355,20 @@ export default function NewOrder() {
               orderProductsIds.push(product.product_id)
             )
           );
-          // console.log('ordered p id', orderProductsIds);
+
+          // console.log("ordered p id", orderProductsIds[0]);
+
+          // const productlist = productData.filter((value) => {
+          //   return value.id === orderProductsIds[0];
+          // });
+
+          // const orderQuantity = orders.filter((value) => {
+          //   return value.order_id === order_id
+          // });
+
+          // console.log(orderQuantity, "orderQuantity========");
+          // console.log(productlist[0].totalStock, "productlist");
+
           // Iterate over each deliveryman to fetch their van data
           for (let deliveryman of deliverymenWithArea) {
             const q = query(collection(db, `Delivery/${deliveryman.id}/Van`));
@@ -199,7 +391,6 @@ export default function NewOrder() {
           }
 
           // Find deliveryman with fewest orders
-
           if (deliverymanIds.length > 1) {
             let minOrderCount = Infinity;
             let deliverymanWithFewestOrders = null;
@@ -207,10 +398,7 @@ export default function NewOrder() {
             const ordersCount = {};
             let lowOrder;
             orders.forEach((order) => {
-              if (
-                order.status === "CONFIRMED" &&
-                deliverymanIds.includes(order.assign_to)
-              ) {
+              if (order.status === "CONFIRMED" && deliverymanIds.includes(order.assign_to)) {
                 if (!ordersCount[order.assign_to]) {
                   ordersCount[order.assign_to] = 0;
                 }
@@ -301,11 +489,15 @@ export default function NewOrder() {
             }
           }
         }
-        const newStatus = "CONFIRMED";
+
+        const newStatus = "OUT_FOR_DELIVERY";
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
         if (!orderData.hasOwnProperty("invoiceNumber")) {
           await updateDoc(orderDocRef, {
             status: newStatus,
+            OTP: otp,
             invoiceNumber: invoiceNumber,
+            tokens: customertoken,
             assign_to:
               deliverymenWithArea.length !== 0
                 ? autoSelectedDeliveryManId
@@ -314,6 +506,7 @@ export default function NewOrder() {
         } else {
           await updateDoc(orderDocRef, {
             status: newStatus,
+            OTP: otp,
             assign_to:
               deliverymenWithArea.length !== 0
                 ? autoSelectedDeliveryManId
@@ -328,31 +521,45 @@ export default function NewOrder() {
           status: newStatus,
           updated_at: new Date().toISOString(),
           updated_by: AdminId,
-          description:
-            "Seller confirmed the order. Preparing items for shipment.",
+          description: "Seller confirmed the order. Preparing items for shipment.",
         };
 
         await addDoc(collection(db, `order/${id}/logs`), logData);
 
-        // const AssignDeliver = {
-        //   name: "Admin",
-        //   status: "PROCESSING",
-        //   updated_at: new Date().toISOString(),
-        //   updated_by: AdminId,
-        //   description:
-        //     "Order assigned to the delivery partner for shipment. Preparing for dispatch.",
-        // };
-        // await addDoc(collection(db, `order/${id}/logs`), AssignDeliver);
+        const AssignDeliver = {
+          name: "Admin",
+          status: "PROCESSING",
+          updated_at: new Date().toISOString(),
+          updated_by: AdminId,
+          description:
+            "Order assigned to the delivery partner for shipment. Preparing for dispatch.",
+        };
+        await addDoc(collection(db, `order/${id}/logs`), AssignDeliver);
         updateData({
           id,
           status: newStatus,
+          OTP: otp,
           invoiceNumber: invoiceNumber,
           assign_to:
             deliverymenWithArea.length !== 0
               ? autoSelectedDeliveryManId
               : selectedDeliveryManId,
         });
+        console.log(
+          "messageewe============================= ",
+          autoSelectedDeliveryManId
+        );
+        console.log("message====================", selectedDeliveryManId);
 
+        // const logData = {
+        //   name: "Store",
+        //   status: newStatus,
+        //   updated_at: new Date().toISOString(),
+        //   updated_by: AdminId,
+        //   description: `Great news! order #${order_id} now being packed and out for delivery and should arrive soon.
+        //  Your delivery person, ${selecteddeliveryData[0].basic_info.name}, is on their way and can be reached at ${selecteddeliveryData[0].basic_info.phone_no} if you have any questions or need to provide additional instructions. Stay tuned for further updates!`,
+        // };
+        // await addDoc(collection(db, `order/${id}/logs`), logData);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -419,50 +626,7 @@ export default function NewOrder() {
         status: newStatus,
         updated_at: new Date().toISOString(),
         updated_by: AdminId,
-        description:
-          "Order successfully delivered to the customer at the provided address.",
-      };
-      await addDoc(collection(db, `order/${id}/logs`), logData);
-      updateData({ id, status: newStatus, assign_to: "" });
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  }
-  async function handleSendForPack(id) {
-    setLoading(true);
-    try {
-      let transcationmode = filterData[0].transaction.mode;
-      let customerName = filterData[0].customer.name;
-      // Toggle the status between 'publish' and 'hidden'
-      let transaction = {
-        date: new Date().toISOString(),
-        mode: "Cash on Delivery",
-        status: "Paid",
-        tx_id: "",
-      };
-      const newStatus = "PROCESSING";
-
-      if (transcationmode === "Cash on Delivery") {
-        await updateDoc(doc(db, "order", id), {
-          status: newStatus,
-          transaction,
-        });
-      } else {
-        await updateDoc(doc(db, "order", id), {
-          status: newStatus,
-          assign_to: "",
-        });
-      }
-
-      // Add a new log entry to the logs collection
-      const logData = {
-        name: customerName,
-        status: newStatus,
-        updated_at: new Date().toISOString(),
-        updated_by: AdminId,
-        description: "Order sent dor packing",
+        description: "Order successfully delivered to the customer at the provided address.",
       };
       await addDoc(collection(db, `order/${id}/logs`), logData);
       updateData({ id, status: newStatus, assign_to: "" });
@@ -486,13 +650,7 @@ export default function NewOrder() {
           <img src={orderReject} className="bg-white" alt="orderRejected" />
         );
       case "PROCESSING":
-        return (
-          <img
-            className="bg-white"
-            src={orderDeliveryAssign}
-            alt="orderDeliveryAssign"
-          />
-        );
+        return <img className="bg-white" src={orderDeliveryAssign} alt="orderDeliveryAssign" />;
       case "DELIVERED":
         return (
           <img className="bg-white" src={orderDelevered} alt="orderDelivered" />
@@ -534,8 +692,7 @@ export default function NewOrder() {
                       : item.status.toString().toLowerCase() === "delivered"
                       ? "fs-sm fw-400 mb-0 green stock_bg"
                       : "fs-sm fw-400 mb-0 black status_btn_red"
-                  }`}
-                >
+                  }`}>
                   {item.status}
                 </p>
               </div>
@@ -552,13 +709,14 @@ export default function NewOrder() {
                     </button>
 
                     <button
-                      onClick={() => handleAcceptOrder(item.id)}
+                      onClick={() => handleAcceptOrder(item.id, item.order_id)}
                       className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
                       type="submit"
                     >
                       <img src={saveicon} alt="saveicon" />
                       ACCEPT ORDER
                     </button>
+
                     {isDeliverymanPopup && (
                       <div className="deliveryman_popup_list">
                         <div className="d-flex align-items-center justify-content-between mb-3">
@@ -647,12 +805,39 @@ export default function NewOrder() {
               ) : item.status === "DISPATCHED" ? (
                 <div></div>
               ) : item.status === "CONFIRMED" ? (
+                <div>
+                  <button
+                    onClick={() =>
+                      handlePreparedPacking(item.id, item.order_id, item)
+                    }
+                    className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-3 save_btn fw-400 black"
+                    type="submit"
+                  >
+                    <img src={saveicon} alt="saveicon" />
+                    Prepared For Packing
+                  </button>
+                </div>
+              ) : item.status === "PROCESSING" ? (
+                <div>
+                  <button
+                    onClick={() =>
+                      handlePreparedDelivery(item.id, item.order_id)
+                    }
+                    className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-3 save_btn fw-400 black"
+                    type="submit"
+                  >
+                    <img src={saveicon} alt="saveicon" />
+                    Out for Delivery
+                  </button>
+                </div>
+              ) : item.status === "OUT_FOR_DELIVERY" ? (
                 <div className="d-flex align-items-center">
                   <div className="d-flex align-itmes-center gap-3">
-                    {/* <button
+                    <button
                       onClick={() => handleMarkAsDelivered(item.id)}
                       className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 green_btn fw-400 white"
-                      type="submit">
+                      type="submit"
+                    >
                       <img src={whitesaveicon} alt="whitesaveicon" />
                       Mark as Delivered
                     </button> */}
@@ -821,11 +1006,7 @@ export default function NewOrder() {
                   <p className="fs-2sm fw-400 black mb-0">Order Logs</p>
                   <div className="order_logs_line">
                     {logs
-                      .sort(
-                        (a, b) =>
-                          new Date(a.data.updated_at) -
-                          new Date(b.data.updated_at)
-                      )
+                      .sort((a, b) => new Date(a.data.updated_at) - new Date(b.data.updated_at))
                       .map((log, index) => (
                         <div
                           key={index}
@@ -838,13 +1019,14 @@ export default function NewOrder() {
                           <p className="fs-xxs fw-400 black mb-0">By: {log.data.by}</p>
                         </div>
                       </div> */}
-                          <div className="d-flex align-items-center">
+
+                          <div className="d-flex align-items-start">
                             {renderLogIcon(log.data.status)}
                             <div className="ps-2 ms-1">
                               <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">
                                 {" "}
                                 {log.data.status === "PROCESSING"
-                                  ? "ASSIGN TO DELIVERY "
+                                  ? "PROCESSING"
                                   : log.data.status === "NEW"
                                   ? "ORDER PLACED"
                                   : log.data.status}{" "}
@@ -858,8 +1040,8 @@ export default function NewOrder() {
                             </div>
                           </div>
                           <div>
-                            <p className="fs-xs fw-400 black mb-0">
-                              {formatDate(log.data.updated_at)}
+                            <p className="fs-xs fw-400 black mb-0 text-nowrap ps-3">
+                              {formatDate(log.data.updated_at.toDate())}
                             </p>
                           </div>
                         </div>

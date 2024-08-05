@@ -39,13 +39,19 @@ import InvoiceBill from "./Components/invoices/InvoiceBill";
 import Chats from "./Components/communications/Chats";
 import Complains from "./Components/communications/Complains";
 import ComplainDetails from "./Components/communications/ComplainDetails";
-import firebase from "./firebase";
+import { firebase, db } from "./firebase";
+import Notification from "./Components/layout/Notification";
+import { getDocs, collection, query } from "firebase/firestore";
+import { CrossIcons } from "./Common/Icon";
+import { useNotification } from "./context/NotificationContext";
+
 function App() {
   const { logoutUser } = useUserAuth();
   const [user, setUser] = useState(null);
   const [loading, setloading] = useState(true);
   const location = useLocation();
   const [deletPopup, setDeletPopup] = useState(false);
+  const { showpop, setShowpop } = useNotification();
   useEffect(() => {
     permissionHandler();
     onMessageListener();
@@ -61,12 +67,34 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const admain_id = async () => {
+      try {
+        const getadmainid = query(collection(db, "User"));
+        const querySnapshot = await getDocs(getadmainid);
+        querySnapshot.forEach((doc) => {
+          const admainid = doc.id;
+          if (admainid) {
+            localStorage.setItem("isAdminId", admainid);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    admain_id();
+  }, []);
+
   // Check if '/orders/orderdetails/' is one of the segments
   var pathSegments = location.pathname.split("/");
   // console.log(pathSegments[1]);
 
   // Check if '/orders/orderdetails/' is one of the segments
-  if (pathSegments.includes("orders") && pathSegments.includes("orderdetails")) {
+  if (
+    pathSegments.includes("orders") &&
+    pathSegments.includes("orderdetails")
+  ) {
     document.body.classList.add("overflow_hidden");
   }
 
@@ -109,8 +137,13 @@ function App() {
   }, []);
 
   return (
-    <div>
-      <Logout logout={handleLogout} setDeletPopup={setDeletPopup} deletPopup={deletPopup} />
+    <div className={`${showpop ? " position-fixed w-100" : null} `}>
+     
+      <Logout
+        logout={handleLogout}
+        setDeletPopup={setDeletPopup}
+        deletPopup={deletPopup}
+      />
       {loading ? (
         <div
           style={{
@@ -123,7 +156,8 @@ function App() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-          }}>
+          }}
+        >
           <HashLoader
             color={"#ffae00"}
             loading={loading}
@@ -146,43 +180,77 @@ function App() {
                   <Sidebar setDeletPopup={setDeletPopup} />
                   <div className="content d-flex flex-column  position-relative">
                     <Topbar />
+                    <Notification />
                     <div className="h-100 px-3 bg_light_grey">
                       <Routes>
                         <Route path="" element={<DashbordCards />} />
                         <Route path="catalog">
                           <Route index element={<CategoriesView />} />
                           <Route path="newcategory" element={<NewCategory />} />
-                          <Route path="parentcategories" element={<ParentCategories />} />
+                          <Route
+                            path="parentcategories"
+                            element={<ParentCategories />}
+                          />
                           <Route path="productlist" element={<ProductList />} />
-                          <Route path="/catalog/addproduct/:id?" element={<AddProduct />} />
+                          <Route
+                            path="/catalog/addproduct/:id?"
+                            element={<AddProduct />}
+                          />
 
-                          <Route path="serviceareas" element={<ServiceAreas />} />
+                          <Route
+                            path="serviceareas"
+                            element={<ServiceAreas />}
+                          />
                         </Route>
                         <Route path="customer">
                           <Route index element={<Customers />} />
-                          <Route path="viewcustomerdetails/:id" element={<ViewCustomerDetails />} />
+                          <Route
+                            path="viewcustomerdetails/:id"
+                            element={<ViewCustomerDetails />}
+                          />
                         </Route>
                         <Route path="orders">
                           <Route index element={<OrdersList />} />
-                          <Route path="orderdetails/:id" element={<Orderdetails />} />
+                          <Route
+                            path="orderdetails/:id"
+                            element={<Orderdetails />}
+                          />
                         </Route>
                         <Route path="deliveryman">
                           <Route index element={<DeliveryManList />} />
-                          <Route path="addnewdeliveryman/:id?" element={<AddDeliveryMan />} />
-                          <Route path="deliverymanprofile/:id" element={<DeliverymanProfile />} />
+                          <Route
+                            path="addnewdeliveryman/:id?"
+                            element={<AddDeliveryMan />}
+                          />
+                          <Route
+                            path="deliverymanprofile/:id"
+                            element={<DeliverymanProfile />}
+                          />
                           {/* <Route path="deliveryorderlist" element={<DeliveryOrderList />} /> */}
-                          <Route path="inventory/:id" element={<DeliveryBoyInventory />} />
+                          <Route
+                            path="inventory/:id"
+                            element={<DeliveryBoyInventory />}
+                          />
                         </Route>
                         <Route path="marketing">
-                          <Route path="bannersadvertisement" element={<BannersAdvertisement />} />
+                          <Route
+                            path="bannersadvertisement"
+                            element={<BannersAdvertisement />}
+                          />
                           <Route path="coupans" element={<Coupons />} />
                         </Route>
                         <Route path="communications">
                           <Route path="chats" element={<Chats />} />
                           <Route path="complains" element={<Complains />} />
-                          <Route path="complaindetails/:complainId" element={<ComplainDetails />} />
+                          <Route
+                            path="complaindetails/:complainId"
+                            element={<ComplainDetails />}
+                          />
                         </Route>
-                        <Route path="privacypolicy" element={<PrivacyPolicy />} />
+                        <Route
+                          path="privacypolicy"
+                          element={<PrivacyPolicy />}
+                        />
                         <Route path="setting">
                           <Route path="brands" element={<Brands />} />
                           {/* <Route path="products" element={< />} /> */}

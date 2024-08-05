@@ -15,6 +15,8 @@ import { UseServiceContext } from "../../context/ServiceAreasGetter";
 
 import { collection, getDocs } from "firebase/firestore";
 import { useOrdercontext } from "../../context/OrderGetter";
+import { CrossIcons } from "../../Common/Icon";
+import { useNotification } from "../../context/NotificationContext";
 // import { collection, getDocs } from 'firebase/firestore';
 const DeliverymanProfile = () => {
   const { DeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
@@ -29,6 +31,7 @@ const DeliverymanProfile = () => {
   const [joiningDate, setjoiningDate] = useState("");
   const [rejectReason, setRejectReason] = useState("");
   const [totalOrders, setTotalOrders] = useState(0);
+  const [totaldailyOrders, setTotalDailyOrders] = useState(0);
   const [onSiteOrders, setOnSiteOrders] = useState(0);
   const [wallet, setWallet] = useState(0);
   const [areaPinCode, setAreaPinCode] = useState(null);
@@ -40,9 +43,12 @@ const DeliverymanProfile = () => {
       terretory: [],
     },
   ]);
+  const { showpop, setShowpop } = useNotification();
   const [addServiceAreaPopup, setAddServiceAreaPopup] = useState(false);
   const [selectarea, setSelectArea] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(Array(addMoreArea.length).fill(false));
+  const [dropdownOpen, setDropdownOpen] = useState(
+    Array(addMoreArea.length).fill(false)
+  );
   const dropdownRef = useRef(null);
 
   function handlAddMoreAreas() {
@@ -72,7 +78,14 @@ const DeliverymanProfile = () => {
     console.log(filterData[0]?.AreaName);
     setAddMoreArea((prevVariants) =>
       prevVariants.map((v, i) =>
-        i === index ? { ...v, pincode: v.pincode, area_name: areaName, terretory: v.terretory } : v
+        i === index
+          ? {
+              ...v,
+              pincode: v.pincode,
+              area_name: areaName,
+              terretory: v.terretory,
+            }
+          : v
       )
     );
     // console.log("first");
@@ -80,7 +93,9 @@ const DeliverymanProfile = () => {
 
   function handleSelectedAreasChange(index, newSelectedAreas) {
     setAddMoreArea((prevVariants) =>
-      prevVariants.map((v, i) => (i === index ? { ...v, terretory: newSelectedAreas } : v))
+      prevVariants.map((v, i) =>
+        i === index ? { ...v, terretory: newSelectedAreas } : v
+      )
     );
     console.log(addMoreArea);
   }
@@ -216,16 +231,54 @@ const DeliverymanProfile = () => {
       });
       setAddMoreArea(allAreas);
     }
+    // let ordersCount = 0;
+    // orders.forEach((order) => {
+    //   if (order.assign_to === DeliveryManId[0].id) {
+    //     ordersCount++;
+    //   }
+    // });
+    // setTotalOrders(ordersCount);
+
+    // let todayordersCount = 0;
+    // orders.forEach((order) => {
+    //   if (order.assign_to === DeliveryManId[0].id) {
+    //     todayordersCount++;
+    //   }
+    //   const dateToCompare = new Date(order.transaction.date);
+    //   const currentDate = new Date();
+    //   if (dateToCompare.getTime() === currentDate.getTime()) {
+    //    todayordersCount++;
+    //   }
+    // });
+    // setTotalDailyOrders(todayordersCount);
+
     let ordersCount = 0;
+    let todayordersCount = 0;
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
     orders.forEach((order) => {
       if (order.assign_to === DeliveryManId[0].id) {
         ordersCount++;
+
+        const dateToCompare = new Date(order.transaction.date);
+        dateToCompare.setHours(0, 0, 0, 0);
+
+        if (dateToCompare.getTime() === currentDate.getTime()) {
+          todayordersCount++;
+        }
       }
     });
+
     setTotalOrders(ordersCount);
+    setTotalDailyOrders(todayordersCount);
+
     let onSiteOrdersCount = 0;
     orders.forEach((order) => {
-      if (order.assign_to === DeliveryManId[0].id && order.order_created_by === "Van") {
+      if (
+        order.assign_to === DeliveryManId[0].id &&
+        order.order_created_by === "Van"
+      ) {
         onSiteOrdersCount++;
       }
     });
@@ -299,7 +352,11 @@ const DeliverymanProfile = () => {
         Reason: rejectReason,
       });
       setLoading(false);
-      updateDeliveryManData({ id: id, is_verified: true, profile_status: "REJECTED" });
+      updateDeliveryManData({
+        id: id,
+        is_verified: true,
+        profile_status: "REJECTED",
+      });
       toast.success("Rejected Successfully", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -316,6 +373,7 @@ const DeliverymanProfile = () => {
     await updateDoc(washingtonRef, {
       wallet: 0,
     });
+    setShowpop(!showpop);
     setLoading(false);
   }
 
@@ -326,6 +384,41 @@ const DeliverymanProfile = () => {
   return filterData.map((datas, index) => {
     return (
       <div className="my-4">
+        {showpop && (
+          <div className="center_pop position-fixed w-100 h-100 layer"></div>
+        )}
+
+        {showpop && (
+          <div className=" bg-white p-4 rounded-4 w-25 position-fixed center_pop">
+            <div className=" d-flex align-items-center justify-content-between">
+              <h2 className=" text-black fw-700 fs-2sm mb-0">
+                Collect Amount!
+              </h2>
+              <button
+                className=" border-0 bg-white"
+                onClick={() => setShowpop(!showpop)}
+              >
+                {" "}
+                <CrossIcons />
+              </button>
+            </div>
+            <div className="black_line my-3"></div>
+            <div className=" d-flex align-items-center justify-content-between">
+              <h4 className=" text-black fw-400 fs-sm mb-0">
+                Today’s Collection
+              </h4>
+              <h2 className=" text-black fw-700 fs-sm mb-0">₹ {wallet}</h2>
+            </div>
+            <div className=" mt-4 pt-2 d-flex justify-content-end">
+              <button
+                onClick={handleCollectBalance}
+                className=" outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
+              >
+                Collect Now
+              </button>
+            </div>
+          </div>
+        )}
         {approvePopup || rejectPopup || addServiceAreaPopup ? (
           <div className="bg_black_overlay"></div>
         ) : null}
@@ -361,7 +454,8 @@ const DeliverymanProfile = () => {
                 type="button"
                 id="dropdownMenuButton3"
                 data-bs-toggle="dropdown"
-                aria-expanded="false">
+                aria-expanded="false"
+              >
                 <div className="d-flex align-items-center justify-content-between w-100">
                   <p className="ff-outfit fw-400 fs_sm m-0 fade_grey">
                     {employTypeDropdown ? employTypeDropdown : "SALARIED"}
@@ -371,7 +465,8 @@ const DeliverymanProfile = () => {
                     height="24"
                     viewBox="0 0 24 24"
                     fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
                     <path
                       d="M7 10L12 15L17 10"
                       stroke="black"
@@ -384,12 +479,14 @@ const DeliverymanProfile = () => {
               </button>
               <ul
                 className="dropdown-menu delivery_man_dropdown w-100"
-                aria-labelledby="dropdownMenuButton3">
+                aria-labelledby="dropdownMenuButton3"
+              >
                 <li>
                   <div
                     onClick={() => setEmployTypeDropdown("SALARIED")}
                     className="dropdown-item py-2"
-                    href="#">
+                    href="#"
+                  >
                     <p className="fs-sm fw-400 balck m-0">SALARIED</p>
                   </div>
                 </li>
@@ -397,7 +494,8 @@ const DeliverymanProfile = () => {
                   <div
                     onClick={() => setEmployTypeDropdown("COMMISSION")}
                     className="dropdown-item py-2"
-                    href="#">
+                    href="#"
+                  >
                     <p className="fs-sm fw-400 balck m-0">COMMISSION</p>
                   </div>
                 </li>
@@ -433,7 +531,8 @@ const DeliverymanProfile = () => {
                   setApprovePopup(false);
                   ApprovedDelivermanProfile(datas.id);
                 }}
-                className="approve_btn mt-4">
+                className="approve_btn mt-4"
+              >
                 <p className="m-0 text-white">Approve Profile</p>
               </button>
             </div>
@@ -458,14 +557,16 @@ const DeliverymanProfile = () => {
               style={{ maxHeight: "90px" }}
               className="input w-100 outline_none resize_none"
               onChange={(e) => setRejectReason(e.target.value)}
-              placeholder="Enter a proper reason here..."></textarea>
+              placeholder="Enter a proper reason here..."
+            ></textarea>
             <div className="text-end mt-3 pt-1">
               <button
                 onClick={() => {
                   setRejectPopup(false);
                   RejectDelivermanProfile(datas.id);
                 }}
-                className="reject_delivery">
+                className="reject_delivery"
+              >
                 Reject profile
               </button>
             </div>
@@ -482,7 +583,8 @@ const DeliverymanProfile = () => {
               </div>
               <button
                 className="fs-2sm fw-400 color_green border-0 bg-white"
-                onClick={handlAddMoreAreas}>
+                onClick={handlAddMoreAreas}
+              >
                 + Add More
               </button>
             </div>
@@ -494,10 +596,13 @@ const DeliverymanProfile = () => {
               return (
                 <div className="mt-3 pt-1 d-flex justify-content-between align-items-end gap-3">
                   <div>
-                    <p className="fs-xs fw-400 black m-0 pb-1">Enter Pin Code</p>
+                    <p className="fs-xs fw-400 black m-0 pb-1">
+                      Enter Pin Code
+                    </p>
                     <div
                       style={{ minWidth: "180px", height: "43px" }}
-                      className="product_input d-flex align-items-center mt-2 ">
+                      className="product_input d-flex align-items-center mt-2 "
+                    >
                       <input
                         required
                         type="number"
@@ -534,22 +639,30 @@ const DeliverymanProfile = () => {
                       onClick={() => {
                         handleProductInputClick(index);
                         handlePincodeChange(index);
-                      }}>
+                      }}
+                    >
                       <p
                         className="fade_grey fs-xs fw-400 w-100 m-0 text-start  white_space_nowrap area_slider overflow-x-scroll"
-                        required>
-                        {area.terretory.length !== 0 ? area.terretory.join(" , ") : "Select area"}
+                        required
+                      >
+                        {area.terretory.length !== 0
+                          ? area.terretory.join(" , ")
+                          : "Select area"}
                       </p>
                       <img src={dropdownImg} alt="" />
                     </div>
                     {dropdownOpen[index] && (
                       <div
                         ref={dropdownRef}
-                        className="position-absolute z-3 area_dropdown delivery_man_dropdown">
+                        className="position-absolute z-3 area_dropdown delivery_man_dropdown"
+                      >
                         {areasForPincode.map((cities, i) => (
                           <div key={i}>
                             {cities.map((city) => (
-                              <div className="d-flex align-items-center gap-3 py-1" key={city}>
+                              <div
+                                className="d-flex align-items-center gap-3 py-1"
+                                key={city}
+                              >
                                 <input
                                   id={city}
                                   type="checkbox"
@@ -560,15 +673,24 @@ const DeliverymanProfile = () => {
                                     const newSelectedAreas = isChecked
                                       ? [...(area.terretory ?? []), value]
                                       : (area.terretory ?? []).filter(
-                                          (selectedCity) => selectedCity !== value
+                                          (selectedCity) =>
+                                            selectedCity !== value
                                         );
-                                    handleSelectedAreasChange(index, newSelectedAreas);
+                                    handleSelectedAreasChange(
+                                      index,
+                                      newSelectedAreas
+                                    );
                                     // Log the selected areas
                                     // console.log('Selected Areas:', newSelectedAreas);
                                   }}
-                                  checked={(area.terretory ?? []).includes(city)}
+                                  checked={(area.terretory ?? []).includes(
+                                    city
+                                  )}
                                 />
-                                <label className="fs-xs fw-400 black w-100" htmlFor={city}>
+                                <label
+                                  className="fs-xs fw-400 black w-100"
+                                  htmlFor={city}
+                                >
                                   {city}
                                 </label>
                               </div>
@@ -598,7 +720,8 @@ const DeliverymanProfile = () => {
                   // }])
                   setAddServiceAreaPopup(false);
                 }}
-                className="save_service_data fs-sm fw-400 white">
+                className="save_service_data fs-sm fw-400 white"
+              >
                 Cancel
               </button>
               <button
@@ -608,7 +731,8 @@ const DeliverymanProfile = () => {
                     setAddServiceAreaPopup(false);
                   }
                 }}
-                className="save_service_data fs-sm fw-400 white">
+                className="save_service_data fs-sm fw-400 white"
+              >
                 Save Data
               </button>
             </div>
@@ -616,16 +740,23 @@ const DeliverymanProfile = () => {
         ) : null}
         <div className="d-flex justify-content-between align-items-center mt-4 mx-2">
           <h1 className="fw-500  mb-0 black fs-lg">
-            {datas.basic_info.name === "" ? "N/A" : datas.basic_info.name} {datas.d_id}{" "}
+            {datas.basic_info.name === "" ? "N/A" : datas.basic_info.name}{" "}
+            {datas.d_id}{" "}
           </h1>
           <div className="d-flex justify-content-center">
             <div className="d-flex  align-items-center flex-column flex-sm-row gap-2 gap-sm-0  justify-content-between">
               {datas.profile_status === "NEW" ? (
                 <div className="d-flex align-itmes-center gap-3">
-                  <button onClick={() => setApprovePopup(true)} className="approve_btn">
+                  <button
+                    onClick={() => setApprovePopup(true)}
+                    className="approve_btn"
+                  >
                     <p className="m-0 text-white">Approve Profile</p>
                   </button>
-                  <button onClick={() => setRejectPopup(true)} className="reject_delivery">
+                  <button
+                    onClick={() => setRejectPopup(true)}
+                    className="reject_delivery"
+                  >
                     Reject profile
                   </button>
                   {/* <button className="reset_border">
@@ -670,7 +801,8 @@ const DeliverymanProfile = () => {
                         height="22"
                         viewBox="0 0 22 22"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M7 10C6.73478 10 6.48043 10.1054 6.29289 10.2929C6.10536 10.4804 6 10.7348 6 11C6 11.2652 6.10536 11.5196 6.29289 11.7071C6.48043 11.8946 6.73478 12 7 12H15C15.2652 12 15.5196 11.8946 15.7071 11.7071C15.8946 11.5196 16 11.2652 16 11C16 10.7348 15.8946 10.4804 15.7071 10.2929C15.5196 10.1054 15.2652 10 15 10H7Z"
                           fill="#D73A60"
@@ -685,14 +817,18 @@ const DeliverymanProfile = () => {
                       Block Profile
                     </button>
                   </button>
-                  <button onClick={() => setAddServiceAreaPopup(true)} className="reset_border">
+                  <button
+                    onClick={() => setAddServiceAreaPopup(true)}
+                    className="reset_border"
+                  >
                     <button className="fs-sm reset_btn border-0 fw-400  d-flex align-items-center gap-2 transition_04">
                       <svg
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M18.8941 17.3939L13.5916 22.6979C13.3827 22.907 13.1346 23.0728 12.8615 23.186C12.5884 23.2992 12.2957 23.3574 12.0001 23.3574C11.7045 23.3574 11.4118 23.2992 11.1387 23.186C10.8657 23.0728 10.6176 22.907 10.4086 22.6979L5.10612 17.3939C4.20069 16.4886 3.48244 15.4138 2.99239 14.2308C2.50233 13.0479 2.25007 11.7801 2.25 10.4997C2.24993 9.21927 2.50206 7.95139 2.99198 6.76842C3.48191 5.58546 4.20004 4.51057 5.10537 3.60514C6.0107 2.69971 7.08551 1.98146 8.26842 1.49141C9.45133 1.00136 10.7192 0.749093 11.9996 0.749023C13.28 0.748954 14.5479 1.00108 15.7308 1.491C16.9138 1.98093 17.9887 2.69906 18.8941 3.60439C19.7996 4.50978 20.5179 5.58467 21.008 6.76768C21.4981 7.95069 21.7503 9.21865 21.7503 10.4991C21.7503 11.7796 21.4981 13.0476 21.008 14.2306C20.5179 15.4136 19.7996 16.4885 18.8941 17.3939ZM17.3041 5.19589C15.8974 3.78918 13.9895 2.9974 12.0001 2.9974C10.0107 2.9974 8.10283 3.78768 6.69612 5.19439C5.28941 6.6011 4.49913 8.50901 4.49913 10.4984C4.49913 12.4878 5.28941 14.3957 6.69612 15.8024L12.0001 21.1049L17.3041 15.8039C18.0008 15.1074 18.5534 14.2805 18.9304 13.3705C19.3075 12.4604 19.5015 11.485 19.5015 10.4999C19.5015 9.51481 19.3075 8.53938 18.9304 7.62931C18.5534 6.71924 18.0008 5.89236 17.3041 5.19589ZM12.0001 13.4999C11.6006 13.5089 11.2033 13.4381 10.8316 13.2914C10.4598 13.1448 10.1211 12.9254 9.83536 12.6461C9.54958 12.3668 9.32249 12.0332 9.16741 11.6649C9.01233 11.2966 8.9324 10.901 8.9323 10.5014C8.9322 10.1018 9.01193 9.70619 9.16683 9.33782C9.32172 8.96945 9.54865 8.63574 9.83429 8.35628C10.1199 8.07682 10.4585 7.85724 10.8302 7.71043C11.2019 7.56363 11.5991 7.49256 11.9986 7.50139C12.7825 7.51873 13.5284 7.84223 14.0767 8.40265C14.625 8.96307 14.9321 9.71588 14.9323 10.4999C14.9325 11.2839 14.6257 12.0369 14.0777 12.5976C13.5297 13.1583 12.784 13.4822 12.0001 13.4999Z"
                           fill="black"
@@ -708,7 +844,8 @@ const DeliverymanProfile = () => {
                       height="48"
                       viewBox="0 0 44 48"
                       fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <rect width="44" height="48" rx="10" fill="white" />
                       <path
                         d="M25 17.9997L28 20.9997M23 31.9997H31M15 27.9997L14 31.9997L18 30.9997L29.586 19.4137C29.9609 19.0386 30.1716 18.53 30.1716 17.9997C30.1716 17.4694 29.9609 16.9608 29.586 16.5857L29.414 16.4137C29.0389 16.0388 28.5303 15.8281 28 15.8281C27.4697 15.8281 26.9611 16.0388 26.586 16.4137L15 27.9997Z"
@@ -728,7 +865,8 @@ const DeliverymanProfile = () => {
                       height="24"
                       viewBox="0 0 24 24"
                       fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <path
                         d="M17.25 20.4L15.3 18.45L14.25 19.5L17.25 22.5L22.5 17.25L21.45 16.2L17.25 20.4ZM9 13.5H15V15H9V13.5ZM9 9.75H15V11.25H9V9.75ZM9 6H15V7.5H9V6Z"
                         fill="#D73A60"
@@ -749,28 +887,44 @@ const DeliverymanProfile = () => {
           <div className="d-flex align-items-center text-center gap-4 mt-4 pb-2 flex-wrap">
             <div className="d-flex align-items-center text-center bg_light_orange">
               <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
-                <p className="fs-sm fw-400 black m-0">Total Delivery</p>
-                <p className="fs_24 fw_600 red m-0 mt-2">{totalOrders}</p>
+                <p className="fs-sm fw-400 black m-0">Today Delivery</p>
+                <p className="fs_24 fw_600 red m-0 mt-2">{totaldailyOrders}</p>
               </div>
               <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
                 <p className="fs-sm fw-400 black m-0">On Site Orders</p>
                 <p className="fs_24 fw_600 black m-0 mt-2">{onSiteOrders}</p>
               </div>
             </div>
+            <div className="d-flex align-items-center text-center bg_light_orange">
+              <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
+                <p className="fs-sm fw-400 black m-0">Total Delivery</p>
+                <p className="fs_24 fw_600 red m-0 mt-2">{totalOrders}</p>
+              </div>
+              {/* <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
+                <p className="fs-sm fw-400 black m-0">On Site Orders</p>
+                <p className="fs_24 fw_600 black m-0 mt-2">{onSiteOrders}</p>
+              </div> */}
+            </div>
             <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_green">
               <p className="fs-sm fw-400 black m-0">Wallet Balance</p>
               <p className="fs_24 fw_600 green m-0 mt-2">₹ {wallet}</p>
               <button
-                onClick={handleCollectBalance}
-                className="fs_sm fw_600 color_blue m-0 mt-2 bg-transparent border-0">
+                onClick={() => setShowpop(!showpop)}
+                className="fs_sm fw_600 color_blue m-0 mt-2 bg-transparent border-0"
+              >
                 Collect
               </button>
             </div>
             <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_purple">
               <p className="fs-sm fw-400 black m-0">Van Capacity</p>
-              <p className="progress_bar mb-0 mt-2">
+              <p className="progress_bar mb-0  mt-3">
                 <span></span>
               </p>
+              <div className=" mt-3">
+                <Link to={`/deliveryman/inventory/${filterData[0].id}`}>
+                  Show Van
+                </Link>
+              </div>
             </div>
           </div>
         ) : null}
@@ -778,13 +932,17 @@ const DeliverymanProfile = () => {
           <Col xl={6}>
             <div className="p-2 bg-white product_shadow">
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Name</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Name
+                </p>
                 <p className="fs-16 fw-400 black m-0">
                   {datas.basic_info.name === "" ? "N/A" : datas.basic_info.name}
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Date of Birth</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Date of Birth
+                </p>
                 <p className="fs-16 fw-400 black m-0">
                   {datas.basic_info.dob === ""
                     ? "N/A"
@@ -792,39 +950,59 @@ const DeliverymanProfile = () => {
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Phone</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Phone
+                </p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.basic_info.phone_no === "" ? "N/A" : datas.basic_info.phone_no}
+                  {datas.basic_info.phone_no === ""
+                    ? "N/A"
+                    : datas.basic_info.phone_no}
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Email</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Email
+                </p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.basic_info.email === "" ? "N/A" : datas.basic_info.email}
+                  {datas.basic_info.email === ""
+                    ? "N/A"
+                    : datas.basic_info.email}
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Address</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Address
+                </p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.basic_info.address === "" ? "N/A" : datas.basic_info.address}
+                  {datas.basic_info.address === ""
+                    ? "N/A"
+                    : datas.basic_info.address}
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">City</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  City
+                </p>
                 <p className="fs-16 fw-400 black m-0">
                   {datas.basic_info.city === "" ? "N/A" : datas.basic_info.city}
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">State </p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  State{" "}
+                </p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.basic_info.state === "" ? "N/A" : datas.basic_info.state}
+                  {datas.basic_info.state === ""
+                    ? "N/A"
+                    : datas.basic_info.state}
                 </p>
               </div>
             </div>
             <div className="p-2 bg-white product_shadow mt-4">
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Emergency Number</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Emergency Number
+                </p>
                 <p className="fs-16 fw-400 black m-0">
                   {datas.basic_info.emergency_contact.phone_no === ""
                     ? "N/A"
@@ -832,7 +1010,9 @@ const DeliverymanProfile = () => {
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Relative Name</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Relative Name
+                </p>
                 <p className="fs-16 fw-400 black m-0">
                   {datas.basic_info.emergency_contact.name === ""
                     ? "N/A"
@@ -840,7 +1020,9 @@ const DeliverymanProfile = () => {
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Relation</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Relation
+                </p>
                 <p className="fs-16 fw-400 black m-0">
                   {datas.basic_info.emergency_contact.relationship === ""
                     ? "N/A"
@@ -852,77 +1034,115 @@ const DeliverymanProfile = () => {
           <Col xl={6}>
             <div className="p-2 bg-white product_shadow">
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Job Title</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Job Title
+                </p>
                 <p className="fs-16 fw-400 black m-0">Delivery Man</p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Date of Joining</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Date of Joining
+                </p>
                 <p className="fs-16 fw-400 black m-0">
                   {datas.job_info.joining_date === ""
                     ? "N/A"
-                    : new Date(datas.job_info.joining_date).toLocaleDateString()}
+                    : new Date(
+                        datas.job_info.joining_date
+                      ).toLocaleDateString()}
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Employment Type</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Employment Type
+                </p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.job_info.employement_type === "" ? "N/A" : datas.job_info.employement_type}
+                  {datas.job_info.employement_type === ""
+                    ? "N/A"
+                    : datas.job_info.employement_type}
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Time Schedule</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Time Schedule
+                </p>
                 <p className="fs-16 fw-400 black m-0">
                   {datas.job_info.shift === "" ? "N/A" : datas.job_info.shift}
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Document Number</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Document Number
+                </p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.kyc.document_number === "" ? "N/A" : datas.kyc.document_number}
+                  {datas.kyc.document_number === ""
+                    ? "N/A"
+                    : datas.kyc.document_number}
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Driving License </p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Driving License{" "}
+                </p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.vehicle.dl_number === "" ? "N/A" : datas.vehicle.dl_number}
+                  {datas.vehicle.dl_number === ""
+                    ? "N/A"
+                    : datas.vehicle.dl_number}
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Vehicle Reg. No. </p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Vehicle Reg. No.{" "}
+                </p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.vehicle.vehicle_number === "" ? "N/A" : datas.vehicle.vehicle_number}
+                  {datas.vehicle.vehicle_number === ""
+                    ? "N/A"
+                    : datas.vehicle.vehicle_number}
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Vehicle Type</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Vehicle Type
+                </p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.vehicle.vehicle_type === "" ? "N/A" : datas.vehicle.vehicle_type}
+                  {datas.vehicle.vehicle_type === ""
+                    ? "N/A"
+                    : datas.vehicle.vehicle_type}
                 </p>
               </div>
             </div>
             <div className="p-2 bg-white product_shadow mt-4">
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Bank Name</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Bank Name
+                </p>
                 <p className="fs-16 fw-400 black m-0">
                   {datas.bank.bank_name === "" ? "N/A" : datas.bank.bank_name}
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">IFSC</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  IFSC
+                </p>
                 <p className="fs-16 fw-400 black m-0">
                   {datas.bank.ifsc_code === "" ? "N/A" : datas.bank.ifsc_code}
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Account Number</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Account Number
+                </p>
                 <p className="fs-16 fw-400 black m-0">
                   {datas.bank.account_no === "" ? "N/A" : datas.bank.account_no}
                 </p>
               </div>
               <div className="d-flex py_10">
-                <p className="left_content_width fs-16 fw-400 black m-0">Name in Account</p>
+                <p className="left_content_width fs-16 fw-400 black m-0">
+                  Name in Account
+                </p>
                 <p className="fs-16 fw-400 black m-0">
-                  {datas.bank.account_holder_name === "" ? "N/A" : datas.bank.account_holder_name}
+                  {datas.bank.account_holder_name === ""
+                    ? "N/A"
+                    : datas.bank.account_holder_name}
                 </p>
               </div>
             </div>

@@ -21,6 +21,7 @@ import minilayoutImgGroup4 from '../../Images/Png/minilayoutImgGroup4.png';
 import minilayoutImgGroup6 from '../../Images/Png/minilayoutImgGroup6.png';
 import minilayoutImgGroup9 from '../../Images/Png/minilayoutImgGroup9.png';
 import minilayoutImgGroup8 from '../../Images/Png/minilayoutImgGroup8.png';
+import default_img from "../../Images/Png/default_img.png"
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useRef } from 'react';
@@ -730,10 +731,19 @@ const Categories = () => {
                                     </label>
                                     <div className="d-flex align-items-center ms-2">
                                       <div className="w_40">
-                                        <img c src={value.image} alt="categoryImg" />
+                                        <img
+                                          src={
+                                            value.image
+                                              ? value.image
+                                              : default_img
+                                          }
+                                          alt="categoryImg"
+                                        />
                                       </div>
                                       <div className="ps-3 ms-1">
-                                        <p className="fw-400 fs-sm black mb-0">{value.title}</p>
+                                        <p className="fw-400 fs-sm black mb-0">
+                                          {value.title}
+                                        </p>
                                       </div>
                                     </div>
                                   </div>
@@ -760,12 +770,17 @@ const Categories = () => {
                                       type="button"
                                       id="dropdownMenuButton1"
                                       data-bs-toggle="dropdown"
-                                      aria-expanded="false">
-                                      <img src={dropdownDots} alt="dropdownDots" />
+                                      aria-expanded="false"
+                                    >
+                                      <img
+                                        src={dropdownDots}
+                                        alt="dropdownDots"
+                                      />
                                     </button>
                                     <ul
                                       class="dropdown-menu categories_dropdown"
-                                      aria-labelledby="dropdownMenuButton1">
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
                                       <li>
                                         <div class="dropdown-item" href="#">
                                           <div className="d-flex align-items-center categorie_dropdown_options">
@@ -781,16 +796,21 @@ const Categories = () => {
                                           <div
                                             onClick={() => {
                                               setEditCatPopup(true);
-                                              setSelectedSubcategoryId(value.id);
+                                              setSelectedSubcategoryId(
+                                                value.id
+                                              );
                                               setEditCatName(value.title);
                                               setEditCatImg(value.image);
                                               setSelectedCategory(
-                                                getParentCategoryName(value.cat_ID)
+                                                getParentCategoryName(
+                                                  value.cat_ID
+                                                )
                                               );
                                               setEditStatus(value.status);
                                               setCat_ID(value.cat_ID);
                                             }}
-                                            className="d-flex align-items-center categorie_dropdown_options">
+                                            className="d-flex align-items-center categorie_dropdown_options"
+                                          >
                                             <img src={pencil_icon} alt="" />
                                             <p className="fs-sm fw-400 black mb-0 ms-2">
                                               Edit Category
@@ -803,15 +823,20 @@ const Categories = () => {
                                           <div
                                             className="d-flex align-items-center categorie_dropdown_options"
                                             onClick={() => {
-                                              setSelectedSubcategoryId(value.id);
-                                              setSelectedSubcategoryStatus(value.status);
+                                              setSelectedSubcategoryId(
+                                                value.id
+                                              );
+                                              setSelectedSubcategoryStatus(
+                                                value.status
+                                              );
                                               setStatusPopup(true);
-                                            }}>
+                                            }}
+                                          >
                                             <img src={updown_icon} alt="" />
                                             <p className="fs-sm fw-400 green mb-0 ms-2">
-                                              {value.status === 'hidden'
-                                                ? 'change to  publish'
-                                                : 'Change to hidden'}
+                                              {value.status === "hidden"
+                                                ? "change to  publish"
+                                                : "Change to hidden"}
                                             </p>
                                           </div>
                                         </div>
@@ -1329,15 +1354,27 @@ const Categories = () => {
                               className={`${selectAll.length > 1 ? 'table_body2' : 'table_body'}`}>
                               {categoreis.map((value, index) => {
                                 return (
-                                  <tr key={index} className="product_borderbottom">
+                                  <tr
+                                    key={index}
+                                    className="product_borderbottom"
+                                  >
                                     <td className="py-3 ps-3">
                                       <div className="d-flex align-items-center gap-3">
                                         <div className="d-flex align-items-center">
                                           <div className="w_40">
-                                            <img src={value.image} alt="categoryImg" />
+                                            <img
+                                              src={
+                                                value.image
+                                                  ? value.image
+                                                  : default_img
+                                              }
+                                              alt="categoryImg"
+                                            />
                                           </div>
                                           <div className="ps-3 ms-1">
-                                            <p className="fw-400 fs-sm black mb-0">{value.title}</p>
+                                            <p className="fw-400 fs-sm black mb-0">
+                                              {value.title}
+                                            </p>
                                           </div>
                                         </div>
                                       </div>
@@ -1347,7 +1384,10 @@ const Categories = () => {
                                         <img
                                           className="cursor_pointer"
                                           onClick={() => {
-                                            handleChangeStatus(value.id, value.status);
+                                            handleChangeStatus(
+                                              value.id,
+                                              value.status
+                                            );
                                           }}
                                           src={updown_icon}
                                           alt="updown_icon"
@@ -1357,9 +1397,13 @@ const Categories = () => {
                                             setEditPerCatPopup(true);
                                             setEditName(value.title);
                                             SetEditCatId(value.id);
-                                            seteditPerentCatStatus(value.status);
+                                            seteditPerentCatStatus(
+                                              value.status
+                                            );
                                             setEditImg(value.image);
-                                            setEditSelectedLayout(value.homepagelayout);
+                                            setEditSelectedLayout(
+                                              value.homepagelayout
+                                            );
                                           }}
                                           className="cursor_pointer"
                                           src={pencil_icon}

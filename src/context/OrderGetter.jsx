@@ -3,7 +3,6 @@ import { getDocs, collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const OrderContext = createContext();
-
 export const useOrdercontext = () => {
   return useContext(OrderContext);
 };
