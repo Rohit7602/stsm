@@ -296,6 +296,12 @@ const DeliveryBoyInventory = () => {
                 );
               })}
             <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
+              {/* <button
+                className="green_btn text-white px-5"
+                onClick={() => window.history.back()}
+              >
+                Back
+              </button> */}
               <button
                 onClick={UpdateEntry}
                 className=" outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "

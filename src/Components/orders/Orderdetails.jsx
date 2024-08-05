@@ -48,7 +48,8 @@ export default function NewOrder() {
   const [orderid, setOrderid] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedDeliveryManId, setSelectedDeliveryManId] = useState(null);
-  const [customSelectDeliveryManId, setCustomSelectDeliveryManId] = useState(null);
+  const [customSelectDeliveryManId, setCustomSelectDeliveryManId] =
+    useState(null);
   const [isDeliverymanPopup, setIssDeliverymanPopup] = useState(false);
   const { customer } = useCustomerContext();
   const [customertoken, setCustomertoken] = useState(null);
@@ -86,10 +87,10 @@ export default function NewOrder() {
         setLogs(logsData);
       };
       fetchLogs();
-      
+
       // console.log("message=====================")
     }
-  }, [id, orders, setLogs]);
+  }, [id, orders]);
 
   if (!id || filterData.length === 0) {
     return <Loader> </Loader>;
@@ -141,7 +142,7 @@ export default function NewOrder() {
     return `ST${year}${randomDigits}`;
   };
 
-  const handleAcceptOrder = async (id, order_id) => {
+  const handleAcceptOrder = async (id) => {
     setLoading(true);
     const orderDocRef = doc(db, "order", id);
     const orderDoc = await getDoc(orderDocRef);
@@ -250,7 +251,6 @@ export default function NewOrder() {
       } else {
         await updateDoc(doc(db, "order", id), {
           status: newStatus,
-          assign_to: "",
         });
       }
       // Add a new log entry to the logs collection
@@ -263,7 +263,7 @@ export default function NewOrder() {
       //   description: `Order #${order_id}  has been successfully delivered! We hope you’re happy with your purchase. If you need any assistance, feel free to contact us. We’d love to hear your feedback – please take a moment to rate our service and help us improve! ${"https://play.google.com/store/apps/details?id=com.hexabird.stsm&hl=en"}`,
       // };
       // await addDoc(collection(db, `order/${id}/logs`), logData);
-      updateData({ id, status: newStatus, assign_to: "" });
+      updateData({ id, status: newStatus });
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -513,7 +513,10 @@ export default function NewOrder() {
             item.id === autoSelectedDeliveryManId ||
             item.id === selectedDeliveryManId
         );
-        const token = [...customertoken, ...selecteddeliveryData[0].tokens];
+        console.log(
+          selecteddeliveryData,
+          "selecteddeliveryData====================="
+        );
 
         updateData({
           id,
@@ -525,6 +528,11 @@ export default function NewOrder() {
               ? autoSelectedDeliveryManId
               : selectedDeliveryManId,
         });
+        console.log(
+          "messageewe============================= ",
+          autoSelectedDeliveryManId
+        );
+        console.log("message====================", selectedDeliveryManId);
 
         // const logData = {
         //   name: "Store",
@@ -535,7 +543,6 @@ export default function NewOrder() {
         //  Your delivery person, ${selecteddeliveryData[0].basic_info.name}, is on their way and can be reached at ${selecteddeliveryData[0].basic_info.phone_no} if you have any questions or need to provide additional instructions. Stay tuned for further updates!`,
         // };
         // await addDoc(collection(db, `order/${id}/logs`), logData);
-        console.log("object");
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -561,9 +568,11 @@ export default function NewOrder() {
         );
       case "PROCESSING":
         return (
-          <div className="proccesing_icon d-flex align-items-center justify-content-center">
-            <img src={proccesing} alt="orderDeliveryAssign" />
-          </div>
+          <img
+            src={proccesing}
+            className="bg-white"
+            alt="orderDeliveryAssign"
+          />
         );
 
       case "OUT_FOR_DELIVERY":

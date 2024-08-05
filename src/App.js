@@ -42,6 +42,8 @@ import ComplainDetails from "./Components/communications/ComplainDetails";
 import { firebase, db } from "./firebase";
 import Notification from "./Components/layout/Notification";
 import { getDocs, collection, query } from "firebase/firestore";
+import { CrossIcons } from "./Common/Icon";
+import { useNotification } from "./context/NotificationContext";
 
 function App() {
   const { logoutUser } = useUserAuth();
@@ -49,6 +51,7 @@ function App() {
   const [loading, setloading] = useState(true);
   const location = useLocation();
   const [deletPopup, setDeletPopup] = useState(false);
+  const { showpop, setShowpop } = useNotification();
   useEffect(() => {
     permissionHandler();
     onMessageListener();
@@ -134,7 +137,8 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <div className={`${showpop ? " position-fixed w-100" : null} `}>
+     
       <Logout
         logout={handleLogout}
         setDeletPopup={setDeletPopup}

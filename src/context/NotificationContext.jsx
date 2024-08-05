@@ -15,6 +15,8 @@ const NotificationContext = createContext();
 const NotificationProvider = ({ children }) => {
   const [showNotification, setShowNotification] = useState(false);
   const [currentNotifications, setCurrentNotifications] = useState([]);
+  const [newnotifications, setNewnotifications] = useState(0);
+  const [showpop, setShowpop] = useState(false);
   const sendNotification = async (type) => {
     const serverKey =
       "AAAA8fySoyk:APA91bGHLjXYPx8D5P2kBZHzJ6BnJHL3-5sz4S2pK4U4Cg-9EsoluUI-h9Dj-HvuXz6lNgnTGbCAaMWC6adijWKysPTpSEhamRnMy5QRcn8_wE-_tYLz3gQ0fWx34unTnCReFIwDCwoY"; // Your server key from Firebase settings
@@ -64,23 +66,28 @@ const NotificationProvider = ({ children }) => {
   const adminId = localStorage.getItem("isAdminId");
 
   const fetchNotifications = async () => {
-  
-   try {
-     const q = query(
-       collection(db, "Notifications"),
-       where("read", "==", false),
-       where("receiverId", "==", adminId)
-     );
-     const querySnapshot = await getDocs(q);
-     const notificationsArray = [];
-     querySnapshot.forEach((doc) => {
-       notificationsArray.push({ id: doc.id, ...doc.data() });
-     });
-     setCurrentNotifications(notificationsArray);
-   } catch (error) {
-     console.log(error);
-   }
+    try {
+      const q = query(
+        collection(db, "Notifications"),
+        where("receiverId", "==", adminId)
+      );
+      const querySnapshot = await getDocs(q);
+      const notificationsArray = [];
+      let unreadCount = 0;
+      querySnapshot.forEach((doc) => {
+        notificationsArray.push({ id: doc.id, ...doc.data() });
+
+        if (doc.data().read === false) {
+          unreadCount++;
+        }
+      });
+      setNewnotifications(unreadCount);
+      setCurrentNotifications(notificationsArray);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
   useEffect(() => {
     fetchNotifications();
   }, []);
@@ -112,6 +119,9 @@ const NotificationProvider = ({ children }) => {
         showNotification,
         currentNotifications,
         CheckNotification,
+        newnotifications,
+        setShowpop,
+        showpop,
       }}
     >
       {children}

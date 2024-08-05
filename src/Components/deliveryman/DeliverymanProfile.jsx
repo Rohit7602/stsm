@@ -15,6 +15,8 @@ import { UseServiceContext } from "../../context/ServiceAreasGetter";
 
 import { collection, getDocs } from "firebase/firestore";
 import { useOrdercontext } from "../../context/OrderGetter";
+import { CrossIcons } from "../../Common/Icon";
+import { useNotification } from "../../context/NotificationContext";
 // import { collection, getDocs } from 'firebase/firestore';
 const DeliverymanProfile = () => {
   const { DeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
@@ -41,6 +43,7 @@ const DeliverymanProfile = () => {
       terretory: [],
     },
   ]);
+  const { showpop, setShowpop } = useNotification();
   const [addServiceAreaPopup, setAddServiceAreaPopup] = useState(false);
   const [selectarea, setSelectArea] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(
@@ -380,6 +383,41 @@ const DeliverymanProfile = () => {
   return filterData.map((datas, index) => {
     return (
       <div className="my-4">
+        {showpop && (
+          <div className="center_pop position-fixed w-100 h-100 layer"></div>
+        )}
+
+        {showpop && (
+          <div className=" bg-white p-4 rounded-4 w-25 position-fixed center_pop">
+            <div className=" d-flex align-items-center justify-content-between">
+              <h2 className=" text-black fw-700 fs-2sm mb-0">
+                Collect Amount!
+              </h2>
+              <button
+                className=" border-0 bg-white"
+                onClick={() => setShowpop(showpop ? false : true)}
+              >
+                {" "}
+                <CrossIcons />
+              </button>
+            </div>
+            <div className="black_line my-3"></div>
+            <div className=" d-flex align-items-center justify-content-between">
+              <h4 className=" text-black fw-400 fs-sm mb-0">
+                Today’s Collection
+              </h4>
+              <h2 className=" text-black fw-700 fs-sm mb-0">₹ {wallet}</h2>
+            </div>
+            <div className=" mt-4 pt-2 d-flex justify-content-end">
+              <button
+                onClick={handleCollectBalance}
+                className=" outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
+              >
+                Collect Now
+              </button>
+            </div>
+          </div>
+        )}
         {approvePopup || rejectPopup || addServiceAreaPopup ? (
           <div className="bg_black_overlay"></div>
         ) : null}
@@ -870,7 +908,7 @@ const DeliverymanProfile = () => {
               <p className="fs-sm fw-400 black m-0">Wallet Balance</p>
               <p className="fs_24 fw_600 green m-0 mt-2">₹ {wallet}</p>
               <button
-                onClick={handleCollectBalance}
+                onClick={() => setShowpop(showpop ? false : true)}
                 className="fs_sm fw_600 color_blue m-0 mt-2 bg-transparent border-0"
               >
                 Collect
