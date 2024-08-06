@@ -28,15 +28,6 @@ import {
   query,
   getDoc,
 } from "firebase/firestore";
-import {
-  doc,
-  updateDoc,
-  getDocs,
-  addDoc,
-  collection,
-  query,
-  getDoc,
-} from "firebase/firestore";
 import { db } from "../../firebase";
 import { useState, useEffect } from "react";
 import { useUserAuth } from "../../context/Authcontext";
@@ -304,7 +295,344 @@ export default function NewOrder() {
     }
   }
 
-  async function handlePreparedDelivery(id, order_id) {
+  // async function handlePreparedDelivery(id, order_id) {
+  //   setLoading(true);
+  //   const orderDocRef = doc(db, "order", id);
+  //   const orderDoc = await getDoc(orderDocRef);
+  //   const orderData = orderDoc.data();
+  //   let area = orderData.shipping.area.toLowerCase();
+  //   // console.log("Area is ", area);
+
+  //   // Filter the deliverymen whose service areas include the desired area
+  //   const deliverymenWithArea = DeliveryManData.filter(
+  //     (deliveryman) =>
+  //       deliveryman.profile_status === "APPROVED" &&
+  //       deliveryman.is_verified === true &&
+  //       deliveryman.serviceArea &&
+  //       deliveryman.serviceArea.some(
+  //         (areas) =>
+  //           areas.terretory &&
+  //           areas.terretory.some((t) => t.toLowerCase() === area)
+  //       )
+  //   );
+
+  //   if (deliverymenWithArea.length !== 0 || selectedDeliveryManId !== null) {
+  //     try {
+  //       const orderDocRef = doc(db, "order", id);
+  //       const orderDoc = await getDoc(orderDocRef);
+  //       const orderData = orderDoc.data();
+  //       const invoiceNumber = await getInvoiceNo();
+  //       let area = orderData.shipping.area.toLowerCase();
+  //       // Filter the deliverymen whose service areas include the desired area
+  //       const deliverymenWithArea = DeliveryManData.filter(
+  //         (deliveryman) =>
+  //           deliveryman.profile_status === "APPROVED" &&
+  //           deliveryman.is_verified === true &&
+  //           deliveryman.serviceArea &&
+  //           deliveryman.serviceArea.some(
+  //             (areas) =>
+  //               areas.terretory &&
+  //               areas.terretory.some((t) => t.toLowerCase() === area)
+  //           )
+  //       );
+  //       let autoSelectedDeliveryManId = null;
+  //       if (deliverymenWithArea.length > 1) {
+  //         let orderProductsIds = [];
+  //         let deliverymanIds = [];
+  //         // Collect product IDs from filterData
+  //         filterData.forEach((item) =>
+  //           item.items.forEach((product) =>
+  //             orderProductsIds.push(product.product_id)
+  //           )
+  //         );
+  //         console.log("asfsegasfdsafvsdgsae",filterData)
+
+  //         // console.log("ordered p id", orderProductsIds[0]);
+
+  //         // const productlist = productData.filter((value) => {
+  //         //   return value.id === orderProductsIds[0];
+  //         // });
+
+  //         // const orderQuantity = orders.filter((value) => {
+  //         //   return value.order_id === order_id
+  //         // });
+
+  //         // console.log(orderQuantity, "orderQuantity========");
+  //         // console.log(productlist[0].totalStock, "productlist");
+
+  //         // Iterate over each deliveryman to fetch their van data
+  //         for (let deliveryman of deliverymenWithArea) {
+  //           const q = query(collection(db, `Delivery/${deliveryman.id}/Van`));
+  //           const querySnapshot = await getDocs(q);
+  //           const vans = querySnapshot.docs.map((doc) => doc.data());
+  //           // Check if this van contains all orderProductsIds and has sufficient quantity
+  //           if (
+  //             orderProductsIds.every((id) =>
+  //               vans.some(
+  //                 (van) =>
+  //                   van.productid === id &&
+  //                   van.quantity >=
+  //                     orderData.items.find((item) => item.product_id === id)
+  //                       .quantity
+  //               )
+  //             )
+  //           ) {
+  //             deliverymanIds.push(deliveryman.id);
+  //           }
+  //         }
+
+  //         // Find deliveryman with fewest orders
+  //         if (deliverymanIds.length > 1) {
+  //           let minOrderCount = Infinity;
+  //           let deliverymanWithFewestOrders = null;
+  //           // Count orders per deliveryman
+  //           const ordersCount = {};
+  //           let lowOrder;
+  //           orders.forEach((order) => {
+  //             if (
+  //               order.status === "CONFIRMED" &&
+  //               deliverymanIds.includes(order.assign_to)
+  //             ) {
+  //               if (!ordersCount[order.assign_to]) {
+  //                 ordersCount[order.assign_to] = 0;
+  //               }
+  //               ordersCount[order.assign_to]++;
+  //             }
+  //           });
+  //           for (let noOrder in ordersCount) {
+  //             lowOrder = deliverymanIds.filter((id) => id !== noOrder);
+  //           }
+  //           // Find deliveryman with the fewest orders
+  //           let randomdeliveryMan;
+  //           if (Array.isArray(lowOrder) && lowOrder.length > 0) {
+  //             randomdeliveryMan = Math.floor(Math.random() * lowOrder.length);
+  //           }
+  //           // Find deliveryman with the fewest orders
+  //           if (Array.isArray(lowOrder) && lowOrder.length === 0) {
+  //             deliverymanIds.forEach((deliverymanId) => {
+  //               const orderCount = ordersCount[deliverymanId] || 0;
+  //               if (orderCount < minOrderCount) {
+  //                 minOrderCount = orderCount;
+  //                 deliverymanWithFewestOrders = deliverymanId;
+  //               }
+  //             });
+  //             console.log(
+  //               "Deliveryman with the fewest orders1:",
+  //               deliverymanWithFewestOrders
+  //             );
+  //             autoSelectedDeliveryManId = deliverymanWithFewestOrders;
+  //           } else if (Array.isArray(lowOrder) && lowOrder.length !== 0) {
+  //             console.log("random1", lowOrder[randomdeliveryMan]);
+  //             autoSelectedDeliveryManId = lowOrder[randomdeliveryMan];
+  //           } else {
+  //             let randomdeliveryManid = Math.floor(
+  //               Math.random() * deliverymanIds.length
+  //             );
+  //             console.log(deliverymanIds[randomdeliveryManid]);
+  //             autoSelectedDeliveryManId = deliverymanIds[randomdeliveryManid];
+  //           }
+  //         } else if (deliverymanIds.length === 0) {
+  //           let minOrderCount = Infinity;
+  //           let deliverymanWithFewestOrders = null;
+  //           // Count orders per deliveryman
+  //           const ordersCount = {};
+  //           let lowOrder = [];
+  //           orders.forEach((order) => {
+  //             if (order.status === "CONFIRMED") {
+  //               if (!ordersCount[order.assign_to]) {
+  //                 ordersCount[order.assign_to] = 0;
+  //               }
+  //               ordersCount[order.assign_to]++;
+  //             }
+  //           });
+  //           // Find deliveryman with the fewest orders
+  //           deliverymenWithArea.forEach((deliverymanId) => {
+  //             const orderCount =
+  //               ordersCount[deliverymanId.id] ??
+  //               lowOrder.push(deliverymanId.id);
+  //             if (orderCount < minOrderCount && lowOrder.length == 0) {
+  //               minOrderCount = orderCount;
+  //               deliverymanWithFewestOrders = deliverymanId.id;
+  //             }
+  //           });
+  //           if (Array.isArray(lowOrder) && lowOrder.length !== 0) {
+  //             let idIndex = Math.floor(Math.random() * lowOrder.length);
+  //             deliverymanWithFewestOrders = lowOrder[idIndex];
+  //           }
+  //           console.log(
+  //             "Deliveryman with the fewest orders2:",
+  //             deliverymanWithFewestOrders
+  //           );
+  //           autoSelectedDeliveryManId = deliverymanWithFewestOrders;
+  //           // console.log(lowOrder);
+  //         }
+  //       } else if (deliverymenWithArea.length === 1) {
+  //         autoSelectedDeliveryManId = deliverymenWithArea[0].id;
+  //         console.log("only one deliveryman", deliverymenWithArea[0].id); // Assuming deliveryman object has an 'id' property
+  //       }
+
+  //       if (orderData && orderData.items) {
+  //         for (const item of orderData.items) {
+  //           const productDocRef = doc(db, "products", item.product_id);
+  //           const productDoc = await getDoc(productDocRef);
+  //           const productData = productDoc.data();
+
+  //           if (productData) {
+  //             const newQuantity = productData.totalStock - item.quantity;
+  //             await updateDoc(productDocRef, { totalStock: newQuantity });
+  //           }
+  //         }
+  //       }
+
+  //       const newStatus = "OUT_FOR_DELIVERY";
+  //       const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  //       if (!orderData.hasOwnProperty("invoiceNumber")) {
+  //         await updateDoc(orderDocRef, {
+  //           status: newStatus,
+  //           OTP: otp,
+  //           invoiceNumber: invoiceNumber,
+  //           tokens: customertoken,
+  //           assign_to:
+  //             deliverymenWithArea.length !== 0
+  //               ? autoSelectedDeliveryManId
+  //               : selectedDeliveryManId,
+  //         });
+  //       } else {
+  //         await updateDoc(orderDocRef, {
+  //           status: newStatus,
+  //           OTP: otp,
+  //           assign_to:
+  //             deliverymenWithArea.length !== 0
+  //               ? autoSelectedDeliveryManId
+  //               : selectedDeliveryManId,
+  //         });
+  //         setLoading(false);
+  //       }
+
+  //       // Add a new log entry to the logs collection
+  //       const logData = {
+  //         name: "Admin",
+  //         status: newStatus,
+  //         updated_at: new Date().toISOString(),
+  //         updated_by: AdminId,
+  //         description:
+  //           "Seller confirmed the order. Preparing items for shipment.",
+  //       };
+
+  //       await addDoc(collection(db, `order/${id}/logs`), logData);
+
+  //       const AssignDeliver = {
+  //         name: "Admin",
+  //         status: "PROCESSING",
+  //         updated_at: new Date().toISOString(),
+  //         updated_by: AdminId,
+  //         description:
+  //           "Order assigned to the delivery partner for shipment. Preparing for dispatch.",
+  //       };
+  //       await addDoc(collection(db, `order/${id}/logs`), AssignDeliver);
+  //       updateData({
+  //         id,
+  //         status: newStatus,
+  //         OTP: otp,
+  //         invoiceNumber: invoiceNumber,
+  //         assign_to:
+  //           deliverymenWithArea.length !== 0
+  //             ? autoSelectedDeliveryManId
+  //             : selectedDeliveryManId,
+  //       });
+  //       console.log(
+  //         "messageewe============================= ",
+  //         autoSelectedDeliveryManId
+  //       );
+  //       console.log("message====================", selectedDeliveryManId);
+
+  //       // const logData = {
+  //       //   name: "Store",
+  //       //   status: newStatus,
+  //       //   updated_at: new Date().toISOString(),
+  //       //   updated_by: AdminId,
+  //       //   description: `Great news! order #${order_id} now being packed and out for delivery and should arrive soon.
+  //       //  Your delivery person, ${selecteddeliveryData[0].basic_info.name}, is on their way and can be reached at ${selecteddeliveryData[0].basic_info.phone_no} if you have any questions or need to provide additional instructions. Stay tuned for further updates!`,
+  //       // };
+  //       // await addDoc(collection(db, `order/${id}/logs`), logData);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.log(error);
+  //       setLoading(false);
+  //     }
+  //   } else {
+  //     setLoading(false);
+  //     setIssDeliverymanPopup(true);
+  //   }
+  // }
+  // const handleRejectOrder = async (id) => {
+  //   setLoading(true);
+  //   try {
+  //     // Toggle the status between 'publish' and 'hidden'
+  //     const newStatus = "REJECTED";
+  //     await updateDoc(doc(db, "order", id), {
+  //       status: newStatus,
+  //     });
+  //     // Add a new log entry to the logs collection
+  //     const logData = {
+  //       name: "Admin",
+  //       status: newStatus,
+  //       updated_at: new Date().toISOString(),
+  //       updated_by: AdminId,
+  //       description:
+  //         "Seller rejected the order due to unavailability of item or other reasons. Refund process initiated.",
+  //     };
+  //     await addDoc(collection(db, `order/${id}/logs`), logData);
+  //     updateData({ id, status: newStatus });
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.log(error);
+  //     setLoading(false);
+  //   }
+  // };
+
+  // async function handleMarkAsDelivered(id) {
+  //   setLoading(true);
+  //   try {
+  //     let transcationmode = filterData[0].transaction.mode;
+  //     // Toggle the status between 'publish' and 'hidden'
+  //     let transaction = {
+  //       date: new Date().toISOString(),
+  //       mode: "Cash on Delivery",
+  //       status: "Paid",
+  //       tx_id: "",
+  //     };
+  //     const newStatus = "DELIVERED";
+
+  //     if (transcationmode === "Cash on Delivery") {
+  //       await updateDoc(doc(db, "order", id), {
+  //         status: newStatus,
+  //         transaction,
+  //       });
+  //     } else {
+  //       await updateDoc(doc(db, "order", id), {
+  //         status: newStatus,
+  //         assign_to: "",
+  //       });
+  //     }
+  //     // Add a new log entry to the logs collection
+  //     const logData = {
+  //       name: "Store",
+  //       status: newStatus,
+  //       updated_at: new Date().toISOString(),
+  //       updated_by: AdminId,
+  //       description:
+  //         "Order successfully delivered to the customer at the provided address.",
+  //     };
+  //     await addDoc(collection(db, `order/${id}/logs`), logData);
+  //     updateData({ id, status: newStatus, assign_to: "" });
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.log(error);
+  //     setLoading(false);
+  //   }
+  // }
+  async function handlePreparedDelivery(id) {
     setLoading(true);
     const orderDocRef = doc(db, "order", id);
     const orderDoc = await getDoc(orderDocRef);
@@ -318,6 +646,7 @@ export default function NewOrder() {
         deliveryman.profile_status === "APPROVED" &&
         deliveryman.is_verified === true &&
         deliveryman.serviceArea &&
+        deliveryman.status === "online" &&
         deliveryman.serviceArea.some(
           (areas) =>
             areas.terretory &&
@@ -338,6 +667,7 @@ export default function NewOrder() {
           (deliveryman) =>
             deliveryman.profile_status === "APPROVED" &&
             deliveryman.is_verified === true &&
+            deliveryman.status === "online" &&
             deliveryman.serviceArea &&
             deliveryman.serviceArea.some(
               (areas) =>
@@ -345,6 +675,7 @@ export default function NewOrder() {
                 areas.terretory.some((t) => t.toLowerCase() === area)
             )
         );
+
         let autoSelectedDeliveryManId = null;
         if (deliverymenWithArea.length > 1) {
           let orderProductsIds = [];
@@ -355,19 +686,6 @@ export default function NewOrder() {
               orderProductsIds.push(product.product_id)
             )
           );
-
-          // console.log("ordered p id", orderProductsIds[0]);
-
-          // const productlist = productData.filter((value) => {
-          //   return value.id === orderProductsIds[0];
-          // });
-
-          // const orderQuantity = orders.filter((value) => {
-          //   return value.order_id === order_id
-          // });
-
-          // console.log(orderQuantity, "orderQuantity========");
-          // console.log(productlist[0].totalStock, "productlist");
 
           // Iterate over each deliveryman to fetch their van data
           for (let deliveryman of deliverymenWithArea) {
@@ -398,7 +716,10 @@ export default function NewOrder() {
             const ordersCount = {};
             let lowOrder;
             orders.forEach((order) => {
-              if (order.status === "CONFIRMED" && deliverymanIds.includes(order.assign_to)) {
+              if (
+                order.status === "OUT_FOR_DELIVERY" &&
+                deliverymanIds.includes(order.assign_to)
+              ) {
                 if (!ordersCount[order.assign_to]) {
                   ordersCount[order.assign_to] = 0;
                 }
@@ -471,6 +792,9 @@ export default function NewOrder() {
             );
             autoSelectedDeliveryManId = deliverymanWithFewestOrders;
             // console.log(lowOrder);
+          } else {
+            autoSelectedDeliveryManId = deliverymanIds[0];
+            console.log("working", autoSelectedDeliveryManId);
           }
         } else if (deliverymenWithArea.length === 1) {
           autoSelectedDeliveryManId = deliverymenWithArea[0].id;
@@ -514,52 +838,31 @@ export default function NewOrder() {
           });
           setLoading(false);
         }
-
-        // Add a new log entry to the logs collection
-        const logData = {
-          name: "Admin",
-          status: newStatus,
-          updated_at: new Date().toISOString(),
-          updated_by: AdminId,
-          description: "Seller confirmed the order. Preparing items for shipment.",
-        };
-
-        await addDoc(collection(db, `order/${id}/logs`), logData);
-
-        const AssignDeliver = {
-          name: "Admin",
-          status: "PROCESSING",
-          updated_at: new Date().toISOString(),
-          updated_by: AdminId,
-          description:
-            "Order assigned to the delivery partner for shipment. Preparing for dispatch.",
-        };
-        await addDoc(collection(db, `order/${id}/logs`), AssignDeliver);
-        updateData({
-          id,
-          status: newStatus,
-          OTP: otp,
-          invoiceNumber: invoiceNumber,
-          assign_to:
-            deliverymenWithArea.length !== 0
-              ? autoSelectedDeliveryManId
-              : selectedDeliveryManId,
-        });
-        console.log(
-          "messageewe============================= ",
-          autoSelectedDeliveryManId
+        let selecteddeliveryData = DeliveryManData.filter(
+          (item) =>
+            item.id === autoSelectedDeliveryManId ||
+            item.id === selectedDeliveryManId
         );
-        console.log("message====================", selectedDeliveryManId);
+        console.log(
+          selecteddeliveryData,
+          "selecteddeliveryData====================="
+        );
 
-        // const logData = {
-        //   name: "Store",
+        // updateData({
+        //   id,
         //   status: newStatus,
-        //   updated_at: new Date().toISOString(),
-        //   updated_by: AdminId,
-        //   description: `Great news! order #${order_id} now being packed and out for delivery and should arrive soon.
-        //  Your delivery person, ${selecteddeliveryData[0].basic_info.name}, is on their way and can be reached at ${selecteddeliveryData[0].basic_info.phone_no} if you have any questions or need to provide additional instructions. Stay tuned for further updates!`,
-        // };
-        // await addDoc(collection(db, `order/${id}/logs`), logData);
+        //   OTP: otp,
+        //   invoiceNumber: invoiceNumber,
+        //   assign_to:
+        //     deliverymenWithArea.length !== 0
+        //       ? autoSelectedDeliveryManId
+        //       : selectedDeliveryManId,
+        // });
+        // console.log(
+        //   "messageewe============================= ",
+        //   autoSelectedDeliveryManId
+        // );
+        // console.log("message====================", selectedDeliveryManId);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -568,72 +871,6 @@ export default function NewOrder() {
     } else {
       setLoading(false);
       setIssDeliverymanPopup(true);
-    }
-  };
-  const handleRejectOrder = async (id) => {
-    setLoading(true);
-    try {
-      // Toggle the status between 'publish' and 'hidden'
-      const newStatus = "REJECTED";
-      await updateDoc(doc(db, "order", id), {
-        status: newStatus,
-      });
-      // Add a new log entry to the logs collection
-      const logData = {
-        name: "Admin",
-        status: newStatus,
-        updated_at: new Date().toISOString(),
-        updated_by: AdminId,
-        description:
-          "Seller rejected the order due to unavailability of item or other reasons. Refund process initiated.",
-      };
-      await addDoc(collection(db, `order/${id}/logs`), logData);
-      updateData({ id, status: newStatus });
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  };
-
-  async function handleMarkAsDelivered(id) {
-    setLoading(true);
-    try {
-      let transcationmode = filterData[0].transaction.mode;
-      // Toggle the status between 'publish' and 'hidden'
-      let transaction = {
-        date: new Date().toISOString(),
-        mode: "Cash on Delivery",
-        status: "Paid",
-        tx_id: "",
-      };
-      const newStatus = "DELIVERED";
-
-      if (transcationmode === "Cash on Delivery") {
-        await updateDoc(doc(db, "order", id), {
-          status: newStatus,
-          transaction,
-        });
-      } else {
-        await updateDoc(doc(db, "order", id), {
-          status: newStatus,
-          assign_to: "",
-        });
-      }
-      // Add a new log entry to the logs collection
-      const logData = {
-        name: "Store",
-        status: newStatus,
-        updated_at: new Date().toISOString(),
-        updated_by: AdminId,
-        description: "Order successfully delivered to the customer at the provided address.",
-      };
-      await addDoc(collection(db, `order/${id}/logs`), logData);
-      updateData({ id, status: newStatus, assign_to: "" });
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
     }
   }
 
@@ -650,7 +887,13 @@ export default function NewOrder() {
           <img src={orderReject} className="bg-white" alt="orderRejected" />
         );
       case "PROCESSING":
-        return <img className="bg-white" src={orderDeliveryAssign} alt="orderDeliveryAssign" />;
+        return (
+          <img
+            className="bg-white"
+            src={orderDeliveryAssign}
+            alt="orderDeliveryAssign"
+          />
+        );
       case "DELIVERED":
         return (
           <img className="bg-white" src={orderDelevered} alt="orderDelivered" />
@@ -678,6 +921,74 @@ export default function NewOrder() {
             key={index}
             className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100"
           >
+            {isDeliverymanPopup && (
+              <div className="deliveryman_popup_list">
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <p className=" fs-5 mb-0">Chosse a delivery man</p>
+                  <img
+                    onClick={() => setIssDeliverymanPopup(false)}
+                    className="cursor_pointer"
+                    src={CloseIcon}
+                    alt="closeicon"
+                  />
+                </div>
+                <div className="deliveryman_list">
+                  <table className="w-100">
+                    <tr>
+                      <th className="w-50 pb-2">Name</th>
+                      <th className="w-50 pb-2">Pincode</th>
+                    </tr>
+                    {DeliveryManData.map((items, index) => {
+                      return (
+                        <tr key={index}>
+                          {items.serviceArea && items.serviceArea.length > 0 ? (
+                            <>
+                              <td className="d-flex align-items-center py-1 w-100">
+                                <input
+                                  onChange={() =>
+                                    setSelectedDeliveryManId(items.uid)
+                                  }
+                                  type="checkbox"
+                                  checked={selectedDeliveryManId === items.uid}
+                                />
+                                <p className="ms-2 mb-0 w-100">
+                                  {items.basic_info.name}
+                                </p>
+                              </td>
+                              {items.serviceArea.map((itm, ind) => {
+                                console.log(itm, " asfdasfasfsafafa");
+                                return (
+                                  <td key={ind} className="w-100">
+                                    {itm.area_name} ({itm.pincode})
+                                  </td>
+                                );
+                              })}
+                            </>
+                          ) : null}
+                        </tr>
+                      );
+                    })}
+                  </table>
+                </div>
+                <div className="d-flex justify-content-end gap-3 mt-3">
+                  <button
+                    onClick={() => setIssDeliverymanPopup(false)}
+                    className="cancel_btn"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      handlePreparedDelivery(item.id);
+                      setIssDeliverymanPopup(false);
+                    }}
+                    className="save_btn"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            )}
             <div className="d-flex align-items-center justify-content-between py-3 my-1">
               <div className="d-flex align-items-center">
                 <h1 className="fs-lg fw-500 black mb-0 me-1">
@@ -692,7 +1003,8 @@ export default function NewOrder() {
                       : item.status.toString().toLowerCase() === "delivered"
                       ? "fs-sm fw-400 mb-0 green stock_bg"
                       : "fs-sm fw-400 mb-0 black status_btn_red"
-                  }`}>
+                  }`}
+                >
                   {item.status}
                 </p>
               </div>
@@ -716,78 +1028,6 @@ export default function NewOrder() {
                       <img src={saveicon} alt="saveicon" />
                       ACCEPT ORDER
                     </button>
-
-                    {isDeliverymanPopup && (
-                      <div className="deliveryman_popup_list">
-                        <div className="d-flex align-items-center justify-content-between mb-3">
-                          <p className=" fs-5 mb-0">Chosse a delivery man</p>
-                          <img
-                            onClick={() => setIssDeliverymanPopup(false)}
-                            className="cursor_pointer"
-                            src={CloseIcon}
-                            alt="closeicon"
-                          />
-                        </div>
-                        <div className="deliveryman_list">
-                          <table className="w-100">
-                            <tr>
-                              <th className="w-50 pb-2">Name</th>
-                              <th className="w-50 pb-2">Pincode</th>
-                            </tr>
-                            {DeliveryManData.map((items, index) => {
-                              return (
-                                <tr key={index}>
-                                  {items.serviceArea &&
-                                  items.serviceArea.length > 0 ? (
-                                    <>
-                                      <td className="d-flex align-items-center py-1 w-100">
-                                        <input
-                                          onChange={() =>
-                                            setSelectedDeliveryManId(items.uid)
-                                          }
-                                          type="checkbox"
-                                          checked={
-                                            selectedDeliveryManId === items.uid
-                                          }
-                                        />
-                                        <p className="ms-2 mb-0 w-100">
-                                          {items.basic_info.name}
-                                        </p>
-                                      </td>
-                                      {items.serviceArea.map((itm, ind) => {
-                                        console.log(itm, " asfdasfasfsafafa");
-                                        return (
-                                          <td key={ind} className="w-100">
-                                            {itm.area_name} ({itm.pincode})
-                                          </td>
-                                        );
-                                      })}
-                                    </>
-                                  ) : null}
-                                </tr>
-                              );
-                            })}
-                          </table>
-                        </div>
-                        <div className="d-flex justify-content-end gap-3 mt-3">
-                          <button
-                            onClick={() => setIssDeliverymanPopup(false)}
-                            className="cancel_btn"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={() => {
-                              handleAcceptOrder(item.id);
-                              setIssDeliverymanPopup(false);
-                            }}
-                            className="save_btn"
-                          >
-                            Save
-                          </button>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               ) : item.status === "CANCELLED" ? (
@@ -840,14 +1080,6 @@ export default function NewOrder() {
                     >
                       <img src={whitesaveicon} alt="whitesaveicon" />
                       Mark as Delivered
-                    </button> */}
-                    <button
-                      onClick={() => handleSendForPack(item.id)}
-                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 green_btn fw-400 white"
-                      type="submit"
-                    >
-                      <img src={whitesaveicon} alt="whitesaveicon" />
-                      Send For Packaging
                     </button>
                   </div>
                 </div>
@@ -1006,7 +1238,11 @@ export default function NewOrder() {
                   <p className="fs-2sm fw-400 black mb-0">Order Logs</p>
                   <div className="order_logs_line">
                     {logs
-                      .sort((a, b) => new Date(a.data.updated_at) - new Date(b.data.updated_at))
+                      .sort(
+                        (a, b) =>
+                          new Date(a.data.updated_at) -
+                          new Date(b.data.updated_at)
+                      )
                       .map((log, index) => (
                         <div
                           key={index}
