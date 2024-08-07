@@ -271,7 +271,7 @@ export default function NewOrder() {
     }
   }
 
-  async function handlePreparedPacking(id, order_id) {
+  async function handlePreparedPacking(id) {
     setLoading(true);
     try {
       const newStatus = "PROCESSING";
@@ -295,7 +295,7 @@ export default function NewOrder() {
     }
   }
 
-  async function handlePreparedDelivery(id, order_id) {
+  async function handlePreparedDelivery(id) {
     setLoading(true);
     const orderDocRef = doc(db, "order", id);
     const orderDoc = await getDoc(orderDocRef);
@@ -336,6 +336,7 @@ export default function NewOrder() {
                 areas.terretory.some((t) => t.toLowerCase() === area)
             )
         );
+        
         let autoSelectedDeliveryManId = null;
         if (deliverymenWithArea.length > 1) {
           let orderProductsIds = [];
@@ -346,7 +347,10 @@ export default function NewOrder() {
               orderProductsIds.push(product.product_id)
             )
           );
-
+         
+          
+         
+        
           // console.log("ordered p id", orderProductsIds[0]);
 
           // const productlist = productData.filter((value) => {
@@ -487,25 +491,25 @@ export default function NewOrder() {
         const newStatus = "OUT_FOR_DELIVERY";
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         if (!orderData.hasOwnProperty("invoiceNumber")) {
-          await updateDoc(orderDocRef, {
-            status: newStatus,
-            OTP: otp,
-            invoiceNumber: invoiceNumber,
-            tokens: customertoken,
-            assign_to:
-              deliverymenWithArea.length !== 0
-                ? autoSelectedDeliveryManId
-                : selectedDeliveryManId,
-          });
+          // await updateDoc(orderDocRef, {
+          //   status: newStatus,
+          //   OTP: otp,
+          //   invoiceNumber: invoiceNumber,
+          //   tokens: customertoken,
+          //   assign_to:
+          //     deliverymenWithArea.length !== 0
+          //       ? autoSelectedDeliveryManId
+          //       : selectedDeliveryManId,
+          // });
         } else {
-          await updateDoc(orderDocRef, {
-            status: newStatus,
-            OTP: otp,
-            assign_to:
-              deliverymenWithArea.length !== 0
-                ? autoSelectedDeliveryManId
-                : selectedDeliveryManId,
-          });
+          // await updateDoc(orderDocRef, {
+          //   status: newStatus,
+          //   OTP: otp,
+          //   assign_to:
+          //     deliverymenWithArea.length !== 0
+          //       ? autoSelectedDeliveryManId
+          //       : selectedDeliveryManId,
+          // });
           setLoading(false);
         }
         let selecteddeliveryData = DeliveryManData.filter(
@@ -514,20 +518,20 @@ export default function NewOrder() {
             item.id === selectedDeliveryManId
         );
         console.log(
-          selecteddeliveryData,
+          autoSelectedDeliveryManId,
           "selecteddeliveryData====================="
         );
 
-        updateData({
-          id,
-          status: newStatus,
-          OTP: otp,
-          invoiceNumber: invoiceNumber,
-          assign_to:
-            deliverymenWithArea.length !== 0
-              ? autoSelectedDeliveryManId
-              : selectedDeliveryManId,
-        });
+        // updateData({
+        //   id,
+        //   status: newStatus,
+        //   OTP: otp,
+        //   invoiceNumber: invoiceNumber,
+        //   assign_to:
+        //     deliverymenWithArea.length !== 0
+        //       ? autoSelectedDeliveryManId
+        //       : selectedDeliveryManId,
+        // });
         console.log(
           "messageewe============================= ",
           autoSelectedDeliveryManId
