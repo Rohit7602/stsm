@@ -60,7 +60,7 @@ const DeliveryBoyInventory = () => {
     let filterData = productData.filter(
       (product) => product.name === productname
     );
-    // console.log("filter data si ", filterData)
+    console.log("filter data si ", filterData)
     setselectedProduct(filterData);
   }, [productname]);
 
@@ -377,6 +377,12 @@ const DeliveryBoyInventory = () => {
                         ? "N/A"
                         : selectedproduct[0].brand.name}
                     </p>
+                    <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">
+                      Total Stokes : {" "} 
+                      {selectedproduct.length === 0
+                        ? "N/A"
+                        : selectedproduct[0].totalStock}
+                    </p>
                   </div>
                   <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">
                     Unit :{" "}
@@ -626,11 +632,11 @@ const DeliveryBoyInventory = () => {
                       <th className="mw-200 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Brand</h3>
                       </th>
-                      <th className="mw-200 ps-3">
+                      {/* <th className="mw-200 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">
                           Total Stokes
                         </h3>
-                      </th>
+                      </th> */}
                       <th className="mx_140 cursor_pointer">
                         <p className="fw-400 fs-sm black mb-0 ms-2">Quantity</p>
                       </th>
@@ -673,11 +679,11 @@ const DeliveryBoyInventory = () => {
                                 {item.brand === " " ? "N/A" : item.brand}
                               </h3>
                             </td>
-                            <td className="ps-4 mw-200">
+                            {/* <td className="ps-4 mw-200">
                               <h3 className="fs-sm fw-400 black mb-0">
                                 {item.totalStocks}
                               </h3>
-                            </td>
+                            </td> */}
                             <td className="mx_140">
                               <h3 className="fs-sm fw-400 black mb-0 color_green ms-3">
                                 {item.quantity -
