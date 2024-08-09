@@ -371,12 +371,12 @@ const DeliveryBoyInventory = () => {
                         ? "N/A"
                         : selectedproduct[0].sku}
                     </p>
-                    <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">
+                    {/* <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">
                       Brand :
                       {selectedproduct.length === 0
                         ? "N/A"
                         : selectedproduct[0].brand.name}
-                    </p>
+                    </p> */}
                     <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">
                       Total Stokes : {" "} 
                       {selectedproduct.length === 0

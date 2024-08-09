@@ -1,4 +1,6 @@
 import React, { useRef } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import saveicon from "../../Images/svgs/saveicon.svg";
 import mobileicon from "../../Images/Png/mobile_icon_40.png";
 import billicon from "../../Images/svgs/bill_icon.svg";
@@ -34,6 +36,7 @@ import { useUserAuth } from "../../context/Authcontext";
 import Loader from "../Loader";
 import { useCustomerContext } from "../../context/Customergetters";
 import { useProductsContext } from "../../context/productgetter";
+import { CrossIcons } from "../../Common/Icon";
 
 export default function NewOrder() {
   const componentRef = useRef();
@@ -73,7 +76,6 @@ export default function NewOrder() {
     }
   }, [orders, id]);
 
-
   useEffect(() => {
     const order = orders.find((item) => item.order_id === id);
     if (order) {
@@ -85,11 +87,10 @@ export default function NewOrder() {
           data: doc.data(),
         }));
         setLogs(logsData);
-        console.log("message" ,"===========================")
       };
       fetchLogs();
     }
-  }, [id, orders ]);
+  }, [id, orders]);
 
   if (!id || filterData.length === 0) {
     return <Loader> </Loader>;
@@ -225,50 +226,50 @@ export default function NewOrder() {
     }
   };
 
-  async function handleMarkAsDelivered(id) {
-    setLoading(true);
-    try {
-      const usetoken = doc(db, "User", adminId);
-      const Getusertoken = await getDoc(usetoken);
-      const usertoken = Getusertoken.data();
-      // console.log("Getusertoken", usertoken.token);
-      const tokens = [...customertoken, ...usertoken.token];
-      let transcationmode = filterData[0].transaction.mode;
-      // Toggle the status between 'publish' and 'hidden'
-      let transaction = {
-        date: new Date().toISOString(),
-        mode: "Cash on Delivery",
-        status: "Paid",
-        tx_id: "",
-      };
-      const newStatus = "DELIVERED";
-      if (transcationmode === "Cash on Delivery") {
-        await updateDoc(doc(db, "order", id), {
-          status: newStatus,
-          transaction,
-        });
-      } else {
-        await updateDoc(doc(db, "order", id), {
-          status: newStatus,
-        });
-      }
-      // Add a new log entry to the logs collection
-      // const logData = {
-      //   name: "Store",
-      //   status: newStatus,
-      //   updated_at: new Date().toISOString(),
-      //   updated_by: AdminId,
-      //   tokens: tokens,
-      //   description: `Order #${order_id}  has been successfully delivered! We hope you’re happy with your purchase. If you need any assistance, feel free to contact us. We’d love to hear your feedback – please take a moment to rate our service and help us improve! ${"https://play.google.com/store/apps/details?id=com.hexabird.stsm&hl=en"}`,
-      // };
-      // await addDoc(collection(db, `order/${id}/logs`), logData);
-      updateData({ id, status: newStatus });
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  }
+  // async function handleMarkAsDelivered(id) {
+  //   setLoading(true);
+  //   try {
+  //     const usetoken = doc(db, "User", adminId);
+  //     const Getusertoken = await getDoc(usetoken);
+  //     const usertoken = Getusertoken.data();
+  //     // console.log("Getusertoken", usertoken.token);
+  //     const tokens = [...customertoken, ...usertoken.token];
+  //     let transcationmode = filterData[0].transaction.mode;
+  //     // Toggle the status between 'publish' and 'hidden'
+  //     let transaction = {
+  //       date: new Date().toISOString(),
+  //       mode: "Cash on Delivery",
+  //       status: "Paid",
+  //       tx_id: "",
+  //     };
+  //     const newStatus = "DELIVERED";
+  //     if (transcationmode === "Cash on Delivery") {
+  //       await updateDoc(doc(db, "order", id), {
+  //         status: newStatus,
+  //         transaction,
+  //       });
+  //     } else {
+  //       await updateDoc(doc(db, "order", id), {
+  //         status: newStatus,
+  //       });
+  //     }
+  //     // Add a new log entry to the logs collection
+  //     // const logData = {
+  //     //   name: "Store",
+  //     //   status: newStatus,
+  //     //   updated_at: new Date().toISOString(),
+  //     //   updated_by: AdminId,
+  //     //   tokens: tokens,
+  //     //   description: `Order #${order_id}  has been successfully delivered! We hope you’re happy with your purchase. If you need any assistance, feel free to contact us. We’d love to hear your feedback – please take a moment to rate our service and help us improve! ${"https://play.google.com/store/apps/details?id=com.hexabird.stsm&hl=en"}`,
+  //     // };
+  //     // await addDoc(collection(db, `order/${id}/logs`), logData);
+  //     updateData({ id, status: newStatus });
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.log(error);
+  //     setLoading(false);
+  //   }
+  // }
 
   async function handlePreparedPacking(id) {
     setLoading(true);
@@ -294,246 +295,533 @@ export default function NewOrder() {
     }
   }
 
- async function handlePreparedDelivery(id) {
-   setLoading(true);
-   const orderDocRef = doc(db, "order", id);
-   const orderDoc = await getDoc(orderDocRef);
-   const orderData = orderDoc.data();
-   let area = orderData.shipping.area.toLowerCase();
-   // console.log("Area is ", area);
+  //   async function handlePreparedDelivery(id) {
+  //     setLoading(true);
+  //     const orderDocRef = doc(db, "order", id);
+  //     const orderDoc = await getDoc(orderDocRef);
+  //     const orderData = orderDoc.data();
+  //     let area = orderData.shipping.area.toLowerCase();
+  //     // console.log("Area is ", area);
 
-   // Filter the deliverymen whose service areas include the desired area
-   const deliverymenWithArea = DeliveryManData.filter(
-     (deliveryman) =>
-       deliveryman.profile_status === "APPROVED" &&
-       deliveryman.is_verified === true &&
-       deliveryman.serviceArea &&
-       deliveryman.status === "online" &&
-       deliveryman.serviceArea.some(
-         (areas) =>
-           areas.terretory &&
-           areas.terretory.some((t) => t.toLowerCase() === area)
-       )
-   );
+  //     // Filter the deliverymen whose service areas include the desired area
+  //     const deliverymenWithArea = DeliveryManData.filter(
+  //       (deliveryman) =>
+  //         deliveryman.profile_status === "APPROVED" &&
+  //         deliveryman.is_verified === true &&
+  //         deliveryman.serviceArea &&
+  //         deliveryman.status === "online" &&
+  //         deliveryman.serviceArea.some(
+  //           (areas) =>
+  //             areas.terretory &&
+  //             areas.terretory.some((t) => t.toLowerCase() === area)
+  //         )
+  //     );
 
-   // console.log(deliverymenWithArea);
-   if (deliverymenWithArea.length !== 0 || selectedDeliveryManId !== null) {
-     try {
-       const orderDocRef = doc(db, "order", id);
-       const orderDoc = await getDoc(orderDocRef);
-       const orderData = orderDoc.data();
-       const invoiceNumber = await getInvoiceNo();
-       let area = orderData.shipping.area.toLowerCase();
-       // Filter the deliverymen whose service areas include the desired area
-       const deliverymenWithArea = DeliveryManData.filter(
-         (deliveryman) =>
-           deliveryman.profile_status === "APPROVED" &&
-           deliveryman.is_verified === true &&
-           deliveryman.status === "online" &&
-           deliveryman.serviceArea &&
-           deliveryman.serviceArea.some(
-             (areas) =>
-               areas.terretory &&
-               areas.terretory.some((t) => t.toLowerCase() === area)
-           )
-       );
+  //     // console.log(deliverymenWithArea);
+  //     if (deliverymenWithArea.length !== 0 || selectedDeliveryManId !== null) {
+  //       try {
+  //         const orderDocRef = doc(db, "order", id);
+  //         const orderDoc = await getDoc(orderDocRef);
+  //         const orderData = orderDoc.data();
+  //         const invoiceNumber = await getInvoiceNo();
+  //         let area = orderData.shipping.area.toLowerCase();
+  //         // Filter the deliverymen whose service areas include the desired area
+  //         const deliverymenWithArea = DeliveryManData.filter(
+  //           (deliveryman) =>
+  //             deliveryman.profile_status === "APPROVED" &&
+  //             deliveryman.is_verified === true &&
+  //             deliveryman.status === "online" &&
+  //             deliveryman.serviceArea &&
+  //             deliveryman.serviceArea.some(
+  //               (areas) =>
+  //                 areas.terretory &&
+  //                 areas.terretory.some((t) => t.toLowerCase() === area)
+  //             )
+  //         );
 
-       let autoSelectedDeliveryManId = null;
-       if (deliverymenWithArea.length > 1) {
-         let orderProductsIds = [];
-         let deliverymanIds = [];
-         // Collect product IDs from filterData
-         filterData.forEach((item) =>
-           item.items.forEach((product) =>
-             orderProductsIds.push(product.product_id)
-           )
-         );
+  //         let autoSelectedDeliveryManId = null;
+  //         if (deliverymenWithArea.length > 1) {
+  //           let orderProductsIds = [];
+  //           let deliverymanIds = [];
+  //           // Collect product IDs from filterData
+  //           filterData.forEach((item) =>
+  //             item.items.forEach((product) =>
+  //               orderProductsIds.push(product.product_id)
+  //             )
+  //           );
 
-         // Iterate over each deliveryman to fetch their van data
-         for (let deliveryman of deliverymenWithArea) {
-           const q = query(collection(db, `Delivery/${deliveryman.id}/Van`));
-           const querySnapshot = await getDocs(q);
-           const vans = querySnapshot.docs.map((doc) => doc.data());
-           // Check if this van contains all orderProductsIds and has sufficient quantity
-           if (
-             orderProductsIds.every((id) =>
-               vans.some(
-                 (van) =>
-                   van.productid === id &&
-                   van.quantity >=
-                     orderData.items.find((item) => item.product_id === id)
-                       .quantity
-               )
-             )
-           ) {
-             deliverymanIds.push(deliveryman.id);
-           }
-         }
+  //           // Iterate over each deliveryman to fetch their van data
+  //           for (let deliveryman of deliverymenWithArea) {
+  //             const q = query(collection(db, `Delivery/${deliveryman.id}/Van`));
+  //             const querySnapshot = await getDocs(q);
+  //             const vans = querySnapshot.docs.map((doc) => doc.data());
+  //             // Check if this van contains all orderProductsIds and has sufficient quantity
+  //             if (
+  //               orderProductsIds.every((id) =>
+  //                 vans.some(
+  //                   (van) =>
+  //                     van.productid === id &&
+  //                     van.quantity >=
+  //                       orderData.items.find((item) => item.product_id === id)
+  //                         .quantity
+  //                 )
+  //               )
+  //             ) {
+  //               deliverymanIds.push(deliveryman.id);
+  //             }
+  //           }
 
-         // Find deliveryman with fewest orders
-         if (deliverymanIds.length > 1) {
-           let minOrderCount = Infinity;
-           let deliverymanWithFewestOrders = null;
-           // Count orders per deliveryman
-           const ordersCount = {};
-           let lowOrder;
-           orders.forEach((order) => {
-             if (
-               order.status === "OUT_FOR_DELIVERY" &&
-               deliverymanIds.includes(order.assign_to)
-             ) {
-               if (!ordersCount[order.assign_to]) {
-                 ordersCount[order.assign_to] = 0;
-               }
-               ordersCount[order.assign_to]++;
-             }
-           });
-           for (let noOrder in ordersCount) {
-             lowOrder = deliverymanIds.filter((id) => id !== noOrder);
-           }
-           // Find deliveryman with the fewest orders
-           let randomdeliveryMan;
-           if (Array.isArray(lowOrder) && lowOrder.length > 0) {
-             randomdeliveryMan = Math.floor(Math.random() * lowOrder.length);
-           }
-           // Find deliveryman with the fewest orders
-           if (Array.isArray(lowOrder) && lowOrder.length === 0) {
-             deliverymanIds.forEach((deliverymanId) => {
-               const orderCount = ordersCount[deliverymanId] || 0;
-               if (orderCount < minOrderCount) {
-                 minOrderCount = orderCount;
-                 deliverymanWithFewestOrders = deliverymanId;
-               }
-             });
-             console.log(
-               "Deliveryman with the fewest orders1:",
-               deliverymanWithFewestOrders
-             );
-             autoSelectedDeliveryManId = deliverymanWithFewestOrders;
-           } else if (Array.isArray(lowOrder) && lowOrder.length !== 0) {
-             console.log("random1", lowOrder[randomdeliveryMan]);
-             autoSelectedDeliveryManId = lowOrder[randomdeliveryMan];
-           } else {
-             let randomdeliveryManid = Math.floor(
-               Math.random() * deliverymanIds.length
-             );
-             console.log(deliverymanIds[randomdeliveryManid]);
-             autoSelectedDeliveryManId = deliverymanIds[randomdeliveryManid];
-           }
-         } else if (deliverymanIds.length === 0) {
-           let minOrderCount = Infinity;
-           let deliverymanWithFewestOrders = null;
-           // Count orders per deliveryman
-           const ordersCount = {};
-           let lowOrder = [];
-           orders.forEach((order) => {
-             if (order.status === "CONFIRMED") {
-               if (!ordersCount[order.assign_to]) {
-                 ordersCount[order.assign_to] = 0;
-               }
-               ordersCount[order.assign_to]++;
-             }
-           });
-           // Find deliveryman with the fewest orders
-           deliverymenWithArea.forEach((deliverymanId) => {
-             const orderCount =
-               ordersCount[deliverymanId.id] ?? lowOrder.push(deliverymanId.id);
-             if (orderCount < minOrderCount && lowOrder.length == 0) {
-               minOrderCount = orderCount;
-               deliverymanWithFewestOrders = deliverymanId.id;
-             }
-           });
-           if (Array.isArray(lowOrder) && lowOrder.length !== 0) {
-             let idIndex = Math.floor(Math.random() * lowOrder.length);
-             deliverymanWithFewestOrders = lowOrder[idIndex];
-           }
-           console.log(
-             "Deliveryman with the fewest orders2:",
-             deliverymanWithFewestOrders
-           );
-           autoSelectedDeliveryManId = deliverymanWithFewestOrders;
-           // console.log(lowOrder);
-         } else {
-           autoSelectedDeliveryManId = deliverymanIds[0];
-           console.log("working", autoSelectedDeliveryManId);
-         }
-       } else if (deliverymenWithArea.length === 1) {
-         autoSelectedDeliveryManId = deliverymenWithArea[0].id;
-         console.log("only one deliveryman", deliverymenWithArea[0].id); // Assuming deliveryman object has an 'id' property
-       }
+  //           // Find deliveryman with fewest orders
+  //           if (deliverymanIds.length > 1) {
+  //             let minOrderCount = Infinity;
+  //             let deliverymanWithFewestOrders = null;
+  //             // Count orders per deliveryman
+  //             const ordersCount = {};
+  //             let lowOrder;
+  //             orders.forEach((order) => {
+  //               if (
+  //                 order.status === "OUT_FOR_DELIVERY" &&
+  //                 deliverymanIds.includes(order.assign_to)
+  //               ) {
+  //                 if (!ordersCount[order.assign_to]) {
+  //                   ordersCount[order.assign_to] = 0;
+  //                 }
+  //                 ordersCount[order.assign_to]++;
+  //               }
+  //             });
+  //             for (let noOrder in ordersCount) {
+  //               lowOrder = deliverymanIds.filter((id) => id !== noOrder);
+  //             }
+  //             // Find deliveryman with the fewest orders
+  //             let randomdeliveryMan;
+  //             if (Array.isArray(lowOrder) && lowOrder.length > 0) {
+  //               randomdeliveryMan = Math.floor(Math.random() * lowOrder.length);
+  //             }
+  //             // Find deliveryman with the fewest orders
+  //             if (Array.isArray(lowOrder) && lowOrder.length === 0) {
+  //               deliverymanIds.forEach((deliverymanId) => {
+  //                 const orderCount = ordersCount[deliverymanId] || 0;
+  //                 if (orderCount < minOrderCount) {
+  //                   minOrderCount = orderCount;
+  //                   deliverymanWithFewestOrders = deliverymanId;
+  //                 }
+  //               });
+  //               console.log(
+  //                 "Deliveryman with the fewest orders1:",
+  //                 deliverymanWithFewestOrders
+  //               );
+  //               autoSelectedDeliveryManId = deliverymanWithFewestOrders;
+  //             } else if (Array.isArray(lowOrder) && lowOrder.length !== 0) {
+  //               console.log("random1", lowOrder[randomdeliveryMan]);
+  //               autoSelectedDeliveryManId = lowOrder[randomdeliveryMan];
+  //             } else {
+  //               let randomdeliveryManid = Math.floor(
+  //                 Math.random() * deliverymanIds.length
+  //               );
+  //               console.log(deliverymanIds[randomdeliveryManid]);
+  //               autoSelectedDeliveryManId = deliverymanIds[randomdeliveryManid];
+  //             }
+  //           } else if (deliverymanIds.length === 0) {
+  //             let minOrderCount = Infinity;
+  //             let deliverymanWithFewestOrders = null;
+  //             // Count orders per deliveryman
+  //             const ordersCount = {};
+  //             let lowOrder = [];
+  //             orders.forEach((order) => {
+  //               if (order.status === "CONFIRMED") {
+  //                 if (!ordersCount[order.assign_to]) {
+  //                   ordersCount[order.assign_to] = 0;
+  //                 }
+  //                 ordersCount[order.assign_to]++;
+  //               }
+  //             });
+  //             // Find deliveryman with the fewest orders
+  //             deliverymenWithArea.forEach((deliverymanId) => {
+  //               const orderCount =
+  //                 ordersCount[deliverymanId.id] ??
+  //                 lowOrder.push(deliverymanId.id);
+  //               if (orderCount < minOrderCount && lowOrder.length == 0) {
+  //                 minOrderCount = orderCount;
+  //                 deliverymanWithFewestOrders = deliverymanId.id;
+  //               }
+  //             });
+  //             if (Array.isArray(lowOrder) && lowOrder.length !== 0) {
+  //               let idIndex = Math.floor(Math.random() * lowOrder.length);
+  //               deliverymanWithFewestOrders = lowOrder[idIndex];
+  //             }
+  //             console.log(
+  //               "Deliveryman with the fewest orders2:",
+  //               deliverymanWithFewestOrders
+  //             );
+  //             autoSelectedDeliveryManId = deliverymanWithFewestOrders;
+  //             // console.log(lowOrder);
+  //           } else {
+  //             autoSelectedDeliveryManId = deliverymanIds[0];
+  //             console.log("working", autoSelectedDeliveryManId);
+  //           }
+  //         } else if (deliverymenWithArea.length === 1) {
+  //           autoSelectedDeliveryManId = deliverymenWithArea[0].id;
+  //           console.log("only one deliveryman", deliverymenWithArea[0].id); // Assuming deliveryman object has an 'id' property
+  //         }
+  //         if (orderData && orderData.items) {
+  //           for (const item of orderData.items) {
+  //             const productDocRef = doc(db, "products", item.product_id);
+  //             const productDoc = await getDoc(productDocRef);
+  //             const productData = productDoc.data();
+  // //////////////////////           pending    /////////////////////
+  //             if (productData) {
+  //               const newQuantity = productData.totalStock - item.quantity;
+  //               await updateDoc(productDocRef, { totalStock: newQuantity });
+  //             }
+  //           }
+  //         }
 
-       if (orderData && orderData.items) {
-         for (const item of orderData.items) {
-           const productDocRef = doc(db, "products", item.product_id);
-           const productDoc = await getDoc(productDocRef);
-           const productData = productDoc.data();
+  //         const newStatus = "OUT_FOR_DELIVERY";
+  //         const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  //         if (!orderData.hasOwnProperty("invoiceNumber")) {
+  //           await updateDoc(orderDocRef, {
+  //             status: newStatus,
+  //             OTP: otp,
+  //             invoiceNumber: invoiceNumber,
+  //             tokens: customertoken,
+  //             assign_to:
+  //               deliverymenWithArea.length !== 0
+  //                 ? autoSelectedDeliveryManId
+  //                 : selectedDeliveryManId,
+  //           });
+  //         } else {
+  //           await updateDoc(orderDocRef, {
+  //             status: newStatus,
+  //             OTP: otp,
+  //             assign_to:
+  //               deliverymenWithArea.length !== 0
+  //                 ? autoSelectedDeliveryManId
+  //                 : selectedDeliveryManId,
+  //           });
+  //           setLoading(false);
+  //         }
+  //         let selecteddeliveryData = DeliveryManData.filter(
+  //           (item) =>
+  //             item.id === autoSelectedDeliveryManId ||
+  //             item.id === selectedDeliveryManId
+  //         );
 
-           if (productData) {
-             const newQuantity = productData.totalStock - item.quantity;
-             await updateDoc(productDocRef, { totalStock: newQuantity });
-           }
-         }
-       }
+  //         updateData({
+  //           id,
+  //           status: newStatus,
+  //           OTP: otp,
+  //           invoiceNumber: invoiceNumber,
+  //           assign_to:
+  //             deliverymenWithArea.length !== 0
+  //               ? autoSelectedDeliveryManId
+  //               : selectedDeliveryManId,
+  //         });
+  //         setLoading(false);
+  //       } catch (error) {
+  //         console.log(error);
+  //         setLoading(false);
+  //       }
+  //     } else {
+  //       setLoading(false);
+  //       setIssDeliverymanPopup(true);
+  //     }
+  //   }
 
-       const newStatus = "OUT_FOR_DELIVERY";
-       const otp = Math.floor(100000 + Math.random() * 900000).toString();
-       if (!orderData.hasOwnProperty("invoiceNumber")) {
-         await updateDoc(orderDocRef, {
-           status: newStatus,
-           OTP: otp,
-           invoiceNumber: invoiceNumber,
-           tokens: customertoken,
-           assign_to:
-             deliverymenWithArea.length !== 0
-               ? autoSelectedDeliveryManId
-               : selectedDeliveryManId,
-         });
-       } else {
-         await updateDoc(orderDocRef, {
-           status: newStatus,
-           OTP: otp,
-           assign_to:
-             deliverymenWithArea.length !== 0
-               ? autoSelectedDeliveryManId
-               : selectedDeliveryManId,
-         });
-         setLoading(false);
-       }
-       let selecteddeliveryData = DeliveryManData.filter(
-         (item) =>
-           item.id === autoSelectedDeliveryManId ||
-           item.id === selectedDeliveryManId
-       );
-      //  console.log(
-      //    selecteddeliveryData,
-      //    "selecteddeliveryData====================="
-      //  );
+  async function handlePreparedDelivery(id) {
+    setLoading(true);
+    const orderDocRef = doc(db, "order", id);
+    const orderDoc = await getDoc(orderDocRef);
+    const orderData = orderDoc.data();
+    let area = orderData.shipping.area.toLowerCase();
+    // console.log("Area is ", area);
 
-       // updateData({
-       //   id,
-       //   status: newStatus,
-       //   OTP: otp,
-       //   invoiceNumber: invoiceNumber,
-       //   assign_to:
-       //     deliverymenWithArea.length !== 0
-       //       ? autoSelectedDeliveryManId
-       //       : selectedDeliveryManId,
-       // });
-       // console.log(
-       //   "messageewe============================= ",
-       //   autoSelectedDeliveryManId
-       // );
-       // console.log("message====================", selectedDeliveryManId);
-       setLoading(false);
-     } catch (error) {
-       console.log(error);
-       setLoading(false);
-     }
-   } else {
-     setLoading(false);
-     setIssDeliverymanPopup(true);
-   }
- }
+    // Filter the deliverymen whose service areas include the desired area
+    const deliverymenWithArea = DeliveryManData.filter(
+      (deliveryman) =>
+        deliveryman.profile_status === "APPROVED" &&
+        deliveryman.is_verified === true &&
+        deliveryman.serviceArea &&
+        deliveryman.status === "online" &&
+        deliveryman.serviceArea.some(
+          (areas) =>
+            areas.terretory &&
+            areas.terretory.some((t) => t.toLowerCase() === area)
+        )
+    );
+
+    // console.log(deliverymenWithArea);
+    if (deliverymenWithArea.length !== 0 || selectedDeliveryManId !== null) {
+      try {
+        const orderDocRef = doc(db, "order", id);
+        const orderDoc = await getDoc(orderDocRef);
+        const orderData = orderDoc.data();
+        const invoiceNumber = await getInvoiceNo();
+        let area = orderData.shipping.area.toLowerCase();
+        // Filter the deliverymen whose service areas include the desired area
+        const deliverymenWithArea = DeliveryManData.filter(
+          (deliveryman) =>
+            deliveryman.profile_status === "APPROVED" &&
+            deliveryman.is_verified === true &&
+            deliveryman.status === "online" &&
+            deliveryman.serviceArea &&
+            deliveryman.serviceArea.some(
+              (areas) =>
+                areas.terretory &&
+                areas.terretory.some((t) => t.toLowerCase() === area)
+            )
+        );
+
+        let autoSelectedDeliveryManId = null;
+        if (deliverymenWithArea.length > 1) {
+          let orderProductsIds = [];
+          let deliverymanIds = [];
+          // Collect product IDs from filterData
+          filterData.forEach((item) =>
+            item.items.forEach((product) =>
+              orderProductsIds.push(product.product_id)
+            )
+          );
+
+          // Iterate over each deliveryman to fetch their van data
+          for (let deliveryman of deliverymenWithArea) {
+            const q = query(collection(db, `Delivery/${deliveryman.id}/Van`));
+            const querySnapshot = await getDocs(q);
+            const vans = querySnapshot.docs.map((doc) => doc.data());
+
+            // Check if this van contains all orderProductsIds and has sufficient quantity
+            if (
+              orderProductsIds.every((id) =>
+                vans.some(
+                  (van) =>
+                    van.productid === id &&
+                    van.quantity >=
+                      orderData.items.find((item) => item.product_id === id)
+                        .quantity
+                )
+              )
+            ) {
+              deliverymanIds.push(deliveryman.id);
+            }
+          }
+
+          // Find deliveryman with fewest orders
+          if (deliverymanIds.length > 1) {
+            let minOrderCount = Infinity;
+            let deliverymanWithFewestOrders = null;
+            // Count orders per deliveryman
+            const ordersCount = {};
+            let lowOrder;
+            orders.forEach((order) => {
+              if (
+                order.status === "OUT_FOR_DELIVERY" &&
+                deliverymanIds.includes(order.assign_to)
+              ) {
+                if (!ordersCount[order.assign_to]) {
+                  ordersCount[order.assign_to] = 0;
+                }
+                ordersCount[order.assign_to]++;
+              }
+            });
+            for (let noOrder in ordersCount) {
+              lowOrder = deliverymanIds.filter((id) => id !== noOrder);
+            }
+            // Find deliveryman with the fewest orders
+            let randomdeliveryMan;
+            if (Array.isArray(lowOrder) && lowOrder.length > 0) {
+              randomdeliveryMan = Math.floor(Math.random() * lowOrder.length);
+            }
+            // Find deliveryman with the fewest orders
+            if (Array.isArray(lowOrder) && lowOrder.length === 0) {
+              deliverymanIds.forEach((deliverymanId) => {
+                const orderCount = ordersCount[deliverymanId] || 0;
+                if (orderCount < minOrderCount) {
+                  minOrderCount = orderCount;
+                  deliverymanWithFewestOrders = deliverymanId;
+                }
+              });
+              console.log(
+                "Deliveryman with the fewest orders1:",
+                deliverymanWithFewestOrders
+              );
+              autoSelectedDeliveryManId = deliverymanWithFewestOrders;
+            } else if (Array.isArray(lowOrder) && lowOrder.length !== 0) {
+              console.log("random1", lowOrder[randomdeliveryMan]);
+              autoSelectedDeliveryManId = lowOrder[randomdeliveryMan];
+            } else {
+              let randomdeliveryManid = Math.floor(
+                Math.random() * deliverymanIds.length
+              );
+
+              // console.log(deliverymanIds[randomdeliveryManid]);
+              autoSelectedDeliveryManId = deliverymanIds[randomdeliveryManid];
+            }
+          } else if (deliverymanIds.length === 0) {
+            let minOrderCount = Infinity;
+            let deliverymanWithFewestOrders = null;
+            // Count orders per deliveryman
+            const ordersCount = {};
+            let lowOrder = [];
+            orders.forEach((order) => {
+              if (order.status === "CONFIRMED") {
+                if (!ordersCount[order.assign_to]) {
+                  ordersCount[order.assign_to] = 0;
+                }
+                ordersCount[order.assign_to]++;
+              }
+            });
+            // Find deliveryman with the fewest orders
+            deliverymenWithArea.forEach((deliverymanId) => {
+              const orderCount =
+                ordersCount[deliverymanId.id] ??
+                lowOrder.push(deliverymanId.id);
+              if (orderCount < minOrderCount && lowOrder.length == 0) {
+                minOrderCount = orderCount;
+                deliverymanWithFewestOrders = deliverymanId.id;
+              }
+            });
+            if (Array.isArray(lowOrder) && lowOrder.length !== 0) {
+              let idIndex = Math.floor(Math.random() * lowOrder.length);
+              deliverymanWithFewestOrders = lowOrder[idIndex];
+            }
+            console.log(
+              "Deliveryman with the fewest orders2:",
+              deliverymanWithFewestOrders
+            );
+            autoSelectedDeliveryManId = deliverymanWithFewestOrders;
+            // console.log(lowOrder);
+          } else {
+            autoSelectedDeliveryManId = deliverymanIds[0];
+            console.log("working", autoSelectedDeliveryManId);
+          }
+        } else if (deliverymenWithArea.length === 1) {
+          autoSelectedDeliveryManId = deliverymenWithArea[0].id;
+          console.log("only one deliveryman", deliverymenWithArea[0].id);
+        }
+
+        if (orderData && orderData.items) {
+          for (const item of orderData.items) {
+            const productDocRef = doc(db, "products", item.product_id);
+            const productDoc = await getDoc(productDocRef);
+            const productData = productDoc.data();
+            const q = query(
+              collection(db, `Delivery/${autoSelectedDeliveryManId}/Van`)
+            );
+            const querySnapshot = await getDocs(q);
+            const vanDoc = querySnapshot.docs.find(
+              (doc) => doc.data().productid === item.product_id
+            );
+            // console.log(autoSelectedDeliveryManId);
+            const showvandata = vanDoc.data();
+            if (showvandata.totalStocks !== 0) {
+              const newQuantity = showvandata.totalStocks - item.quantity;
+              console.log(newQuantity);
+              const vanDocRef = doc(
+                db,
+                `Delivery/${autoSelectedDeliveryManId}/Van`,
+                vanDoc.id
+              );
+              await updateDoc(vanDocRef, {
+                totalStocks: newQuantity,
+              });
+              const newStatus = "OUT_FOR_DELIVERY";
+              const otp = Math.floor(
+                100000 + Math.random() * 900000
+              ).toString();
+              if (!orderData.hasOwnProperty("invoiceNumber")) {
+                await updateDoc(orderDocRef, {
+                  status: newStatus,
+                  OTP: otp,
+                  invoiceNumber: invoiceNumber,
+                  tokens: customertoken,
+                  assign_to:
+                    deliverymenWithArea.length !== 0
+                      ? autoSelectedDeliveryManId
+                      : selectedDeliveryManId,
+                });
+              } else {
+                await updateDoc(orderDocRef, {
+                  status: newStatus,
+                  OTP: otp,
+                  assign_to:
+                    deliverymenWithArea.length !== 0
+                      ? autoSelectedDeliveryManId
+                      : selectedDeliveryManId,
+                });
+                setLoading(false);
+              }
+            } else if (productData.totalStock !== 0) {
+              const newQuantity = productData.totalStock - item.quantity;
+              await updateDoc(productDocRef, { totalStock: newQuantity });
+              const newStatus = "OUT_FOR_DELIVERY";
+              const otp = Math.floor(
+                100000 + Math.random() * 900000
+              ).toString();
+              if (!orderData.hasOwnProperty("invoiceNumber")) {
+                await updateDoc(orderDocRef, {
+                  status: newStatus,
+                  OTP: otp,
+                  invoiceNumber: invoiceNumber,
+                  tokens: customertoken,
+                  assign_to:
+                    deliverymenWithArea.length !== 0
+                      ? autoSelectedDeliveryManId
+                      : selectedDeliveryManId,
+                });
+              } else {
+                await updateDoc(orderDocRef, {
+                  status: newStatus,
+                  OTP: otp,
+                  assign_to:
+                    deliverymenWithArea.length !== 0
+                      ? autoSelectedDeliveryManId
+                      : selectedDeliveryManId,
+                });
+                setLoading(false);
+              }
+            } else {
+              toast.warning("product Stocks not available", {
+                position: toast.POSITION.TOP_RIGHT,
+              });
+            }
+          }
+        }
+
+        let selecteddeliveryData = DeliveryManData.filter(
+          (item) =>
+            item.id === autoSelectedDeliveryManId ||
+            item.id === selectedDeliveryManId
+        );
+
+        //  console.log(
+        //    selecteddeliveryData,
+        //    "selecteddeliveryData====================="
+        //  );
+
+        // updateData({
+        //   id,
+        //   status: newStatus,
+        //   OTP: otp,
+        //   invoiceNumber: invoiceNumber,
+        //   assign_to:
+        //     deliverymenWithArea.length !== 0
+        //       ? autoSelectedDeliveryManId
+        //       : selectedDeliveryManId,
+        // });
+        // console.log(
+        //   "messageewe============================= ",
+        //   autoSelectedDeliveryManId
+        // );
+        // console.log("message====================", selectedDeliveryManId);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
+      setIssDeliverymanPopup(true);
+    }
+  }
 
   const renderLogIcon = (status) => {
     switch (status) {
@@ -744,22 +1032,23 @@ export default function NewOrder() {
                     Out for Delivery
                   </button>
                 </div>
-              ) : item.status === "OUT_FOR_DELIVERY" ? (
-                <div className="d-flex align-items-center">
-                  <div className="d-flex align-itmes-center gap-3">
-                    <button
-                      onClick={() =>
-                        handleMarkAsDelivered(item.id, item.order_id)
-                      }
-                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 green_btn fw-400 white"
-                      type="submit"
-                    >
-                      <img src={whitesaveicon} alt="whitesaveicon" />
-                      Mark as Delivered
-                    </button>
-                  </div>
-                </div>
               ) : (
+                //           : item.status === "OUT_FOR_DELIVERY" ? (
+                // <div className="d-flex align-items-center">
+                //   <div className="d-flex align-itmes-center gap-3">
+                //     <button
+                //       onClick={() =>
+                //         handleMarkAsDelivered(item.id, item.order_id)
+                //       }
+                //       className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 green_btn fw-400 white"
+                //       type="submit"
+                //     >
+                //       <img src={whitesaveicon} alt="whitesaveicon" />
+                //       Mark as Delivered
+                //     </button>
+                //   </div>
+                // </div>
+                //           )
                 ""
               )}
             </div>
@@ -1324,6 +1613,7 @@ export default function NewOrder() {
             : null}
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }
