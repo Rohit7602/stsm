@@ -16,6 +16,7 @@ import CloseIcon from "../../Images/svgs/closeicon.svg";
 import proccesing from "../../Images/svgs/proccesing.svg";
 import profile from "../../Images/Png/customer_profile.png";
 import manimage from "../../Images/Png/manimage.jpg";
+import deliveryman_not_found from "../../Images/Png/deliveryman_not_found.webp";
 import { Col, Row } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 import { useOrdercontext } from "../../context/OrderGetter";
@@ -51,9 +52,11 @@ export default function NewOrder() {
   const [orderid, setOrderid] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedDeliveryManId, setSelectedDeliveryManId] = useState(null);
-  const [customSelectDeliveryManId, setCustomSelectDeliveryManId] =
-    useState(null);
+  const [filterallDeliverymans, setFilterAllDeliverymans] = useState(null);
   const [isDeliverymanPopup, setIssDeliverymanPopup] = useState(false);
+  const [isfilterDeliverymanPopup, setIsFilterDeliverymanPopup] =
+    useState(false);
+  const [allDeliverymans, setAllDeliverymans] = useState(null);
   const { customer } = useCustomerContext();
   const [customertoken, setCustomertoken] = useState(null);
   const { productData } = useProductsContext();
@@ -533,7 +536,6 @@ export default function NewOrder() {
     const orderDoc = await getDoc(orderDocRef);
     const orderData = orderDoc.data();
     let area = orderData.shipping.area.toLowerCase();
-    // console.log("Area is ", area);
 
     // Filter the deliverymen whose service areas include the desired area
     const deliverymenWithArea = DeliveryManData.filter(
@@ -548,8 +550,8 @@ export default function NewOrder() {
             areas.terretory.some((t) => t.toLowerCase() === area)
         )
     );
-
     // console.log(deliverymenWithArea);
+    // setAllDeliverymans(deliverymenWithArea);
     if (deliverymenWithArea.length !== 0 || selectedDeliveryManId !== null) {
       try {
         const orderDocRef = doc(db, "order", id);
@@ -570,6 +572,7 @@ export default function NewOrder() {
                 areas.terretory.some((t) => t.toLowerCase() === area)
             )
         );
+        setAllDeliverymans(deliverymenWithArea);
 
         let autoSelectedDeliveryManId = null;
         if (deliverymenWithArea.length > 1) {
@@ -683,10 +686,10 @@ export default function NewOrder() {
               let idIndex = Math.floor(Math.random() * lowOrder.length);
               deliverymanWithFewestOrders = lowOrder[idIndex];
             }
-            console.log(
-              "Deliveryman with the fewest orders2:",
-              deliverymanWithFewestOrders
-            );
+            // console.log(
+            //   "Deliveryman with the fewest orders2:",
+            //   deliverymanWithFewestOrders
+            // );
             autoSelectedDeliveryManId = deliverymanWithFewestOrders;
             // console.log(lowOrder);
           } else {
@@ -703,94 +706,128 @@ export default function NewOrder() {
             const productDocRef = doc(db, "products", item.product_id);
             const productDoc = await getDoc(productDocRef);
             const productData = productDoc.data();
+            const filterdeliverymanid = selectedDeliveryManId !== null
+                ? selectedDeliveryManId
+                : autoSelectedDeliveryManId;
             const q = query(
-              collection(db, `Delivery/${autoSelectedDeliveryManId}/Van`)
+              collection(db, `Delivery/${filterdeliverymanid}/Van`)
+            );
+
+            console.log(
+              filterdeliverymanid,
+              "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
             );
             const querySnapshot = await getDocs(q);
             const vanDoc = querySnapshot.docs.find(
               (doc) => doc.data().productid === item.product_id
             );
             // console.log(autoSelectedDeliveryManId);
+            // console.log(selectedDeliveryManId);
+            // console.log(vanDoc.data(), "fkkkkkkkkkkkkkkkkkkk");
             const showvandata = vanDoc.data();
-            if (showvandata.totalStocks !== 0) {
-              const newQuantity = showvandata.totalStocks - item.quantity;
-              console.log(newQuantity);
-              const vanDocRef = doc(
-                db,
-                `Delivery/${autoSelectedDeliveryManId}/Van`,
-                vanDoc.id
+            const filterorder = filterData
+              .flatMap((value) => value.items)
+              .filter((filterid) => filterid.product_id === item.product_id);
+            console.log(filterorder)
+            // console.log(filterorder[0].quantity <= showvandata.quantity);
+            // console.log(filterorder[0].quantity);
+            // console.log(showvandata.quantity);
+            // console.log(
+            //   showvandata.quantity >= 0,
+            //   "skkkkkkkkkkkkkkkkkkkkkkkkkkkk"
+            // );
+            if (filterorder[0].quantity > showvandata.quantity) {
+              const matchingDeliverymanData = await Promise.all(
+                deliverymenWithArea.map(async (value) => {
+                  const q = query(collection(db, `Delivery/${value.id}/Van`));
+                  const querySnapshot = await getDocs(q);
+                  const vans = querySnapshot.docs.map((doc) => doc.data());
+                  const filterproduct = vans.filter(
+                    (van) => van.productid === item.product_id
+                  );
+                  const filterquatity = filterproduct.filter(
+                    (van) => van.quantity > filterorder[0].quantity
+                  );
+                  if (filterquatity.length > 0) {
+                    return value;
+                  }
+                  return null;
+                })
               );
-              await updateDoc(vanDocRef, {
-                totalStocks: newQuantity,
-              });
-              const newStatus = "OUT_FOR_DELIVERY";
-              const otp = Math.floor(
-                100000 + Math.random() * 900000
-              ).toString();
-              if (!orderData.hasOwnProperty("invoiceNumber")) {
-                await updateDoc(orderDocRef, {
-                  status: newStatus,
-                  OTP: otp,
-                  invoiceNumber: invoiceNumber,
-                  tokens: customertoken,
-                  assign_to:
-                    deliverymenWithArea.length !== 0
-                      ? autoSelectedDeliveryManId
-                      : selectedDeliveryManId,
-                });
-              } else {
-                await updateDoc(orderDocRef, {
-                  status: newStatus,
-                  OTP: otp,
-                  assign_to:
-                    deliverymenWithArea.length !== 0
-                      ? autoSelectedDeliveryManId
-                      : selectedDeliveryManId,
-                });
-                setLoading(false);
+              const validDeliverymanData =  matchingDeliverymanData.filter(
+                (data) => data !== null
+              );
+              console.log(matchingDeliverymanData);
+              console.log(validDeliverymanData);
+              if (validDeliverymanData.length !== 0) {
+                setFilterAllDeliverymans(validDeliverymanData);
               }
-            } else if (productData.totalStock !== 0) {
-              const newQuantity = productData.totalStock - item.quantity;
-              await updateDoc(productDocRef, { totalStock: newQuantity });
-              const newStatus = "OUT_FOR_DELIVERY";
-              const otp = Math.floor(
-                100000 + Math.random() * 900000
-              ).toString();
-              if (!orderData.hasOwnProperty("invoiceNumber")) {
-                await updateDoc(orderDocRef, {
-                  status: newStatus,
-                  OTP: otp,
-                  invoiceNumber: invoiceNumber,
-                  tokens: customertoken,
-                  assign_to:
-                    deliverymenWithArea.length !== 0
-                      ? autoSelectedDeliveryManId
-                      : selectedDeliveryManId,
+              
+              else {
+                setIsFilterDeliverymanPopup(true);
+              }
+            }
+            if (showvandata.quantity >= 0) {
+              const newQuantity = showvandata.quantity - item.quantity;
+              if (newQuantity >= 0) {
+                const vanDocRef = doc(
+                  db,
+                  `Delivery/${
+                    selectedDeliveryManId
+                      ? selectedDeliveryManId
+                      : autoSelectedDeliveryManId
+                  }/Van`,
+                  vanDoc.id
+                );
+                await updateDoc(vanDocRef, {
+                  quantity: newQuantity,
                 });
+
+                const newStatus = "OUT_FOR_DELIVERY";
+                const otp = Math.floor(
+                  100000 + Math.random() * 900000
+                ).toString();
+                if (!orderData.hasOwnProperty("invoiceNumber")) {
+                  // await updateDoc(orderDocRef, {
+                  //   status: newStatus,
+                  //   OTP: otp,
+                  //   invoiceNumber: invoiceNumber,
+                  //   tokens: customertoken,
+                  //   assign_to:
+                  //     deliverymenWithArea.length !== 0
+                  //       ? autoSelectedDeliveryManId
+                  //       : selectedDeliveryManId,
+                  // });
+                } else {
+                  // await updateDoc(orderDocRef, {
+                  //   status: newStatus,
+                  //   OTP: otp,
+                  //   assign_to:
+                  //     deliverymenWithArea.length !== 0
+                  //       ? autoSelectedDeliveryManId
+                  //       : selectedDeliveryManId,
+                  // });
+                  setLoading(false);
+                }
               } else {
-                await updateDoc(orderDocRef, {
-                  status: newStatus,
-                  OTP: otp,
-                  assign_to:
-                    deliverymenWithArea.length !== 0
-                      ? autoSelectedDeliveryManId
-                      : selectedDeliveryManId,
+                toast.warning("product Stocks not found", {
+                  position: toast.POSITION.TOP_RIGHT,
                 });
-                setLoading(false);
               }
             } else {
               toast.warning("product Stocks not available", {
                 position: toast.POSITION.TOP_RIGHT,
               });
             }
+
+            ///////////////////////////////////////
           }
         }
-
-        let selecteddeliveryData = DeliveryManData.filter(
-          (item) =>
-            item.id === autoSelectedDeliveryManId ||
-            item.id === selectedDeliveryManId
-        );
+        // let selecteddeliveryData = DeliveryManData.filter(
+        //   (item) =>
+        //     item.id === autoSelectedDeliveryManId ||
+        //     item.id === selectedDeliveryManId
+        // );
 
         //  console.log(
         //    selecteddeliveryData,
@@ -822,6 +859,8 @@ export default function NewOrder() {
       setIssDeliverymanPopup(true);
     }
   }
+
+  // console.log(validDeliverymanData , "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
 
   const renderLogIcon = (status) => {
     switch (status) {
@@ -872,6 +911,7 @@ export default function NewOrder() {
   return (
     <div className="overflow-hidden">
       {isDeliverymanPopup && <div className="bg_black_overlay"></div>}
+      {isfilterDeliverymanPopup && <div className="bg_black_overlay"></div>}
 
       {filterData.map((item, index) => {
         return (
@@ -879,6 +919,99 @@ export default function NewOrder() {
             key={index}
             className="main_panel_wrapper pb-4 overflow-x-hidden bg_light_grey w-100"
           >
+            {isfilterDeliverymanPopup && (
+              <div className="deliveryman_popup_list d-flex flex-column">
+                <div className="d-flex align-items-center justify-content-between">
+                  <img
+                    onClick={() => setIsFilterDeliverymanPopup(false)}
+                    className="cursor_pointer"
+                    src={CloseIcon}
+                    alt="closeicon"
+                  />
+                </div>
+                <div className="deliveryman_list d-flex align-items-center justify-content-center">
+                  <div className=" text-center">
+                    <img width={'300px'}
+                      src={deliveryman_not_found}
+                      alt="deliveryman_not_found"
+                    />
+                    <h3 className=" text-center ">
+                      No delivery man has the required capacity for this
+                      delivery.
+                    </h3>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {isDeliverymanPopup && (
+              <div className="deliveryman_popup_list">
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <p className=" fs-5 mb-0">Chosse a delivery man</p>
+                  <img
+                    onClick={() => setIssDeliverymanPopup(false)}
+                    className="cursor_pointer"
+                    src={CloseIcon}
+                    alt="closeicon"
+                  />
+                </div>
+                <div className="deliveryman_list">
+                  <table className="w-100">
+                    <tr>
+                      <th className="w-50 pb-2">Name</th>
+                      <th className="w-50 pb-2">Pincode</th>
+                    </tr>
+                    {DeliveryManData.map((items, index) => {
+                      return (
+                        <tr key={index}>
+                          {items.serviceArea && items.serviceArea.length > 0 ? (
+                            <>
+                              <td className="d-flex align-items-center py-1 w-100">
+                                <input
+                                  onChange={() =>
+                                    setSelectedDeliveryManId(items.uid)
+                                  }
+                                  type="checkbox"
+                                  checked={selectedDeliveryManId === items.uid}
+                                />
+                                <p className="ms-2 mb-0 w-100">
+                                  {items.basic_info.name}
+                                </p>
+                              </td>
+                              {items.serviceArea.map((itm, ind) => {
+                                console.log(itm, " asfdasfasfsafafa");
+                                return (
+                                  <td key={ind} className="w-100">
+                                    {itm.area_name} ({itm.pincode})
+                                  </td>
+                                );
+                              })}
+                            </>
+                          ) : null}
+                        </tr>
+                      );
+                    })}
+                  </table>
+                </div>
+                <div className="d-flex justify-content-end gap-3 mt-3">
+                  <button
+                    onClick={() => setIssDeliverymanPopup(false)}
+                    className="cancel_btn"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      handlePreparedDelivery(item.id);
+                      setIssDeliverymanPopup(false);
+                    }}
+                    className="save_btn"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            )}
             <div className="d-flex align-items-center justify-content-between py-3 my-1">
               <div className="d-flex align-items-center">
                 <h1 className="fs-lg fw-500 black mb-0 me-1">
@@ -918,78 +1051,6 @@ export default function NewOrder() {
                       <img src={saveicon} alt="saveicon" />
                       ACCEPT ORDER
                     </button>
-
-                    {isDeliverymanPopup && (
-                      <div className="deliveryman_popup_list">
-                        <div className="d-flex align-items-center justify-content-between mb-3">
-                          <p className=" fs-5 mb-0">Chosse a delivery man</p>
-                          <img
-                            onClick={() => setIssDeliverymanPopup(false)}
-                            className="cursor_pointer"
-                            src={CloseIcon}
-                            alt="closeicon"
-                          />
-                        </div>
-                        <div className="deliveryman_list">
-                          <table className="w-100">
-                            <tr>
-                              <th className="w-50 pb-2">Name</th>
-                              <th className="w-50 pb-2">Pincode</th>
-                            </tr>
-                            {DeliveryManData.map((items, index) => {
-                              return (
-                                <tr key={index}>
-                                  {items.serviceArea &&
-                                  items.serviceArea.length > 0 ? (
-                                    <>
-                                      <td className="d-flex align-items-center py-1 w-100">
-                                        <input
-                                          onChange={() =>
-                                            setSelectedDeliveryManId(items.uid)
-                                          }
-                                          type="checkbox"
-                                          checked={
-                                            selectedDeliveryManId === items.uid
-                                          }
-                                        />
-                                        <p className="ms-2 mb-0 w-100">
-                                          {items.basic_info.name}
-                                        </p>
-                                      </td>
-                                      {items.serviceArea.map((itm, ind) => {
-                                        console.log(itm, " asfdasfasfsafafa");
-                                        return (
-                                          <td key={ind} className="w-100">
-                                            {itm.area_name} ({itm.pincode})
-                                          </td>
-                                        );
-                                      })}
-                                    </>
-                                  ) : null}
-                                </tr>
-                              );
-                            })}
-                          </table>
-                        </div>
-                        <div className="d-flex justify-content-end gap-3 mt-3">
-                          <button
-                            onClick={() => setIssDeliverymanPopup(false)}
-                            className="cancel_btn"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={() => {
-                              handleAcceptOrder(item.id);
-                              setIssDeliverymanPopup(false);
-                            }}
-                            className="save_btn"
-                          >
-                            Save
-                          </button>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               ) : item.status === "CANCELLED" ? (
