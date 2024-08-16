@@ -706,7 +706,8 @@ export default function NewOrder() {
             const productDocRef = doc(db, "products", item.product_id);
             const productDoc = await getDoc(productDocRef);
             const productData = productDoc.data();
-            const filterdeliverymanid = selectedDeliveryManId !== null
+            const filterdeliverymanid =
+              selectedDeliveryManId !== null
                 ? selectedDeliveryManId
                 : autoSelectedDeliveryManId;
             const q = query(
@@ -728,7 +729,7 @@ export default function NewOrder() {
             const filterorder = filterData
               .flatMap((value) => value.items)
               .filter((filterid) => filterid.product_id === item.product_id);
-            console.log(filterorder)
+            // console.log(filterorder);
             // console.log(filterorder[0].quantity <= showvandata.quantity);
             // console.log(filterorder[0].quantity);
             // console.log(showvandata.quantity);
@@ -736,6 +737,10 @@ export default function NewOrder() {
             //   showvandata.quantity >= 0,
             //   "skkkkkkkkkkkkkkkkkkkkkkkkkkkk"
             // );
+            console.log(showvandata.quantity >= item.quantity);
+            console.log( item.quantity);
+            console.log(showvandata.quantity );
+
             if (filterorder[0].quantity > showvandata.quantity) {
               const matchingDeliverymanData = await Promise.all(
                 deliverymenWithArea.map(async (value) => {
@@ -754,65 +759,43 @@ export default function NewOrder() {
                   return null;
                 })
               );
-              const validDeliverymanData =  matchingDeliverymanData.filter(
+              const validDeliverymanData = matchingDeliverymanData.filter(
                 (data) => data !== null
               );
               console.log(matchingDeliverymanData);
               console.log(validDeliverymanData);
               if (validDeliverymanData.length !== 0) {
                 setFilterAllDeliverymans(validDeliverymanData);
-              }
-              
-              else {
+              } else {
                 setIsFilterDeliverymanPopup(true);
               }
             }
-            if (showvandata.quantity >= 0) {
-              const newQuantity = showvandata.quantity - item.quantity;
-              if (newQuantity >= 0) {
-                const vanDocRef = doc(
-                  db,
-                  `Delivery/${
-                    selectedDeliveryManId
-                      ? selectedDeliveryManId
-                      : autoSelectedDeliveryManId
-                  }/Van`,
-                  vanDoc.id
-                );
-                await updateDoc(vanDocRef, {
-                  quantity: newQuantity,
+            if (showvandata.quantity >= item.quantity) {
+              const newStatus = "OUT_FOR_DELIVERY";
+              const otp = Math.floor(
+                100000 + Math.random() * 900000
+              ).toString();
+              if (!orderData.hasOwnProperty("invoiceNumber")) {
+                await updateDoc(orderDocRef, {
+                  status: newStatus,
+                  OTP: otp,
+                  invoiceNumber: invoiceNumber,
+                  tokens: customertoken,
+                  assign_to:
+                    deliverymenWithArea.length !== 0
+                      ? autoSelectedDeliveryManId
+                      : selectedDeliveryManId,
                 });
-
-                const newStatus = "OUT_FOR_DELIVERY";
-                const otp = Math.floor(
-                  100000 + Math.random() * 900000
-                ).toString();
-                if (!orderData.hasOwnProperty("invoiceNumber")) {
-                  // await updateDoc(orderDocRef, {
-                  //   status: newStatus,
-                  //   OTP: otp,
-                  //   invoiceNumber: invoiceNumber,
-                  //   tokens: customertoken,
-                  //   assign_to:
-                  //     deliverymenWithArea.length !== 0
-                  //       ? autoSelectedDeliveryManId
-                  //       : selectedDeliveryManId,
-                  // });
-                } else {
-                  // await updateDoc(orderDocRef, {
-                  //   status: newStatus,
-                  //   OTP: otp,
-                  //   assign_to:
-                  //     deliverymenWithArea.length !== 0
-                  //       ? autoSelectedDeliveryManId
-                  //       : selectedDeliveryManId,
-                  // });
-                  setLoading(false);
-                }
               } else {
-                toast.warning("product Stocks not found", {
-                  position: toast.POSITION.TOP_RIGHT,
+                await updateDoc(orderDocRef, {
+                  status: newStatus,
+                  OTP: otp,
+                  assign_to:
+                    deliverymenWithArea.length !== 0
+                      ? autoSelectedDeliveryManId
+                      : selectedDeliveryManId,
                 });
+                setLoading(false);
               }
             } else {
               toast.warning("product Stocks not available", {
@@ -931,7 +914,8 @@ export default function NewOrder() {
                 </div>
                 <div className="deliveryman_list d-flex align-items-center justify-content-center">
                   <div className=" text-center">
-                    <img width={'300px'}
+                    <img
+                      width={"300px"}
                       src={deliveryman_not_found}
                       alt="deliveryman_not_found"
                     />
