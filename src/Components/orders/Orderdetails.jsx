@@ -737,9 +737,9 @@ export default function NewOrder() {
             //   showvandata.quantity >= 0,
             //   "skkkkkkkkkkkkkkkkkkkkkkkkkkkk"
             // );
-            console.log(showvandata.quantity >= item.quantity);
-            console.log( item.quantity);
-            console.log(showvandata.quantity );
+            // console.log(showvandata.quantity >= item.quantity);
+            // console.log( item.quantity);
+            // console.log(showvandata.quantity );
 
             if (filterorder[0].quantity > showvandata.quantity) {
               const matchingDeliverymanData = await Promise.all(
