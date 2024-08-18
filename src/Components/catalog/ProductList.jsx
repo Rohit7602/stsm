@@ -386,9 +386,19 @@ const ProductList = () => {
                           <h3 className="fs-sm fw-400 black mb-0">
                             ₹{' '}
                             {value.varients.map((item) =>
-                              item.discountType === 'Amount'
-                                ? item.originalPrice - item.discount
-                                : item.originalPrice - (item.originalPrice * item.discount) / 100
+                            {
+                             const data =  item.discountType === "Amount"
+                                 ? item.unitPrice - item.discount
+                                 : item.unitPrice -
+                                (item.unitPrice * item.discount) / 100;
+                              
+                                const truncatedNumber = parseFloat(
+                                  data.toFixed(3)
+                              );
+                              
+                              return truncatedNumber
+                            }
+                              
                             )}
                           </h3>
                         </td>
@@ -414,10 +424,10 @@ const ProductList = () => {
                             ₹{' '}
                             {value.varients.map(
                               (item) =>
-                                (item.discountType === 'Amount'
-                                  ? item.originalPrice - item.discount
-                                  : item.originalPrice -
-                                    (item.originalPrice * item.discount) / 100) * value.totalStock
+                                ( item.discountType === 'Amount'
+                                  ? item.unitPrice - item.discount
+                                  : item.unitPrice -
+                                    (item.unitPrice * item.discount) / 100) * value.totalStock
                             )}
                           </h3>
                         </td>
