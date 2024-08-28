@@ -35,12 +35,12 @@ const DeliveryBoyInventory = () => {
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [selectedValue, setSelectedValue] = useState();
   const [productname, setproductname] = useState("");
-  const [varient, setVarient] = useState("");
+  // const [varient, setVarient] = useState("");
   const [quantity, setquantity] = useState("");
   const [selectedproduct, setselectedProduct] = useState([]);
   const [AllItems, setAllItems] = useState([]);
   const [delivryMan, setDeliveryMan] = useState([]);
-  const [color, setColor] = useState("");
+  // const [color, setColor] = useState("");
 
   useEffect(() => {
     const DeliveryManDatas = DeliveryManData.filter((item) => item.id === id);
@@ -86,7 +86,7 @@ const DeliveryBoyInventory = () => {
   function HandleAddToVan(e) {
     if (
       selectedproduct.length > 0 &&
-      varient &&
+      // varient &&
       quantity &&
       selectedproduct[0].totalStock >= quantity
     ) {
@@ -97,9 +97,9 @@ const DeliveryBoyInventory = () => {
       console.log("added");
       console.log("function working here ");
       // console.log("all vairents ", allvarients)
-      let currentvairent = allvarients
-        .flat()
-        .filter((data) => data.VarientName === varient);
+      // let currentvairent = allvarients
+      //   .flat()
+      //   .filter((data) => data.VarientName === varient);
       // console.log("currentvairent valie ", currentvairent[0])
       setAllItems((prevVariants) => [
         ...prevVariants,
@@ -114,8 +114,8 @@ const DeliveryBoyInventory = () => {
           unitType:
             selectedproduct.length > 0 &&
             selectedproduct[0].varients[0].unitType,
-          varient: currentvairent.length > 0 && currentvairent[0],
-          color: color,
+          // varient: currentvairent.length > 0 && currentvairent[0],
+          // color: color,
           tax: selectedproduct.length > 0 && selectedproduct[0].Tax,
           DeliveryCharge:
             selectedproduct.length > 0 && selectedproduct[0].DeliveryCharge,
@@ -130,9 +130,9 @@ const DeliveryBoyInventory = () => {
       setproductname("");
       setselectedProduct([]);
       setquantity("");
-      setVarient("");
+      // setVarient("");
     } else if (
-      varient === "" ||
+      // varient === "" ||
       quantity === "" ||
       selectedproduct.length < 0
     ) {
@@ -395,7 +395,7 @@ const DeliveryBoyInventory = () => {
             </div>
             <div className="d-flex align-items-center justify-content-between w-100 gap-4">
               <div className=" w-100 d-flex align-items-center gap-3">
-                <div className="dropdown w-100">
+                {/* <div className="dropdown w-100">
                   <button
                     style={{ height: "44px" }}
                     className="btn dropdown-toggle w-100 quantity_bg"
@@ -447,8 +447,8 @@ const DeliveryBoyInventory = () => {
                         );
                       })}
                   </ul>
-                </div>
-                <div className="dropdown w-100">
+                </div> */}
+                {/* <div className="dropdown w-100">
                   <button
                     style={{ height: "44px" }}
                     className="btn dropdown-toggle w-100 quantity_bg"
@@ -498,7 +498,7 @@ const DeliveryBoyInventory = () => {
                         );
                       })}
                   </ul>
-                </div>
+                </div> */}
                 {/* <div className="dropdown w-100">
                   <button
                     style={{ height: '44px' }}
@@ -565,7 +565,7 @@ const DeliveryBoyInventory = () => {
                   </ul>
                 </div> */}
                 <input
-                  className="w-100 quantity_bg outline_none"
+                  className="w-25 quantity_bg outline_none"
                   type="text"
                   placeholder="Quantity"
                   value={quantity}
