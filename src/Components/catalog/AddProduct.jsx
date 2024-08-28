@@ -67,7 +67,6 @@ const AddProduct = () => {
   const [searchdata, setSearchdata] = useState([]);
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [stockpopup, setStockpopup] = useState(false);
-  const [unitType, setUnitType] = useState("KG");
   const [DeliveryCharge, setDeliveryCharges] = useState();
   const [ServiceCharge, setServiceCharge] = useState();
 
@@ -88,6 +87,7 @@ const AddProduct = () => {
   const [perUnitPrice, setPerUnitPrice] = useState("");
   const [totalStockQun, setTotalStockQun] = useState("");
   const [showchecked, setShowchecked] = useState(false);
+  const [showweightfield, setShowweightfield] = useState(false);
 
   const handleSelectCategory = (category) => {
     setSearchvalue("");
@@ -111,6 +111,7 @@ const AddProduct = () => {
   const [discountvalue, setDiscountvalue] = useState(null);
   const [unitPrice, setUnitPrice] = useState("");
   const [totalunit, setTotalunit] = useState("");
+  const [totalweight, setTotalweight] = useState(null);
   const [SalesmanCommission, setSalesmanComssion] = useState("");
   const [VarintName, setVariantsNAME] = useState("");
   const [Tax, setTax] = useState(null);
@@ -121,17 +122,18 @@ const AddProduct = () => {
       ...prevVariants,
       {
         totalunit: totalunit,
+        totalweight: totalweight,
         SalesmanCommission: SalesmanCommission,
         VarientName: VarintName,
         unitPrice: unitPrice,
         discountType: discountType,
         discountvalue: discountvalue,
-        unitType,
       },
     ]);
     // Reset individual variant properties
     setUnitPrice(0);
     setTotalunit("");
+    setTotalweight(null);
     setDiscountType(null);
     setDiscountvalue(null);
     setVariantsNAME("");
@@ -169,6 +171,24 @@ const AddProduct = () => {
       }
     });
   };
+
+  const onhandelunittype = (itmes) => {
+    setStockUnitType(itmes);
+    if (itmes === "BAG") {
+      setShowweightfield(true);
+    } else {
+      setShowweightfield(false);
+    }
+  };
+
+  useEffect(() => {
+    if (stockUnitType === "BAG") {
+    setShowweightfield(true);    
+    }
+
+  }, [stockUnitType])
+
+
 
   const closeDropdown = (index) => {
     setDropdownOpen((prevState) => {
@@ -313,6 +333,7 @@ const AddProduct = () => {
     setLongDes("");
     setUnitPrice("");
     setTotalunit("");
+    setTotalweight(null);
     setDiscountType(null);
     setDiscountvalue(null);
     setVariants([]);
@@ -393,12 +414,12 @@ const AddProduct = () => {
                 varients: [
                   {
                     totalunit: totalunit,
+                    totalweight: totalweight,
                     SalesmanCommission: SalesmanCommission,
                     VarientName: VarintName,
                     unitPrice: unitPrice,
                     discountType: discountType,
                     discountvalue: discountvalue,
-                    unitType,
                   },
                 ],
               }
@@ -485,6 +506,7 @@ const AddProduct = () => {
         if (items.SalesmanCommission)
           setSalesmanComssion(items.varients.SalesmanCommission);
         if (items.totalunit) setTotalunit(items.varients.totalunit);
+        if (items.totalweight) setTotalweight(items.varients.totalweight);
         if (items.showchecked) setShowchecked(items.varients.showchecked);
         if (items.stockAlert) setStockCount(items.stockAlert);
         if (items.colors) setStoreColors(items.colors);
@@ -507,20 +529,15 @@ const AddProduct = () => {
           items.varients.map((itm) => {
             allVariants.push({
               totalunit: itm.totalunit,
+              totalweight: itm.totalweight,
               SalesmanCommission: itm.SalesmanCommission,
               VarientName: itm.VarientName,
               unitPrice: itm.unitPrice,
               discountType: itm.discountType,
               discountvalue: itm.discountvalue,
-              unitType: itm.unitType,
             });
           });
-
-          if (allVariants.length == 1) {
-            setUnitType(allVariants[0].unitType);
-          }
         }
-
         const allAreas = [];
         if (items.serviceable_areas) {
           items.serviceable_areas.map((item) => {
@@ -626,12 +643,12 @@ const AddProduct = () => {
               varients: [
                 {
                   totalunit: variants[0].totalunit,
+                  totalweight: showweightfield ?  variants[0].totalweight : null,
                   SalesmanCommission: variants[0].SalesmanCommission,
                   VarientName: variants[0].VarientName,
                   unitPrice: variants[0].unitPrice,
                   discountType: variants[0].discountType,
                   discountvalue: variants[0].discountvalue,
-                  unitType: variants[0].unitType,
                 },
               ],
             }
@@ -1091,7 +1108,7 @@ const AddProduct = () => {
                             </div>
                             <div className="d-flex flex-column flex-sm-row gap-3 flex-wrap">
                               <div className=" d-flex align-items-center gap-3">
-                                <div className="w-100">
+                                {/* <div className="w-100">
                                   <label
                                     htmlFor="salesMan"
                                     className="fs-xs fw-400 mt-3 black"
@@ -1154,14 +1171,15 @@ const AddProduct = () => {
                                       </Dropdown.Menu>
                                     </Dropdown>
                                   </div>
-                                </div>
+                                </div> */}
 
                                 <div className="w-100">
                                   <label
                                     htmlFor="origi"
                                     className="fs-xs fw-400 mt-3 black"
                                   >
-                                    Total Unit
+                                    Total Unit{" "}
+                                    <span>{`(${stockUnitType})`}</span>
                                   </label>
                                   <input
                                     required
@@ -1247,115 +1265,151 @@ const AddProduct = () => {
                                   </div>
                                 </div>
                               </div>
-                              <div className="d-flex align-items-center gap-3">
-                                <div className="w-100 mt-4">
-                                  <input
-                                    type="checkbox"
-                                    checked={variant.showchecked}
-                                    onChange={() =>
-                                      setVariants((prevVariants) =>
-                                        prevVariants.map((v, i) =>
-                                          i === index
-                                            ? {
-                                                ...v,
-                                                showchecked: !v.showchecked,
-                                                discountType: v.showchecked
-                                                  ? null
-                                                  : "Amount",
-                                                discountvalue: v.showchecked
-                                                  ? null
-                                                  : v.discountvalue ?? 0,
-                                              }
-                                            : v
-                                        )
-                                      )
-                                    }
-                                  />
-                                  <label className="ms-3">ADD DISCOUNT</label>
-                                </div>
-
-                                {variant.showchecked && (
-                                  <>
-                                    <div className="w-100">
-                                      <label
-                                        htmlFor="Discount"
-                                        className="fs-xs fw-400 mt-3 black"
-                                      >
-                                        Discount Type
-                                      </label>
-                                      <select
-                                        className="mt-2 product_input fade_grey fw-400"
-                                        id="Discount"
-                                        value={variant.discountType || ""}
-                                        onChange={(e) => {
-                                          const selectedDiscountType =
-                                            e.target.value;
-                                          setVariants((prevVariants) =>
-                                            prevVariants.map((v, i) =>
-                                              i === index
-                                                ? {
-                                                    ...v,
-                                                    discountType:
-                                                      selectedDiscountType,
-                                                    discountvalue:
-                                                      selectedDiscountType ===
-                                                      "Amount"
-                                                        ? 0
-                                                        : v.discountvalue,
-                                                  }
-                                                : v
-                                            )
-                                          );
-                                        }}
-                                      >
-                                        <option value="Amount">Amount</option>
-                                        <option value="Percentage">
-                                          Percentage
-                                        </option>
-                                      </select>
-                                    </div>
-
-                                    <div className="w-100">
-                                      <label
-                                        htmlFor="ddisc"
-                                        className="fs-xs fw-400 mt-3 black"
-                                      >
-                                        Discount value
-                                      </label>
-                                      <input
-                                        required
-                                        type="number"
-                                        className="mt-2 product_input fade_grey fw-400"
-                                        placeholder={
-                                          variant.discountType !== "Percentage"
-                                            ? "₹ 0.00"
-                                            : "%"
-                                        }
-                                        id="ddisc"
-                                        value={variant.discountvalue || ""} // Handle case when discount is null
-                                        onChange={(e) =>
-                                          setVariants((prevVariants) =>
-                                            prevVariants.map((v, i) =>
-                                              i === index && variant.showchecked // Only update if showchecked is true
-                                                ? {
-                                                    ...v,
-                                                    discountvalue:
-                                                      v.discountType ===
-                                                      "Percentage"
-                                                        ? Math.min(
-                                                            e.target.value,
-                                                            100
-                                                          ) // Ensure percentage is at most 100
-                                                        : e.target.value,
-                                                  }
-                                                : v
-                                            )
+                              <div>
+                                {showweightfield && (
+                                  <div className="w-75">
+                                    <label
+                                      htmlFor="Weight"
+                                      className="fs-xs fw-400 mt-3 black"
+                                    >
+                                      Weight
+                                    </label>
+                                    <input
+                                      required
+                                      type="number"
+                                      className="mt-2 product_input fade_grey fw-400"
+                                      placeholder="1"
+                                      id="Weight"
+                                      value={variant.totalweight ?? ""}
+                                      onChange={(e) =>
+                                        setVariants((prevVariants) =>
+                                          prevVariants.map((v, i) =>
+                                            i === index
+                                              ? {
+                                                  ...v,
+                                                  totalweight:
+                                                    e.target.value || null,
+                                                }
+                                              : v
                                           )
-                                        }
-                                      />
-                                    </div>
-                                  </>
+                                        )
+                                      }
+                                    />
+                                  </div>
                                 )}
+
+                                <div className="d-flex align-items-center gap-3">
+                                  <div className="w-100 mt-4">
+                                    <input
+                                      type="checkbox"
+                                      checked={variant.showchecked}
+                                      onChange={() =>
+                                        setVariants((prevVariants) =>
+                                          prevVariants.map((v, i) =>
+                                            i === index
+                                              ? {
+                                                  ...v,
+                                                  showchecked: !v.showchecked,
+                                                  discountType: v.showchecked
+                                                    ? null
+                                                    : "Amount",
+                                                  discountvalue: v.showchecked
+                                                    ? null
+                                                    : v.discountvalue ?? 0,
+                                                }
+                                              : v
+                                          )
+                                        )
+                                      }
+                                    />
+                                    <label className="ms-3">ADD DISCOUNT</label>
+                                  </div>
+
+                                  {variant.showchecked && (
+                                    <>
+                                      <div className="w-100">
+                                        <label
+                                          htmlFor="Discount"
+                                          className="fs-xs fw-400 mt-3 black"
+                                        >
+                                          Discount Type
+                                        </label>
+                                        <select
+                                          className="mt-2 product_input fade_grey fw-400"
+                                          id="Discount"
+                                          value={variant.discountType || ""}
+                                          onChange={(e) => {
+                                            const selectedDiscountType =
+                                              e.target.value;
+                                            setVariants((prevVariants) =>
+                                              prevVariants.map((v, i) =>
+                                                i === index
+                                                  ? {
+                                                      ...v,
+                                                      discountType:
+                                                        selectedDiscountType,
+                                                      discountvalue:
+                                                        selectedDiscountType ===
+                                                        "Amount"
+                                                          ? 0
+                                                          : v.discountvalue,
+                                                    }
+                                                  : v
+                                              )
+                                            );
+                                          }}
+                                        >
+                                          <option value="Amount">Amount</option>
+                                          <option value="Percentage">
+                                            Percentage
+                                          </option>
+                                        </select>
+                                      </div>
+
+                                      <div className="w-100">
+                                        <label
+                                          htmlFor="ddisc"
+                                          className="fs-xs fw-400 mt-3 black"
+                                        >
+                                          Discount value
+                                        </label>
+                                        <input
+                                          required
+                                          type="number"
+                                          className="mt-2 product_input fade_grey fw-400"
+                                          placeholder={
+                                            variant.discountType !==
+                                            "Percentage"
+                                              ? "₹ 0.00"
+                                              : "%"
+                                          }
+                                          id="ddisc"
+                                          value={variant.discountvalue || ""} // Handle case when discount is null
+                                          onChange={(e) =>
+                                            setVariants((prevVariants) =>
+                                              prevVariants.map((v, i) =>
+                                                i === index &&
+                                                variant.showchecked // Only update if showchecked is true
+                                                  ? {
+                                                      ...v,
+                                                      discountvalue:
+                                                        v.discountType ===
+                                                        "Percentage"
+                                                          ? Math.min(
+                                                              e.target.value,
+                                                              100
+                                                            ) // Ensure percentage is at most 100
+                                                          : e.target.value,
+                                                    }
+                                                  : v
+                                              )
+                                            )
+                                          }
+                                        />
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -1395,12 +1449,12 @@ const AddProduct = () => {
                           </div>
                           <div className="d-flex flex-column ">
                             <div className=" d-flex flex-column  flex-sm-row gap-3">
-                              <div className="w-100">
+                              {/* <div className="w-100">
                                 <label
                                   htmlFor="salesMan"
                                   className="fs-xs fw-400 mt-3 black"
                                 >
-                                  Unit type
+                                  Unit Type
                                 </label>
                                 <br />
                                 <div className="d-flex align-items-center justify-content-between">
@@ -1444,7 +1498,7 @@ const AddProduct = () => {
                                     </Dropdown.Menu>
                                   </Dropdown>
                                 </div>
-                              </div>
+                              </div> */}
 
                               {/* ist input */}
                               <div className="w-100">
@@ -1452,7 +1506,7 @@ const AddProduct = () => {
                                   htmlFor="origi"
                                   className="fs-xs fw-400 mt-3 black"
                                 >
-                                  Total Unit
+                                  Total Unit <span>{`(${stockUnitType})`}</span>
                                 </label>
                                 <input
                                   required
@@ -1564,7 +1618,50 @@ const AddProduct = () => {
                               </div>
                             </div>
                             {/* 4rd input */}
+                            {showweightfield && (
+                              <div className="w-25">
+                                <label
+                                  htmlFor="origi"
+                                  className="fs-xs fw-400 mt-3 black"
+                                >
+                                  Weight
+                                </label>
+                                <input
+                                  required
+                                  type="number"
+                                  className="mt-2 product_input fade_grey fw-400"
+                                  placeholder="1"
+                                  id="origi"
+                                  value={
+                                    variants.length === 0
+                                      ? totalweight
+                                      : variants[0].totalweight
+                                  }
+                                  onChange={(e) => {
+                                    const newValue = showweightfield
+                                      ? e.target.value
+                                      : null;
 
+                                    if (variants.length === 0) {
+                                      setTotalweight(newValue);
+                                    } else {
+                                      setVariants((prevVariants) =>
+                                        
+                                        prevVariants.map((v, i) =>
+                                          i === 0
+                                            ? {
+                                                ...v,
+                                              totalweight: newValue,
+                                                
+                                              }
+                                            : v
+                                        )
+                                      );
+                                    }
+                                  }}
+                                />
+                              </div>
+                            )}
                             <div className="d-flex gap-3 align-items-center">
                               <div className="w-75 mt-4">
                                 <input
@@ -1987,9 +2084,50 @@ const AddProduct = () => {
                     />
                   </div>
                   {/* 2nd input */}
+                  <div className="d-flex flex-column mt-2 w-100">
+                    <label className="fs-xs fw-400 black">Unit Type</label>
+                    <Dropdown className="category_dropdown  w-100">
+                      <Dropdown.Toggle
+                        id="dropdown-basic"
+                        className="mt-2 unit_type_input border-0"
+                      >
+                        <div className="product_input d-flex align-items-center justify-content-between">
+                          <p className="fade_grey fw-400 w-100 mb-0 text-start">
+                            {stockUnitType}
+                          </p>
+                          <img src={dropdownImg} alt="" />
+                        </div>
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu className="w-100 p-0">
+                        <div>
+                          <Dropdown.Item>
+                            {Units.map((itmes) => {
+                              return (
+                                <div className="d-flex justify-content-between">
+                                  <p
+                                    className="fs-xs fw-400 black mb-0 py-1 w-100"
+                                    onClick={() => onhandelunittype(itmes)}
+                                  >
+                                    {itmes}
+                                  </p>
+                                  {stockUnitType === itmes && (
+                                    <img
+                                      src={savegreenicon}
+                                      alt="savegreenicon"
+                                    />
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </Dropdown.Item>
+                        </div>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </div>
+                  {/* 3nd input */}
                   <label htmlFor="total" className="fs-xs fw-400 mt-3 black">
                     Total Stock{" "}
-                    <span className="fade_grey ms-2">{`Purchase Value : ₹${stockPrice}`}</span>
+                    {/* <span className="fade_grey ms-2">{`Purchase Value : ₹${stockPrice}`}</span> */}
                   </label>{" "}
                   <br />
                   <div className="position-relative">
@@ -2017,7 +2155,7 @@ const AddProduct = () => {
                         >
                           <img src={closeicon} alt="closeicon" />
                         </div>
-                        <div className="d-flex flex-column mt-2">
+                        {/* <div className="d-flex flex-column mt-2">
                           <label className="fs-xs fw-400 black">
                             Date of Purchase
                           </label>
@@ -2025,7 +2163,7 @@ const AddProduct = () => {
                             className="product_input fade_grey fw-400 mt-2"
                             type="date"
                           />
-                        </div>
+                        </div> */}
                         <div className="d-flex flex-column mt-2">
                           <label className="fs-xs fw-400 black">
                             Total Quantity
@@ -2039,7 +2177,7 @@ const AddProduct = () => {
                           />
                         </div>
                         <div className="d-flex align-items-center gap-3">
-                          <div className="d-flex flex-column mt-2 w-50">
+                          {/* <div className="d-flex flex-column mt-2 w-50">
                             <label className="fs-xs fw-400 black">
                               Unit Type
                             </label>
@@ -2082,8 +2220,8 @@ const AddProduct = () => {
                                 </div>
                               </Dropdown.Menu>
                             </Dropdown>
-                          </div>
-                          <div className="d-flex flex-column mt-2 w-50">
+                          </div> */}
+                          <div className="d-flex flex-column mt-2 w-100">
                             <label className="fs-xs fw-400 black">
                               Price per unit
                             </label>
