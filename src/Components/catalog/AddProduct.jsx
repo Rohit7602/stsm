@@ -116,7 +116,6 @@ const AddProduct = () => {
   const [VarintName, setVariantsNAME] = useState("");
   const [Tax, setTax] = useState(null);
   const [discountType, setDiscountType] = useState(null);
-
   function HandleAddVarients() {
     setVariants((prevVariants) => [
       ...prevVariants,
@@ -150,15 +149,15 @@ const AddProduct = () => {
   const dropdownRef = useRef(null);
   // const [areas, setAreas] = useState([]);
 
-  const handleCheckboxChange = (e) => {
-    let isChecked = e.target.checked;
-    let value = e.target.value;
-    if (isChecked) {
-      setSelectArea([...selectarea, value]);
-    } else {
-      setSelectArea((prevState) => prevState.filter((area) => area !== value));
-    }
-  };
+  // const handleCheckboxChange = (e) => {
+  //   let isChecked = e.target.checked;
+  //   let value = e.target.value;
+  //   if (isChecked) {
+  //     setSelectArea([...selectarea, value]);
+  //   } else {
+  //     setSelectArea((prevState) => prevState.filter((area) => area !== value));
+  //   }
+  // };
 
   const toggleDropdown = (index) => {
     setDropdownOpen((prevState) => {
@@ -183,12 +182,11 @@ const AddProduct = () => {
 
   useEffect(() => {
     if (stockUnitType === "BAG") {
-    setShowweightfield(true);    
+      setShowweightfield(true);
+    } else {
+      setTotalweight(null);
     }
-
-  }, [stockUnitType])
-
-
+  }, [stockUnitType, showweightfield]);
 
   const closeDropdown = (index) => {
     setDropdownOpen((prevState) => {
@@ -527,6 +525,8 @@ const AddProduct = () => {
         const allVariants = [];
         if (items.varients) {
           items.varients.map((itm) => {
+            if (itm.discountType !== null && itm.discountvalue !== null)
+              setShowchecked(true);
             allVariants.push({
               totalunit: itm.totalunit,
               totalweight: itm.totalweight,
@@ -608,7 +608,12 @@ const AddProduct = () => {
         }
       }
 
-      // console.log('previoisdCategoryId', previousCategoryId);
+      // console.log('previoisdCategoryId', variants);
+
+      const updatedVariants = variants.map((variant) => ({
+        ...variant,
+        totalweight: showweightfield ? variant.totalweight : null,
+      }));
 
       const updateDatas = {
         name: name,
@@ -643,7 +648,7 @@ const AddProduct = () => {
               varients: [
                 {
                   totalunit: variants[0].totalunit,
-                  totalweight: showweightfield ?  variants[0].totalweight : null,
+                  totalweight: showweightfield ? variants[0].totalweight : null,
                   SalesmanCommission: variants[0].SalesmanCommission,
                   VarientName: variants[0].VarientName,
                   unitPrice: variants[0].unitPrice,
@@ -653,11 +658,13 @@ const AddProduct = () => {
               ],
             }
           : {
-              varients: variants,
+              varients: updatedVariants,
             }),
 
         serviceable_areas: addMoreArea,
       };
+
+      console.log("message---------------------", showweightfield);
 
       // Check if the selected category is different from the existing category
       if (selectedCategoryId === null) {
@@ -1267,7 +1274,7 @@ const AddProduct = () => {
                               </div>
                               <div>
                                 {showweightfield && (
-                                  <div className="w-75">
+                                  <div className="w-50">
                                     <label
                                       htmlFor="Weight"
                                       className="fs-xs fw-400 mt-3 black"
@@ -1278,7 +1285,7 @@ const AddProduct = () => {
                                       required
                                       type="number"
                                       className="mt-2 product_input fade_grey fw-400"
-                                      placeholder="1"
+                                      placeholder="0"
                                       id="Weight"
                                       value={variant.totalweight ?? ""}
                                       onChange={(e) =>
@@ -1297,118 +1304,122 @@ const AddProduct = () => {
                                     />
                                   </div>
                                 )}
-
                                 <div className="d-flex align-items-center gap-3">
                                   <div className="w-100 mt-4">
                                     <input
                                       type="checkbox"
-                                      checked={variant.showchecked}
-                                      onChange={() =>
+                                      checked={variant.discountType !== null}
+                                      onChange={(e) => {
+                                        const isChecked = e.target.checked;
                                         setVariants((prevVariants) =>
                                           prevVariants.map((v, i) =>
                                             i === index
                                               ? {
                                                   ...v,
-                                                  showchecked: !v.showchecked,
-                                                  discountType: v.showchecked
-                                                    ? null
-                                                    : "Amount",
-                                                  discountvalue: v.showchecked
-                                                    ? null
-                                                    : v.discountvalue ?? 0,
+                                                  showchecked: isChecked,
+                                                  discountType: isChecked
+                                                    ? "Amount"
+                                                    : null,
+                                                  discountvalue: isChecked
+                                                    ? v.discountvalue ?? 0
+                                                    : null,
                                                 }
                                               : v
                                           )
-                                        )
-                                      }
+                                        );
+                                      }}
                                     />
                                     <label className="ms-3">ADD DISCOUNT</label>
                                   </div>
 
-                                  {variant.showchecked && (
-                                    <>
-                                      <div className="w-100">
-                                        <label
-                                          htmlFor="Discount"
-                                          className="fs-xs fw-400 mt-3 black"
-                                        >
-                                          Discount Type
-                                        </label>
-                                        <select
-                                          className="mt-2 product_input fade_grey fw-400"
-                                          id="Discount"
-                                          value={variant.discountType || ""}
-                                          onChange={(e) => {
-                                            const selectedDiscountType =
-                                              e.target.value;
-                                            setVariants((prevVariants) =>
-                                              prevVariants.map((v, i) =>
-                                                i === index
-                                                  ? {
-                                                      ...v,
-                                                      discountType:
-                                                        selectedDiscountType,
-                                                      discountvalue:
-                                                        selectedDiscountType ===
-                                                        "Amount"
-                                                          ? 0
-                                                          : v.discountvalue,
-                                                    }
-                                                  : v
-                                              )
-                                            );
-                                          }}
-                                        >
-                                          <option value="Amount">Amount</option>
-                                          <option value="Percentage">
-                                            Percentage
-                                          </option>
-                                        </select>
-                                      </div>
+                                  {variant.discountType !== null &&
+                                    variant.discountvalue !== null && (
+                                      <>
+                                        <div className="w-100">
+                                          <label
+                                            htmlFor="Discount"
+                                            className="fs-xs fw-400 mt-3 black"
+                                          >
+                                            Discount Type
+                                          </label>
+                                          <select
+                                            className="mt-2 product_input fade_grey fw-400"
+                                            id="Discount"
+                                            value={variant.discountType || ""}
+                                            onChange={(e) => {
+                                              const selectedDiscountType =
+                                                e.target.value;
+                                              setVariants((prevVariants) =>
+                                                prevVariants.map((v, i) =>
+                                                  i === index
+                                                    ? {
+                                                        ...v,
+                                                        discountType:
+                                                          selectedDiscountType,
+                                                        discountvalue:
+                                                          selectedDiscountType ===
+                                                          "Amount"
+                                                            ? "0"
+                                                            : v.discountvalue ||
+                                                              "",
+                                                      }
+                                                    : v
+                                                )
+                                              );
+                                            }}
+                                          >
+                                            <option value="Amount">
+                                              Amount
+                                            </option>
+                                            <option value="Percentage">
+                                              Percentage
+                                            </option>
+                                          </select>
+                                        </div>
 
-                                      <div className="w-100">
-                                        <label
-                                          htmlFor="ddisc"
-                                          className="fs-xs fw-400 mt-3 black"
-                                        >
-                                          Discount value
-                                        </label>
-                                        <input
-                                          required
-                                          type="number"
-                                          className="mt-2 product_input fade_grey fw-400"
-                                          placeholder={
-                                            variant.discountType !==
-                                            "Percentage"
-                                              ? "₹ 0.00"
-                                              : "%"
-                                          }
-                                          id="ddisc"
-                                          value={variant.discountvalue || ""} // Handle case when discount is null
-                                          onChange={(e) =>
-                                            setVariants((prevVariants) =>
-                                              prevVariants.map((v, i) =>
-                                                i === index &&
-                                                variant.showchecked // Only update if showchecked is true
-                                                  ? {
-                                                      ...v,
-                                                      discountvalue:
-                                                        v.discountType ===
-                                                        "Percentage"
-                                                          ? Math.min(
-                                                              e.target.value,
-                                                              100
-                                                            ) // Ensure percentage is at most 100
-                                                          : e.target.value,
-                                                    }
-                                                  : v
-                                              )
-                                            )
-                                          }
-                                        />
-                                      </div>
-                                    </>
-                                  )}
+                                        <div className="w-100">
+                                          <label
+                                            htmlFor="ddisc"
+                                            className="fs-xs fw-400 mt-3 black"
+                                          >
+                                            Discount value
+                                          </label>
+                                          <input
+                                            required
+                                            type="number"
+                                            className="mt-2 product_input fade_grey fw-400"
+                                            placeholder={
+                                              variant.discountType !==
+                                              "Percentage"
+                                                ? "₹ 0.00"
+                                                : "%"
+                                            }
+                                            id="ddisc"
+                                            value={variant.discountvalue || ""} // Handle case when discountvalue is null
+                                            onChange={(e) => {
+                                              const newValue = e.target.value;
+                                              setVariants((prevVariants) =>
+                                                prevVariants.map((v, i) =>
+                                                  i === index
+                                                    ? {
+                                                        ...v,
+                                                        discountvalue:
+                                                          v.discountType ===
+                                                          "Percentage"
+                                                            ? Math.min(
+                                                                newValue,
+                                                                100
+                                                              )
+                                                            : newValue,
+                                                      }
+                                                    : v
+                                                )
+                                              );
+                                            }}
+                                          />
+                                        </div>
+                                      </>
+                                    )}
                                 </div>
                               </div>
                             </div>
@@ -1619,7 +1630,7 @@ const AddProduct = () => {
                             </div>
                             {/* 4rd input */}
                             {showweightfield && (
-                              <div className="w-25">
+                              <div className="w-50">
                                 <label
                                   htmlFor="origi"
                                   className="fs-xs fw-400 mt-3 black"
@@ -1630,7 +1641,7 @@ const AddProduct = () => {
                                   required
                                   type="number"
                                   className="mt-2 product_input fade_grey fw-400"
-                                  placeholder="1"
+                                  placeholder="0"
                                   id="origi"
                                   value={
                                     variants.length === 0
@@ -1646,13 +1657,11 @@ const AddProduct = () => {
                                       setTotalweight(newValue);
                                     } else {
                                       setVariants((prevVariants) =>
-                                        
                                         prevVariants.map((v, i) =>
                                           i === 0
                                             ? {
                                                 ...v,
-                                              totalweight: newValue,
-                                                
+                                                totalweight: newValue,
                                               }
                                             : v
                                         )
@@ -1669,6 +1678,7 @@ const AddProduct = () => {
                                   checked={showchecked}
                                   onChange={(e) => {
                                     const isChecked = e.target.checked;
+
                                     setShowchecked(isChecked);
                                     if (isChecked) {
                                       setDiscountType("Amount");
@@ -1781,10 +1791,6 @@ const AddProduct = () => {
                                       }
                                       onChange={(e) => {
                                         const value = e.target.value;
-                                        // console.log(
-                                        //   "Discount value changed to:",
-                                        //   value
-                                        // );
 
                                         if (variants.length === 0) {
                                           setDiscountvalue(

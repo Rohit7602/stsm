@@ -41,7 +41,7 @@ const DeliveryBoyInventory = () => {
   const [AllItems, setAllItems] = useState([]);
   const [delivryMan, setDeliveryMan] = useState([]);
   // const [color, setColor] = useState("");
-
+  console.log(selectedproduct, "------------------------------------");
   useEffect(() => {
     const DeliveryManDatas = DeliveryManData.filter((item) => item.id === id);
     setDeliveryMan(DeliveryManDatas);
@@ -60,7 +60,7 @@ const DeliveryBoyInventory = () => {
     let filterData = productData.filter(
       (product) => product.name === productname
     );
-    console.log("filter data si ", filterData)
+    console.log("filter data si ", filterData);
     setselectedProduct(filterData);
   }, [productname]);
 
@@ -308,6 +308,14 @@ const DeliveryBoyInventory = () => {
               >
                 Update Entry
               </button>
+              {selectAll.length !== 0 && (
+                <button
+                  onClick={handleWithdrow}
+                  className=" outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400"
+                >
+                  Unload Van
+                </button>
+              )}
             </div>
           </div>
           <div className="  gap-2 gap-sm-0  p-3 mt-3 bg-white product_shadow mt-4 ">
@@ -364,7 +372,7 @@ const DeliveryBoyInventory = () => {
               </div>
               <div className="col-6">
                 <div className="d-flex align-items-center justify-content-between">
-                  <div className="d-flex align-items-center gap-5 ms-5">
+                  <div className="d-flex align-items-center gap-5 ms-5 justify-content-between w-75">
                     <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">
                       SKU :{" "}
                       {selectedproduct.length === 0
@@ -378,18 +386,19 @@ const DeliveryBoyInventory = () => {
                         : selectedproduct[0].brand.name}
                     </p> */}
                     <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">
-                      Total Stokes : {" "} 
+                      Total Stokes :{" "}
                       {selectedproduct.length === 0
                         ? "N/A"
-                        : selectedproduct[0].totalStock}
+                        :` ${selectedproduct[0].totalStock}  ${selectedproduct[0].stockUnitType}`}
+                    
                     </p>
                   </div>
-                  <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">
+                  {/* <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">
                     Unit :{" "}
                     {selectedproduct.length === 0
                       ? "N/A"
                       : selectedproduct[0].varients[0].unitType}
-                  </p>
+                  </p> */}
                 </div>
               </div>
             </div>
@@ -589,14 +598,7 @@ const DeliveryBoyInventory = () => {
             </div>
           </div>
           {/* categories details  */}
-          {selectAll.length !== 0 && (
-            <button
-              onClick={handleWithdrow}
-              className=" outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400  mt-4"
-            >
-              Withdraw
-            </button>
-          )}
+
           <div className="p-3 mt-3 bg-white product_shadow mt-3">
             <div className="overflow_xl_scroll line_scroll">
               <div className="categories_xl_overflow_X ">
@@ -648,7 +650,6 @@ const DeliveryBoyInventory = () => {
                   >
                     {AllItems.length > 0 &&
                       AllItems.map((item, index) => {
-                        console.log(item, "===========");
                         return (
                           <tr className="product_borderbottom">
                             <td className="py-3 ps-3 w-100">
@@ -688,6 +689,7 @@ const DeliveryBoyInventory = () => {
                               <h3 className="fs-sm fw-400 black mb-0 color_green ms-3">
                                 {item.quantity -
                                   (item.sold != null ? item.sold : 0)}
+                                <span className=" ms-1">{ item.unitType }</span>
                               </h3>
                             </td>
                           </tr>
