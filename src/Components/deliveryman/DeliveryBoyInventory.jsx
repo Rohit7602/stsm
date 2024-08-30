@@ -41,7 +41,7 @@ const DeliveryBoyInventory = () => {
   const [AllItems, setAllItems] = useState([]);
   const [delivryMan, setDeliveryMan] = useState([]);
   // const [color, setColor] = useState("");
-  console.log(selectedproduct, "------------------------------------");
+
   useEffect(() => {
     const DeliveryManDatas = DeliveryManData.filter((item) => item.id === id);
     setDeliveryMan(DeliveryManDatas);
@@ -60,7 +60,7 @@ const DeliveryBoyInventory = () => {
     let filterData = productData.filter(
       (product) => product.name === productname
     );
-    console.log("filter data si ", filterData);
+    // console.log("filter data si ", filterData);
     setselectedProduct(filterData);
   }, [productname]);
 
@@ -82,7 +82,6 @@ const DeliveryBoyInventory = () => {
   }, [id, DeliveryManData]);
 
   // console.log("selected product is ", selectedproduct)
-
   function HandleAddToVan(e) {
     if (
       selectedproduct.length > 0 &&
@@ -101,6 +100,7 @@ const DeliveryBoyInventory = () => {
       //   .flat()
       //   .filter((data) => data.VarientName === varient);
       // console.log("currentvairent valie ", currentvairent[0])
+      // console.log(selectedproduct[0].varients);
       setAllItems((prevVariants) => [
         ...prevVariants,
         {
@@ -111,16 +111,19 @@ const DeliveryBoyInventory = () => {
           quantity: selectedproduct.length > 0 && quantity,
           sku: selectedproduct.length > 0 && selectedproduct[0].sku,
           brand: selectedproduct.length > 0 && selectedproduct[0].brand.name,
-          unitType:
-            selectedproduct.length > 0 &&
-            selectedproduct[0].varients[0].unitType,
+          stockUnitType:
+            selectedproduct.length > 0 && selectedproduct[0].stockUnitType,
           // varient: currentvairent.length > 0 && currentvairent[0],
           // color: color,
           tax: selectedproduct.length > 0 && selectedproduct[0].Tax,
           DeliveryCharge:
             selectedproduct.length > 0 && selectedproduct[0].DeliveryCharge,
           SalesmanCommission:
-            selectedproduct.length > 0 && selectedproduct[0].SalesmanCommission,
+            selectedproduct.length > 0 &&
+            selectedproduct[0].varients.map(
+              (value) => value.SalesmanCommission
+            ),
+
           ServiceCharge:
             selectedproduct.length > 0 && selectedproduct[0].ServiceCharge,
           totalStocks:
@@ -389,15 +392,14 @@ const DeliveryBoyInventory = () => {
                       Total Stokes :{" "}
                       {selectedproduct.length === 0
                         ? "N/A"
-                        :` ${selectedproduct[0].totalStock}  ${selectedproduct[0].stockUnitType}`}
-                    
+                        : ` ${selectedproduct[0].totalStock}  ${selectedproduct[0].stockUnitType}`}
                     </p>
                   </div>
                   {/* <p className="ff-outfit mb-0 fw-400 fs_sm fade_grey">
                     Unit :{" "}
                     {selectedproduct.length === 0
                       ? "N/A"
-                      : selectedproduct[0].varients[0].unitType}
+                      : selectedproduct[0].varients[0].stockUnitType}
                   </p> */}
                 </div>
               </div>
@@ -689,7 +691,9 @@ const DeliveryBoyInventory = () => {
                               <h3 className="fs-sm fw-400 black mb-0 color_green ms-3">
                                 {item.quantity -
                                   (item.sold != null ? item.sold : 0)}
-                                <span className=" ms-1">{ item.unitType }</span>
+                                <span className=" ms-1">
+                                  {item.stockUnitType}
+                                </span>
                               </h3>
                             </td>
                           </tr>
