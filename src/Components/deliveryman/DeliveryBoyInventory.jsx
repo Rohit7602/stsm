@@ -100,7 +100,7 @@ const DeliveryBoyInventory = () => {
       //   .flat()
       //   .filter((data) => data.VarientName === varient);
       // console.log("currentvairent valie ", currentvairent[0])
-      // console.log(selectedproduct[0].varients);
+      console.log(selectedproduct[0]);
       setAllItems((prevVariants) => [
         ...prevVariants,
         {
@@ -108,6 +108,8 @@ const DeliveryBoyInventory = () => {
           productImage:
             selectedproduct.length > 0 && selectedproduct[0].productImages[0],
           productid: selectedproduct.length > 0 && selectedproduct[0].id,
+          salesprice:
+            selectedproduct.length > 0 && selectedproduct[0].salesprice,
           quantity: selectedproduct.length > 0 && quantity,
           sku: selectedproduct.length > 0 && selectedproduct[0].sku,
           brand: selectedproduct.length > 0 && selectedproduct[0].brand.name,

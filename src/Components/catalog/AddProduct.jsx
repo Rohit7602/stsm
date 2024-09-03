@@ -68,6 +68,7 @@ const AddProduct = () => {
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [stockpopup, setStockpopup] = useState(false);
   const [DeliveryCharge, setDeliveryCharges] = useState();
+  const [salesprice, setSalesPrice] = useState();
   const [ServiceCharge, setServiceCharge] = useState();
 
   //  search functionaltiy in categories and selected categories
@@ -343,6 +344,7 @@ const AddProduct = () => {
     setSelectedCategory(null);
     setStockPrice("");
     setDeliveryCharges("");
+    setSalesPrice("")
     setSalesmanComssion("");
     setServiceCharge("");
     setPerUnitPrice("");
@@ -404,6 +406,7 @@ const AddProduct = () => {
           // SalesmanCommission: SalesmanCommission || '0',
           ServiceCharge: ServiceCharge || "0",
           DeliveryCharge: DeliveryCharge || "0",
+          salesprice:salesprice || "0",
           colors: storeColors,
           Tax: Tax || 0,
           isMultipleVariant: isvarient === true,
@@ -498,6 +501,7 @@ const AddProduct = () => {
           setSelectedCategory(items.categories.name);
         if (items.productImages) setImageUpload22(items.productImages);
         if (items.DeliveryCharge) setDeliveryCharges(items.DeliveryCharge);
+        if (items.salesprice) setSalesPrice(items.salesprice);
         if (items.perUnitPrice) setPerUnitPrice(items.perUnitPrice);
         if (items.stockUnitType) setStockUnitType(items.stockUnitType);
         if (items.ServiceCharge) setServiceCharge(items.ServiceCharge);
@@ -635,6 +639,7 @@ const AddProduct = () => {
         // SalesmanCommission: SalesmanCommission || "0",
         ServiceCharge: ServiceCharge || "0",
         DeliveryCharge: DeliveryCharge || "0",
+        salesprice:salesprice || "0",
         colors: storeColors,
         isMultipleVariant: isvarient === true,
         brand: {
@@ -2265,6 +2270,27 @@ const AddProduct = () => {
                   <br />
                 </div>
                 {/* Categories */}
+                <div className="mt-4 product_shadow bg_white p-3 pt-0">
+                  <label
+                    htmlFor="salesprice"
+                    className="fs-xs fw-400 mt-3 black pt-1"
+                  >
+                    Sales Price
+                  </label>
+                  <br />
+                  <div className="d-flex align-items-center justify-content-between product_input mt-2">
+                    <input
+                      required
+                      type="number"
+                      className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
+                      placeholder="₹ 0.00"
+                      id="salesprice"
+                      value={salesprice}
+                      onChange={(e) => setSalesPrice(e.target.value)}
+                    />
+                  </div>
+                </div>
+
                 <div className="mt-4 product_shadow bg_white p-3">
                   <lable className="fw-400 fs-2sm black mb-0">
                     Select Brand (optional)
