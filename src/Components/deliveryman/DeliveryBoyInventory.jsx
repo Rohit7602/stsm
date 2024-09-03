@@ -118,11 +118,11 @@ const DeliveryBoyInventory = () => {
           tax: selectedproduct.length > 0 && selectedproduct[0].Tax,
           DeliveryCharge:
             selectedproduct.length > 0 && selectedproduct[0].DeliveryCharge,
-          SalesmanCommission:
-            selectedproduct.length > 0 &&
-            selectedproduct[0].varients.map(
-              (value) => value.SalesmanCommission
-            ),
+          // SalesmanCommission:
+          //   selectedproduct.length > 0 &&
+          //   selectedproduct[0].varients.map(
+          //     (value) => value.SalesmanCommission
+          //   ),
 
           ServiceCharge:
             selectedproduct.length > 0 && selectedproduct[0].ServiceCharge,
