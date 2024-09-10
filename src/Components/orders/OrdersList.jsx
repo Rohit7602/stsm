@@ -525,22 +525,40 @@ const OrderList = () => {
                           <td className="p-3 mw_160">
                             <h3
                               className={`fs-sm fw-400 mb-0 d-inline-block ${
-                                orderTableData.transaction.status
+                                orderTableData.status
                                   .toString()
-                                  .toLowerCase() === "paid"
-                                  ? "black stock_bg"
-                                  : orderTableData.transaction.status
+                                  .toUpperCase() !== "CANCELLED" &&
+                                orderTableData.status
+                                  .toString()
+                                  .toUpperCase() !== "REJECTED" &&
+                                orderTableData.status
+                                  .toString()
+                                  .toUpperCase() !== "RETURNED"
+                                  ? orderTableData.transaction.status
                                       .toString()
-                                      .toLowerCase() === "cod"
-                                  ? "black cancel_gray"
-                                  : orderTableData.transaction.status
-                                      .toString()
-                                      .toLowerCase() === "refund"
-                                  ? "new_order red"
-                                  : "color_brown on_credit_bg"
+                                      .toLowerCase() === "paid"
+                                    ? "black stock_bg"
+                                    : orderTableData.transaction.status
+                                        .toString()
+                                        .toLowerCase() === "cod"
+                                    ? "black cancel_gray"
+                                    : orderTableData.transaction.status
+                                        .toString()
+                                        .toLowerCase() === "refund"
+                                    ? "new_order red"
+                                    : "color_brown on_credit_bg"
+                                  : ""
                               }`}
                             >
-                              {orderTableData.transaction.status}
+                              {orderTableData.status
+                                .toString()
+                                .toUpperCase() !== "CANCELLED" &&
+                              orderTableData.status.toString().toUpperCase() !==
+                                "REJECTED" &&
+                              orderTableData.status.toString().toUpperCase() !==
+                                "RETURNED"
+                                ? orderTableData.transaction.status
+                                : null}
                             </h3>
                           </td>
                           <td className="p-3 mw_190">
