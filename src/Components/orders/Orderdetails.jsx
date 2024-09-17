@@ -702,6 +702,7 @@ export default function NewOrder() {
         }
 
         if (orderData && orderData.items) {
+           const otp = Math.floor(100000 + Math.random() * 900000).toString();
           for (const item of orderData.items) {
             const productDocRef = doc(db, "products", item.product_id);
             const productDoc = await getDoc(productDocRef);
@@ -772,9 +773,7 @@ export default function NewOrder() {
             }
             if (showvandata.quantity >= item.quantity) {
               const newStatus = "OUT_FOR_DELIVERY";
-              const otp = Math.floor(
-                100000 + Math.random() * 900000
-              ).toString();
+             
               if (!orderData.hasOwnProperty("invoiceNumber")) {
                 await updateDoc(orderDocRef, {
                   status: newStatus,
