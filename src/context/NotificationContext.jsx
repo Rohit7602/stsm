@@ -70,27 +70,27 @@ const NotificationProvider = ({ children }) => {
   const adminId = localStorage.getItem("isAdminId");
 
   const fetchNotifications = async () => {
-    // try {
-    //   const q = query(
-    //     collection(db, "Notifications"),
-    //     where("receiverId", "==", adminId),
-    //     limit(100)
-    //   );
-    //   const querySnapshot = await getDocs(q);
-    //   const notificationsArray = [];
-    //   let unreadCount = 0;
-    //   querySnapshot.forEach((doc) => {
-    //     notificationsArray.push({ id: doc.id, ...doc.data() });
+    try {
+      const q = query(
+        collection(db, "Notifications"),
+        where("receiverId", "==", adminId),
+        limit(100)
+      );
+      const querySnapshot = await getDocs(q);
+      const notificationsArray = [];
+      let unreadCount = 0;
+      querySnapshot.forEach((doc) => {
+        notificationsArray.push({ id: doc.id, ...doc.data() });
 
-    //     if (doc.data().read === false) {
-    //       unreadCount++;
-    //     }
-    //   });
-    //   setNewnotifications(unreadCount);
-    //   setCurrentNotifications(notificationsArray);
-    // } catch (error) {
-    //   console.log(error);
-    // }
+        if (doc.data().read === false) {
+          unreadCount++;
+        }
+      });
+      setNewnotifications(unreadCount);
+      setCurrentNotifications(notificationsArray);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const Deletenotification = async (data) => {
