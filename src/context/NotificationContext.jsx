@@ -1,6 +1,7 @@
 import { getMessaging } from "firebase/messaging";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { messaging, db } from "../firebase";
+
 import {
   doc,
   getDocs,
@@ -8,6 +9,8 @@ import {
   query,
   where,
   updateDoc,
+  writeBatch,
+  limit,
 } from "firebase/firestore";
 
 const NotificationContext = createContext();
@@ -17,6 +20,7 @@ const NotificationProvider = ({ children }) => {
   const [currentNotifications, setCurrentNotifications] = useState([]);
   const [newnotifications, setNewnotifications] = useState(0);
   const [showpop, setShowpop] = useState(false);
+  const [loading, setLoading] = useState(true);
   const sendNotification = async (type) => {
     const serverKey =
       "AAAA8fySoyk:APA91bGHLjXYPx8D5P2kBZHzJ6BnJHL3-5sz4S2pK4U4Cg-9EsoluUI-h9Dj-HvuXz6lNgnTGbCAaMWC6adijWKysPTpSEhamRnMy5QRcn8_wE-_tYLz3gQ0fWx34unTnCReFIwDCwoY"; // Your server key from Firebase settings
@@ -69,7 +73,8 @@ const NotificationProvider = ({ children }) => {
     try {
       const q = query(
         collection(db, "Notifications"),
-        where("receiverId", "==", adminId)
+        where("receiverId", "==", adminId),
+        limit(100)
       );
       const querySnapshot = await getDocs(q);
       const notificationsArray = [];
@@ -86,6 +91,16 @@ const NotificationProvider = ({ children }) => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const Deletenotification = async (data) => {
+    setLoading(true);
+    let batch = writeBatch(db);
+    for (const i of data) {
+      batch.delete(doc(db, "Notifications", i.id));
+    }
+    await batch.commit();
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -122,6 +137,7 @@ const NotificationProvider = ({ children }) => {
         newnotifications,
         setShowpop,
         showpop,
+        Deletenotification,
       }}
     >
       {children}
