@@ -36,7 +36,7 @@ const DeliveryBoyInventory = () => {
   const [selectedValue, setSelectedValue] = useState();
   const [productname, setproductname] = useState("");
   // const [varient, setVarient] = useState("");
-  const [quantity, setquantity] = useState("");
+  const [quantity, setquantity] = useState(0);
   const [selectedproduct, setselectedProduct] = useState([]);
   const [AllItems, setAllItems] = useState([]);
   const [delivryMan, setDeliveryMan] = useState([]);
@@ -82,116 +82,113 @@ const DeliveryBoyInventory = () => {
   }, [id, DeliveryManData]);
 
   // console.log("selected product is ", selectedproduct)
-  function HandleAddToVan(e) {
-    if (
-      selectedproduct.length > 0 &&
-      // varient &&
-      quantity &&
-      selectedproduct[0].totalStock >= quantity
-    ) {
-      e.preventDefault();
-      let allvarients =
-        selectedproduct.length > 0 &&
-        selectedproduct.map((data) => data.varients);
-      console.log("added");
-      console.log("function working here ");
-      // console.log("all vairents ", allvarients)
-      // let currentvairent = allvarients
-      //   .flat()
-      //   .filter((data) => data.VarientName === varient);
-      // console.log("currentvairent valie ", currentvairent[0])
-      console.log(selectedproduct[0]);
-      setAllItems((prevVariants) => [
-        ...prevVariants,
-        {
-          name: productname,
-          productImage:
-            selectedproduct.length > 0 && selectedproduct[0].productImages[0],
-          productid: selectedproduct.length > 0 && selectedproduct[0].id,
-          salesprice:
-            selectedproduct.length > 0 && selectedproduct[0].salesprice,
-          quantity: selectedproduct.length > 0 && quantity,
-          sku: selectedproduct.length > 0 && selectedproduct[0].sku,
-          brand: selectedproduct.length > 0 && selectedproduct[0].brand.name,
-          stockUnitType:
-            selectedproduct.length > 0 && selectedproduct[0].stockUnitType,
-          // varient: currentvairent.length > 0 && currentvairent[0],
-          // color: color,
-          tax: selectedproduct.length > 0 && selectedproduct[0].Tax,
-          DeliveryCharge:
-            selectedproduct.length > 0 && selectedproduct[0].DeliveryCharge,
-          // SalesmanCommission:
-          //   selectedproduct.length > 0 &&
-          //   selectedproduct[0].varients.map(
-          //     (value) => value.SalesmanCommission
-          //   ),
+function HandleAddToVan(e) {
+  e.preventDefault();
 
-          ServiceCharge:
-            selectedproduct.length > 0 && selectedproduct[0].ServiceCharge,
-          totalStocks:
-            selectedproduct.length > 0 && selectedproduct[0].totalStock,
-        },
-      ]);
-      setproductname("");
-      setselectedProduct([]);
-      setquantity("");
-      // setVarient("");
-    } else if (
-      // varient === "" ||
-      quantity === "" ||
-      selectedproduct.length < 0
-    ) {
-      // alert("Please Select each field");
-      toast.error("Please Select each field", {
+  // Check if all required fields are valid
+  if (
+    selectedproduct.length > 0 &&
+    quantity > 0 &&
+    selectedproduct[0].totalStock >= quantity
+  ) {
+    let productToUpdate = selectedproduct[0];
+
+    setAllItems((prevVariants) => {
+      const existingItemIndex = prevVariants.findIndex(
+        (item) => item.productid === productToUpdate.id
+      );
+
+      if (existingItemIndex !== -1) {
+        // Update existing item
+        const updatedItem = {
+          ...prevVariants[existingItemIndex],
+          quantity: prevVariants[existingItemIndex].quantity + quantity,
+        };
+
+        return [
+          ...prevVariants.slice(0, existingItemIndex),
+          updatedItem,
+          ...prevVariants.slice(existingItemIndex + 1),
+        ];
+      } else {
+        // Add new item
+        const newItem = {
+          name: productname,
+          productImage: productToUpdate.productImages[0],
+          productid: productToUpdate.id,
+          salesprice: productToUpdate.salesprice,
+          quantity: quantity,
+          sku: productToUpdate.sku,
+          brand: productToUpdate.brand.name,
+          stockUnitType: productToUpdate.stockUnitType,
+          tax: productToUpdate.Tax,
+          DeliveryCharge: productToUpdate.DeliveryCharge,
+          ServiceCharge: productToUpdate.ServiceCharge,
+          totalStocks: productToUpdate.totalStock,
+        };
+
+        return [...prevVariants, newItem];
+      }
+    });
+
+    // Reset state
+    setproductname("");
+    setselectedProduct([]);
+    setquantity(0);
+  } else if (quantity === 0 || selectedproduct.length === 0) {
+    toast.error("Please select each field", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+  } else {
+    toast.warning("Product stock not available", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+  }
+}
+
+async function UpdateEntry(e) {
+  e.preventDefault();
+  if (AllItems.length === 0) {
+    alert("please add item into van");
+  } else {
+    try {
+      setLoaderstatus(true);
+      let totalStock;
+      const itemsToAdd = AllItems.filter((item) => !item.id);
+      console.log(itemsToAdd);
+      for (let item of itemsToAdd) {
+        console.log("item======================", item);
+        await addDoc(collection(db, `Delivery/${id}/Van`), item);
+        const docRef = doc(db, "products", item.productid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          totalStock = docSnap.data().totalStock;
+        } else {
+          console.log("No such document!");
+        }
+        const washingtonRef = doc(db, "products", item.productid);
+        await updateDoc(washingtonRef, {
+          totalStock: totalStock - item.quantity,
+        });
+      }
+      window.location.reload();
+      setLoaderstatus(false);
+      toast.success("Product added Successfully !", {
         position: toast.POSITION.TOP_RIGHT,
       });
-    } else {
-      toast.warning("Prodcut stock not available", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+    } catch (error) {
+      setLoaderstatus(false);
+      console.log("Error in Adding Data to Van", error);
     }
   }
+  }
+  
+  
   // useEffect(() => {
   //   console.log("items is ", AllItems)
   // }, [AllItems])
 
-  async function UpdateEntry(e) {
-    e.preventDefault();
-    if (AllItems.length === 0) {
-      alert("please add item into van");
-    } else {
-      try {
-        setLoaderstatus(true);
-        let totalStock;
-        const itemsToAdd = AllItems.filter((item) => !item.id);
-        console.log(itemsToAdd);
-        for (let item of itemsToAdd) {
-          console.log("item======================", item);
-          await addDoc(collection(db, `Delivery/${id}/Van`), item);
-          const docRef = doc(db, "products", item.productid);
-          const docSnap = await getDoc(docRef);
 
-          if (docSnap.exists()) {
-            totalStock = docSnap.data().totalStock;
-          } else {
-            console.log("No such document!");
-          }
-          const washingtonRef = doc(db, "products", item.productid);
-          await updateDoc(washingtonRef, {
-            totalStock: totalStock - item.quantity,
-          });
-        }
-        window.location.reload();
-        setLoaderstatus(false);
-        toast.success("Product added Successfully !", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      } catch (error) {
-        setLoaderstatus(false);
-        console.log("Error in Adding Data to Van", error);
-      }
-    }
-  }
   const [selectAll, setSelectAll] = useState([]);
   function handleSelectAll() {
     if (AllItems.length === selectAll.length) {
@@ -582,7 +579,7 @@ const DeliveryBoyInventory = () => {
                   type="text"
                   placeholder="Quantity"
                   value={quantity}
-                  onChange={(e) => setquantity(e.target.value)}
+                  onChange={(e) => setquantity(Number(e.target.value) || 0)}
                 />
               </div>
               <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
