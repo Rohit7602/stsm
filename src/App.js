@@ -51,7 +51,7 @@ function App() {
   const [loading, setloading] = useState(true);
   const location = useLocation();
   const [deletPopup, setDeletPopup] = useState(false);
-  const { showpop, setShowpop } = useNotification();
+  const { showpop, setShowpop  } = useNotification();
   useEffect(() => {
     permissionHandler();
     onMessageListener();
@@ -123,16 +123,12 @@ function App() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
-        // User is signed in
         setUser(false);
       } else {
-        // User is signed out
         setUser(true);
       }
       setloading(false);
     });
-
-    // Cleanup function to unsubscribe when the component unmounts
     return () => unsubscribe();
   }, []);
 
