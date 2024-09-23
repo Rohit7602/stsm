@@ -9,6 +9,9 @@ import {
   addDoc,
   collection,
   getDoc,
+  where,
+  WriteBatch,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { Link } from "react-router-dom";
@@ -82,112 +85,117 @@ const DeliveryBoyInventory = () => {
   }, [id, DeliveryManData]);
 
   // console.log("selected product is ", selectedproduct)
-function HandleAddToVan(e) {
-  e.preventDefault();
+  function HandleAddToVan(e) {
+    e.preventDefault();
 
-  // Check if all required fields are valid
-  if (
-    selectedproduct.length > 0 &&
-    quantity > 0 &&
-    selectedproduct[0].totalStock >= quantity
-  ) {
-    let productToUpdate = selectedproduct[0];
+    if (
+      selectedproduct.length > 0 &&
+      quantity > 0 &&
+      selectedproduct[0].totalStock >= quantity
+    ) {
+      let productToUpdate = selectedproduct[0];
 
-    setAllItems((prevVariants) => {
-      const existingItemIndex = prevVariants.findIndex(
-        (item) => item.productid === productToUpdate.id
-      );
+      setAllItems((prevVariants) => {
+        const existingItemIndex = prevVariants.findIndex(
+          (item) => item.productid === productToUpdate.id
+        );
 
-      if (existingItemIndex !== -1) {
-        // Update existing item
-        const updatedItem = {
-          ...prevVariants[existingItemIndex],
-          quantity: prevVariants[existingItemIndex].quantity + quantity,
-        };
+        if (existingItemIndex !== -1) {
+          // Update the existing item quantity by adding the new quantity
+          const updatedItem = {
+            ...prevVariants[existingItemIndex],
+            additionalQty: quantity, // Add the new quantity
+          };
 
-        return [
-          ...prevVariants.slice(0, existingItemIndex),
-          updatedItem,
-          ...prevVariants.slice(existingItemIndex + 1),
-        ];
-      } else {
-        // Add new item
-        const newItem = {
-          name: productname,
-          productImage: productToUpdate.productImages[0],
-          productid: productToUpdate.id,
-          salesprice: productToUpdate.salesprice,
-          quantity: quantity,
-          sku: productToUpdate.sku,
-          brand: productToUpdate.brand.name,
-          stockUnitType: productToUpdate.stockUnitType,
-          tax: productToUpdate.Tax,
-          DeliveryCharge: productToUpdate.DeliveryCharge,
-          ServiceCharge: productToUpdate.ServiceCharge,
-          totalStocks: productToUpdate.totalStock,
-        };
-
-        return [...prevVariants, newItem];
-      }
-    });
-
-    // Reset state
-    setproductname("");
-    setselectedProduct([]);
-    setquantity(0);
-  } else if (quantity === 0 || selectedproduct.length === 0) {
-    toast.error("Please select each field", {
-      position: toast.POSITION.TOP_RIGHT,
-    });
-  } else {
-    toast.warning("Product stock not available", {
-      position: toast.POSITION.TOP_RIGHT,
-    });
-  }
-}
-
-async function UpdateEntry(e) {
-  e.preventDefault();
-  if (AllItems.length === 0) {
-    alert("please add item into van");
-  } else {
-    try {
-      setLoaderstatus(true);
-      let totalStock;
-      const itemsToAdd = AllItems.filter((item) => !item.id);
-      console.log(itemsToAdd);
-      for (let item of itemsToAdd) {
-        console.log("item======================", item);
-        await addDoc(collection(db, `Delivery/${id}/Van`), item);
-        const docRef = doc(db, "products", item.productid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          totalStock = docSnap.data().totalStock;
+          return [
+            ...prevVariants.slice(0, existingItemIndex),
+            updatedItem,
+            ...prevVariants.slice(existingItemIndex + 1),
+          ];
         } else {
-          console.log("No such document!");
+          // Add new item
+          const newItem = {
+            name: productname,
+            productImage: productToUpdate.productImages[0],
+            productid: productToUpdate.id,
+            salesprice: productToUpdate.salesprice,
+            quantity: quantity,
+            sku: productToUpdate.sku,
+            brand: productToUpdate.brand.name,
+            stockUnitType: productToUpdate.stockUnitType,
+            tax: productToUpdate.Tax,
+            DeliveryCharge: productToUpdate.DeliveryCharge,
+            ServiceCharge: productToUpdate.ServiceCharge,
+            totalStocks: productToUpdate.totalStock,
+          };
+
+          return [...prevVariants, newItem];
         }
-        const washingtonRef = doc(db, "products", item.productid);
-        await updateDoc(washingtonRef, {
-          totalStock: totalStock - item.quantity,
-        });
-      }
-      window.location.reload();
-      setLoaderstatus(false);
-      toast.success("Product added Successfully !", {
+      });
+
+      // Reset state
+      setproductname("");
+      setselectedProduct([]);
+      setquantity(0);
+    } else if (quantity === 0 || selectedproduct.length === 0) {
+      toast.error("Please select each field", {
         position: toast.POSITION.TOP_RIGHT,
       });
-    } catch (error) {
-      setLoaderstatus(false);
-      console.log("Error in Adding Data to Van", error);
+    } else {
+      toast.warning("Product stock not available", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     }
   }
+
+  async function UpdateEntry(e) {
+    e.preventDefault();
+    if (AllItems.length === 0) {
+      alert("please add item into van");
+    } else {
+      try {
+        let batch = writeBatch(db);
+
+        for (let item of AllItems) {
+          const existingDoc = await getDoc(
+            doc(db, `Delivery/${id}/Van/${item.id}`)
+          );
+
+          if (!existingDoc.exists()) {
+            await addDoc(collection(db, `Delivery/${id}/Van`), item);
+          } else {
+            batch.update(doc(db, `Delivery/${id}/Van/${item.id}`), {
+              quantity: existingDoc.data().quantity + (item.additionalQty ?? 0),
+            });
+          }
+          const docRef = doc(db, "products", item.productid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            let qty = existingDoc.exists()
+              ? item.additionalQty ?? 0
+              : item.quantity;
+            batch.update(doc(db, `products/${item.productid}`), {
+              totalStock: docSnap.data().totalStock - qty,
+            });
+          }
+        }
+        await batch.commit();
+        setLoaderstatus(true);
+        window.location.reload();
+        setLoaderstatus(false);
+        toast.success("Product added Successfully !", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      } catch (error) {
+        setLoaderstatus(false);
+        console.log("Error in Adding Data to Van", error);
+      }
+    }
   }
-  
-  
+
   // useEffect(() => {
   //   console.log("items is ", AllItems)
   // }, [AllItems])
-
 
   const [selectAll, setSelectAll] = useState([]);
   function handleSelectAll() {
@@ -405,175 +413,6 @@ async function UpdateEntry(e) {
             </div>
             <div className="d-flex align-items-center justify-content-between w-100 gap-4">
               <div className=" w-100 d-flex align-items-center gap-3">
-                {/* <div className="dropdown w-100">
-                  <button
-                    style={{ height: "44px" }}
-                    className="btn dropdown-toggle w-100 quantity_bg"
-                    type="button"
-                    id="dropdownMenuButton3"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <div className="d-flex align-items-center justify-content-between w-100">
-                      <p className="ff-outfit fw-400 fs_sm mb-0 fade_grey">
-                        {varient ? varient : "Varient"}
-                      </p>
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M7 10L12 15L17 10"
-                          stroke="black"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  </button>
-
-                  <ul
-                    className="dropdown-menu delivery_man_dropdown w-100"
-                    aria-labelledby="dropdownMenuButton3"
-                  >
-                    {selectedproduct.length > 0 &&
-                      selectedproduct[0].varients.map((name) => {
-                        return (
-                          <li>
-                            <div
-                              onClick={() => setVarient(name.VarientName)}
-                              className="dropdown-item py-2"
-                              href="#"
-                            >
-                              <p className="fs-sm fw-400 balck m-0">
-                                {name.VarientName}
-                              </p>
-                            </div>
-                          </li>
-                        );
-                      })}
-                  </ul>
-                </div> */}
-                {/* <div className="dropdown w-100">
-                  <button
-                    style={{ height: "44px" }}
-                    className="btn dropdown-toggle w-100 quantity_bg"
-                    type="button"
-                    id="dropdownMenuButton3"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <div className="d-flex align-items-center justify-content-between w-100">
-                      <p className="ff-outfit fw-400 fs_sm mb-0 fade_grey">
-                        {color ? color : "Select Colors"}
-                      </p>
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M7 10L12 15L17 10"
-                          stroke="black"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  </button>
-
-                  <ul
-                    className="dropdown-menu delivery_man_dropdown w-100"
-                    aria-labelledby="dropdownMenuButton3"
-                  >
-                    {selectedproduct.length > 0 &&
-                      selectedproduct[0].colors.map((name) => {
-                        return (
-                          <li>
-                            <div
-                              onClick={() => setColor(name)}
-                              className="dropdown-item py-2"
-                              href="#"
-                            >
-                              <p className="fs-sm fw-400 balck m-0">{name}</p>
-                            </div>
-                          </li>
-                        );
-                      })}
-                  </ul>
-                </div> */}
-                {/* <div className="dropdown w-100">
-                  <button
-                    style={{ height: '44px' }}
-                    className="btn dropdown-toggle w-100 quantity_bg"
-                    type="button"
-                    id="dropdownMenuButton3"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    <div className="d-flex align-items-center justify-content-between w-100">
-                      <p className="ff-outfit fw-400 fs_sm mb-0 fade_grey">
-                        {quantity ? quantity : 'Quantity'}
-                      </p>
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M7 10L12 15L17 10"
-                          stroke="black"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  </button>
-                  <ul
-                    className="dropdown-menu delivery_man_dropdown w-100"
-                    aria-labelledby="dropdownMenuButton3">
-                    <li>
-                      <div
-                        onClick={() => setquantity('product')}
-                        className="dropdown-item py-2"
-                        href="#">
-                        <p className="fs-sm fw-400 balck m-0">Product</p>
-                      </div>
-                    </li>
-                    <li>
-                      <div
-                        onClick={() => setquantity('product')}
-                        className="dropdown-item py-2"
-                        href="#">
-                        <p className="fs-sm fw-400 balck m-0">Product</p>
-                      </div>
-                    </li>
-                    <li>
-                      <div
-                        onClick={() => setquantity('product')}
-                        className="dropdown-item py-2"
-                        href="#">
-                        <p className="fs-sm fw-400 balck m-0">Product</p>
-                      </div>
-                    </li>
-                    <li>
-                      <div
-                        onClick={() => setquantity('product')}
-                        className="dropdown-item py-2"
-                        href="#">
-                        <p className="fs-sm fw-400 balck m-0">Product</p>
-                      </div>
-                    </li>
-                  </ul>
-                </div> */}
                 <input
                   className="w-25 quantity_bg outline_none"
                   type="text"
@@ -688,7 +527,8 @@ async function UpdateEntry(e) {
                             </td> */}
                             <td className="mx_140">
                               <h3 className="fs-sm fw-400 black mb-0 color_green ms-3">
-                                {item.quantity -
+                                {item.quantity +
+                                  (item.additionalQty ?? 0) -
                                   (item.sold != null ? item.sold : 0)}
                                 <span className=" ms-1">
                                   {item.stockUnitType}
