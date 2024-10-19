@@ -176,17 +176,22 @@ const Customers = () => {
                                   <div>
                                     <Link
                                       className="d-flex py-1 color_blue"
-                                      to={`viewcustomerdetails/${id}`}>
+                                      to={`viewcustomerdetails/${id}`}
+                                    >
                                       {name}
                                     </Link>
 
-                                    <h3 className="fs-xxs fw-400 fade_grey mt-1 mb-0">{email}</h3>
+                                    <h3 className="fs-xxs fw-400 fade_grey mt-1 mb-0">
+                                      {email}
+                                    </h3>
                                   </div>
                                 </div>
                               </div>
                             </td>
                             <td className="p-3 mw_160">
-                              <h3 className="fs-sm fw-400 black mb-0">{newDate}</h3>
+                              <h3 className="fs-sm fw-400 black mb-0">
+                                {newDate}
+                              </h3>
                             </td>
                             <td className="p-3 mw-300">
                               <h3 className="fs-sm fw-400 black mb-0">
@@ -194,13 +199,16 @@ const Customers = () => {
                               </h3>
                             </td>
                             <td className="p-3 mw_160">
-                              <h3 className="fs-sm fw-400 black mb-0">Public</h3>
+                              <h3 className="fs-sm fw-400 black mb-0">
+                                Public
+                              </h3>
                             </td>
                             <td className="p-3 mw-200">
                               <h3 className="fs-sm fw-400 black mb-0">
                                 ₹ {calculateTotalSpent(id)}
                               </h3>
                             </td>
+
                             <td className="text-center mw-90">
                               <div class="dropdown">
                                 <button
@@ -208,17 +216,23 @@ const Customers = () => {
                                   type="button"
                                   id="dropdownMenuButton3"
                                   data-bs-toggle="dropdown"
-                                  aria-expanded="false">
-                                  <img src={threedot} alt="dropdownDots" />
+                                  aria-expanded="false"
+                                >
+                                  <abbr title="View">
+                                    <img src={threedot} alt="dropdownDots" />
+                                  </abbr>
                                 </button>
                                 <ul
                                   class="dropdown-menu categories_dropdown border-0"
-                                  aria-labelledby="dropdownMenuButton3">
+                                  aria-labelledby="dropdownMenuButton3"
+                                >
                                   <li>
                                     <Link to={`viewcustomerdetails/${id}`}>
                                       <div className="d-flex align-items-center categorie_dropdown_options">
                                         <img src={eye_icon} alt="" />
-                                        <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
+                                        <p className="fs-sm fw-400 black mb-0 ms-2">
+                                          View Details
+                                        </p>
                                       </div>
                                     </Link>
                                   </li>

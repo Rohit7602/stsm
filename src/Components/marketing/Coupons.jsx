@@ -144,14 +144,19 @@ const Coupons = () => {
   } else {
     return (
       <div className="main_panel_wrapper bg_light_grey w-100">
-        {addsServicePopup || deletepopup ? <div className="bg_black_overlay"></div> : ''}
+        {addsServicePopup || deletepopup ? (
+          <div className="bg_black_overlay"></div>
+        ) : (
+          ""
+        )}
 
         <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
           <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
             <h1 className="fw-500 black fs-lg mb-0">Coupons</h1>
             <Link
               onClick={() => setAddsServicePopup(!addsServicePopup)}
-              className="update_entry black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 gap-2 ">
+              className="update_entry black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 gap-2 "
+            >
               <TickIcon />
               Add Counpon
             </Link>
@@ -159,7 +164,9 @@ const Coupons = () => {
               <form onSubmit={addcoupons} className="add_coupon_popup  ">
                 <div className="d-flex  justify-content-between position-relative mt-1">
                   <div className="w-100">
-                    <label className="fs-sm fw-400 black mb-0">Promo Code</label>
+                    <label className="fs-sm fw-400 black mb-0">
+                      Promo Code
+                    </label>
                     <input
                       required
                       className="popup_coupon_input w-100 fs-xs fw-400 black mt-2"
@@ -185,9 +192,9 @@ const Coupons = () => {
                         <label class="check fw-400 fs-sm black mb-0">
                           Percentage
                           <input
-                            onChange={() => setDiscounttype('PERCENTAGE')}
+                            onChange={() => setDiscounttype("PERCENTAGE")}
                             type="radio"
-                            checked={discounttype === 'PERCENTAGE'}
+                            checked={discounttype === "PERCENTAGE"}
                           />
                           <span class="checkmark"></span>
                         </label>
@@ -198,9 +205,9 @@ const Coupons = () => {
                         <label class="check fw-400 fs-sm black mb-0">
                           Fixed
                           <input
-                            onChange={() => setDiscounttype('FIXED')}
+                            onChange={() => setDiscounttype("FIXED")}
                             type="radio"
-                            checked={discounttype === 'FIXED'}
+                            checked={discounttype === "FIXED"}
                           />
                           <span class="checkmark"></span>
                         </label>
@@ -210,7 +217,9 @@ const Coupons = () => {
                 </div>
 
                 <div className="w-100 mt-3">
-                  <label className="fs-sm fw-400 black mb-0">Discount Value</label>
+                  <label className="fs-sm fw-400 black mb-0">
+                    Discount Value
+                  </label>
                   <input
                     className="popup_coupon_input w-100 fs-xs fw-400 black mt-1"
                     type="text"
@@ -219,7 +228,7 @@ const Coupons = () => {
                     value={discount}
                     onChange={(e) => {
                       const value = e.target.value;
-                      if (discounttype === 'PERCENTAGE' && value > 100) {
+                      if (discounttype === "PERCENTAGE" && value > 100) {
                         setDiscount(100);
                       } else {
                         setDiscount(value);
@@ -243,10 +252,15 @@ const Coupons = () => {
                 </div>
 
                 <div className="w-100 mt-2">
-                  <label className="fs-sm fw-400 black mb-0">Coupon Count</label>
+                  <label className="fs-sm fw-400 black mb-0">
+                    Coupon Count
+                  </label>
                   <input
                     className="popup_coupon_input w-100 fs-xs fw-400 black mt-1"
                     type="number"
+                    onWheel={(e) => {
+                      e.target.blur();
+                    }}
                     required
                     id="couponcount"
                     value={couponUseCount}
@@ -296,7 +310,7 @@ const Coupons = () => {
                         required
                         id="startdate"
                         value={startdate}
-                        min={new Date().toISOString().split('T')[0]}
+                        min={new Date().toISOString().split("T")[0]}
                         onChange={(e) => setStartDate(e.target.value)}
                       />
                     </div>
@@ -311,7 +325,7 @@ const Coupons = () => {
                         required
                         id="enddate"
                         value={enddate}
-                        min={new Date().toISOString().split('T')[0]}
+                        min={new Date().toISOString().split("T")[0]}
                         onChange={(e) => setEndDate(e.target.value)}
                       />
                     </div>
@@ -322,14 +336,16 @@ const Coupons = () => {
                     onClick={() => {
                       handleUpdateCoupons(couponsId);
                     }}
-                    className="fs-sm d-flex gap-2 mt-3 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black">
+                    className="fs-sm d-flex gap-2 mt-3 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black"
+                  >
                     <TickIcon />
                     update Promo
                   </button>
                 ) : (
                   <button
                     type="submit"
-                    className="fs-sm d-flex gap-2 mt-3 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black">
+                    className="fs-sm d-flex gap-2 mt-3 mb-0 align-items-center px-sm-3 px-2 py-2  save_btn fw-400 black"
+                  >
                     <TickIcon />
                     Add Promo
                   </button>
@@ -348,10 +364,14 @@ const Coupons = () => {
                         <h3 className="fs-sm fw-400 black mb-0">Promo Code</h3>
                       </th>
                       <th className="mx_160 ps-3">
-                        <h3 className="fs-sm fw-400 black mb-0">Discount Value</h3>
+                        <h3 className="fs-sm fw-400 black mb-0">
+                          Discount Value
+                        </h3>
                       </th>
                       <th className="mx_140 cursor_pointer">
-                        <h3 className="fs-sm fw-400 black mb-0">Max. Discount</h3>
+                        <h3 className="fs-sm fw-400 black mb-0">
+                          Max. Discount
+                        </h3>
                       </th>
                       <th className="mx_160 ps-3">
                         <h3 className="fs-sm fw-400 black mb-0">Min. Order</h3>
@@ -371,22 +391,31 @@ const Coupons = () => {
                     {allcoupons.map((coupns, index) => {
                       return (
                         <tr key={coupns.id}>
-                          <td className="py-3 ps-3 mx_70 cursor_pointer ">{index + 1}</td>
+                          <td className="py-3 ps-3 mx_70 cursor_pointer ">
+                            {index + 1}
+                          </td>
                           <td className="mx_160 px-2">
-                            <h3 className="fs-sm fw-400 black mb-0">{coupns.promo_code}</h3>
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              {coupns.promo_code}
+                            </h3>
                           </td>
                           <td className="mx_160 ps-3">
                             <h3 className="fs-sm fw-400 black mb-0">
-                              {coupns.discount_type === 'FIXED'
+                              {coupns.discount_type === "FIXED"
                                 ? `₹${coupns.discount_value}`
                                 : `% ${coupns.discount_value}`}
                             </h3>
                           </td>
                           <td className="mx_140 cursor_pointer">
-                            <h3 className="fs-sm fw-400 black mb-0"> ₹{coupns.max_discount}</h3>
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              {" "}
+                              ₹{coupns.max_discount}
+                            </h3>
                           </td>
                           <td className="mx_160 ps-3">
-                            <h3 className="fs-sm fw-400 black mb-0">₹ {coupns.min_order}</h3>
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              ₹ {coupns.min_order}
+                            </h3>
                           </td>
                           <td className="mx_160 ps-3">
                             <h3 className="fs-sm fw-400 black mb-0">
@@ -413,14 +442,16 @@ const Coupons = () => {
                                   setDiscounttype(coupns.discount_type);
                                   setdescription(coupns.description);
                                   setcouponUseCount(coupns.coupon_count);
-                                }}>
+                                }}
+                              >
                                 <EditIcon />
                               </div>
                               <div
                                 onClick={() => {
                                   setDeletePopup(true);
                                   setCouponId(coupns.id);
-                                }}>
+                                }}
+                              >
                                 <DeleteIcon> </DeleteIcon>
                               </div>
                             </div>

@@ -344,7 +344,7 @@ const AddProduct = () => {
     setSelectedCategory(null);
     setStockPrice("");
     setDeliveryCharges("");
-    setSalesPrice("")
+    setSalesPrice("");
     setSalesmanComssion("");
     setServiceCharge("");
     setPerUnitPrice("");
@@ -406,7 +406,7 @@ const AddProduct = () => {
           // SalesmanCommission: SalesmanCommission || '0',
           ServiceCharge: ServiceCharge || "0",
           DeliveryCharge: DeliveryCharge || "0",
-          salesprice:salesprice || "0",
+          salesprice: salesprice || "0",
           colors: storeColors,
           Tax: Tax || 0,
           isMultipleVariant: isvarient === true,
@@ -639,7 +639,7 @@ const AddProduct = () => {
         // SalesmanCommission: SalesmanCommission || "0",
         ServiceCharge: ServiceCharge || "0",
         DeliveryCharge: DeliveryCharge || "0",
-        salesprice:salesprice || "0",
+        salesprice: salesprice || "0",
         colors: storeColors,
         isMultipleVariant: isvarient === true,
         brand: {
@@ -921,6 +921,9 @@ const AddProduct = () => {
                                   <input
                                     required
                                     type="number"
+                                    onWheel={(e) => {
+                                      e.target.blur(); 
+                                    }}
                                     className="  fade_grey fw-400 border-0 w-100 outline_none"
                                     placeholder="Enter Pincode "
                                     id="pinCode"
@@ -1196,6 +1199,9 @@ const AddProduct = () => {
                                   <input
                                     required
                                     type="number"
+                                    onWheel={(e) => {
+                                      e.target.blur(); 
+                                    }}
                                     className="mt-2 product_input fade_grey fw-400"
                                     placeholder="1"
                                     id="origi"
@@ -1225,6 +1231,9 @@ const AddProduct = () => {
                                   <input
                                     required
                                     type="number"
+                                    onWheel={(e) => {
+                                      e.target.blur(); 
+                                    }}
                                     className="mt-2 product_input fade_grey fw-400"
                                     placeholder="₹ 0.00"
                                     id="origi"
@@ -1256,6 +1265,9 @@ const AddProduct = () => {
                                     <input
                                       required
                                       type="number"
+                                      onWheel={(e) => {
+                                        e.target.blur(); 
+                                      }}
                                       className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                                       placeholder="₹ 0.00"
                                       id="salesMan"
@@ -1289,6 +1301,9 @@ const AddProduct = () => {
                                     <input
                                       required
                                       type="number"
+                                      onWheel={(e) => {
+                                        e.target.blur(); 
+                                      }}
                                       className="mt-2 product_input fade_grey fw-400"
                                       placeholder="0"
                                       id="Weight"
@@ -1392,6 +1407,9 @@ const AddProduct = () => {
                                           <input
                                             required
                                             type="number"
+                                            onWheel={(e) => {
+                                              e.target.blur(); 
+                                            }}
                                             className="mt-2 product_input fade_grey fw-400"
                                             placeholder={
                                               variant.discountType !==
@@ -1527,6 +1545,9 @@ const AddProduct = () => {
                                 <input
                                   required
                                   type="number"
+                                  onWheel={(e) => {
+                                    e.target.blur(); 
+                                  }}
                                   className="mt-2 product_input fade_grey fw-400"
                                   placeholder="1"
                                   id="origi"
@@ -1564,6 +1585,9 @@ const AddProduct = () => {
                                 <input
                                   required
                                   type="number"
+                                  onWheel={(e) => {
+                                    e.target.blur(); 
+                                  }}
                                   className="mt-2 product_input fade_grey fw-400"
                                   placeholder="₹ 0.00"
                                   id="origi"
@@ -1604,6 +1628,9 @@ const AddProduct = () => {
                                   <input
                                     required
                                     type="number"
+                                    onWheel={(e) => {
+                                      e.target.blur(); 
+                                    }}
                                     className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                                     placeholder="₹ 0.00"
                                     id="salesMan"
@@ -1645,6 +1672,9 @@ const AddProduct = () => {
                                 <input
                                   required
                                   type="number"
+                                  onWheel={(e) => {
+                                    e.target.blur(); 
+                                  }}
                                   className="mt-2 product_input fade_grey fw-400"
                                   placeholder="0"
                                   id="origi"
@@ -1777,6 +1807,9 @@ const AddProduct = () => {
                                     <input
                                       required
                                       type="number"
+                                      onWheel={(e) => {
+                                        e.target.blur(); 
+                                      }}
                                       className="mt-2 product_input fade_grey fw-400"
                                       placeholder={
                                         discountType !== "Percentage"
@@ -2009,6 +2042,9 @@ const AddProduct = () => {
                       <input
                         required
                         type="number"
+                        onWheel={(e) => {
+                          e.target.blur(); 
+                        }}
                         className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                         placeholder="₹ 0.00"
                         id="deliveryCharge"
@@ -2027,6 +2063,9 @@ const AddProduct = () => {
                       <input
                         required
                         type="number"
+                        onWheel={(e) => {
+                          e.target.blur(); 
+                        }}
                         className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                         placeholder="%"
                         id="deliveryCharge"
@@ -2045,6 +2084,9 @@ const AddProduct = () => {
                       <input
                         required
                         type="number"
+                        onWheel={(e) => {
+                          e.target.blur(); 
+                        }}
                         className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                         placeholder="Amount"
                         id="serviceCharge"
@@ -2063,6 +2105,9 @@ const AddProduct = () => {
                       <input
                         required
                         type="number"
+                         onWheel={(e) => {
+    e.target.blur(); 
+  }}
                         className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                         placeholder="₹ 0.00"
                         id="salesMan"
@@ -2182,6 +2227,9 @@ const AddProduct = () => {
                           <input
                             className="product_input fade_grey fw-400 mt-2"
                             type="number"
+                            onWheel={(e) => {
+                              e.target.blur(); 
+                            }}
                             placeholder="0.00"
                             value={totalStockQun}
                             onChange={(e) => setTotalStockQun(e.target.value)}
@@ -2239,6 +2287,9 @@ const AddProduct = () => {
                             <input
                               className="product_input fade_grey fw-400 mt-2"
                               type="number"
+                              onWheel={(e) => {
+                                e.target.blur(); 
+                              }}
                               placeholder="₹ 0.00"
                               value={perUnitPrice}
                               onChange={(e) => setPerUnitPrice(e.target.value)}
@@ -2261,6 +2312,9 @@ const AddProduct = () => {
                     <input
                       required
                       type="number"
+                      onWheel={(e) => {
+                        e.target.blur(); 
+                      }}
                       className="mt-2 product_input fade_grey fw-400"
                       placeholder="Enter alert count "
                       value={StockCount}
@@ -2282,6 +2336,9 @@ const AddProduct = () => {
                     <input
                       required
                       type="number"
+                      onWheel={(e) => {
+                        e.target.blur(); 
+                      }}
                       className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                       placeholder="₹ 0.00"
                       id="salesprice"

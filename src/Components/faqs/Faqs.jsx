@@ -137,11 +137,15 @@ function Faqs() {
   } else {
     return (
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100 mt-3 pt-1 px-1">
-        {addQusPopup || deleteQusPopup ? <div className="bg_black_overlay"></div> : null}
+        {addQusPopup || deleteQusPopup ? (
+          <div className="bg_black_overlay"></div>
+        ) : null}
         {addQusPopup ? (
           <div className="addqus_popup">
             <div className="d-flex align-items-center justify-content-between pb-4">
-              <p className="m-0 fs-sm fw-400 black">{editQusPopup ? 'Edit' : 'Add'} Question</p>
+              <p className="m-0 fs-sm fw-400 black">
+                {editQusPopup ? "Edit" : "Add"} Question
+              </p>
               <img
                 onClick={() => setAddQusPopup(false)}
                 className="cursor_pointer"
@@ -157,7 +161,8 @@ function Faqs() {
                 className="ques_input w-100"
                 placeholder="text"
                 rows="2"
-                cols=""></textarea>
+                cols=""
+              ></textarea>
             </div>
             <div className="d-flex flex-column align-items-start justify-content-between mt-3 pt-1">
               <p className="fs-sm fw-400 black">Answer</p>
@@ -178,20 +183,20 @@ function Faqs() {
                     handleFaqChange(editor); // Pass the editor object to your custom handler
                   }}
                   init={{
-                    placeholder: 'Write something...',
+                    placeholder: "Write something...",
                     plugins:
-                      'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown',
+                      "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown",
                     toolbar:
-                      'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | spellcheckdialog | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                    tinycomments_mode: 'embedded',
-                    tinycomments_author: 'Author name',
+                      "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | spellcheckdialog | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
+                    tinycomments_mode: "embedded",
+                    tinycomments_author: "Author name",
                     mergetags_list: [
-                      { value: 'First.Name', title: 'First Name' },
-                      { value: 'Email', title: 'Email' },
+                      { value: "First.Name", title: "First Name" },
+                      { value: "Email", title: "Email" },
                     ],
                     ai_request: (request, respondWith) =>
                       respondWith.string(() =>
-                        Promise.reject('See docs to implement AI Assistant')
+                        Promise.reject("See docs to implement AI Assistant")
                       ),
                   }}
                 />
@@ -199,10 +204,16 @@ function Faqs() {
             </div>
             {!editQusPopup ? (
               <div className="d-flex align-items-center justify-content-end gap-2 mt-3 pt-1">
-                <button onClick={handleReset} className="fs-sm fw-400 black qes_reset_btn">
+                <button
+                  onClick={handleReset}
+                  className="fs-sm fw-400 black qes_reset_btn"
+                >
                   Reset
                 </button>
-                <button onClick={handelStoreQesAns} className="fs-sm fw-400 black qes_save_btn">
+                <button
+                  onClick={handelStoreQesAns}
+                  className="fs-sm fw-400 black qes_save_btn"
+                >
                   Save
                 </button>
               </div>
@@ -211,12 +222,14 @@ function Faqs() {
               <div className="d-flex align-items-center justify-content-end gap-2 mt-3 pt-1">
                 <button
                   onClick={handleCancelEditpopup}
-                  className="fs-sm fw-400 black qes_reset_btn">
+                  className="fs-sm fw-400 black qes_reset_btn"
+                >
                   Cancel
                 </button>
                 <button
                   onClick={() => handleUpdateQuestion(questionId)}
-                  className="fs-sm fw-400 black qes_save_btn">
+                  className="fs-sm fw-400 black qes_save_btn"
+                >
                   Update
                 </button>
               </div>
@@ -226,7 +239,12 @@ function Faqs() {
         {deleteQusPopup ? (
           <div className="delete_popup">
             <div onClick={() => setDeleteQusPopup(false)} className="text-end">
-              <img width={40} className="cursor_pointer" src={closeIcon} alt="closeIcon" />
+              <img
+                width={40}
+                className="cursor_pointer"
+                src={closeIcon}
+                alt="closeIcon"
+              />
             </div>
             <p className="fs-2sm fw-700 black mb-0 text-center">Delete FAQs </p>
             <p className="fs-sm fw-500 black text-center mt-4">
@@ -235,10 +253,14 @@ function Faqs() {
             <div className="d-flex align-items-center justify-content-center gap-4 mt-4 pt-2">
               <button
                 onClick={() => setDeleteQusPopup(false)}
-                className="cancel_btn fs-sm fw-400 color_brown">
+                className="cancel_btn fs-sm fw-400 color_brown"
+              >
                 Cancel
               </button>
-              <button onClick={() => handleDeleteQuestion(questionId)} className="delete_btn">
+              <button
+                onClick={() => handleDeleteQuestion(questionId)}
+                className="delete_btn"
+              >
                 Delete
               </button>
             </div>
@@ -250,11 +272,12 @@ function Faqs() {
             onClick={() => {
               setAddQusPopup(true);
               setEditQusPopup(false);
-              setQns('');
-              setAns('');
+              setQns("");
+              setAns("");
             }}
             className="fs-sm d-flex gap-2 mb-0 align-items-center px-2 px-sm-3  py-2 save_btn"
-            type="button">
+            type="button"
+          >
             <img src={faqIcon} alt="faqIcon" />
             <p className="fs-sm fw-400 black ms-2 mb-0">add your Quection’s</p>
           </button>
@@ -274,17 +297,25 @@ function Faqs() {
                         type="button"
                         id="dropdownMenuButton3"
                         data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <img src={dropdownDots} alt="dropdownDots" />
+                        aria-expanded="false"
+                      >
+                        <abbr title="View">
+                          {" "}
+                          <img src={dropdownDots} alt="dropdownDots" />
+                        </abbr>
                       </button>
-                      <ul class="dropdown-menu faqs_dropdown" aria-labelledby="dropdownMenuButton3">
+                      <ul
+                        class="dropdown-menu faqs_dropdown"
+                        aria-labelledby="dropdownMenuButton3"
+                      >
                         <li>
                           <div
                             onClick={() => {
                               setQuestionId(item.id);
                               setDeleteQusPopup(true);
                             }}
-                            class="dropdown-item d-flex align-items-center cursor_pointer">
+                            class="dropdown-item d-flex align-items-center cursor_pointer"
+                          >
                             <img src={deleteIcon} alt="deleteIcon" />
                             <p className="m-0 ms-2">Delete Quection</p>
                           </div>
@@ -295,7 +326,8 @@ function Faqs() {
                               handelEditQus(index);
                               setQuestionId(item.id);
                             }}
-                            class="dropdown-item d-flex align-items-center cursor_pointer">
+                            class="dropdown-item d-flex align-items-center cursor_pointer"
+                          >
                             <img src={editIcon} alt="editIcon" />
                             <p className="m-0 ms-2">Edit Quction</p>
                           </div>
@@ -311,7 +343,8 @@ function Faqs() {
                       className="ms-4"
                       dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(item.answer),
-                      }}></div>
+                      }}
+                    ></div>
                   </div>
                 </div>
               </div>

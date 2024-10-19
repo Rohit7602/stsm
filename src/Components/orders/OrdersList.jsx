@@ -601,7 +601,9 @@ const OrderList = () => {
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false"
                               >
-                                <img src={dropdownDots} alt="dropdownDots" />
+                                <abbr title="View">
+                                  <img src={dropdownDots} alt="dropdownDots" />
+                                </abbr>
                               </button>
                               <ul
                                 class="dropdown-menu categories_dropdown"

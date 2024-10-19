@@ -115,7 +115,10 @@ function Notification() {
                     }`}
                   >
                     <div className="d-flex gap-3">
-                      <NotificationIcon />
+                      <abbr title="Notifications">
+                        {" "}
+                        <NotificationIcon />
+                      </abbr>
                       <div className="w-100">
                         <div className="d-flex justify-content-between">
                           <h5 className="mb-0 fw-normal text-black fs-sm">

@@ -609,6 +609,9 @@ const DeliverymanProfile = () => {
                         className="fade_grey fw-400 border-0 outline_none"
                         placeholder="Enter pin code"
                         id="pinCode"
+                        onWheel={(e) => {
+                          e.target.blur();
+                        }}
                         value={area.pincode}
                         onChange={(e) => {
                           setAddMoreArea((prevsArareas) =>

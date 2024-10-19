@@ -342,14 +342,20 @@ const AddDeliveryMan = () => {
             <div className="d-flex  align-items-center flex-column flex-sm-row gap-2 gap-sm-0  justify-content-between">
               <div className="d-flex">
                 <h1 className="fw-500  mb-0 black fs-lg">
-                  {filterData.length === 0 ? 'New' : 'Edit'} delivery Man
+                  {filterData.length === 0 ? "New" : "Edit"} delivery Man
                 </h1>
               </div>
               {filterData.length === 0 ? (
                 <button
                   className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black  "
-                  type="submit">
-                  <img className="me-1" width={20} src={addicon} alt="add-icon" />
+                  type="submit"
+                >
+                  <img
+                    className="me-1"
+                    width={20}
+                    src={addicon}
+                    alt="add-icon"
+                  />
                   Save New Delivery Man
                 </button>
               ) : (
@@ -368,7 +374,9 @@ const AddDeliveryMan = () => {
                   <div>
                     {/* Ist-box  */}
                     <div class="product_shadow bg_white p-3 pb-0 ">
-                      <h2 className="fw-400 fs-2sm black mb-0">Basic Information</h2>
+                      <h2 className="fw-400 fs-2sm black mb-0">
+                        Basic Information
+                      </h2>
                       {/* ist input */}
                       <label htmlFor="Name" className="fs-xs fw-400 mt-3 black">
                         Name
@@ -386,7 +394,9 @@ const AddDeliveryMan = () => {
                       <br />
                       <div className="row ">
                         <div className="col-3">
-                          <label className="fs-xs fw-400 mt-3 black">Date of Birth</label>
+                          <label className="fs-xs fw-400 mt-3 black">
+                            Date of Birth
+                          </label>
                           <br />
                           <input
                             type="date"
@@ -399,10 +409,15 @@ const AddDeliveryMan = () => {
                           />
                         </div>
                         <div className="col-4">
-                          <label className="fs-xs fw-400 mt-3 black">Phone</label>
+                          <label className="fs-xs fw-400 mt-3 black">
+                            Phone
+                          </label>
                           <br />
                           <input
                             type="number"
+                            onWheel={(e) => {
+                              e.target.blur();
+                            }}
                             required
                             className="mt-2 product_input fade_grey fw-400"
                             placeholder="+91 XXXXXXXXX"
@@ -412,7 +427,9 @@ const AddDeliveryMan = () => {
                           />
                         </div>
                         <div className="col-5">
-                          <label className="fs-xs fw-400 mt-3 black">Email</label>
+                          <label className="fs-xs fw-400 mt-3 black">
+                            Email
+                          </label>
                           <br />
                           <input
                             type="email"
@@ -426,7 +443,10 @@ const AddDeliveryMan = () => {
                         </div>
                       </div>
                       {/* 2nd input */}
-                      <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
+                      <label
+                        htmlFor="short"
+                        className="fs-xs fw-400 mt-3  black"
+                      >
                         Address
                       </label>
                       <br />
@@ -441,7 +461,9 @@ const AddDeliveryMan = () => {
                       />
                       <div className="row">
                         <div className="col-6">
-                          <label className="fs-xs fw-400 mt-3 black">City</label>
+                          <label className="fs-xs fw-400 mt-3 black">
+                            City
+                          </label>
                           <br />
                           <input
                             type="text"
@@ -454,7 +476,9 @@ const AddDeliveryMan = () => {
                           />
                         </div>
                         <div className="col-6">
-                          <label className="fs-xs fw-400 mt-3 black">State</label>
+                          <label className="fs-xs fw-400 mt-3 black">
+                            State
+                          </label>
                           <br />
                           <input
                             type="text"
@@ -467,8 +491,12 @@ const AddDeliveryMan = () => {
                           />
                         </div>
                       </div>
-                      <h2 className="fw-400 fs-2sm black mb-0 mt-3">Bank Detail’s</h2>
-                      <label className="fs-xs fw-400 mt-3  black">Name in Bank Account</label>
+                      <h2 className="fw-400 fs-2sm black mb-0 mt-3">
+                        Bank Detail’s
+                      </h2>
+                      <label className="fs-xs fw-400 mt-3  black">
+                        Name in Bank Account
+                      </label>
                       <br />
                       <input
                         type="text"
@@ -481,7 +509,9 @@ const AddDeliveryMan = () => {
                       />
                       <div className="row">
                         <div className="col-6">
-                          <label className="fs-xs fw-400 mt-3  black">Bank name</label>
+                          <label className="fs-xs fw-400 mt-3  black">
+                            Bank name
+                          </label>
                           <br />
                           <input
                             type="text"
@@ -494,8 +524,10 @@ const AddDeliveryMan = () => {
                           />
                         </div>
                         <div className="col-6">
-                          {' '}
-                          <label className="fs-xs fw-400 mt-3  black">IFSC Code</label>
+                          {" "}
+                          <label className="fs-xs fw-400 mt-3  black">
+                            IFSC Code
+                          </label>
                           <br />
                           <input
                             type="text"
@@ -510,7 +542,9 @@ const AddDeliveryMan = () => {
                       </div>
                       <div className="row align-items-center pb-4">
                         <div className="col-6">
-                          <label className="fs-xs fw-400 mt-3 black">Account Number</label>
+                          <label className="fs-xs fw-400 mt-3 black">
+                            Account Number
+                          </label>
                           <br />
                           <input
                             type="text"
@@ -523,7 +557,9 @@ const AddDeliveryMan = () => {
                           />
                         </div>
                         <div className="col-6">
-                          <label className="fs-xs fw-400 mt-3 black">Confirm Account Number</label>
+                          <label className="fs-xs fw-400 mt-3 black">
+                            Confirm Account Number
+                          </label>
                           <br />
                           <input
                             type="text"
@@ -532,14 +568,21 @@ const AddDeliveryMan = () => {
                             placeholder="xxxx xxxx xxxx xxxx"
                             id="confirmaccountno"
                             value={confirmaccountno}
-                            onChange={(e) => setConfirmaccountno(e.target.value)}
+                            onChange={(e) =>
+                              setConfirmaccountno(e.target.value)
+                            }
                           />
                         </div>
                       </div>
                     </div>
                     <div class="product_shadow bg_white p-4  mt-3  ">
-                      <h2 className="fw-400 fs-2sm black mb-0">Emergency Contact Information</h2>
-                      <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
+                      <h2 className="fw-400 fs-2sm black mb-0">
+                        Emergency Contact Information
+                      </h2>
+                      <label
+                        htmlFor="short"
+                        className="fs-xs fw-400 mt-3  black"
+                      >
                         Name of Emergency Contact
                       </label>
                       <br />
@@ -552,7 +595,10 @@ const AddDeliveryMan = () => {
                         value={emergencycontact}
                         onChange={(e) => setEmergencycontact(e.target.value)}
                       />
-                      <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
+                      <label
+                        htmlFor="short"
+                        className="fs-xs fw-400 mt-3  black"
+                      >
                         Relationship to Employee
                       </label>
                       <br />
@@ -565,7 +611,10 @@ const AddDeliveryMan = () => {
                         value={relationship}
                         onChange={(e) => setRelationship(e.target.value)}
                       />
-                      <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
+                      <label
+                        htmlFor="short"
+                        className="fs-xs fw-400 mt-3  black"
+                      >
                         Contact Phone Number
                       </label>
                       <br />
@@ -587,7 +636,9 @@ const AddDeliveryMan = () => {
                 {/* Status */}
                 <div className="product_shadow bg_white p-3 mt-3 mt-xxl-0">
                   <div>
-                    <h2 className="fw-400 fs-2sm black mb-0">Job Title ( Delivery Man )</h2>
+                    <h2 className="fw-400 fs-2sm black mb-0">
+                      Job Title ( Delivery Man )
+                    </h2>
                     <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
                       Joining Date
                     </label>
@@ -604,11 +655,14 @@ const AddDeliveryMan = () => {
                   </div>
 
                   <div>
-                    <h2 className="fw-400 fs-2sm black mb-0 pt-3">Employment Type</h2>
+                    <h2 className="fw-400 fs-2sm black mb-0 pt-3">
+                      Employment Type
+                    </h2>
                     <select
                       value={selectedOption}
                       onChange={handleOptionChange}
-                      className="mt-2 product_input fade_grey fw-400">
+                      className="mt-2 product_input fade_grey fw-400"
+                    >
                       <option className="option-commission" value="COMMISSION">
                         Commission
                       </option>
@@ -621,9 +675,9 @@ const AddDeliveryMan = () => {
                         <label className="check fw-400 fs-sm black mb-0">
                           PartTime
                           <input
-                            onChange={() => setEmploymentstatus('PARTTIME')}
+                            onChange={() => setEmploymentstatus("PARTTIME")}
                             type="radio"
-                            checked={employmentstatus === 'PARTTIME'}
+                            checked={employmentstatus === "PARTTIME"}
                           />
                           <span className="checkmark"></span>
                         </label>
@@ -632,9 +686,9 @@ const AddDeliveryMan = () => {
                         <label className="check fw-400 fs-sm black mb-0">
                           FullTime
                           <input
-                            onChange={() => setEmploymentstatus('FULLTIME')}
+                            onChange={() => setEmploymentstatus("FULLTIME")}
                             type="radio"
-                            checked={employmentstatus === 'FULLTIME'}
+                            checked={employmentstatus === "FULLTIME"}
                           />
                           <span className="checkmark"></span>
                         </label>
@@ -652,8 +706,8 @@ const AddDeliveryMan = () => {
                             Aadhar Card
                             <input
                               type="radio"
-                              checked={kycType === 'ADHAR CARD'}
-                              onChange={() => setKycType('ADHAR CARD')}
+                              checked={kycType === "ADHAR CARD"}
+                              onChange={() => setKycType("ADHAR CARD")}
                             />
                             <span className="checkmark"></span>
                           </label>
@@ -663,17 +717,20 @@ const AddDeliveryMan = () => {
                             Votor Card
                             <input
                               type="radio"
-                              checked={kycType === 'VOTOR CARD'}
-                              onChange={() => setKycType('VOTOR CARD')}
+                              checked={kycType === "VOTOR CARD"}
+                              onChange={() => setKycType("VOTOR CARD")}
                             />
                             <span className="checkmark"></span>
                           </label>
                         </div>
                       </div>
 
-                      {kycType === 'VOTERIDCARD' ? (
+                      {kycType === "VOTERIDCARD" ? (
                         <div>
-                          <label htmlFor="social" className="fs-xs fw-400 mt-4 black">
+                          <label
+                            htmlFor="social"
+                            className="fs-xs fw-400 mt-4 black"
+                          >
                             Fill your Social Security Identity
                           </label>
                           <br />
@@ -689,7 +746,10 @@ const AddDeliveryMan = () => {
                         </div>
                       ) : (
                         <div>
-                          <label htmlFor="govt" className="fs-xs fw-400 mt-4 black">
+                          <label
+                            htmlFor="govt"
+                            className="fs-xs fw-400 mt-4 black"
+                          >
                             Fill your any government ID
                           </label>
                           <br />
@@ -709,7 +769,9 @@ const AddDeliveryMan = () => {
                 </div>
                 <div className="product_shadow bg_white p-3 mt-3 ">
                   <div>
-                    <h2 className="fw-400 fs-2sm black mb-0">Vechile Information</h2>
+                    <h2 className="fw-400 fs-2sm black mb-0">
+                      Vechile Information
+                    </h2>
 
                     <label htmlFor="short" className="fs-xs fw-400 mt-3  black">
                       Driving License Number
@@ -738,15 +800,17 @@ const AddDeliveryMan = () => {
                       onChange={(e) => setVechileno(e.target.value)}
                     />
                     <div>
-                      <h2 className="fw-400 fs-2sm black mb-0 pt-3 mt-3">Type of Vehicle</h2>
+                      <h2 className="fw-400 fs-2sm black mb-0 pt-3 mt-3">
+                        Type of Vehicle
+                      </h2>
                       <div className="d-flex align-items-center justify-content-between mt-3">
                         <div className="mt-3 mx-2 py-1 d-flex align-items-center gap-3">
                           <label className="check fw-400 fs-sm black mb-0">
                             4 Wheeler
                             <input
-                              onChange={() => setVechiletype('4 WHEELER')}
+                              onChange={() => setVechiletype("4 WHEELER")}
                               type="radio"
-                              checked={vechiletype === '4 WHEELER'}
+                              checked={vechiletype === "4 WHEELER"}
                             />
                             <span className="checkmark"></span>
                           </label>
@@ -755,9 +819,9 @@ const AddDeliveryMan = () => {
                           <label className="check fw-400 fs-sm black mb-0">
                             2 Wheeler
                             <input
-                              onChange={() => setVechiletype('2 WHEELER')}
+                              onChange={() => setVechiletype("2 WHEELER")}
                               type="radio"
-                              checked={vechiletype === '2 WHEELER'}
+                              checked={vechiletype === "2 WHEELER"}
                             />
                             <span className="checkmark"></span>
                           </label>

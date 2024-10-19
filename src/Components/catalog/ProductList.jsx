@@ -503,13 +503,15 @@ const ProductList = () => {
                               data-bs-toggle="dropdown"
                               aria-expanded="false"
                             >
-                              <img
-                                // onClick={() => {
-                                //  ;
-                                // }}
-                                src={dropdownDots}
-                                alt="dropdownDots"
-                              />
+                              <abbr title="View">
+                                <img
+                                  // onClick={() => {
+                                  //  ;
+                                  // }}
+                                  src={dropdownDots}
+                                  alt="dropdownDots"
+                                />
+                              </abbr>
                             </button>
                             <ul
                               class="dropdown-menu categories_dropdown"

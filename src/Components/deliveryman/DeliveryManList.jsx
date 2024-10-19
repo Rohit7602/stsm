@@ -240,7 +240,9 @@ const DeliveryManList = () => {
                                   />
                                   <span class="checkmark"></span>
                                 </label>
-                                <Link to={`/deliveryman/deliverymanprofile/${data.d_id}`}>
+                                <Link
+                                  to={`/deliveryman/deliverymanprofile/${data.d_id}`}
+                                >
                                   <p className="fw-400 fs-sm black color_blue mb-0 ms-2">
                                     {data.basic_info.name}
                                   </p>
@@ -251,16 +253,23 @@ const DeliveryManList = () => {
                               </div>
                             </td>
                             <td className="px-2 mx_160">
-                              <h3 className="fs-sm fw-400 black mb-0">{data.job_info.shift}</h3>
+                              <h3 className="fs-sm fw-400 black mb-0">
+                                {data.job_info.shift}
+                              </h3>
                             </td>
                             <td className="mx_140 ps-5">
-                              <h3 className="fs-sm fw-400 black ">{orderCount[data.id] ?? 0}</h3>
+                              <h3 className="fs-sm fw-400 black ">
+                                {orderCount[data.id] ?? 0}
+                              </h3>
                             </td>
                             <td className="px-2 mx_140">
                               <h3
                                 className={`fs-sm fw-400 ${
-                                  data.status === "online" ? "status_btn_green" : "status_btn_red"
-                                } mb-0`}>
+                                  data.status === "online"
+                                    ? "status_btn_green"
+                                    : "status_btn_red"
+                                } mb-0`}
+                              >
                                 {data.status}
                               </h3>
                               {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">online</h3> */}
@@ -273,8 +282,11 @@ const DeliveryManList = () => {
                                     : data.profile_status === "APPROVED"
                                     ? "green stock_bg "
                                     : "status_btn_red"
-                                } `}>
-                                {data.profile_status === "NEW" ? "PENDING" : data.profile_status}
+                                } `}
+                              >
+                                {data.profile_status === "NEW"
+                                  ? "PENDING"
+                                  : data.profile_status}
                               </h3>
                               {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">Rejected</h3> */}
                             </td>
@@ -290,7 +302,8 @@ const DeliveryManList = () => {
                                       setSelectedId(data.id);
                                       setShowLocation(true);
                                     }}
-                                    className="service_area_show_btn fs-sm fw-400">
+                                    className="service_area_show_btn fs-sm fw-400"
+                                  >
                                     Show
                                   </button>
                                 ) : (
@@ -311,16 +324,21 @@ const DeliveryManList = () => {
                               data.profile_status === "APPROVED" &&
                               data.hasOwnProperty("serviceArea") ? (
                                 <div>
-                                  <Link to={`inventory/${data.uid}`}>
-                                    <ActionIcon />
-                                  </Link>
+                                  <abbr title="Show Van">
+                                    <Link to={`inventory/${data.uid}`}>
+                                      <ActionIcon />
+                                    </Link>
+                                  </abbr>
                                   <button
                                     onClick={() => {
                                       setDeletePopup(true);
                                       setDeliveryManId(data.uid);
                                     }}
-                                    className="ms-3 bg-white border-0">
-                                    <DeleteIcon />
+                                    className="ms-3 bg-white border-0"
+                                  >
+                                    <abbr title="Delete">
+                                      <DeleteIcon />
+                                    </abbr>
                                   </button>
                                 </div>
                               ) : (
@@ -331,8 +349,11 @@ const DeliveryManList = () => {
                                       setDeletePopup(true);
                                       setDeliveryManId(data.uid);
                                     }}
-                                    className="ms-3 bg-white border-0">
-                                    <DeleteIcon />
+                                    className="ms-3 bg-white border-0"
+                                  >
+                                    <abbr title="Delete">
+                                      <DeleteIcon />
+                                    </abbr>
                                   </button>
                                 </div>
                               )}
