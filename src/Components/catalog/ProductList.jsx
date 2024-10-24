@@ -31,6 +31,7 @@ const ProductList = () => {
   const [ProductImage, setProductImage] = useState(null);
   const [deletepopup, setDeletePopup] = useState(false);
   const [statusPopup, setStatusPopup] = useState(false);
+  const [filtervalue, setFilterValue] = useState("");
   const [loading, setloading] = useState(false);
   console.log(1000 / 20);
   const [order, setorder] = useState("ASC");
@@ -247,6 +248,8 @@ const ProductList = () => {
               <img src={search} alt="searchicon" />
               <input
                 type="text"
+                onChange={(e) => setFilterValue(e.target.value)}
+                value={filtervalue}
                 className="fw-400 categorie_input  "
                 placeholder="Search for Product..."
               />
@@ -378,57 +381,61 @@ const ProductList = () => {
                     selectAll.length >= 2 ? "table_body2" : "table_body"
                   }`}
                 >
-                  {productData.map((value, index) => {
-                    return (
-                      <tr key={index}>
-                        <td className="p-3 d-flex align-items-center">
-                          <label className="check1 fw-400 fs-sm black mb-0">
-                            <input
-                              className="position-relative"
-                              type="checkbox"
-                              value={value.id}
-                              checked={selectAll.includes(
-                                value.id,
-                                value.productImages
-                              )}
-                              onChange={handleCheckboxChange}
-                            />
-                            <span className="checkmark me-5"></span>
-                          </label>
-                          <div className="d-flex align-items-center ms-2">
-                            <div className="w_40">
-                              <img src={value.productImages} alt="" />
-                            </div>
-                            <div className="ps-3 ms-1">
-                              <p className="fw-400 fs-sm black mb-0">
-                                {value.name}
-                              </p>
-                              <div className="d-flex align-items-center">
-                                <p className="mb-0 fs-xxs fw-400 fade_grey d-flex flex-column">
-                                  <span className="pe-1">
-                                    {" "}
-                                    ID : {value.id}{" "}
-                                  </span>
-                                  <span>SKU : {value.sku}</span>
+                  {productData
+                    .filter((v) =>
+                      v.name.toLowerCase().includes(filtervalue.toLowerCase())
+                    )
+                    .map((value, index) => {
+                      return (
+                        <tr key={index}>
+                          <td className="p-3 d-flex align-items-center">
+                            <label className="check1 fw-400 fs-sm black mb-0">
+                              <input
+                                className="position-relative"
+                                type="checkbox"
+                                value={value.id}
+                                checked={selectAll.includes(
+                                  value.id,
+                                  value.productImages
+                                )}
+                                onChange={handleCheckboxChange}
+                              />
+                              <span className="checkmark me-5"></span>
+                            </label>
+                            <div className="d-flex align-items-center ms-2">
+                              <div className="w_40">
+                                <img src={value.productImages} alt="" />
+                              </div>
+                              <div className="ps-3 ms-1">
+                                <p className="fw-400 fs-sm black mb-0">
+                                  {value.name}
                                 </p>
+                                <div className="d-flex align-items-center">
+                                  <p className="mb-0 fs-xxs fw-400 fade_grey d-flex flex-column">
+                                    <span className="pe-1">
+                                      {" "}
+                                      ID : {value.id}{" "}
+                                    </span>
+                                    <span>SKU : {value.sku}</span>
+                                  </p>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="p-3 mw_160">
-                          <h3 className="fs-sm fw-400 black mb-0">
-                            {value.categories.name}
-                          </h3>
-                        </td>
-                        <td className="p-3 mx_180">
-                          <h3 className="fs-sm fw-400 black mb-0">
-                            ₹ {value.perUnitPrice}
-                          </h3>
-                        </td>
-                        <td className="p-3 mw_160">
-                          <h3 className="fs-sm fw-400 black mb-0">
-                            ₹{" "}
-                            {/* {value.varients.map((item) => {
+                          </td>
+                          <td className="p-3 mw_160">
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              {value.categories.name}
+                            </h3>
+                          </td>
+                          <td className="p-3 mx_180">
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              ₹ {value.perUnitPrice}
+                            </h3>
+                          </td>
+                          <td className="p-3 mw_160">
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              ₹{" "}
+                              {/* {value.varients.map((item) => {
                               const data =
                                 item.discountType === "Amount"
                                   ? item.unitPrice - item.discountvalue
@@ -441,33 +448,33 @@ const ProductList = () => {
 
                               return truncatedNumber;
                             })} */}
-                            {value.salesprice}
-                          </h3>
-                        </td>
-                        <td className="p-3 mw_130">
-                          <h3
-                            className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${
-                              parseInt(value.totalStock) === 0
-                                ? "stock_bg_red text-white"
-                                : parseInt(value.totalStock) <=
+                              {value.salesprice}
+                            </h3>
+                          </td>
+                          <td className="p-3 mw_130">
+                            <h3
+                              className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${
+                                parseInt(value.totalStock) === 0
+                                  ? "stock_bg_red text-white"
+                                  : parseInt(value.totalStock) <=
+                                    parseInt(value.stockAlert)
+                                  ? "stock_bg_orange"
+                                  : "px-2 stock_bg"
+                              } `}
+                            >
+                              {parseInt(value.totalStock) === 0
+                                ? `Out of Stock`
+                                : parseInt(value.totalStock) >=
                                   parseInt(value.stockAlert)
-                                ? "stock_bg_orange"
-                                : "px-2 stock_bg"
-                            } `}
-                          >
-                            {parseInt(value.totalStock) === 0
-                              ? `Out of Stock`
-                              : parseInt(value.totalStock) >=
-                                parseInt(value.stockAlert)
-                              ? `${value.totalStock} in Stock`
-                              : `${value.totalStock} Left`}
-                          </h3>
-                        </td>
+                                ? `${value.totalStock} in Stock`
+                                : `${value.totalStock} Left`}
+                            </h3>
+                          </td>
 
-                        <td className="p-3 mw_160">
-                          <h3 className="fs-sm fw-400 black mb-0">
-                            ₹{" "}
-                            {/* {value.varients.map(
+                          <td className="p-3 mw_160">
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              ₹{" "}
+                              {/* {value.varients.map(
                               (item) =>
                                 (item.discountType === "Amount"
                                   ? item.unitPrice - item.discountvalue
@@ -475,120 +482,120 @@ const ProductList = () => {
                                     (item.unitPrice * item.discountvalue) /
                                       100) * value.totalStock
                             )} */}
-                            {value.salesprice * value.totalStock}
-                          </h3>
-                        </td>
-                        <td className="p-3 mx_170">
-                          <h3 className="fs-sm fw-400 black mb-0">
-                            {new Date(value.updated_at).toLocaleDateString(
-                              "en-GB"
-                            )}
-                          </h3>
-                        </td>
-                        <td className="p-3 mw_130">
-                          <h3
-                            className={`fs-sm fw-400 black mb-0 ms-2 ${
-                              value.status === "hidden" ? "text-danger" : null
-                            } `}
-                          >
-                            {value.status}
-                          </h3>
-                        </td>
-                        <td className="text-center mx_100">
-                          <div class="dropdown">
-                            <button
-                              class="btn dropdown-toggle"
-                              type="button"
-                              id="dropdownMenuButton3"
-                              data-bs-toggle="dropdown"
-                              aria-expanded="false"
+                              {value.salesprice * value.totalStock}
+                            </h3>
+                          </td>
+                          <td className="p-3 mx_170">
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              {new Date(value.updated_at).toLocaleDateString(
+                                "en-GB"
+                              )}
+                            </h3>
+                          </td>
+                          <td className="p-3 mw_130">
+                            <h3
+                              className={`fs-sm fw-400 black mb-0 ms-2 ${
+                                value.status === "hidden" ? "text-danger" : null
+                              } `}
                             >
-                              <abbr title="View">
-                                <img
-                                  // onClick={() => {
-                                  //  ;
-                                  // }}
-                                  src={dropdownDots}
-                                  alt="dropdownDots"
-                                />
-                              </abbr>
-                            </button>
-                            <ul
-                              class="dropdown-menu categories_dropdown"
-                              aria-labelledby="dropdownMenuButton3"
-                            >
-                              <li>
-                                <div class="dropdown-item" href="#">
-                                  <div className="d-flex align-items-center categorie_dropdown_options">
-                                    <img src={eye_icon} alt="" />
-                                    <p className="fs-sm fw-400 black mb-0 ms-2">
-                                      View Details
-                                    </p>
+                              {value.status}
+                            </h3>
+                          </td>
+                          <td className="text-center mx_100">
+                            <div class="dropdown">
+                              <button
+                                class="btn dropdown-toggle"
+                                type="button"
+                                id="dropdownMenuButton3"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                              >
+                                <abbr title="View">
+                                  <img
+                                    // onClick={() => {
+                                    //  ;
+                                    // }}
+                                    src={dropdownDots}
+                                    alt="dropdownDots"
+                                  />
+                                </abbr>
+                              </button>
+                              <ul
+                                class="dropdown-menu categories_dropdown"
+                                aria-labelledby="dropdownMenuButton3"
+                              >
+                                <li>
+                                  <div class="dropdown-item" href="#">
+                                    <div className="d-flex align-items-center categorie_dropdown_options">
+                                      <img src={eye_icon} alt="" />
+                                      <p className="fs-sm fw-400 black mb-0 ms-2">
+                                        View Details
+                                      </p>
+                                    </div>
                                   </div>
-                                </div>
-                              </li>
-                              <li>
-                                <div class="dropdown-item" href="#">
-                                  <NavLink
-                                    to={`/catalog/addproduct/${value.id}`}
+                                </li>
+                                <li>
+                                  <div class="dropdown-item" href="#">
+                                    <NavLink
+                                      to={`/catalog/addproduct/${value.id}`}
+                                    >
+                                      <div
+                                        onClick={() => {
+                                          setProductId(value.id);
+                                        }}
+                                        className="d-flex align-items-center categorie_dropdown_options"
+                                      >
+                                        <img src={pencil_icon} alt="" />
+                                        <p className="fs-sm fw-400 black mb-0 ms-2">
+                                          Edit Product
+                                        </p>
+                                      </div>
+                                    </NavLink>
+                                  </div>
+                                </li>
+                                <li>
+                                  <div
+                                    class="dropdown-item"
+                                    href="#"
+                                    onClick={() => {
+                                      setProductId(value.id);
+                                      setProductStatus(value.status);
+                                      setStatusPopup(true);
+                                    }}
                                   >
+                                    <div className="d-flex align-items-center categorie_dropdown_options">
+                                      <img src={updown_icon} alt="" />
+                                      <p className="fs-sm fw-400 green mb-0 ms-2">
+                                        {value.status === "hidden"
+                                          ? "change to  publish"
+                                          : "Change to hidden"}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </li>
+                                <li>
+                                  <div class="dropdown-item" href="#">
                                     <div
                                       onClick={() => {
                                         setProductId(value.id);
+                                        setProductImage(value.productImages);
+                                        setDeletePopup(true);
                                       }}
                                       className="d-flex align-items-center categorie_dropdown_options"
                                     >
-                                      <img src={pencil_icon} alt="" />
-                                      <p className="fs-sm fw-400 black mb-0 ms-2">
-                                        Edit Product
+                                      <img src={delete_icon} alt="" />
+                                      <p className="fs-sm fw-400 red mb-0 ms-2">
+                                        Delete
                                       </p>
                                     </div>
-                                  </NavLink>
-                                </div>
-                              </li>
-                              <li>
-                                <div
-                                  class="dropdown-item"
-                                  href="#"
-                                  onClick={() => {
-                                    setProductId(value.id);
-                                    setProductStatus(value.status);
-                                    setStatusPopup(true);
-                                  }}
-                                >
-                                  <div className="d-flex align-items-center categorie_dropdown_options">
-                                    <img src={updown_icon} alt="" />
-                                    <p className="fs-sm fw-400 green mb-0 ms-2">
-                                      {value.status === "hidden"
-                                        ? "change to  publish"
-                                        : "Change to hidden"}
-                                    </p>
                                   </div>
-                                </div>
-                              </li>
-                              <li>
-                                <div class="dropdown-item" href="#">
-                                  <div
-                                    onClick={() => {
-                                      setProductId(value.id);
-                                      setProductImage(value.productImages);
-                                      setDeletePopup(true);
-                                    }}
-                                    className="d-flex align-items-center categorie_dropdown_options"
-                                  >
-                                    <img src={delete_icon} alt="" />
-                                    <p className="fs-sm fw-400 red mb-0 ms-2">
-                                      Delete
-                                    </p>
-                                  </div>
-                                </div>
-                              </li>
-                            </ul>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                                </li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </table>
             </div>

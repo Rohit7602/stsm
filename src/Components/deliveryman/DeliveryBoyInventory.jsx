@@ -39,6 +39,7 @@ const DeliveryBoyInventory = () => {
   const [selectedValue, setSelectedValue] = useState();
   const [productname, setproductname] = useState("");
   // const [varient, setVarient] = useState("");
+   const [filtervalue, setFilterValue] = useState("");
   const [quantity, setquantity] = useState(0);
   const [selectedproduct, setselectedProduct] = useState([]);
   const [AllItems, setAllItems] = useState([]);
@@ -272,6 +273,8 @@ const DeliveryBoyInventory = () => {
     }
   }
 
+ 
+
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
@@ -354,29 +357,43 @@ const DeliveryBoyInventory = () => {
                         <path
                           d="M7 10L12 15L17 10"
                           stroke="black"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                     </div>
                   </button>
                   <ul
-                    className="dropdown-menu delivery_man_dropdown w-100"
+                    className="dropdown-menu delivery_man_dropdown w-100 pt-0 bg-white mt-3"
                     aria-labelledby="dropdownMenuButton3"
                   >
-                    {product_names.map((names) => {
-                      return (
-                        <li>
+                    <li className="p-2 position-sticky start-0 top-0 bg-white">
+                      <input
+                        type="text"
+                        className="form-control shadow-none border-1 border-dark-subtle"
+                        placeholder="Search Product..."
+                        value={filtervalue}
+                        onChange={(e) => setFilterValue(e.target.value)}
+                      />
+                    </li>
+                    {product_names
+                      .filter((v) =>
+                        v.toLowerCase().includes(filtervalue.toLowerCase())
+                      )
+                      .map((names, index) => (
+                        <li key={index}>
                           <div
-                            onClick={() => setproductname(names)}
+                            onClick={() => {
+                              setproductname(names); 
+                              setFilterValue(""); 
+                            }}
                             className="dropdown-item py-2"
                           >
-                            <p className="fs-sm fw-400 balck m-0">{names}</p>
+                            <p className="fs-sm fw-400 black m-0">{names}</p>
                           </div>
                         </li>
-                      );
-                    })}
+                      ))}
                   </ul>
                 </div>
               </div>
