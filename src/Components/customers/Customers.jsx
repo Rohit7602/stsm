@@ -133,11 +133,11 @@ const Customers = () => {
                         ? data
                         : data.name.toLowerCase().includes(searchvalue);
                     })
-                    .sort((a, b) => {
-                      const dateA = new Date(a.created_at);
-                      const dateB = new Date(b.created_at);
-                      return dateB - dateA; 
-                    })
+                    // .sort((a, b) => {
+                    //   const dateA = new Date(a.created_at);
+                    //   const dateB = new Date(b.created_at);
+                    //   return dateB - dateA; 
+                    // })
                     .map((item, index) => {
                       const {
                         id,
