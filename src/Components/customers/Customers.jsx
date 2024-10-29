@@ -69,7 +69,12 @@ const Customers = () => {
               />
             </div>
             <button className="filter_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400  ">
-              <img className="me-1" width={24} src={filtericon} alt="filtericon" />
+              <img
+                className="me-1"
+                width={24}
+                src={filtericon}
+                alt="filtericon"
+              />
               Filter
             </button>
           </div>
@@ -127,6 +132,11 @@ const Customers = () => {
                       return searchvalue.toLowerCase() === ""
                         ? data
                         : data.name.toLowerCase().includes(searchvalue);
+                    })
+                    .sort((a, b) => {
+                      const dateA = new Date(a.created_at);
+                      const dateB = new Date(b.created_at);
+                      return dateB - dateA; 
                     })
                     .map((item, index) => {
                       const {
