@@ -702,7 +702,7 @@ export default function NewOrder() {
         }
 
         if (orderData && orderData.items) {
-           const otp = Math.floor(100000 + Math.random() * 900000).toString();
+          //  const otp = Math.floor(100000 + Math.random() * 900000).toString();
           for (const item of orderData.items) {
             const productDocRef = doc(db, "products", item.product_id);
             const productDoc = await getDoc(productDocRef);
@@ -777,7 +777,7 @@ export default function NewOrder() {
               if (!orderData.hasOwnProperty("invoiceNumber")) {
                 await updateDoc(orderDocRef, {
                   status: newStatus,
-                  OTP: otp,
+                  // OTP: otp,
                   invoiceNumber: invoiceNumber,
                   tokens: customertoken,
                   assign_to:
@@ -788,7 +788,7 @@ export default function NewOrder() {
               } else {
                 await updateDoc(orderDocRef, {
                   status: newStatus,
-                  OTP: otp,
+                  // OTP: otp,
                   assign_to:
                     deliverymenWithArea.length !== 0
                       ? autoSelectedDeliveryManId

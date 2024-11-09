@@ -12,7 +12,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { db } from "../../firebase";
 import { UseServiceContext } from "../../context/ServiceAreasGetter";
-
+import filtericon from "../../Images/svgs/filtericon.svg";
 import { collection, getDocs } from "firebase/firestore";
 import { useOrdercontext } from "../../context/OrderGetter";
 import { CrossIcons } from "../../Common/Icon";
@@ -35,7 +35,11 @@ const DeliverymanProfile = () => {
   const [onSiteOrders, setOnSiteOrders] = useState(0);
   const [wallet, setWallet] = useState(0);
   const [areaPinCode, setAreaPinCode] = useState(null);
+  const [showdeliverypop, setShowDeliveryPop] = useState(false);
   const { orders } = useOrdercontext();
+  const [showCustomDate, setShowCustomDate] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [addMoreArea, setAddMoreArea] = useState([
     {
       pincode: "",
@@ -45,6 +49,9 @@ const DeliverymanProfile = () => {
   ]);
   const { showpop, setShowpop } = useNotification();
   const [addServiceAreaPopup, setAddServiceAreaPopup] = useState(false);
+  const [deliveryhistory, setDeliveryHistory] = useState(0);
+  const [deliveryhistorytime, setDeliveryHistoryTime] = useState("");
+  const [totalspent, setTotalSpent] = useState(0);
   const [selectarea, setSelectArea] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(
     Array(addMoreArea.length).fill(false)
@@ -377,6 +384,97 @@ const DeliverymanProfile = () => {
     setLoading(false);
   }
 
+  //////////////////////////////////////////
+
+  const formatDate = (date) => {
+    return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+  };
+
+  const handleDateRangeSelection = (range) => {
+    setStartDate("");
+    setEndDate("");
+    setShowCustomDate(false);
+    setDeliveryHistoryTime(range);
+    const today = new Date();
+    let start, end;
+
+    switch (range) {
+      case "yesterday":
+        start = new Date(today);
+        start.setDate(today.getDate() - 1);
+        end = new Date(start);
+        break;
+      case "week":
+        start = new Date(today);
+        start.setDate(today.getDate() - 7);
+        end = today;
+        break;
+      case "month":
+        start = new Date(today);
+        start.setMonth(today.getMonth() - 1);
+        end = today;
+        break;
+      case "six_months":
+        start = new Date(today);
+        start.setMonth(today.getMonth() - 6);
+        end = today;
+        break;
+      case "custom":
+        setShowCustomDate(true);
+        return; // Display custom date inputs and exit
+      default:
+        return;
+    }
+
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+
+    setStartDate(formatDate(start));
+    setEndDate(formatDate(end));
+
+    filterOrdersByDateRange(start, end);
+  };
+
+  const filterOrdersByDateRange = (start, end) => {
+    const DeliveryManid = DeliveryManData.find((item) => item.d_id === id);
+    if (DeliveryManid) {
+      const filterDelivery = orders
+        .filter((value) => {
+          const orderDate = new Date(value.created_at);
+          orderDate.setHours(0, 0, 0, 0);
+          return (
+            value.assign_to === DeliveryManid.id &&
+            orderDate >= start &&
+            orderDate <= end
+          );
+        })
+        .map((value) => value);
+      setDeliveryHistory(filterDelivery.length);
+   setTotalSpent(
+     filterDelivery
+       .map((value) => value.order_price)
+       .reduce((previousValue, currentValue) => previousValue + currentValue, 0)
+   );
+    }
+  };
+
+  const handleCustomDateSelection = () => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      start.setHours(0, 0, 0, 0);
+      end.setHours(23, 59, 59, 999);
+
+      filterOrdersByDateRange(start, end);
+      console.log(`Fetching orders from ${startDate} to ${endDate}...`);
+    } else {
+      console.error(
+        "Please select both start and end dates for the custom range."
+      );
+    }
+  };
+
   if (loading) {
     return <Loader />;
   }
@@ -384,10 +482,113 @@ const DeliverymanProfile = () => {
   return filterData.map((datas, index) => {
     return (
       <div className="my-4">
+        {showdeliverypop && (
+          <div className="bg-white p-4 rounded-4 w_500 position-fixed center_pop overflow-auto xl_h_500">
+            <div className="d-flex align-items-center justify-content-between">
+              <h2 className="text-black fw-700 fs-2sm mb-0">
+                Delivery History
+              </h2>
+              <button
+                className="border-0 bg-white"
+                onClick={() => setShowDeliveryPop(false)}
+              >
+                <CrossIcons />
+              </button>
+            </div>
+            <div className="black_line my-3"></div>
+
+            {/* Date Selection Options */}
+            <div className="mb-3">
+              <label className="text-black fw-400 fs-sm mb-2">
+                Select Order Date Range
+              </label>
+              <div className="d-flex flex-column">
+                <button
+                  className="btn btn-outline-secondary mb-1"
+                  onClick={() => handleDateRangeSelection("yesterday")}
+                >
+                  Yesterday
+                </button>
+                <button
+                  className="btn btn-outline-secondary mb-1"
+                  onClick={() => handleDateRangeSelection("week")}
+                >
+                  One Week
+                </button>
+                <button
+                  className="btn btn-outline-secondary mb-1"
+                  onClick={() => handleDateRangeSelection("month")}
+                >
+                  One Month
+                </button>
+                <button
+                  className="btn btn-outline-secondary mb-1"
+                  onClick={() => handleDateRangeSelection("six_months")}
+                >
+                  Six Months
+                </button>
+                <button
+                  className="btn btn-outline-secondary"
+                  onClick={() => handleDateRangeSelection("custom")}
+                >
+                  Custom
+                </button>
+              </div>
+            </div>
+            {showCustomDate && (
+              <div className="p-3 border rounded bg-light mt-2">
+                <div className="mb-2">
+                  <label htmlFor="startDate" className="form-label">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    value={startDate}
+                    max={startDate || new Date().toISOString().split("T")[0]}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="form-control"
+                    placeholder="Start Date"
+                  />
+                </div>
+                <div className="mb-2">
+                  <label htmlFor="endDate" className="form-label">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    value={endDate}
+                    max={startDate || new Date().toISOString().split("T")[0]}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="form-control"
+                    placeholder="End Date"
+                  />
+                </div>
+                <button
+                  onClick={handleCustomDateSelection}
+                  className="apply_btn mt-2"
+                >
+                  Apply Custom Date Range
+                </button>
+              </div>
+            )}
+
+            <div className="d-flex align-items-center justify-content-between mt-3">
+              <h4 className="text-black fw-400 fs-sm mb-0">Total Delivery</h4>
+              <h2 className="text-black fw-700 fs-sm mb-0">
+                {deliveryhistory}
+              </h2>
+            </div>
+            <div className="d-flex align-items-center justify-content-between mt-3">
+              <h4 className=" text-black fw-400 fs-sm mb-0">Total Spent</h4>
+              <h2 className="color_green fw-700 fs-sm mb-0">₹ {totalspent}</h2>
+            </div>
+          </div>
+        )}
         {showpop && (
           <div className="center_pop position-fixed w-100 h-100 layer"></div>
         )}
-
         {showpop && (
           <div className=" bg-white p-4 rounded-4 w-25 position-fixed center_pop">
             <div className=" d-flex align-items-center justify-content-between">
@@ -419,7 +620,10 @@ const DeliverymanProfile = () => {
             </div>
           </div>
         )}
-        {approvePopup || rejectPopup || addServiceAreaPopup ? (
+        {approvePopup ||
+        rejectPopup ||
+        addServiceAreaPopup ||
+        showdeliverypop ? (
           <div className="bg_black_overlay"></div>
         ) : null}
         {approvePopup ? (
@@ -762,6 +966,7 @@ const DeliverymanProfile = () => {
                   >
                     Reject profile
                   </button>
+
                   {/* <button className="reset_border">
                   <button className="fs-sm reset_btn border-0 fw-400  d-flex align-items-center gap-2 transition_04">
                     <svg
@@ -797,6 +1002,18 @@ const DeliverymanProfile = () => {
                 </div>
               ) : datas.profile_status === "APPROVED" ? (
                 <div className="d-flex align-itmes-center gap-3">
+                  <button
+                    onClick={() => setShowDeliveryPop(true)}
+                    className="filter_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
+                  >
+                    <img
+                      className="me-1"
+                      width={24}
+                      src={filtericon}
+                      alt="filtericon"
+                    />
+                    Filter
+                  </button>
                   <button className="reset_border">
                     <button className="fs-sm reset_btn border-0 fw-400  d-flex align-items-center gap-2 transition_04">
                       <svg

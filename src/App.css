@@ -112,6 +112,10 @@ body {
   background-color: #00000033;
 }
 
+input[type="range"] {
+  accent-color: #ffae00;
+}
+
 .notifications_details {
   border: 0.5px solid #00000033;
 }
@@ -1402,7 +1406,7 @@ delivery_man_dropdown::-webkit-scrollbar {
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 2;
+  z-index: 200 !important;
 }
 
 .mx_140 {
@@ -2730,6 +2734,10 @@ input[type="number"]::-webkit-outer-spin-button {
     max-width: 580px !important;
     width: 580px !important;
   }
+
+  .xl_h_500{
+    height: 500px;
+  }
 }
 
 @media (max-width: 1199.98px) {
@@ -2943,4 +2951,28 @@ input[type="number"]::-webkit-outer-spin-button {
 abbr {
   cursor: default !important;
   text-decoration: none !important;
+}
+
+.transform_rotate_arrows {
+  transform: rotateX(-180deg);
+}
+
+.customer_pop {
+  box-shadow: 0px 1px 3px 0px #00000033;
+  background-color: white;
+  border-radius: 20px;
+  padding: 20px;
+  width: 500px;
+}
+
+.apply_btn {
+  background-color: #ffae00;
+  color: white;
+  border-radius: 10px;
+  padding: 10px 20px;
+  border: none;
+}
+
+.btn_bg_green {
+  background-color: #50b848;
 }
