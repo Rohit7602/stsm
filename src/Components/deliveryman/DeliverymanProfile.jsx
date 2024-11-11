@@ -4,7 +4,7 @@ import dropdownImg from "../../Images/svgs/dropdown_icon.svg";
 import checkGreen from "../../Images/svgs/check-green-btn.svg";
 import deleteiconWithBg from "../../Images/svgs/delete-icon-with-bg.svg";
 import { Col, Row } from "react-bootstrap";
-import { Link, useParams } from "react-router-dom";
+import { Link, NavLink, useParams } from "react-router-dom";
 import Loader from "../Loader";
 import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
 import { updateDoc, doc } from "firebase/firestore";
@@ -431,7 +431,6 @@ const DeliverymanProfile = () => {
 
     setStartDate(formatDate(start));
     setEndDate(formatDate(end));
-
     filterOrdersByDateRange(start, end);
   };
 
@@ -449,12 +448,15 @@ const DeliverymanProfile = () => {
           );
         })
         .map((value) => value);
-      setDeliveryHistory(filterDelivery.length);
-   setTotalSpent(
-     filterDelivery
-       .map((value) => value.order_price)
-       .reduce((previousValue, currentValue) => previousValue + currentValue, 0)
-   );
+      setDeliveryHistory(filterDelivery);
+      setTotalSpent(
+        filterDelivery
+          .map((value) => value.order_price)
+          .reduce(
+            (previousValue, currentValue) => previousValue + currentValue,
+            0
+          )
+      );
     }
   };
 
@@ -474,6 +476,7 @@ const DeliverymanProfile = () => {
       );
     }
   };
+
 
   if (loading) {
     return <Loader />;
@@ -577,13 +580,23 @@ const DeliverymanProfile = () => {
             <div className="d-flex align-items-center justify-content-between mt-3">
               <h4 className="text-black fw-400 fs-sm mb-0">Total Delivery</h4>
               <h2 className="text-black fw-700 fs-sm mb-0">
-                {deliveryhistory}
+                {deliveryhistory.length}
               </h2>
             </div>
             <div className="d-flex align-items-center justify-content-between mt-3">
               <h4 className=" text-black fw-400 fs-sm mb-0">Total Spent</h4>
               <h2 className="color_green fw-700 fs-sm mb-0">₹ {totalspent}</h2>
             </div>
+            {deliveryhistory.length > 0 && (
+              <div className=" mt-3 text-center">
+                <NavLink
+                  to={`/deliverylist`}
+                  state={{ deliverydata: deliveryhistory }}
+                >
+                  Show Dilvery List
+                </NavLink>
+              </div>
+            )}
           </div>
         )}
         {showpop && (

@@ -408,6 +408,9 @@ const OrderList = () => {
       prevStatuses.filter((item) => item !== status)
     );
   };
+
+
+  
   return (
     <div className="main_panel_wrapper overflow-x-hidden bg_light_grey w-100">
       {datepop ? <div className="bg_black_overlay"></div> : null}
@@ -756,6 +759,8 @@ const OrderList = () => {
                     })
 
                     .map((orderTableData, index) => {
+                      console.log(orderTableData ,"------------------------");
+                      
                       return (
                         <tr>
                           <td className="p-3 mw-200">

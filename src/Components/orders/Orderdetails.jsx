@@ -773,7 +773,7 @@ export default function NewOrder() {
             }
             if (showvandata.quantity >= item.quantity) {
               const newStatus = "OUT_FOR_DELIVERY";
-             
+
               if (!orderData.hasOwnProperty("invoiceNumber")) {
                 await updateDoc(orderDocRef, {
                   status: newStatus,
@@ -1391,6 +1391,19 @@ export default function NewOrder() {
                       {item.customer.email}
                     </p>
                   </div>
+                  {item.alternateCustomer && (
+                    <div className="mt-3">
+                      <p className="fs-2sm fw-400 black mb-0">
+                        Alternate Contact
+                      </p>
+                      <p className="fs-xs fw-400 black mb-0 pt-1 mt-3">
+                        {item.alternateCustomer.name}
+                      </p>
+                      <p className="fs-xs fw-400 black mb-0 pt-1">
+                        {item.alternateCustomer.phone}
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <div className="p-3 bg-white product_shadow mt-4">
                   <p className="fs-2sm fw-400 black mb-0">Shipping Info</p>

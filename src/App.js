@@ -44,6 +44,7 @@ import Notification from "./Components/layout/Notification";
 import { getDocs, collection, query } from "firebase/firestore";
 import { CrossIcons } from "./Common/Icon";
 import { useNotification } from "./context/NotificationContext";
+import DeliveryList from "./Components/deliveryman/DeliveryList";
 
 function App() {
   const { logoutUser } = useUserAuth();
@@ -51,7 +52,7 @@ function App() {
   const [loading, setloading] = useState(true);
   const location = useLocation();
   const [deletPopup, setDeletPopup] = useState(false);
-  const { showpop, setShowpop  } = useNotification();
+  const { showpop, setShowpop } = useNotification();
   useEffect(() => {
     permissionHandler();
     onMessageListener();
@@ -134,7 +135,6 @@ function App() {
 
   return (
     <div className={`${showpop ? " position-fixed w-100" : null} `}>
-     
       <Logout
         logout={handleLogout}
         setDeletPopup={setDeletPopup}
@@ -212,6 +212,7 @@ function App() {
                             element={<Orderdetails />}
                           />
                         </Route>
+                        <Route path="deliverylist" element={<DeliveryList />} />
                         <Route path="deliveryman">
                           <Route index element={<DeliveryManList />} />
                           <Route
