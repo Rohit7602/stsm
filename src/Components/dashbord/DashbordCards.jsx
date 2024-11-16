@@ -1,15 +1,21 @@
-import React from 'react';
-import Dots from '../../Images/svgs/dots.svg';
-import ApexBarChart from '../charts/bar';
-import Donut from '../charts/donatchart';
-import eyeIcon from '../../Images/svgs/eye-icon.svg';
-import printIcon from '../../Images/svgs/print-icon.svg';
-import { useOrdercontext } from '../../context/OrderGetter';
-import { Link } from 'react-router-dom';
-import { min } from 'date-fns';
-import { useNotification } from '../../context/NotificationContext';
+import React, { useState } from "react";
+import Dots from "../../Images/svgs/dots.svg";
+import ApexBarChart from "../charts/bar";
+import Donut from "../charts/donatchart";
+import eyeIcon from "../../Images/svgs/eye-icon.svg";
+import printIcon from "../../Images/svgs/print-icon.svg";
+import { useOrdercontext } from "../../context/OrderGetter";
+import { Link } from "react-router-dom";
+import { min } from "date-fns";
+import { useNotification } from "../../context/NotificationContext";
+import { CrossIcons } from "../../Common/Icon";
 function DashbordCards() {
   const { orders } = useOrdercontext();
+  const [showCustomDate, setShowCustomDate] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+   const [totalspent, setTotalSpent] = useState(0);
+  const [showdeliverypop, setShowDeliveryPop] = useState(false);
   /**  ******************************************* Calculation of Average ORder value According to current Month
    * ****************************************    */
 
@@ -17,9 +23,13 @@ function DashbordCards() {
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1; // Handle January as special case
-  const last20DaysDate = new Date(currentDate.getTime() - 20 * 24 * 60 * 60 * 1000); // Calculate date 20 days ago
+  const last20DaysDate = new Date(
+    currentDate.getTime() - 20 * 24 * 60 * 60 * 1000
+  ); // Calculate date 20 days ago
 
-  const ordersLast20Days = orders.filter((order) => new Date(order.created_at) >= last20DaysDate);
+  const ordersLast20Days = orders.filter(
+    (order) => new Date(order.created_at) >= last20DaysDate
+  );
 
   // Calculate the total number of orders per city
   const ordersPerCity = ordersLast20Days.reduce((acc, order) => {
@@ -45,7 +55,10 @@ function DashbordCards() {
   }, {});
 
   // console.log(totalLengthPerCity);
-  const totalActiveUsers = Object.values(totalLengthPerCity).reduce((acc, count) => acc + count, 0);
+  const totalActiveUsers = Object.values(totalLengthPerCity).reduce(
+    (acc, count) => acc + count,
+    0
+  );
 
   // console.log("ORder of Last 20 days", ordersLast20Days);
 
@@ -61,17 +74,23 @@ function DashbordCards() {
   // Calculate the average order value for each month
 
   const percentageChangeOfOrderMonth =
-    ((ordersThisMonth.length - ordersLastMonth.length) / ordersLastMonth.length) * 100;
+    ((ordersThisMonth.length - ordersLastMonth.length) /
+      ordersLastMonth.length) *
+    100;
 
   const averageOrderValueThisMonth =
-    ordersThisMonth.reduce((total, order) => total + order.order_price, 0) / ordersThisMonth.length;
+    ordersThisMonth.reduce((total, order) => total + order.order_price, 0) /
+    ordersThisMonth.length;
   // console.log("averageordrebalue this ", averageOrderValueThisMonth)
   const averageOrderValueLastMonth =
-    ordersLastMonth.reduce((total, order) => total + order.order_price, 0) / ordersLastMonth.length;
+    ordersLastMonth.reduce((total, order) => total + order.order_price, 0) /
+    ordersLastMonth.length;
   // console.log("averageOrderValueLastMonth", averageOrderValueLastMonth)
   // Calculate the percentage change
   const percentageChangeOfOrder =
-    ((averageOrderValueThisMonth - averageOrderValueLastMonth) / averageOrderValueLastMonth) * 100;
+    ((averageOrderValueThisMonth - averageOrderValueLastMonth) /
+      averageOrderValueLastMonth) *
+    100;
 
   /**  ******************************************* Calculation of Average ORder value According to current Month End
    * ****************************************    */
@@ -91,7 +110,7 @@ function DashbordCards() {
 
   // Filter  the New orders
 
-  const NewOrders = orders.filter((order) => order.status === 'NEW');
+  const NewOrders = orders.filter((order) => order.status === "NEW");
 
   /**  ******************************************* Filter the Recent orders of last week End here
    * ****************************************    */
@@ -99,7 +118,9 @@ function DashbordCards() {
   /**  ******************************************* Calculate Total Sales of ORder
    * ****************************************    */
 
-  let DeliverdOrder = orders.filter((item) => item.status.toString().toLowerCase() === 'delivered');
+  let DeliverdOrder = orders.filter(
+    (item) => item.status.toString().toLowerCase() === "delivered"
+  );
   // console.log(DeliverdOrder)
   const deliveredOrdersThisMonthValue = DeliverdOrder.filter(
     (order) => new Date(order.created_at).getMonth() === currentMonth
@@ -114,27 +135,212 @@ function DashbordCards() {
     (total, order) => total + order.order_price,
     0
   );
-  let comparedLastSaleValue = deliveredOrdersThisMonthValue - deliveredOrdersLastMonthValue;
+  let comparedLastSaleValue =
+    deliveredOrdersThisMonthValue - deliveredOrdersLastMonthValue;
 
   // format date function
 
   function formatDate(dateString) {
     const options = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
     };
-    const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
-    return formattedDate.replace('at', '|');
+    const formattedDate = new Date(dateString).toLocaleDateString(
+      undefined,
+      options
+    );
+    return formattedDate.replace("at", "|");
   }
   const { sendNotification } = useNotification();
+
+  const formatDatepop = (date) => {
+    return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+  };
+
+  const handleDateRangeSelection = (range) => {
+    setStartDate("");
+    setEndDate("");
+    setShowCustomDate(false);
+    const today = new Date();
+    let start, end;
+
+    switch (range) {
+      case "yesterday":
+        start = new Date(today);
+        start.setDate(today.getDate() - 1);
+        end = new Date(start);
+        break;
+      case "week":
+        start = new Date(today);
+        start.setDate(today.getDate() - 7);
+        end = today;
+        break;
+      case "month":
+        start = new Date(today);
+        start.setMonth(today.getMonth() - 1);
+        end = today;
+        break;
+      case "six_months":
+        start = new Date(today);
+        start.setMonth(today.getMonth() - 6);
+        end = today;
+        break;
+      case "custom":
+        setShowCustomDate(true);
+        return; // Display custom date inputs and exit
+      default:
+        return;
+    }
+
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+
+    setStartDate(formatDatepop(start));
+    setEndDate(formatDatepop(end));
+    filterOrdersByDateRange(start, end);
+  };
+
+  const filterOrdersByDateRange = (start, end) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const filteredOrders = DeliverdOrder.filter((order) => {
+      const orderDate = new Date(order.created_at);
+      return orderDate >= startDate && orderDate <= endDate;
+    });
+    const totalDeliverdOrderValue = filteredOrders.reduce(
+      (total, order) => total + order.order_price,
+      0
+    );
+    setTotalSpent(totalDeliverdOrderValue);
+    // return {
+    //   filteredOrders,
+    //   totalDeliverdOrderValue,
+    // };
+    
+  };
+  const handleCustomDateSelection = () => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      start.setHours(0, 0, 0, 0);
+      end.setHours(23, 59, 59, 999);
+
+      filterOrdersByDateRange(start, end);
+    } else {
+      console.error(
+        "Please select both start and end dates for the custom range."
+      );
+    }
+  };
+
+  
 
   return (
     <>
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
         {/* Dashboard-panel  */}
+        {showdeliverypop ? <div className="bg_black_overlay"></div> : null}
+        {showdeliverypop && (
+          <div className="bg-white p-4 rounded-4 w_500 position-fixed center_pop overflow-auto xl_h_500">
+            <div className="d-flex align-items-center justify-content-between">
+              <h2 className="text-black fw-700 fs-2sm mb-0">
+                Total Sale History
+              </h2>
+              <button
+                className="border-0 bg-white"
+                onClick={() => setShowDeliveryPop(false)}
+              >
+                <CrossIcons />
+              </button>
+            </div>
+            <div className="black_line my-3"></div>
+
+            {/* Date Selection Options */}
+            <div className="mb-3">
+              <label className="text-black fw-400 fs-sm mb-2">
+                Select Order Date Range
+              </label>
+              <div className="d-flex flex-column">
+                <button
+                  className="btn btn-outline-secondary mb-1"
+                  onClick={() => handleDateRangeSelection("yesterday")}
+                >
+                  Yesterday
+                </button>
+                <button
+                  className="btn btn-outline-secondary mb-1"
+                  onClick={() => handleDateRangeSelection("week")}
+                >
+                  One Week
+                </button>
+                <button
+                  className="btn btn-outline-secondary mb-1"
+                  onClick={() => handleDateRangeSelection("month")}
+                >
+                  One Month
+                </button>
+                <button
+                  className="btn btn-outline-secondary mb-1"
+                  onClick={() => handleDateRangeSelection("six_months")}
+                >
+                  Six Months
+                </button>
+                <button
+                  className="btn btn-outline-secondary"
+                  onClick={() => handleDateRangeSelection("custom")}
+                >
+                  Custom
+                </button>
+              </div>
+            </div>
+            {showCustomDate && (
+              <div className="p-3 border rounded bg-light mt-2">
+                <div className="mb-2">
+                  <label htmlFor="startDate" className="form-label">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    value={startDate}
+                    max={startDate || new Date().toISOString().split("T")[0]}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="form-control"
+                    placeholder="Start Date"
+                  />
+                </div>
+                <div className="mb-2">
+                  <label htmlFor="endDate" className="form-label">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    value={endDate}
+                    max={new Date().toISOString().split("T")[0]}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="form-control"
+                    placeholder="End Date"
+                  />
+                </div>
+                <button
+                  onClick={handleCustomDateSelection}
+                  className="apply_btn mt-2"
+                >
+                  Apply Custom Date Range
+                </button>
+              </div>
+            )}
+            <div className="d-flex align-items-center justify-content-between mt-3">
+              <h4 className=" text-black fw-400 fs-sm mb-0">Total Sale</h4>
+              <h2 className="color_green fw-700 fs-sm mb-0">₹ {totalspent}</h2>
+            </div>
+          </div>
+        )}
         <div className="w-100 px-3 py-4">
           <div className="d-flex   justify-content-between">
             <div className="d-flex">
@@ -148,20 +354,35 @@ function DashbordCards() {
                 <div className="d-flex justify-content-between align-items-center justify-content-center   bg-white">
                   <div>
                     <h3 className="fw-400 fade_grey fs-xs">Total Sales</h3>
-                    <p className="fw-400 fade_grey para2">Delivered Products Only</p>
+                    <p className="fw-400 fade_grey para2">
+                      Delivered Products Only
+                    </p>
                   </div>
-                  <button className="fw-400 color_blue fs-xs border-0 bg-white">View all</button>
+                  <button
+                    className="fw-400 color_blue fs-xs border-0 bg-white"
+                    onClick={() => setShowDeliveryPop(!showdeliverypop)}
+                  >
+                    View all
+                  </button>
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
                   <h3 className="fw-500 black mb-0 fs-lg">
-                    ₹{isNaN(totalDeliverdOrderValue) ? 0 : totalDeliverdOrderValue.toFixed(2)}{' '}
+                    ₹
+                    {isNaN(totalDeliverdOrderValue)
+                      ? 0
+                      : totalDeliverdOrderValue.toFixed(2)}{" "}
                   </h3>
                   <div className="d-flex flex-column   justify-content-between">
                     <h3 className="color_green fs-xxs mb-0 text-end">
-                      ₹{isNaN(comparedLastSaleValue) ? 0 : comparedLastSaleValue.toFixed(2)}
+                      ₹
+                      {isNaN(comparedLastSaleValue)
+                        ? 0
+                        : comparedLastSaleValue.toFixed(2)}
                     </h3>
-                    <p className="text-end  para mb-0">Compared to Last Month</p>
+                    <p className="text-end  para mb-0">
+                      Compared to Last Month
+                    </p>
                   </div>
                 </div>
               </div>
@@ -169,19 +390,28 @@ function DashbordCards() {
             <div className="    col-xl col-lg-4 col-md-6 mr-3 mt-4 mt-md-0">
               <div className=" bg-white   cards  flex-column d-flex justify-content-around px-3">
                 <div className="d-flex justify-content-between   bg-white">
-                  <h3 className="fw-400 fade_grey fs-xs">Average Order Value</h3>
+                  <h3 className="fw-400 fade_grey fs-xs">
+                    Average Order Value
+                  </h3>
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
                   <h3 className="fw-500 black mb-0 fs-lg">
-                    ₹{' '}
-                    {isNaN(averageOrderValueThisMonth) ? 0 : averageOrderValueThisMonth.toFixed(2)}
+                    ₹{" "}
+                    {isNaN(averageOrderValueThisMonth)
+                      ? 0
+                      : averageOrderValueThisMonth.toFixed(2)}
                   </h3>
                   <div className="d-flex flex-column   justify-content-between">
                     <h3 className="color_green fs-xxs mb-0 text-end">
-                      {isNaN(percentageChangeOfOrder) ? 0 : percentageChangeOfOrder.toFixed(2)} %
+                      {isNaN(percentageChangeOfOrder)
+                        ? 0
+                        : percentageChangeOfOrder.toFixed(2)}{" "}
+                      %
                     </h3>
-                    <p className="text-end  para mb-0">Compared to Last Month</p>
+                    <p className="text-end  para mb-0">
+                      Compared to Last Month
+                    </p>
                   </div>
                 </div>
               </div>
@@ -190,8 +420,10 @@ function DashbordCards() {
               <div className="bg-white  cards  flex-column d-flex justify-content-around px-3">
                 <div className="d-flex justify-content-between bg-white">
                   <h3 className="fw-400 fade_grey fs-xs">Total Orders</h3>
-                  <Link to={'/orders'}>
-                    <button className="fw-400 color_blue fs-xs border-0 bg-white">View all</button>
+                  <Link to={"/orders"}>
+                    <button className="fw-400 color_blue fs-xs border-0 bg-white">
+                      View all
+                    </button>
                   </Link>
                 </div>
 
@@ -204,7 +436,9 @@ function DashbordCards() {
                         : percentageChangeOfOrderMonth.toFixed(2)}
                       %
                     </h3>
-                    <p className="text-end  para mb-0">Compared to Last Month</p>
+                    <p className="text-end  para mb-0">
+                      Compared to Last Month
+                    </p>
                   </div>
                 </div>
               </div>
@@ -219,10 +453,15 @@ function DashbordCards() {
               <div className="chart_content_wrapper active_user pb-2 bg-white d-flex flex-column">
                 <div className="position-sticky top-0 bg-white p-2 ">
                   <div className="d-flex align-items-center justify-content-between">
-                    <h3 className="fw-400 fade_grey mb-0 fs-xs"> Active Users</h3>
+                    <h3 className="fw-400 fade_grey mb-0 fs-xs">
+                      {" "}
+                      Active Users
+                    </h3>
                   </div>
                   <div className="grey_box my-2 text-center w-100 p-2">
-                    <h3 className="fw-500 black mb-0 fs-lg">{totalActiveUsers}</h3>
+                    <h3 className="fw-500 black mb-0 fs-lg">
+                      {totalActiveUsers}
+                    </h3>
                   </div>
                   <div className="d-flex align-items-center py-1 bottom_border  justify-content-between">
                     <h4 className="fw-400 fade_grey mb-0 fs-xs"> City</h4>
@@ -233,7 +472,8 @@ function DashbordCards() {
                   {Object.entries(totalLengthPerCity).map(([city, count]) => (
                     <div
                       key={city}
-                      className="d-flex align-items-center py-1 bottom_border justify-content-between">
+                      className="d-flex align-items-center py-1 bottom_border justify-content-between"
+                    >
                       <h4 className="fw-400 black mb-0 fs-xs">{city}</h4>
                       <h4 className="fw-400 black mb-0 fs-xs">{count}</h4>
                     </div>
@@ -273,7 +513,9 @@ function DashbordCards() {
                         <h4 className="fw-400 fade_grey mb-0 fs-xs"> City</h4>
                       </th>
                       <th className="py-2 px-3 mw-250">
-                        <h4 className="fw-400 fade_grey mb-0 fs-xs">Customer</h4>
+                        <h4 className="fw-400 fade_grey mb-0 fs-xs">
+                          Customer
+                        </h4>
                       </th>
                       <th className="py-2 px-3 mx_160">
                         <h4 className="fw-400 fade_grey mb-0 fs-xs"> Date</h4>
@@ -290,42 +532,61 @@ function DashbordCards() {
                         </td>
                       </tr>
                     ) : (
-                      NewOrders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map(
-                        (data, index) => {
-                          return (
-                            <tr key={data.created_at} className="product_borderbottom">
-                              <td className="py-2 px-3">
-                                <h4 className="fw-400 black mb-0  fs-xs">{index + 1}</h4>
-                              </td>
-                              <td className="py-2 px-3">
-                                <h4 className="fw-400 black mb-0  fs-xs"> {data.status}</h4>
-                              </td>
-                              <td className="py-2 px-3">
-                                <h4 className="fw-400 black mb-0  fs-xs">{data.shipping.city}</h4>
-                              </td>
-                              <td className="py-2 px-3">
-                                <h4 className="fw-400 black mb-0 fs-xs">{data.customer.name}</h4>
-                              </td>
-                              <td className="py-2 px-3">
-                                <h4 className="fw-400 black mb-0 fs-xs white_space_nowrap">
-                                  {formatDate(data.created_at)}
-                                </h4>
-                              </td>
-                              <td className="py-2 px-3">
-                                <h4 className="fw-400 black mb-0 fs-xs white_space_nowrap">
-                                  {' '}
-                                  ₹ {data.order_price}
-                                </h4>
-                              </td>
-                              <td className="py-1 px-3">
-                                <Link to={`/orders/orderdetails/${data.order_id}`}>
-                                  <img className="cursor_pointer" src={eyeIcon} alt="" />
-                                </Link>
-                              </td>
-                            </tr>
-                          );
-                        }
-                      )
+                      NewOrders.sort(
+                        (a, b) =>
+                          new Date(b.created_at) - new Date(a.created_at)
+                      ).map((data, index) => {
+                        return (
+                          <tr
+                            key={data.created_at}
+                            className="product_borderbottom"
+                          >
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0  fs-xs">
+                                {index + 1}
+                              </h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0  fs-xs">
+                                {" "}
+                                {data.status}
+                              </h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0  fs-xs">
+                                {data.shipping.city}
+                              </h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0 fs-xs">
+                                {data.customer.name}
+                              </h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0 fs-xs white_space_nowrap">
+                                {formatDate(data.created_at)}
+                              </h4>
+                            </td>
+                            <td className="py-2 px-3">
+                              <h4 className="fw-400 black mb-0 fs-xs white_space_nowrap">
+                                {" "}
+                                ₹ {data.order_price}
+                              </h4>
+                            </td>
+                            <td className="py-1 px-3">
+                              <Link
+                                to={`/orders/orderdetails/${data.order_id}`}
+                              >
+                                <img
+                                  className="cursor_pointer"
+                                  src={eyeIcon}
+                                  alt=""
+                                />
+                              </Link>
+                            </td>
+                          </tr>
+                        );
+                      })
                     )}
                   </table>
                 </div>
@@ -344,23 +605,39 @@ function DashbordCards() {
 
                 <div className="d-flex     align-items-center   p-2 bottom_border  justify-content-between">
                   <h4 className="fw-400 col fade_grey mb-0 fs-xs"> Source</h4>
-                  <h4 className="fw-400 col text-center fade_grey mb-0 fs-xs">Orders</h4>
-                  <h4 className="fw-400 col text-end fade_grey mb-0 fs-xs">Amount</h4>
+                  <h4 className="fw-400 col text-center fade_grey mb-0 fs-xs">
+                    Orders
+                  </h4>
+                  <h4 className="fw-400 col text-end fade_grey mb-0 fs-xs">
+                    Amount
+                  </h4>
                 </div>
                 <div className="d-flex      align-items-center p-2 bottom_border justify-content-between  ">
                   <h4 className="fw-400 col black mb-0 fs-xs"> Direct</h4>
-                  <h4 className="fw-400 col text-center black mb-0    fs-xs">110</h4>
-                  <h4 className="fw-400 col text-end black mb-0 fs-xs">₹45,368.00</h4>
+                  <h4 className="fw-400 col text-center black mb-0    fs-xs">
+                    110
+                  </h4>
+                  <h4 className="fw-400 col text-end black mb-0 fs-xs">
+                    ₹45,368.00
+                  </h4>
                 </div>
                 <div className="d-flex     align-items-center p-2 bottom_border justify-content-between  ">
                   <h4 className="fw-400 col  black mb-0 fs-xs"> Salesman</h4>
-                  <h4 className="fw-400 col text-center  black mb-0   fs-xs">36</h4>
-                  <h4 className="fw-400 col text-end black mb-0 fs-xs">₹13,810.00</h4>
+                  <h4 className="fw-400 col text-center  black mb-0   fs-xs">
+                    36
+                  </h4>
+                  <h4 className="fw-400 col text-end black mb-0 fs-xs">
+                    ₹13,810.00
+                  </h4>
                 </div>
                 <div className="d-flex     align-items-center p-2 bottom_border justify-content-between  ">
                   <h4 className="fw-400 col  black mb-0 fs-xs">Wholesalers</h4>
-                  <h4 className="fw-400 col text-center black mb-0     fs-xs">43</h4>
-                  <h4 className="fw-400 col text-end black mb-0 fs-xs">₹56,108.00</h4>
+                  <h4 className="fw-400 col text-center black mb-0     fs-xs">
+                    43
+                  </h4>
+                  <h4 className="fw-400 col text-end black mb-0 fs-xs">
+                    ₹56,108.00
+                  </h4>
                 </div>
               </div>
             </div>

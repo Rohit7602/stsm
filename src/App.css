@@ -263,6 +263,13 @@ input[type="range"] {
   display: inline-block;
   border-radius: 5px;
 }
+.status_btn_yellow {
+  background-color: rgba(0, 0, 139, 0.242);
+  color: darkblue;
+  padding: 5px 10px;
+  display: inline-block;
+  border-radius: 5px;
+}
 
 .status_btn_red {
   background-color: #ffdcdc;
@@ -275,7 +282,7 @@ input[type="range"] {
 .top_bar {
   position: sticky;
   top: 0;
-  z-index: 100 !important;
+  z-index: 10 !important;
   background-color: white;
 }
 
@@ -1406,7 +1413,7 @@ delivery_man_dropdown::-webkit-scrollbar {
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 200 !important;
+  z-index: 10;
 }
 
 .mx_140 {

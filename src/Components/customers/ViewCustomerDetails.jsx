@@ -36,7 +36,7 @@ const ViewCustomerDetails = () => {
     return currentTimestamp > maxTimestamp ? currentOrder : maxOrder;
   }, null);
   const totalSpent = targetOrder.reduce((sum, order) => {
-    return order.status !== "REJECTED" ? sum + order.order_price : sum;
+    return order.status === "DELIVERED" ? sum + order.order_price : sum;
   }, 0);
   // const totalSpent2 = targetOrder.map((sum, order) => sum.state, 0);
   // console.log(totalSpent2 ,  "------------------------------------");
@@ -97,6 +97,9 @@ const ViewCustomerDetails = () => {
   //   };
   //   fetchData();
   // }, []);
+
+console.log(targetOrder ,);
+
 
   return (
     <>
@@ -301,6 +304,11 @@ const ViewCustomerDetails = () => {
                                                       .toLowerCase() ===
                                                     "processing"
                                                   ? "fs-sm fw-400 mb-0 processing_skyblue"
+                                                  : data.status
+                                                      .toString()
+                                                      .toLowerCase() ===
+                                                    "confirmed"
+                                                  ? "fs-sm fw-400  mb-0 status_btn_yellow"
                                                   : data.status
                                                       .toString()
                                                       .toLowerCase() ===

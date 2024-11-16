@@ -39,11 +39,14 @@ const DeliveryBoyInventory = () => {
   const [selectedValue, setSelectedValue] = useState();
   const [productname, setproductname] = useState("");
   // const [varient, setVarient] = useState("");
-   const [filtervalue, setFilterValue] = useState("");
+  const [filtervalue, setFilterValue] = useState("");
   const [quantity, setquantity] = useState(0);
   const [selectedproduct, setselectedProduct] = useState([]);
   const [AllItems, setAllItems] = useState([]);
   const [delivryMan, setDeliveryMan] = useState([]);
+  const [varienttype, setvarienttype] = useState("");
+  console.log(varienttype);
+
   // const [color, setColor] = useState("");
 
   useEffect(() => {
@@ -148,7 +151,6 @@ const DeliveryBoyInventory = () => {
       });
     }
   }
-
   async function UpdateEntry(e) {
     e.preventDefault();
     if (AllItems.length === 0) {
@@ -194,9 +196,159 @@ const DeliveryBoyInventory = () => {
     }
   }
 
-  // useEffect(() => {
-  //   console.log("items is ", AllItems)
-  // }, [AllItems])
+  //////////////////////////////
+
+//   function HandleAddToVan(e) {
+//     e.preventDefault();
+// console.log(selectedproduct[0].stockUnitType, "-----------------");
+
+//     if (!varienttype && selectedproduct[0].stockUnitType === "KG") {
+//       toast.error("Please select each field", {
+//         position: toast.POSITION.TOP_RIGHT,
+//       });
+//     } else {
+//       if (
+//         selectedproduct.length > 0 &&
+//         quantity > 0 &&
+//         (selectedproduct[0].stockUnitType === "KG" && varienttype === "GRAM"
+//           ? selectedproduct[0].totalStock * 1000 >= quantity
+//           : selectedproduct[0].totalStock >= quantity)
+//       ) {
+//         let productToUpdate = selectedproduct[0];
+
+//         setAllItems((prevVariants) => {
+//           const existingItemIndex = prevVariants.findIndex(
+//             (item) =>
+//               item.productid === productToUpdate.id &&
+//               item.stockUnitType ===
+//                 (selectedproduct[0].stockUnitType === "KG"
+//                   ? varienttype
+//                   : productToUpdate.stockUnitType)
+//           );
+
+//           if (existingItemIndex !== -1) {
+//             const updatedItem = {
+//               ...prevVariants[existingItemIndex],
+//               additionalQty: quantity,
+//             };
+
+//             return [
+//               ...prevVariants.slice(0, existingItemIndex),
+//               updatedItem,
+//               ...prevVariants.slice(existingItemIndex + 1),
+//             ];
+//           } else {
+//             // Add new item
+//             const newItem = {
+//               name: productname,
+//               productImage: productToUpdate.productImages[0],
+//               productid: productToUpdate.id,
+//               salesprice: productToUpdate.salesprice,
+//               quantity: quantity,
+//               sku: productToUpdate.sku,
+//               brand: productToUpdate.brand.name,
+//               stockUnitType:
+//                 selectedproduct[0].stockUnitType === "KG"
+//                   ? varienttype
+//                   : productToUpdate.stockUnitType,
+//               tax: productToUpdate.Tax,
+//               DeliveryCharge: productToUpdate.DeliveryCharge,
+//               ServiceCharge: productToUpdate.ServiceCharge,
+//               totalStocks: productToUpdate.totalStock,
+//             };
+
+//             return [...prevVariants, newItem];
+//           }
+//         });
+
+//         // Reset state
+//         setproductname("");
+//         setselectedProduct([]);
+//         setquantity(0);
+//         setvarienttype("");
+//       } else if (quantity === 0 || selectedproduct.length === 0) {
+//         toast.error("Please select each field", {
+//           position: toast.POSITION.TOP_RIGHT,
+//         });
+//       } else {
+//         toast.warning("Product stock not available", {
+//           position: toast.POSITION.TOP_RIGHT,
+//         });
+//       }
+//     }
+//   }
+
+//   async function UpdateEntry(e) {
+//     e.preventDefault();
+//     if (AllItems.length === 0) {
+//       alert("please add item into van");
+//     } else {
+//       try {
+//         let batch = writeBatch(db);
+
+//         for (let item of AllItems) {
+//           const existingDoc = await getDoc(
+//             doc(db, `Delivery/${id}/Van/${item.id}`)
+//           );
+
+//           if (!existingDoc.exists()) {
+//             await addDoc(collection(db, `Delivery/${id}/Van`), item);
+//           } else {
+//             batch.update(doc(db, `Delivery/${id}/Van/${item.id}`), {
+//               quantity: existingDoc.data().quantity + (item.additionalQty ?? 0),
+//             });
+//           }
+//           const docRef = doc(db, "products", item.productid);
+//           const docSnap = await getDoc(docRef);
+//           if (docSnap.exists()) {
+//             let qty = existingDoc.exists()
+//               ? item.additionalQty ?? 0
+//               : item.quantity;
+//             console.log(
+//               docSnap.data().totalStocks,
+//               "total stokes",
+//               qty,
+//               "----------------"
+//             );
+//             console.log(
+//               Number(
+//                 ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(1)
+//               ),
+//               "total pending"
+//             );
+
+//             console.log(
+//               typeof Number(
+//                 ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(1)
+//               ),
+//               "total type"
+//             );
+
+//             batch.update(doc(db, `products/${item.productid}`), {
+//               totalStock:
+//                 item.stockUnitType === "GRAM"
+//                   ? Number(
+//                       ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(
+//                         1
+//                       )
+//                     )
+//                   : docSnap.data().totalStock - qty,
+//             });
+//           }
+//         }
+//         await batch.commit();
+//         setLoaderstatus(true);
+//         // window.location.reload();
+//         setLoaderstatus(false);
+//         toast.success("Product added Successfully !", {
+//           position: toast.POSITION.TOP_RIGHT,
+//         });
+//       } catch (error) {
+//         setLoaderstatus(false);
+//         console.log("Error in Adding Data to Van", error);
+//       }
+//     }
+//   }
 
   const [selectAll, setSelectAll] = useState([]);
   function handleSelectAll() {
@@ -273,11 +425,11 @@ const DeliveryBoyInventory = () => {
     }
   }
 
- 
-
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
+
+  console.log(AllItems, "-------------------------------");
 
   if (loaderstatus) {
     return <Loader></Loader>;
@@ -385,8 +537,8 @@ const DeliveryBoyInventory = () => {
                         <li key={index}>
                           <div
                             onClick={() => {
-                              setproductname(names); 
-                              setFilterValue(""); 
+                              setproductname(names);
+                              setFilterValue("");
                             }}
                             className="dropdown-item py-2"
                           >
@@ -429,15 +581,32 @@ const DeliveryBoyInventory = () => {
               </div>
             </div>
             <div className="d-flex align-items-center justify-content-between w-100 gap-4">
-              <div className=" w-100 d-flex align-items-center gap-3">
-                <input
-                  className="w-25 quantity_bg outline_none"
-                  type="text"
-                  placeholder="Quantity"
-                  value={quantity}
-                  onChange={(e) => setquantity(Number(e.target.value) || 0)}
-                />
+              <div className=" d-flex gap-4 align-items-center">
+                <div className=" w-100 d-flex align-items-center gap-3">
+                  <input
+                    className="w-100 quantity_bg outline_none"
+                    type="text"
+                    placeholder="Quantity"
+                    value={quantity}
+                    onChange={(e) => setquantity(Number(e.target.value) || 0)}
+                  />
+                </div>
+                {selectedproduct.length !== 0 &&
+                  selectedproduct[0].stockUnitType.toLowerCase() === "kg" && (
+                    <div className="w-100 d-flex align-items-center gap-3 quantity_bg">
+                      <select
+                        required
+                        onChange={(e) => setvarienttype(e.target.value)}
+                        className="w-100  bg-transparent outline_none border-0"
+                      >
+                        <option value={""}>Select Type</option>
+                        <option value={"KG"}>KG</option>
+                        <option value={"GRAM"}>GRAM</option>
+                      </select>
+                    </div>
+                  )}
               </div>
+
               <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
                 <button
                   onClick={HandleAddToVan}

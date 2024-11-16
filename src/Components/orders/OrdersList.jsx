@@ -759,7 +759,6 @@ const OrderList = () => {
                     })
 
                     .map((orderTableData, index) => {
-                      console.log(orderTableData ,"------------------------");
                       
                       return (
                         <tr>

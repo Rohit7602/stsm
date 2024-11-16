@@ -16,8 +16,9 @@ const DeliveryList = () => {
   const [filterpop, setFilterPop] = useState(false);
   const [selectAll, setSelectAll] = useState([]);
   const { customer } = useCustomerContext();
+  const [searchdata, setSearchData] = useState(0);
 
-  const location = useLocation()
+  const location = useLocation();
 
   function handlecheckboxes(e) {
     let isChecked = e.target.checked;
@@ -43,6 +44,21 @@ const DeliveryList = () => {
     }
   }
 
+  const data = Array.from(
+    new Set([
+      ...location.state.deliverydata.map((value) => value.status),
+      "All",
+    ])
+  );
+
+  const handleClickstatus = () => {
+    let newIndex = searchdata + 1;
+    if (newIndex >= data.length) {
+      newIndex = 0;
+    }
+    setSearchData(newIndex);
+  };
+
   return (
     <div className="main_panel_wrapper overflow-x-hidden bg_light_grey w-100">
       {filterpop ? <div className="bg_black_overlay"></div> : null}
@@ -65,26 +81,50 @@ const DeliveryList = () => {
               className="w-100 my-2"
               onChange={(e) => setOrderPriceValueSelect(e.target.value)}
               max={Math.max(
-                ...location.state.deliverydata.map((value) => value.order_price)
+                ...location.state.deliverydata
+                  .filter(
+                    (value) =>
+                      data[searchdata] === "All" ||
+                      value.status === data[searchdata]
+                  )
+                  .map((value) => value.order_price)
+              )}
+              min={Math.min(
+                ...location.state.deliverydata
+                  .filter(
+                    (value) =>
+                      data[searchdata] === "All" ||
+                      value.status === data[searchdata]
+                  )
+                  .map((value) => value.order_price)
               )}
               step={100}
               value={orderpricevalueselect}
-              min={Math.min(
-                ...location.state.deliverydata.map((value) => value.order_price)
-              )}
             />
           </div>
-          <div className=" d-flex justify-content-between align-items-center">
-            <span className=" fw-normal fs-xxs text-black opacity-50">
+          <div className="d-flex justify-content-between align-items-center">
+            <span className="fw-normal fs-xxs text-black opacity-50">
               ₹{" "}
               {Math.min(
-                ...location.state.deliverydata.map((value) => value.order_price)
+                ...location.state.deliverydata
+                  .filter(
+                    (value) =>
+                      data[searchdata] === "All" ||
+                      value.status === data[searchdata]
+                  )
+                  .map((value) => value.order_price)
               )}
             </span>
-            <span className=" fw-normal fs-xxs text-black opacity-50">
+            <span className="fw-normal fs-xxs text-black opacity-50">
               ₹{" "}
               {Math.max(
-                ...location.state.deliverydata.map((value) => value.order_price)
+                ...location.state.deliverydata
+                  .filter(
+                    (value) =>
+                      data[searchdata] === "All" ||
+                      value.status === data[searchdata]
+                  )
+                  .map((value) => value.order_price)
               )}
             </span>
           </div>
@@ -186,8 +226,18 @@ const DeliveryList = () => {
                     <th className="mw-300 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">City / State</h3>
                     </th>
-                    <th className="mw-300 p-3">
-                      <h3 className="fs-sm fw-400 black mb-0">Status</h3>
+                    <th className="mw_300 p-3 cursor_pointer">
+                      <h3 className="fs-sm fw-400 black mb-0">
+                        Order Status
+                        <span onClick={handleClickstatus}>
+                          <img
+                            className="ms-2 cursor_pointer"
+                            width={20}
+                            src={shortIcon}
+                            alt="short-icon"
+                          />
+                        </span>
+                      </h3>
                     </th>
                     <th className="mw-200 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Order Price</h3>
@@ -205,6 +255,16 @@ const DeliveryList = () => {
                         : data.customer.name
                             .toLowerCase()
                             .includes(searchvalue);
+                    })
+                    .filter((value) => {
+                      if (data[searchdata] === "All") {
+                        return true;
+                      } else {
+                        return (
+                          value.status.toLowerCase() ===
+                          data[searchdata].toLowerCase()
+                        );
+                      }
                     })
                     .sort((a, b) => {
                       const dateA = new Date(a.created_at);

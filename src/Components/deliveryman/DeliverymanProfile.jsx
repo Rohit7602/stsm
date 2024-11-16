@@ -386,10 +386,6 @@ const DeliverymanProfile = () => {
 
   //////////////////////////////////////////
 
-  const formatDate = (date) => {
-    return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-  };
-
   const handleDateRangeSelection = (range) => {
     setStartDate("");
     setEndDate("");
@@ -448,6 +444,7 @@ const DeliverymanProfile = () => {
           );
         })
         .map((value) => value);
+
       setDeliveryHistory(filterDelivery);
       setTotalSpent(
         filterDelivery
@@ -477,6 +474,9 @@ const DeliverymanProfile = () => {
     }
   };
 
+  const formatDate = (date) => {
+    return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+  };
 
   if (loading) {
     return <Loader />;
@@ -562,7 +562,7 @@ const DeliverymanProfile = () => {
                     type="date"
                     id="endDate"
                     value={endDate}
-                    max={startDate || new Date().toISOString().split("T")[0]}
+                    max={endDate || new Date().toISOString().split("T")[0]}
                     onChange={(e) => setEndDate(e.target.value)}
                     className="form-control"
                     placeholder="End Date"

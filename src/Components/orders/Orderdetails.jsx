@@ -723,54 +723,50 @@ export default function NewOrder() {
             const vanDoc = querySnapshot.docs.find(
               (doc) => doc.data().productid === item.product_id
             );
-            // console.log(autoSelectedDeliveryManId);
-            // console.log(selectedDeliveryManId);
-            // console.log(vanDoc.data(), "fkkkkkkkkkkkkkkkkkkk");
-            const showvandata = vanDoc.data();
-            const filterorder = filterData
-              .flatMap((value) => value.items)
-              .filter((filterid) => filterid.product_id === item.product_id);
-            // console.log(filterorder);
-            // console.log(filterorder[0].quantity <= showvandata.quantity);
-            // console.log(filterorder[0].quantity);
-            // console.log(showvandata.quantity);
-            // console.log(
-            //   showvandata.quantity >= 0,
-            //   "skkkkkkkkkkkkkkkkkkkkkkkkkkkk"
-            // );
-            // console.log(showvandata.quantity >= item.quantity);
-            // console.log( item.quantity);
-            // console.log(showvandata.quantity );
-
-            if (filterorder[0].quantity > showvandata.quantity) {
-              const matchingDeliverymanData = await Promise.all(
-                deliverymenWithArea.map(async (value) => {
-                  const q = query(collection(db, `Delivery/${value.id}/Van`));
-                  const querySnapshot = await getDocs(q);
-                  const vans = querySnapshot.docs.map((doc) => doc.data());
-                  const filterproduct = vans.filter(
-                    (van) => van.productid === item.product_id
-                  );
-                  const filterquatity = filterproduct.filter(
-                    (van) => van.quantity > filterorder[0].quantity
-                  );
-                  if (filterquatity.length > 0) {
-                    return value;
-                  }
-                  return null;
-                })
-              );
-              const validDeliverymanData = matchingDeliverymanData.filter(
-                (data) => data !== null
-              );
-              console.log(matchingDeliverymanData);
-              console.log(validDeliverymanData);
-              if (validDeliverymanData.length !== 0) {
-                setFilterAllDeliverymans(validDeliverymanData);
-              } else {
-                setIsFilterDeliverymanPopup(true);
+            const showvandata = vanDoc ? vanDoc.data() : null;
+            if (showvandata) {
+              const filterorder = filterData
+                .flatMap((value) => value.items)
+                .filter((filterid) => filterid.product_id === item.product_id);
+              if (filterorder[0].quantity > showvandata.quantity) {
+                const matchingDeliverymanData = await Promise.all(
+                  deliverymenWithArea.map(async (value) => {
+                    const q = query(collection(db, `Delivery/${value.id}/Van`));
+                    const querySnapshot = await getDocs(q);
+                    const vans = querySnapshot.docs.map((doc) => doc.data());
+                    const filterproduct = vans.filter(
+                      (van) => van.productid === item.product_id
+                    );
+                    const filterquatity = filterproduct.filter(
+                      (van) => van.quantity > filterorder[0].quantity
+                    );
+                    if (filterquatity.length > 0) {
+                      return value;
+                    }
+                    return null;
+                  })
+                );
+                const validDeliverymanData = matchingDeliverymanData.filter(
+                  (data) => data !== null
+                );
+                console.log(matchingDeliverymanData);
+                console.log(validDeliverymanData);
+                if (validDeliverymanData.length !== 0) {
+                  setFilterAllDeliverymans(validDeliverymanData);
+                } else {
+                  setIsFilterDeliverymanPopup(true);
+                }
               }
+            } else {
+              console.warn("Van data not found for product:", item.product_id);
+              toast.warning("Van data for this product is unavailable", {
+                position: toast.POSITION.TOP_RIGHT,
+              });
             }
+
+
+
+
             if (showvandata.quantity >= item.quantity) {
               const newStatus = "OUT_FOR_DELIVERY";
 
