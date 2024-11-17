@@ -41,6 +41,8 @@ const DeliveryBoyInventory = () => {
   // const [varient, setVarient] = useState("");
   const [filtervalue, setFilterValue] = useState("");
   const [quantity, setquantity] = useState(0);
+  const [qut, setQut] = useState(0);
+
   const [selectedproduct, setselectedProduct] = useState([]);
   const [AllItems, setAllItems] = useState([]);
   const [delivryMan, setDeliveryMan] = useState([]);
@@ -87,8 +89,6 @@ const DeliveryBoyInventory = () => {
       fetchVan();
     }
   }, [id, DeliveryManData]);
-
-
 
   ///////////////////////////     previous functionality     ////////////////////////////////////
 
@@ -155,7 +155,6 @@ const DeliveryBoyInventory = () => {
   //   }
   // }
 
-
   // async function UpdateEntry(e) {
   //   e.preventDefault();
   //   if (AllItems.length === 0) {
@@ -201,14 +200,14 @@ const DeliveryBoyInventory = () => {
   //   }
   // }
 
-  
   //////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
   function HandleAddToVan(e) {
     e.preventDefault();
-    if (!varienttype && selectedproduct[0].stockUnitType === "KG") {
+
+    if (!varienttype && selectedproduct[0]?.stockUnitType === "KG") {
       toast.error("Please select each field", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -221,6 +220,8 @@ const DeliveryBoyInventory = () => {
           : selectedproduct[0].totalStock >= quantity)
       ) {
         let productToUpdate = selectedproduct[0];
+
+        
 
         setAllItems((prevVariants) => {
           const existingItemIndex = prevVariants.findIndex(
@@ -235,7 +236,8 @@ const DeliveryBoyInventory = () => {
           if (existingItemIndex !== -1) {
             const updatedItem = {
               ...prevVariants[existingItemIndex],
-              additionalQty: quantity,
+              additionalQty: (prevVariants[existingItemIndex].additionalQty || 0) + quantity, // Add new quantity
+
             };
 
             return [
@@ -594,7 +596,8 @@ const DeliveryBoyInventory = () => {
                     type="text"
                     placeholder="Quantity"
                     value={quantity}
-                    onChange={(e) => setquantity(Number(e.target.value) || 0)}
+                    onChange={(e) => {setquantity(Number(e.target.value) || 0)
+                    }}
                   />
                 </div>
                 {selectedproduct.length !== 0 &&
