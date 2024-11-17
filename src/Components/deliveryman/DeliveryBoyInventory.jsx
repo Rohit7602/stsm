@@ -88,69 +88,202 @@ const DeliveryBoyInventory = () => {
     }
   }, [id, DeliveryManData]);
 
-  // console.log("selected product is ", selectedproduct)
+
+
+  ///////////////////////////     previous functionality     ////////////////////////////////////
+
+  // function HandleAddToVan(e) {
+  //   e.preventDefault();
+
+  //   if (
+  //     selectedproduct.length > 0 &&
+  //     quantity > 0 &&
+  //     selectedproduct[0].totalStock >= quantity
+  //   ) {
+  //     let productToUpdate = selectedproduct[0];
+
+  //     setAllItems((prevVariants) => {
+  //       const existingItemIndex = prevVariants.findIndex(
+  //         (item) => item.productid === productToUpdate.id
+  //       );
+
+  //       if (existingItemIndex !== -1) {
+  //         // Update the existing item quantity by adding the new quantity
+  //         const updatedItem = {
+  //           ...prevVariants[existingItemIndex],
+  //           additionalQty: quantity, // Add the new quantity
+  //         };
+
+  //         return [
+  //           ...prevVariants.slice(0, existingItemIndex),
+  //           updatedItem,
+  //           ...prevVariants.slice(existingItemIndex + 1),
+  //         ];
+  //       } else {
+  //         // Add new item
+  //         const newItem = {
+  //           name: productname,
+  //           productImage: productToUpdate.productImages[0],
+  //           productid: productToUpdate.id,
+  //           salesprice: productToUpdate.salesprice,
+  //           quantity: quantity,
+  //           sku: productToUpdate.sku,
+  //           brand: productToUpdate.brand.name,
+  //           stockUnitType: productToUpdate.stockUnitType,
+  //           tax: productToUpdate.Tax,
+  //           DeliveryCharge: productToUpdate.DeliveryCharge,
+  //           ServiceCharge: productToUpdate.ServiceCharge,
+  //           totalStocks: productToUpdate.totalStock,
+  //         };
+
+  //         return [...prevVariants, newItem];
+  //       }
+  //     });
+
+  //     // Reset state
+  //     setproductname("");
+  //     setselectedProduct([]);
+  //     setquantity(0);
+  //   } else if (quantity === 0 || selectedproduct.length === 0) {
+  //     toast.error("Please select each field", {
+  //       position: toast.POSITION.TOP_RIGHT,
+  //     });
+  //   } else {
+  //     toast.warning("Product stock not available", {
+  //       position: toast.POSITION.TOP_RIGHT,
+  //     });
+  //   }
+  // }
+
+
+  // async function UpdateEntry(e) {
+  //   e.preventDefault();
+  //   if (AllItems.length === 0) {
+  //     alert("please add item into van");
+  //   } else {
+  //     try {
+  //       let batch = writeBatch(db);
+
+  //       for (let item of AllItems) {
+  //         const existingDoc = await getDoc(
+  //           doc(db, `Delivery/${id}/Van/${item.id}`)
+  //         );
+
+  //         if (!existingDoc.exists()) {
+  //           await addDoc(collection(db, `Delivery/${id}/Van`), item);
+  //         } else {
+  //           batch.update(doc(db, `Delivery/${id}/Van/${item.id}`), {
+  //             quantity: existingDoc.data().quantity + (item.additionalQty ?? 0),
+  //           });
+  //         }
+  //         const docRef = doc(db, "products", item.productid);
+  //         const docSnap = await getDoc(docRef);
+  //         if (docSnap.exists()) {
+  //           let qty = existingDoc.exists()
+  //             ? item.additionalQty ?? 0
+  //             : item.quantity;
+  //           batch.update(doc(db, `products/${item.productid}`), {
+  //             totalStock: docSnap.data().totalStock - qty,
+  //           });
+  //         }
+  //       }
+  //       await batch.commit();
+  //       setLoaderstatus(true);
+  //       window.location.reload();
+  //       setLoaderstatus(false);
+  //       toast.success("Product added Successfully !", {
+  //         position: toast.POSITION.TOP_RIGHT,
+  //       });
+  //     } catch (error) {
+  //       setLoaderstatus(false);
+  //       console.log("Error in Adding Data to Van", error);
+  //     }
+  //   }
+  // }
+
+  
+  //////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
   function HandleAddToVan(e) {
     e.preventDefault();
-
-    if (
-      selectedproduct.length > 0 &&
-      quantity > 0 &&
-      selectedproduct[0].totalStock >= quantity
-    ) {
-      let productToUpdate = selectedproduct[0];
-
-      setAllItems((prevVariants) => {
-        const existingItemIndex = prevVariants.findIndex(
-          (item) => item.productid === productToUpdate.id
-        );
-
-        if (existingItemIndex !== -1) {
-          // Update the existing item quantity by adding the new quantity
-          const updatedItem = {
-            ...prevVariants[existingItemIndex],
-            additionalQty: quantity, // Add the new quantity
-          };
-
-          return [
-            ...prevVariants.slice(0, existingItemIndex),
-            updatedItem,
-            ...prevVariants.slice(existingItemIndex + 1),
-          ];
-        } else {
-          // Add new item
-          const newItem = {
-            name: productname,
-            productImage: productToUpdate.productImages[0],
-            productid: productToUpdate.id,
-            salesprice: productToUpdate.salesprice,
-            quantity: quantity,
-            sku: productToUpdate.sku,
-            brand: productToUpdate.brand.name,
-            stockUnitType: productToUpdate.stockUnitType,
-            tax: productToUpdate.Tax,
-            DeliveryCharge: productToUpdate.DeliveryCharge,
-            ServiceCharge: productToUpdate.ServiceCharge,
-            totalStocks: productToUpdate.totalStock,
-          };
-
-          return [...prevVariants, newItem];
-        }
-      });
-
-      // Reset state
-      setproductname("");
-      setselectedProduct([]);
-      setquantity(0);
-    } else if (quantity === 0 || selectedproduct.length === 0) {
+    if (!varienttype && selectedproduct[0].stockUnitType === "KG") {
       toast.error("Please select each field", {
         position: toast.POSITION.TOP_RIGHT,
       });
     } else {
-      toast.warning("Product stock not available", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+      if (
+        selectedproduct.length > 0 &&
+        quantity > 0 &&
+        (selectedproduct[0].stockUnitType === "KG" && varienttype === "GRAM"
+          ? selectedproduct[0].totalStock * 1000 >= quantity
+          : selectedproduct[0].totalStock >= quantity)
+      ) {
+        let productToUpdate = selectedproduct[0];
+
+        setAllItems((prevVariants) => {
+          const existingItemIndex = prevVariants.findIndex(
+            (item) =>
+              item.productid === productToUpdate.id &&
+              item.stockUnitType ===
+                (selectedproduct[0].stockUnitType === "KG"
+                  ? varienttype
+                  : productToUpdate.stockUnitType)
+          );
+
+          if (existingItemIndex !== -1) {
+            const updatedItem = {
+              ...prevVariants[existingItemIndex],
+              additionalQty: quantity,
+            };
+
+            return [
+              ...prevVariants.slice(0, existingItemIndex),
+              updatedItem,
+              ...prevVariants.slice(existingItemIndex + 1),
+            ];
+          } else {
+            // Add new item
+            const newItem = {
+              name: productname,
+              productImage: productToUpdate.productImages[0],
+              productid: productToUpdate.id,
+              salesprice: productToUpdate.salesprice,
+              quantity: quantity,
+              sku: productToUpdate.sku,
+              brand: productToUpdate.brand.name,
+              stockUnitType:
+                selectedproduct[0].stockUnitType === "KG"
+                  ? varienttype
+                  : productToUpdate.stockUnitType,
+              tax: productToUpdate.Tax,
+              DeliveryCharge: productToUpdate.DeliveryCharge,
+              ServiceCharge: productToUpdate.ServiceCharge,
+              totalStocks: productToUpdate.totalStock,
+            };
+
+            return [...prevVariants, newItem];
+          }
+        });
+
+        // Reset state
+        setproductname("");
+        setselectedProduct([]);
+        setquantity(0);
+        setvarienttype("");
+      } else if (quantity === 0 || selectedproduct.length === 0) {
+        toast.error("Please select each field", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      } else {
+        toast.warning("Product stock not available", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
     }
   }
+
   async function UpdateEntry(e) {
     e.preventDefault();
     if (AllItems.length === 0) {
@@ -177,14 +310,41 @@ const DeliveryBoyInventory = () => {
             let qty = existingDoc.exists()
               ? item.additionalQty ?? 0
               : item.quantity;
+            console.log(
+              docSnap.data().totalStocks,
+              "total stokes",
+              qty,
+              "----------------"
+            );
+            console.log(
+              Number(
+                ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(1)
+              ),
+              "total pending"
+            );
+
+            console.log(
+              typeof Number(
+                ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(1)
+              ),
+              "total type"
+            );
+
             batch.update(doc(db, `products/${item.productid}`), {
-              totalStock: docSnap.data().totalStock - qty,
+              totalStock:
+                item.stockUnitType === "GRAM"
+                  ? Number(
+                      ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(
+                        1
+                      )
+                    )
+                  : docSnap.data().totalStock - qty,
             });
           }
         }
         await batch.commit();
         setLoaderstatus(true);
-        window.location.reload();
+        // window.location.reload();
         setLoaderstatus(false);
         toast.success("Product added Successfully !", {
           position: toast.POSITION.TOP_RIGHT,
@@ -195,160 +355,6 @@ const DeliveryBoyInventory = () => {
       }
     }
   }
-
-  //////////////////////////////
-
-//   function HandleAddToVan(e) {
-//     e.preventDefault();
-// console.log(selectedproduct[0].stockUnitType, "-----------------");
-
-//     if (!varienttype && selectedproduct[0].stockUnitType === "KG") {
-//       toast.error("Please select each field", {
-//         position: toast.POSITION.TOP_RIGHT,
-//       });
-//     } else {
-//       if (
-//         selectedproduct.length > 0 &&
-//         quantity > 0 &&
-//         (selectedproduct[0].stockUnitType === "KG" && varienttype === "GRAM"
-//           ? selectedproduct[0].totalStock * 1000 >= quantity
-//           : selectedproduct[0].totalStock >= quantity)
-//       ) {
-//         let productToUpdate = selectedproduct[0];
-
-//         setAllItems((prevVariants) => {
-//           const existingItemIndex = prevVariants.findIndex(
-//             (item) =>
-//               item.productid === productToUpdate.id &&
-//               item.stockUnitType ===
-//                 (selectedproduct[0].stockUnitType === "KG"
-//                   ? varienttype
-//                   : productToUpdate.stockUnitType)
-//           );
-
-//           if (existingItemIndex !== -1) {
-//             const updatedItem = {
-//               ...prevVariants[existingItemIndex],
-//               additionalQty: quantity,
-//             };
-
-//             return [
-//               ...prevVariants.slice(0, existingItemIndex),
-//               updatedItem,
-//               ...prevVariants.slice(existingItemIndex + 1),
-//             ];
-//           } else {
-//             // Add new item
-//             const newItem = {
-//               name: productname,
-//               productImage: productToUpdate.productImages[0],
-//               productid: productToUpdate.id,
-//               salesprice: productToUpdate.salesprice,
-//               quantity: quantity,
-//               sku: productToUpdate.sku,
-//               brand: productToUpdate.brand.name,
-//               stockUnitType:
-//                 selectedproduct[0].stockUnitType === "KG"
-//                   ? varienttype
-//                   : productToUpdate.stockUnitType,
-//               tax: productToUpdate.Tax,
-//               DeliveryCharge: productToUpdate.DeliveryCharge,
-//               ServiceCharge: productToUpdate.ServiceCharge,
-//               totalStocks: productToUpdate.totalStock,
-//             };
-
-//             return [...prevVariants, newItem];
-//           }
-//         });
-
-//         // Reset state
-//         setproductname("");
-//         setselectedProduct([]);
-//         setquantity(0);
-//         setvarienttype("");
-//       } else if (quantity === 0 || selectedproduct.length === 0) {
-//         toast.error("Please select each field", {
-//           position: toast.POSITION.TOP_RIGHT,
-//         });
-//       } else {
-//         toast.warning("Product stock not available", {
-//           position: toast.POSITION.TOP_RIGHT,
-//         });
-//       }
-//     }
-//   }
-
-//   async function UpdateEntry(e) {
-//     e.preventDefault();
-//     if (AllItems.length === 0) {
-//       alert("please add item into van");
-//     } else {
-//       try {
-//         let batch = writeBatch(db);
-
-//         for (let item of AllItems) {
-//           const existingDoc = await getDoc(
-//             doc(db, `Delivery/${id}/Van/${item.id}`)
-//           );
-
-//           if (!existingDoc.exists()) {
-//             await addDoc(collection(db, `Delivery/${id}/Van`), item);
-//           } else {
-//             batch.update(doc(db, `Delivery/${id}/Van/${item.id}`), {
-//               quantity: existingDoc.data().quantity + (item.additionalQty ?? 0),
-//             });
-//           }
-//           const docRef = doc(db, "products", item.productid);
-//           const docSnap = await getDoc(docRef);
-//           if (docSnap.exists()) {
-//             let qty = existingDoc.exists()
-//               ? item.additionalQty ?? 0
-//               : item.quantity;
-//             console.log(
-//               docSnap.data().totalStocks,
-//               "total stokes",
-//               qty,
-//               "----------------"
-//             );
-//             console.log(
-//               Number(
-//                 ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(1)
-//               ),
-//               "total pending"
-//             );
-
-//             console.log(
-//               typeof Number(
-//                 ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(1)
-//               ),
-//               "total type"
-//             );
-
-//             batch.update(doc(db, `products/${item.productid}`), {
-//               totalStock:
-//                 item.stockUnitType === "GRAM"
-//                   ? Number(
-//                       ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(
-//                         1
-//                       )
-//                     )
-//                   : docSnap.data().totalStock - qty,
-//             });
-//           }
-//         }
-//         await batch.commit();
-//         setLoaderstatus(true);
-//         // window.location.reload();
-//         setLoaderstatus(false);
-//         toast.success("Product added Successfully !", {
-//           position: toast.POSITION.TOP_RIGHT,
-//         });
-//       } catch (error) {
-//         setLoaderstatus(false);
-//         console.log("Error in Adding Data to Van", error);
-//       }
-//     }
-//   }
 
   const [selectAll, setSelectAll] = useState([]);
   function handleSelectAll() {

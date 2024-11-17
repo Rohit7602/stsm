@@ -586,6 +586,9 @@ const ServiceArea = () => {
                     {/* <div className=""></div> */}
                   </div>
                   {deletepopup ? (
+                    <div className="bg_black_overlay"></div>
+                  ) : null}
+                  {deletepopup ? (
                     <Deletepopup
                       showPopup={setDeletePopup}
                       handleDelete={() =>

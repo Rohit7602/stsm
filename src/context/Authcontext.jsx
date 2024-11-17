@@ -37,7 +37,7 @@ export function UserAuthContextProvider({ children }) {
   }
 
   if (loading) {
-    return <Loader></Loader>; // Display a loading indicator while user data is being fetched
+    return <Loader></Loader>; 
   }
 
   return (
