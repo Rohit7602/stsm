@@ -14,7 +14,7 @@ function DashbordCards() {
   const [showCustomDate, setShowCustomDate] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-   const [totalspent, setTotalSpent] = useState(0);
+  const [totalspent, setTotalSpent] = useState(0);
   const [showdeliverypop, setShowDeliveryPop] = useState(false);
   /**  ******************************************* Calculation of Average ORder value According to current Month
    * ****************************************    */
@@ -219,7 +219,6 @@ function DashbordCards() {
     //   filteredOrders,
     //   totalDeliverdOrderValue,
     // };
-    
   };
   const handleCustomDateSelection = () => {
     if (startDate && endDate) {
@@ -236,8 +235,6 @@ function DashbordCards() {
       );
     }
   };
-
-  
 
   return (
     <>
@@ -307,7 +304,7 @@ function DashbordCards() {
                     type="date"
                     id="startDate"
                     value={startDate}
-                    max={startDate || new Date().toISOString().split("T")[0]}
+                    max={new Date().toISOString().split("T")[0]}
                     onChange={(e) => setStartDate(e.target.value)}
                     className="form-control"
                     placeholder="Start Date"
@@ -337,7 +334,9 @@ function DashbordCards() {
             )}
             <div className="d-flex align-items-center justify-content-between mt-3">
               <h4 className=" text-black fw-400 fs-sm mb-0">Total Sale</h4>
-              <h2 className="color_green fw-700 fs-sm mb-0">₹ {totalspent}</h2>
+              <h2 className="color_green fw-700 fs-sm mb-0">
+                {totalspent !== 0 ? "₹" + totalspent : "No Spend"}
+              </h2>
             </div>
           </div>
         )}

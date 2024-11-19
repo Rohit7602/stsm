@@ -1,44 +1,47 @@
-import React from 'react';
-import saveicon from '../../Images/svgs/saveicon.svg';
-import savegreenicon from '../../Images/svgs/save_green_icon.svg';
-import deleteicon from '../../Images/svgs/deleteicon.svg';
-import { Col, Row } from 'react-bootstrap';
-import Dropdown from 'react-bootstrap/Dropdown';
-import SearchIcon from '../../Images/svgs/search.svg';
-import Accordion from 'react-bootstrap/Accordion';
-import { useState } from 'react';
-import { collection, addDoc } from 'firebase/firestore';
-import minilayoutImgGroup3 from '../../Images/Png/minilayoutImgGroup3.png';
-import minilayoutImgGroup4 from '../../Images/Png/minilayoutImgGroup4.png';
-import minilayoutImgGroup6 from '../../Images/Png/minilayoutImgGroup6.png';
-import minilayoutImgGroup9 from '../../Images/Png/minilayoutImgGroup9.png';
-import minilayoutImgGroup8 from '../../Images/Png/minilayoutImgGroup8.png';
-import { db } from '../../firebase';
-import { useRef } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../../firebase';
-import { NavLink, Link } from 'react-router-dom';
-import { useImageHandleContext } from '../../context/ImageHandler';
-import { useSubCategories, useMainCategories } from '../../context/categoriesGetter';
-import { increment } from 'firebase/firestore';
-import { doc, updateDoc } from 'firebase/firestore';
+import React from "react";
+import saveicon from "../../Images/svgs/saveicon.svg";
+import savegreenicon from "../../Images/svgs/save_green_icon.svg";
+import deleteicon from "../../Images/svgs/deleteicon.svg";
+import { Col, Row } from "react-bootstrap";
+import Dropdown from "react-bootstrap/Dropdown";
+import SearchIcon from "../../Images/svgs/search.svg";
+import Accordion from "react-bootstrap/Accordion";
+import { useState } from "react";
+import { collection, addDoc } from "firebase/firestore";
+import minilayoutImgGroup3 from "../../Images/Png/minilayoutImgGroup3.png";
+import minilayoutImgGroup4 from "../../Images/Png/minilayoutImgGroup4.png";
+import minilayoutImgGroup6 from "../../Images/Png/minilayoutImgGroup6.png";
+import minilayoutImgGroup9 from "../../Images/Png/minilayoutImgGroup9.png";
+import minilayoutImgGroup8 from "../../Images/Png/minilayoutImgGroup8.png";
+import { db } from "../../firebase";
+import { useRef } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../../firebase";
+import { NavLink, Link } from "react-router-dom";
+import { useImageHandleContext } from "../../context/ImageHandler";
+import {
+  useSubCategories,
+  useMainCategories,
+} from "../../context/categoriesGetter";
+import { increment } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 
-import Loader from '../Loader';
+import Loader from "../Loader";
 
 // import { Toast } from 'react-toastify/dist/components';
 
 const NewCategory = () => {
-  const [imageupload, setImageupload] = useState('');
+  const [imageupload, setImageupload] = useState("");
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [status, setStatus] = useState();
   const [name, setName] = useState();
   const [category, setCategory] = useState();
-  const [searchvalue, setSearchvalue] = useState('');
+  const [searchvalue, setSearchvalue] = useState("");
   const { ImageisValidOrNot } = useImageHandleContext();
 
-  const [selectedLayout, setSelectedLayout] = useState('');
+  const [selectedLayout, setSelectedLayout] = useState("");
 
   // ...
 
@@ -47,11 +50,11 @@ const NewCategory = () => {
   };
 
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const { addData } = useSubCategories();
+  const { addData, data } = useSubCategories();
   const { categoreis, addDataParent } = useMainCategories();
 
   const handleSelectCategory = (category) => {
-    setSearchvalue('');
+    setSearchvalue("");
     setSelectedCategory(category);
     setCategory(category);
   };
@@ -66,21 +69,21 @@ const NewCategory = () => {
 
     try {
       if (name == undefined) {
-        toast.error('Please enter the name');
+        toast.error("Please enter the name");
       } else if (status === undefined) {
-        toast.error('Please Set the status');
+        toast.error("Please Set the status");
       } else if (category === undefined) {
-        toast.error('please select category');
+        toast.error("please select category");
       } else if (imageupload.length === 0) {
-        toast.error('Please Set an image for the product');
+        toast.error("Please Set an image for the product");
       } else {
         setLoaderstatus(true);
-        const filename = Math.floor(Date.now() / 1000) + '-' + imageupload.name;
+        const filename = Math.floor(Date.now() / 1000) + "-" + imageupload.name;
         const storageRef = ref(storage, `/Sub-categories/${filename}`);
         const upload = await uploadBytes(storageRef, imageupload);
         const imageUrl = await getDownloadURL(storageRef);
 
-        const docRef = await addDoc(collection(db, 'sub_categories'), {
+        const docRef = await addDoc(collection(db, "sub_categories"), {
           title: name,
           status: status,
           image: imageUrl,
@@ -88,13 +91,15 @@ const NewCategory = () => {
           created_at: Date.now(),
           updated_at: Date.now(),
           noOfProducts: 0,
+          subcategorynumber: data.length + 1,
         });
-        await updateDoc(doc(db, 'categories', category.id), {
+        await updateDoc(doc(db, "categories", category.id), {
           noOfSubcateogry: increment(1),
+          categorynumber: categoreis.length + 1,
         });
 
         setLoaderstatus(false);
-        toast.success('Category  added Successfully !', {
+        toast.success("Category  added Successfully !", {
           position: toast.POSITION.TOP_RIGHT,
         });
         handleReset();
@@ -104,7 +109,7 @@ const NewCategory = () => {
       toast.error(e, {
         position: toast.POSITION.TOP_RIGHT,
       });
-      console.error('Error adding document: ', e);
+      console.error("Error adding document: ", e);
     }
   }
 
@@ -112,7 +117,7 @@ const NewCategory = () => {
     const selectedFile = e.target.files[0];
 
     if (!ImageisValidOrNot(selectedFile)) {
-      toast.error('Please select a valid image file within 1.5 MB.');
+      toast.error("Please select a valid image file within 1.5 MB.");
       setImageupload(null);
     } else {
       setImageupload(selectedFile);
@@ -120,7 +125,7 @@ const NewCategory = () => {
   };
   function handleReset() {
     setImageupload();
-    setName('');
+    setName("");
     pubref.current.checked = false;
     hidref.current.checked = false;
   }
@@ -136,14 +141,14 @@ const NewCategory = () => {
    */
   const [refreshData, setRefreshData] = useState(false);
   const [addCatPopup, setAddCatPopup] = useState(false);
-  const [perName, setPerName] = useState('');
-  const [imageupload2, setImageupload2] = useState('');
+  const [perName, setPerName] = useState("");
+  const [imageupload2, setImageupload2] = useState("");
   const [perStatus, setPerStatus] = useState();
 
   function handelUpload2(e) {
     const selectedFile = e.target.files[0];
     if (!ImageisValidOrNot(selectedFile)) {
-      toast.error('please select an image file ');
+      toast.error("please select an image file ");
       setImageupload2(null);
     } else {
       setImageupload2(selectedFile);
@@ -158,7 +163,7 @@ const NewCategory = () => {
   }
 
   function HandleResetFormParentCategory() {
-    setPerName('');
+    setPerName("");
     setImageupload2();
     setAddCatPopup(false);
   }
@@ -167,18 +172,19 @@ const NewCategory = () => {
     e.preventDefault();
     try {
       if (perName === undefined || null) {
-        toast.error('please enter the name of the category  ');
+        toast.error("please enter the name of the category  ");
       } else if (imageupload2.length === 0) {
-        toast.error('please upload image of the category');
+        toast.error("please upload image of the category");
       } else if (perStatus === undefined || null) {
-        toast.error('please Set the status');
+        toast.error("please Set the status");
       } else {
         setLoaderstatus(true);
-        const filename = Math.floor(Date.now() / 1000) + '-' + imageupload2.name;
+        const filename =
+          Math.floor(Date.now() / 1000) + "-" + imageupload2.name;
         const storageRef = ref(storage, `/Parent-category/${filename}`);
         const upload = await uploadBytes(storageRef, imageupload2);
         const imageUrl = await getDownloadURL(storageRef);
-        const docRef = await addDoc(collection(db, 'categories'), {
+        const docRef = await addDoc(collection(db, "categories"), {
           title: perName,
           status: perStatus,
           image: imageUrl,
@@ -186,9 +192,10 @@ const NewCategory = () => {
           created_at: Date.now(),
           updated_at: Date.now(),
           noOfSubcateogry: 0,
+          // categorynumber: Number(categorynumber),
         });
         setLoaderstatus(false);
-        toast.success('Category added Successfully !', {
+        toast.success("Category added Successfully !", {
           position: toast.POSITION.TOP_RIGHT,
         });
         HandleResetFormParentCategory();
@@ -215,7 +222,7 @@ const NewCategory = () => {
   } else {
     return (
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
-        {addCatPopup === true ? <div className="bg_black_overlay"></div> : ''}
+        {addCatPopup === true ? <div className="bg_black_overlay"></div> : ""}
         <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
           {/* NEW PRODUCT DETAILSS  */}
           <form>
@@ -225,13 +232,17 @@ const NewCategory = () => {
                 <div className="d-flex  align-items-center flex-column flex-sm-row gap-2 gap-sm-0  justify-content-between">
                   <div className="d-flex align-itmes-center gap-3">
                     <button className="reset_border">
-                      <button onClick={handleReset} className="fs-sm reset_btn border-0 fw-400 ">
+                      <button
+                        onClick={handleReset}
+                        className="fs-sm reset_btn border-0 fw-400 "
+                      >
                         Reset
                       </button>
                     </button>
                     <button
                       onClick={handleSave}
-                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black">
+                      className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 save_btn fw-400 black"
+                    >
                       <img src={saveicon} alt="saveicon" />
                       Save
                     </button>
@@ -243,7 +254,9 @@ const NewCategory = () => {
               <Col xxl={8}>
                 {/* Basic Information */}
                 <div className="product_shadow bg_white p-3">
-                  <h2 className="fw-400 fs-2sm black mb-0">Basic Information</h2>
+                  <h2 className="fw-400 fs-2sm black mb-0">
+                    Basic Information
+                  </h2>
                   {/* ist input */}
                   <label htmlFor="Name" className="fs-xs fw-400 mt-3 black">
                     Name
@@ -256,7 +269,7 @@ const NewCategory = () => {
                     id="Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                  />{' '}
+                  />{" "}
                   <br />
                   {/* 2nd input */}
                   <label htmlFor="des" className="fs-xs fw-400 mt-3 black">
@@ -294,7 +307,8 @@ const NewCategory = () => {
                     {!imageupload ? (
                       <label
                         htmlFor="file22"
-                        className="color_green cursor_pointer fs-sm addmedia_btn d-flex justify-content-center align-items-center">
+                        className="color_green cursor_pointer fs-sm addmedia_btn d-flex justify-content-center align-items-center"
+                      >
                         + Add Media
                       </label>
                     ) : null}
@@ -313,7 +327,7 @@ const NewCategory = () => {
                         ref={pubref}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setStatus('published');
+                            setStatus("published");
                             hidref.current.checked = false;
                           }
                         }}
@@ -329,7 +343,7 @@ const NewCategory = () => {
                         ref={hidref}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setStatus('hidden');
+                            setStatus("hidden");
                             pubref.current.checked = false;
                           }
                         }}
@@ -343,16 +357,26 @@ const NewCategory = () => {
                 {/* Parent Category */}
                 <div className="mt-4 product_shadow bg_white p-3">
                   <div className="d-flex align-items-center justify-content-between">
-                    <h2 className="fw-400 fs-2sm black mb-0">Parent Category</h2>
-                    <Link to="/catalog/parentcategories" className="fs-2sm fw-400 red">
+                    <h2 className="fw-400 fs-2sm black mb-0">
+                      Parent Category
+                    </h2>
+                    <Link
+                      to="/catalog/parentcategories"
+                      className="fs-2sm fw-400 red"
+                    >
                       View All
                     </Link>
                   </div>
                   <Dropdown className="category_dropdown z-1">
-                    <Dropdown.Toggle id="dropdown-basic" className="dropdown_input_btn">
+                    <Dropdown.Toggle
+                      id="dropdown-basic"
+                      className="dropdown_input_btn"
+                    >
                       <div className="product_input">
                         <p className="fade_grey fw-400 w-100 mb-0 text-start">
-                          {selectedCategory ? selectedCategory.title : 'Select Category'}
+                          {selectedCategory
+                            ? selectedCategory.title
+                            : "Select Category"}
                         </p>
                       </div>
                     </Dropdown.Toggle>
@@ -372,7 +396,7 @@ const NewCategory = () => {
                           {categoreis
                             .filter((items) => {
                               return (
-                                searchvalue.toLowerCase() === '' ||
+                                searchvalue.toLowerCase() === "" ||
                                 items.title.toLowerCase().includes(searchvalue)
                               );
                             })
@@ -380,21 +404,31 @@ const NewCategory = () => {
                               <Dropdown.Item key={category.id}>
                                 <div
                                   className={`d-flex justify-content-between ${
-                                    selectedCategory && selectedCategory.id === category.id
-                                      ? 'selected'
-                                      : ''
+                                    selectedCategory &&
+                                    selectedCategory.id === category.id
+                                      ? "selected"
+                                      : ""
                                   }`}
-                                  onClick={() => handleSelectCategory(category)}>
-                                  <p className="fs-xs fw-400 black mb-0">{category.title}</p>
-                                  {selectedCategory && selectedCategory.id === category.id && (
-                                    <img src={savegreenicon} alt="savegreenicon" />
-                                  )}
+                                  onClick={() => handleSelectCategory(category)}
+                                >
+                                  <p className="fs-xs fw-400 black mb-0">
+                                    {category.title}
+                                  </p>
+                                  {selectedCategory &&
+                                    selectedCategory.id === category.id && (
+                                      <img
+                                        src={savegreenicon}
+                                        alt="savegreenicon"
+                                      />
+                                    )}
                                 </div>
                               </Dropdown.Item>
                             ))}
                           {searchvalue &&
                             !categoreis.some((category) =>
-                              category.title.toLowerCase().includes(searchvalue.toLowerCase())
+                              category.title
+                                .toLowerCase()
+                                .includes(searchvalue.toLowerCase())
                             ) && (
                               <button
                                 type="button"
@@ -402,9 +436,11 @@ const NewCategory = () => {
                                   setPerName(searchvalue);
                                   setAddCatPopup(true);
                                 }}
-                                className="addnew_category_btn fs-xs green">
-                                +Add <span className="black">"{searchvalue}"</span> in Parent
-                                Category
+                                className="addnew_category_btn fs-xs green"
+                              >
+                                +Add{" "}
+                                <span className="black">"{searchvalue}"</span>{" "}
+                                in Parent Category
                               </button>
                             )}
                         </div>
@@ -415,9 +451,14 @@ const NewCategory = () => {
                     <div className="parent_category_popup">
                       <form action="">
                         <div className="d-flex align-items-center justify-content-between">
-                          <p className="fs-4 fw-400 black mb-0">New Parent Category</p>
+                          <p className="fs-4 fw-400 black mb-0">
+                            New Parent Category
+                          </p>
                           <div className="d-flex align-items-center gap-3">
-                            <button onClick={() => setAddCatPopup(false)} className="reset_border">
+                            <button
+                              onClick={() => setAddCatPopup(false)}
+                              className="reset_border"
+                            >
                               <button className="fs-sm fw-400 reset_btn border-0 px-sm-3 px-2 py-2 ">
                                 Cancel
                               </button>
@@ -425,16 +466,24 @@ const NewCategory = () => {
                             <button
                               onClick={(e) => handleSaveParentCategory(e)}
                               type="submit"
-                              className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn">
+                              className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn"
+                            >
                               <img src={saveicon} alt="saveicon" />
-                              <p className="fs-sm fw-400 black mb-0 ps-1">Save</p>
+                              <p className="fs-sm fw-400 black mb-0 ps-1">
+                                Save
+                              </p>
                             </button>
                           </div>
                         </div>
                         <div className="mt-4">
-                          <h2 className="fw-400 fs-2sm black mb-0">Basic Information</h2>
+                          <h2 className="fw-400 fs-2sm black mb-0">
+                            Basic Information
+                          </h2>
                           {/* ist input */}
-                          <label htmlFor="Name" className="fs-xs fw-400 mt-3 black">
+                          <label
+                            htmlFor="Name"
+                            className="fs-xs fw-400 mt-3 black"
+                          >
                             Name
                           </label>
                           <br />
@@ -445,12 +494,15 @@ const NewCategory = () => {
                             id="Name"
                             value={perName}
                             onChange={(e) => setPerName(e.target.value)}
-                          />{' '}
+                          />{" "}
                           <br />
                           {/* 2nd input */}
-                          <label htmlFor="des" className="fs-xs fw-400 mt-3 black">
+                          <label
+                            htmlFor="des"
+                            className="fs-xs fw-400 mt-3 black"
+                          >
                             Category Image
-                          </label>{' '}
+                          </label>{" "}
                           <br />
                           <div className="d-flex flex-wrap  gap-4 mt-3 align-items-center">
                             {!imageupload2 ? (
@@ -483,7 +535,8 @@ const NewCategory = () => {
                             {!imageupload2 ? (
                               <label
                                 htmlFor="file2"
-                                className="color_green cursor_pointer fs-sm addmedia_btn d-flex justify-content-center align-items-center">
+                                className="color_green cursor_pointer fs-sm addmedia_btn d-flex justify-content-center align-items-center"
+                              >
                                 + Add Media
                               </label>
                             ) : null}
@@ -493,7 +546,9 @@ const NewCategory = () => {
                           <Accordion className="w-100 rounded-none bg-white product_input py-0">
                             <Accordion.Header className="bg_grey fs-xs fw-400 white mb-0 bg-white d-flex justify-content-between">
                               <div className="d-flex justify-content-between w-100 py-3">
-                                <h3 className="fs-sm fw-400 black mb-0">Select Homepage Layout</h3>
+                                <h3 className="fs-sm fw-400 black mb-0">
+                                  Select Homepage Layout
+                                </h3>
                               </div>
                             </Accordion.Header>
                             <Accordion.Body className="py-2 px-0">
@@ -505,9 +560,12 @@ const NewCategory = () => {
                                       className="raido-black"
                                       type="radio"
                                       name="minilayout"
-                                      onChange={() => handleLayoutChange('1X3')}
+                                      onChange={() => handleLayoutChange("1X3")}
                                     />
-                                    <label htmlFor="one" className="fs-xs fw-400 black mb-0 ms-2">
+                                    <label
+                                      htmlFor="one"
+                                      className="fs-xs fw-400 black mb-0 ms-2"
+                                    >
                                       1 x 3
                                     </label>
                                   </div>
@@ -520,9 +578,12 @@ const NewCategory = () => {
                                       className="raido-black"
                                       type="radio"
                                       name="minilayout"
-                                      onChange={() => handleLayoutChange('2X2')}
+                                      onChange={() => handleLayoutChange("2X2")}
                                     />
-                                    <label htmlFor="two" className="fs-xs fw-400 black mb-0 ms-2">
+                                    <label
+                                      htmlFor="two"
+                                      className="fs-xs fw-400 black mb-0 ms-2"
+                                    >
                                       2 x 2
                                     </label>
                                   </div>
@@ -535,9 +596,12 @@ const NewCategory = () => {
                                       className="raido-black"
                                       type="radio"
                                       name="minilayout"
-                                      onChange={() => handleLayoutChange('2X3')}
+                                      onChange={() => handleLayoutChange("2X3")}
                                     />
-                                    <label htmlFor="three" className="fs-xs fw-400 black mb-0 ms-2">
+                                    <label
+                                      htmlFor="three"
+                                      className="fs-xs fw-400 black mb-0 ms-2"
+                                    >
                                       2 x 3
                                     </label>
                                   </div>
@@ -550,9 +614,12 @@ const NewCategory = () => {
                                       className="raido-black"
                                       type="radio"
                                       name="minilayout"
-                                      onChange={() => handleLayoutChange('3X3')}
+                                      onChange={() => handleLayoutChange("3X3")}
                                     />
-                                    <label htmlFor="four" className="fs-xs fw-400 black mb-0 ms-2">
+                                    <label
+                                      htmlFor="four"
+                                      className="fs-xs fw-400 black mb-0 ms-2"
+                                    >
                                       3 x 3
                                     </label>
                                   </div>
@@ -565,9 +632,14 @@ const NewCategory = () => {
                                       className="raido-black"
                                       type="radio"
                                       name="minilayout"
-                                      onChange={() => handleLayoutChange('2X2 Inline3')}
+                                      onChange={() =>
+                                        handleLayoutChange("2X2 Inline3")
+                                      }
                                     />
-                                    <label htmlFor="five" className="fs-xs fw-400 black mb-0 ms-2">
+                                    <label
+                                      htmlFor="five"
+                                      className="fs-xs fw-400 black mb-0 ms-2"
+                                    >
                                       2 x 2 Inline3
                                     </label>
                                   </div>
@@ -587,7 +659,7 @@ const NewCategory = () => {
                                   ref={pubref}
                                   onChange={(e) => {
                                     if (e.target.checked) {
-                                      setPerStatus('published');
+                                      setPerStatus("published");
                                       hidref.current.checked = false;
                                     }
                                   }}
@@ -603,7 +675,7 @@ const NewCategory = () => {
                                   ref={hidref}
                                   onChange={(e) => {
                                     if (e.target.checked) {
-                                      setPerStatus('hidden');
+                                      setPerStatus("hidden");
                                       pubref.current.checked = false;
                                     }
                                   }}
@@ -617,10 +689,11 @@ const NewCategory = () => {
                       </form>
                     </div>
                   ) : (
-                    ''
+                    ""
                   )}
                   <p className="black fw-400 fs-xxs mb-0 mt-3">
-                    Select a category that will be the parent of the current one.
+                    Select a category that will be the parent of the current
+                    one.
                   </p>
                 </div>
               </Col>

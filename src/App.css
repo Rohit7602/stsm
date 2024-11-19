@@ -557,6 +557,11 @@ input[type="range"] {
   border: 1px solid #ffae00;
 }
 
+.bg_layer {
+  background-color: #00000021;
+  color: white;
+}
+
 /*filter_btn*/
 .filter_btn {
   transition: 0.5s ease-in-out;

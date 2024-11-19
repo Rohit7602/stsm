@@ -1,48 +1,58 @@
-import React, { useState } from 'react';
-import addicon from '../../Images/svgs/addicon.svg';
-import search from '../../Images/svgs/search.svg';
-import dropdownDots from '../../Images/svgs/dots2.svg';
-import eye_icon from '../../Images/svgs/eye.svg';
-import pencil_icon from '../../Images/svgs/pencil.svg';
-import Accordion from 'react-bootstrap/Accordion';
-import minilayoutImgGroup3 from '../../Images/Png/minilayoutImgGroup3.png';
-import minilayoutImgGroup4 from '../../Images/Png/minilayoutImgGroup4.png';
-import minilayoutImgGroup6 from '../../Images/Png/minilayoutImgGroup6.png';
-import minilayoutImgGroup9 from '../../Images/Png/minilayoutImgGroup9.png';
-import minilayoutImgGroup8 from '../../Images/Png/minilayoutImgGroup8.png';
-import deleteicon from '../../Images/svgs/deleteicon.svg';
-import updown_icon from '../../Images/svgs/arross.svg';
-import saveicon from '../../Images/svgs/saveicon.svg';
-import shortIcon from '../../Images/svgs/short-icon.svg';
-import { useRef } from 'react';
-import { collection, doc, addDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
-import { useEffect } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { ref, uploadBytes, getDownloadURL, getStorage, deleteObject } from 'firebase/storage';
-import { storage } from '../../firebase';
-import { useImageHandleContext } from '../../context/ImageHandler';
-import { useMainCategories, useSubCategories } from '../../context/categoriesGetter';
-import Loader from '../Loader';
-import { increment } from 'firebase/firestore';
+import React, { useState } from "react";
+import addicon from "../../Images/svgs/addicon.svg";
+import search from "../../Images/svgs/search.svg";
+import dropdownDots from "../../Images/svgs/dots2.svg";
+import eye_icon from "../../Images/svgs/eye.svg";
+import pencil_icon from "../../Images/svgs/pencil.svg";
+import Accordion from "react-bootstrap/Accordion";
+import minilayoutImgGroup3 from "../../Images/Png/minilayoutImgGroup3.png";
+import minilayoutImgGroup4 from "../../Images/Png/minilayoutImgGroup4.png";
+import minilayoutImgGroup6 from "../../Images/Png/minilayoutImgGroup6.png";
+import minilayoutImgGroup9 from "../../Images/Png/minilayoutImgGroup9.png";
+import minilayoutImgGroup8 from "../../Images/Png/minilayoutImgGroup8.png";
+import deleteicon from "../../Images/svgs/deleteicon.svg";
+import updown_icon from "../../Images/svgs/arross.svg";
+import saveicon from "../../Images/svgs/saveicon.svg";
+import shortIcon from "../../Images/svgs/short-icon.svg";
+import { useRef } from "react";
+import { collection, doc, addDoc, updateDoc, writeBatch } from "firebase/firestore";
+import { db } from "../../firebase";
+import { useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  getStorage,
+  deleteObject,
+} from "firebase/storage";
+import { storage } from "../../firebase";
+import { useImageHandleContext } from "../../context/ImageHandler";
+import {
+  useMainCategories,
+  useSubCategories,
+} from "../../context/categoriesGetter";
+import Loader from "../Loader";
+import { increment } from "firebase/firestore";
 const ParentCategories = () => {
   // const [data, setData] = useState([]);
   // const [mainCategory, setMainCategory] = useState([]);
   const [selectedParentCategory, setSelectedParentCategory] = useState(null);
   const [name, setName] = useState();
-  const [imageupload, setImageupload] = useState('');
+  const [imageupload, setImageupload] = useState("");
   const [addCatPopup, setAddCatPopup] = useState(false);
   const [editPerCatPopup, setEditPerCatPopup] = useState(false);
-  const [editPerentCatStatus, seteditPerentCatStatus] = useState('');
-  const [editName, setEditName] = useState('');
-  const [editImg, setEditImg] = useState('');
-  const [EditCatId, SetEditCatId] = useState('');
-  const [EditSelectedLayout, setEditSelectedLayout] = useState('');
+  const [editPerentCatStatus, seteditPerentCatStatus] = useState("");
+  const [editName, setEditName] = useState("");
+  const [editImg, setEditImg] = useState("");
+  const [EditCatId, SetEditCatId] = useState("");
+  const [EditSelectedLayout, setEditSelectedLayout] = useState("");
   const [status, setStatus] = useState();
-  const [searchvalue, setSearchvalue] = useState('');
+  const [searchvalue, setSearchvalue] = useState("");
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
+    const [categorynumber, setCategoryNumber] = useState("");
 
   // context
   const { ImageisValidOrNot } = useImageHandleContext();
@@ -59,14 +69,14 @@ const ParentCategories = () => {
   function handelUpload(e) {
     const selectedFile = e.target.files[0];
     if (!ImageisValidOrNot(selectedFile)) {
-      toast.error('Please select a valid image file within 1.5 MB.');
+      toast.error("Please select a valid image file within 1.5 MB.");
       setImageupload(null);
     } else {
       setImageupload(selectedFile);
     }
   }
 
-  const [selectedLayout, setSelectedLayout] = useState('oneByThree');
+  const [selectedLayout, setSelectedLayout] = useState("oneByThree");
 
   // ...
 
@@ -87,19 +97,19 @@ const ParentCategories = () => {
     e.preventDefault();
     try {
       if (name === undefined || null) {
-        alert('please enter the name of the category ');
+        alert("please enter the name of the category ");
       } else if (imageupload.length === 0) {
-        alert('please upload image of the category ');
+        alert("please upload image of the category ");
       } else if (status === undefined || null) {
-        alert('please Set the status ');
+        alert("please Set the status ");
       } else {
         setLoaderstatus(true);
-        const filename = Math.floor(Date.now() / 1000) + '-' + imageupload.name;
+        const filename = Math.floor(Date.now() / 1000) + "-" + imageupload.name;
         const storageRef = ref(storage, `/Parent-category/${filename}`);
         const upload = await uploadBytes(storageRef, imageupload);
         const imageUrl = await getDownloadURL(storageRef);
 
-        const docRef = await addDoc(collection(db, 'categories'), {
+        const docRef = await addDoc(collection(db, "categories"), {
           title: name,
           status: status,
           image: imageUrl,
@@ -107,9 +117,10 @@ const ParentCategories = () => {
           created_at: Date.now(),
           updated_at: Date.now(),
           noOfSubcateogry: 0,
+          categorynumber: categoreis.length + 1,
         });
         setLoaderstatus(false);
-        toast.success('Category added Successfully !', {
+        toast.success("Category added Successfully !", {
           position: toast.POSITION.TOP_RIGHT,
         });
         HandleResetForm();
@@ -127,9 +138,9 @@ const ParentCategories = () => {
   }
 
   function HandleResetForm() {
-    setName('');
-    setImageupload('');
-    setStatus('');
+    setName("");
+    setImageupload("");
+    setStatus("");
   }
 
   /*  *******************************
@@ -198,11 +209,11 @@ const ParentCategories = () => {
   async function handleChangeStatus(id, status) {
     try {
       // Toggle the status between 'publish' and 'hidden'
-      const newStatus = status === 'hidden' ? 'published' : 'hidden';
-      await updateDoc(doc(db, 'categories', id), {
+      const newStatus = status === "hidden" ? "published" : "hidden";
+      await updateDoc(doc(db, "categories", id), {
         status: newStatus,
       });
-      toast.error('status Change succesffuly');
+      toast.error("status Change succesffuly");
       updateData({ id, status: newStatus });
     } catch (error) {
       console.log(error);
@@ -220,7 +231,7 @@ const ParentCategories = () => {
   function HanleEditImgUpload(e) {
     const selectedFile = e.target.files[0];
     if (!ImageisValidOrNot(selectedFile)) {
-      toast.error('Please select a valid image file within 1.5 MB. ');
+      toast.error("Please select a valid image file within 1.5 MB. ");
       setEditImg(null);
     } else {
       setEditImg(selectedFile);
@@ -237,8 +248,8 @@ const ParentCategories = () => {
 
   function HandleDeleteEditImg() {
     setLoaderstatus(true);
-    setEditImg('');
-    if (typeof editImg === 'string' && editImg.startsWith('http')) {
+    setEditImg("");
+    if (typeof editImg === "string" && editImg.startsWith("http")) {
       try {
         if (editImg.length !== 0) {
           var st = getStorage();
@@ -260,52 +271,80 @@ const ParentCategories = () => {
   /*  *******************************
      Edit Parent  Category   functionality start 
   *********************************************   **/
-  async function HandleSaveEditCategory(e) {
-    e.preventDefault();
-    setEditPerCatPopup(false);
-    setLoaderstatus(true);
-    try {
-      let imageUrl = null;
-      if (editImg instanceof File) {
-        // Handle the case where editCatImg is a File
-        const filename = Math.floor(Date.now() / 1000) + '-' + editImg.name;
-        const storageRef = ref(storage, `/Parent-category/${filename}`);
-        await uploadBytes(storageRef, editImg);
-        imageUrl = await getDownloadURL(storageRef);
-      } else if (typeof editImg === 'string' && editImg.startsWith('http')) {
-        // Handle the case where editCatImg is a URL
-        imageUrl = editImg;
-      }
-
-      await updateDoc(doc(db, 'categories', EditCatId), {
-        title: editName,
-        status: editPerentCatStatus,
-        image: imageUrl,
-        homepagelayout: EditSelectedLayout,
-        updated_at: Date.now(),
-      });
-
-      updateData({
-        EditCatId,
-        title: editName,
-        status: editPerentCatStatus,
-        image: imageUrl,
-        homepagelayout: EditSelectedLayout,
-        updated_at: Date.now(),
-      });
-
-      // alert("Updated Successfully");
-      setLoaderstatus(false);
-      toast.success('Parent Category updated Successfully', {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } catch (error) {
-      setLoaderstatus(false);
-      toast.error(error, {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+async function HandleSaveEditCategory(e) {
+  e.preventDefault();
+  setEditPerCatPopup(false);
+  setLoaderstatus(true);
+  try {
+    let imageUrl = null;
+    // Handle image upload if it's a File
+    if (editImg instanceof File) {
+      const filename = Math.floor(Date.now() / 1000) + "-" + editImg.name;
+      const storageRef = ref(storage, `/Parent-category/${filename}`);
+      await uploadBytes(storageRef, editImg);
+      imageUrl = await getDownloadURL(storageRef);
+    } else if (typeof editImg === "string" && editImg.startsWith("http")) {
+      // Handle image URL
+      imageUrl = editImg;
     }
+    const matchedCategory = categoreis.find(
+      (value) => value.categorynumber === Number(categorynumber)
+    );
+    if (matchedCategory && matchedCategory.id !== EditCatId) {
+      const matchedCategoryRef = doc(db, "categories", matchedCategory.id);
+      const currentCategoryRef = doc(db, "categories", EditCatId);
+      const currentCategory = categoreis.find((item) => item.id === EditCatId);
+      if (matchedCategory && currentCategory) {
+        const matchedCategoryCategoryNumber = matchedCategory.categorynumber;
+        const currentCategoryCategoryNumber = currentCategory.categorynumber;
+        const batch = writeBatch(db);
+        batch.update(matchedCategoryRef, {
+          categorynumber: currentCategoryCategoryNumber,
+        });
+        batch.update(currentCategoryRef, {
+          categorynumber: matchedCategoryCategoryNumber,
+        });
+        await batch.commit();
+        console.log("Swapped categorynumbers:", {
+          matchedCategory: matchedCategoryCategoryNumber,
+          currentCategory: currentCategoryCategoryNumber,
+        });
+      }
+    } else {
+      console.log("No matching category found or trying to swap with itself.");
+    }
+    // Update the current category details
+    const updateData = {
+      title: editName,
+      status: editPerentCatStatus,
+      image: imageUrl,
+      homepagelayout: EditSelectedLayout,
+      updated_at: Date.now(),
+      categorynumber: Number(categorynumber),
+    };
+    // Update the current category in Firestore
+    await updateDoc(doc(db, "categories", EditCatId), updateData);
+    // Update the local state after category update
+    updateData({
+      EditCatId,
+      title: editName,
+      status: editPerentCatStatus,
+      image: imageUrl,
+      categorynumber: Number(categorynumber),
+      homepagelayout: EditSelectedLayout,
+      updated_at: Date.now(),
+    });
+    setLoaderstatus(false);
+    toast.success("Parent Category updated Successfully", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+  } catch (error) {
+    setLoaderstatus(false);
+    toast.error(error, {
+      position: toast.POSITION.TOP_RIGHT,
+    });
   }
+}
 
   /*  *******************************
       Edit  Parent  Category  functionality end 
@@ -316,7 +355,11 @@ const ParentCategories = () => {
   } else {
     return (
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
-        {addCatPopup || editPerCatPopup ? <div className="bg_black_overlay"></div> : ''}
+        {addCatPopup || editPerCatPopup ? (
+          <div className="bg_black_overlay"></div>
+        ) : (
+          ""
+        )}
         <div className="w-100 px-sm-3 mt-4 bg_body">
           <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between">
             <div className="d-flex">
@@ -336,35 +379,55 @@ const ParentCategories = () => {
                 <button
                   onClick={() => {
                     setAddCatPopup(true);
-                    setSelectedLayout('oneByThree');
+                    setSelectedLayout("oneByThree");
                   }}
-                  className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 ">
-                  <img className="me-1" width={20} src={addicon} alt="add-icon" />
+                  className="addnewproduct_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
+                >
+                  <img
+                    className="me-1"
+                    width={20}
+                    src={addicon}
+                    alt="add-icon"
+                  />
                   Add New Category
                 </button>
                 {addCatPopup === true ? (
                   <div className="parent_category_popup">
-                    <form action="" onSubmit={(e) => handleSaveParentCategory(e)}>
+                    <form
+                      action=""
+                      onSubmit={(e) => handleSaveParentCategory(e)}
+                    >
                       <div className="d-flex align-items-center justify-content-between">
-                        <p className="fs-4 fw-400 black mb-0">New Parent Category</p>
+                        <p className="fs-4 fw-400 black mb-0">
+                          New Parent Category
+                        </p>
                         <div className="d-flex align-items-center gap-3">
-                          <button onClick={() => setAddCatPopup(false)} className="reset_border">
+                          <button
+                            onClick={() => setAddCatPopup(false)}
+                            className="reset_border"
+                          >
                             <button className="fs-sm fw-400 reset_btn border-0 px-sm-3 px-2 py-2 ">
                               Cancel
                             </button>
                           </button>
                           <button
                             type="submit"
-                            className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn">
+                            className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn"
+                          >
                             <img src={saveicon} alt="saveicon" />
                             <p className="fs-sm fw-400 black mb-0 ps-1">Save</p>
                           </button>
                         </div>
                       </div>
                       <div className="mt-4">
-                        <h2 className="fw-400 fs-2sm black mb-0">Basic Information</h2>
+                        <h2 className="fw-400 fs-2sm black mb-0">
+                          Basic Information
+                        </h2>
                         {/* ist input */}
-                        <label htmlFor="Name" className="fs-xs fw-400 mt-3 black">
+                        <label
+                          htmlFor="Name"
+                          className="fs-xs fw-400 mt-3 black"
+                        >
                           Name
                         </label>
                         <br />
@@ -375,12 +438,15 @@ const ParentCategories = () => {
                           id="Name"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                        />{' '}
+                        />{" "}
                         <br />
                         {/* 2nd input */}
-                        <label htmlFor="des" className="fs-xs fw-400 mt-3 black">
+                        <label
+                          htmlFor="des"
+                          className="fs-xs fw-400 mt-3 black"
+                        >
                           Category Image
-                        </label>{' '}
+                        </label>{" "}
                         <br />
                         <div className="d-flex flex-wrap  gap-4 mt-3 align-items-center">
                           {!imageupload ? (
@@ -413,7 +479,8 @@ const ParentCategories = () => {
                           {!imageupload ? (
                             <label
                               htmlFor="file22"
-                              className="color_green cursor_pointer fs-sm addmedia_btn d-flex justify-content-center align-items-center">
+                              className="color_green cursor_pointer fs-sm addmedia_btn d-flex justify-content-center align-items-center"
+                            >
                               + Add Media
                             </label>
                           ) : null}
@@ -423,7 +490,9 @@ const ParentCategories = () => {
                         <Accordion className="w-100 rounded-none bg-white product_input py-0">
                           <Accordion.Header className="bg_grey fs-xs fw-400 white mb-0 bg-white d-flex justify-content-between">
                             <div className="d-flex justify-content-between w-100 py-3">
-                              <h3 className="fs-sm fw-400 black mb-0">Select Homepage Layout</h3>
+                              <h3 className="fs-sm fw-400 black mb-0">
+                                Select Homepage Layout
+                              </h3>
                             </div>
                           </Accordion.Header>
                           <Accordion.Body className="py-2 px-0">
@@ -435,12 +504,15 @@ const ParentCategories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
-                                    onChange={() => handleLayoutChange('oneByThree')}
-                                    checked={selectedLayout === 'oneByThree'}
+                                    onChange={() =>
+                                      handleLayoutChange("oneByThree")
+                                    }
+                                    checked={selectedLayout === "oneByThree"}
                                   />
                                   <label
                                     htmlFor="one"
-                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer"
+                                  >
                                     1 x 3
                                   </label>
                                 </div>
@@ -453,12 +525,15 @@ const ParentCategories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
-                                    onChange={() => handleLayoutChange('twoByTwo')}
-                                    checked={selectedLayout === 'twoByTwo'}
+                                    onChange={() =>
+                                      handleLayoutChange("twoByTwo")
+                                    }
+                                    checked={selectedLayout === "twoByTwo"}
                                   />
                                   <label
                                     htmlFor="two"
-                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer"
+                                  >
                                     2 x 2
                                   </label>
                                 </div>
@@ -471,12 +546,15 @@ const ParentCategories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
-                                    onChange={() => handleLayoutChange('threeByTwo')}
-                                    checked={selectedLayout === 'threeByTwo'}
+                                    onChange={() =>
+                                      handleLayoutChange("threeByTwo")
+                                    }
+                                    checked={selectedLayout === "threeByTwo"}
                                   />
                                   <label
                                     htmlFor="three"
-                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer"
+                                  >
                                     3 x 2
                                   </label>
                                 </div>
@@ -489,12 +567,15 @@ const ParentCategories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
-                                    onChange={() => handleLayoutChange('threeByThree')}
-                                    checked={selectedLayout === 'threeByThree'}
+                                    onChange={() =>
+                                      handleLayoutChange("threeByThree")
+                                    }
+                                    checked={selectedLayout === "threeByThree"}
                                   />
                                   <label
                                     htmlFor="four"
-                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer"
+                                  >
                                     3 x 3
                                   </label>
                                 </div>
@@ -507,12 +588,17 @@ const ParentCategories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
-                                    onChange={() => handleLayoutChange('twoByTwoWithList')}
-                                    checked={selectedLayout === 'twoByTwoWithList'}
+                                    onChange={() =>
+                                      handleLayoutChange("twoByTwoWithList")
+                                    }
+                                    checked={
+                                      selectedLayout === "twoByTwoWithList"
+                                    }
                                   />
                                   <label
                                     htmlFor="five"
-                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer"
+                                  >
                                     2 x 2 Inline3
                                   </label>
                                 </div>
@@ -532,7 +618,7 @@ const ParentCategories = () => {
                                 ref={pubref}
                                 onChange={(e) => {
                                   if (e.target.checked) {
-                                    setStatus('published');
+                                    setStatus("published");
                                     hidref.current.checked = false;
                                   }
                                 }}
@@ -548,7 +634,7 @@ const ParentCategories = () => {
                                 ref={hidref}
                                 onChange={(e) => {
                                   if (e.target.checked) {
-                                    setStatus('hidden');
+                                    setStatus("hidden");
                                     pubref.current.checked = false;
                                   }
                                 }}
@@ -566,14 +652,17 @@ const ParentCategories = () => {
                   <div className="parent_category_popup">
                     <form action="">
                       <div className="d-flex align-items-center justify-content-between">
-                        <p className="fs-4 fw-400 black mb-0">Edit Parent Category</p>
+                        <p className="fs-4 fw-400 black mb-0">
+                          Edit Parent Category
+                        </p>
                         <div className="d-flex align-items-center gap-3">
                           <button
                             onClick={() => {
                               setEditPerCatPopup(false);
-                              setSelectedLayout('oneByThree');
+                              setSelectedLayout("oneByThree");
                             }}
-                            className="reset_border">
+                            className="reset_border"
+                          >
                             <button className="fs-sm fw-400 reset_btn border-0 px-sm-3 px-2 py-2 ">
                               Cancel
                             </button>
@@ -581,16 +670,22 @@ const ParentCategories = () => {
                           <button
                             onClick={HandleSaveEditCategory}
                             type="submit"
-                            className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn">
+                            className="d-flex align-items-center px-sm-3 px-2 py-2 save_btn"
+                          >
                             <img src={saveicon} alt="saveicon" />
                             <p className="fs-sm fw-400 black mb-0 ps-1">Save</p>
                           </button>
                         </div>
                       </div>
                       <div className="mt-4">
-                        <h2 className="fw-400 fs-2sm black mb-0">Basic Information</h2>
+                        <h2 className="fw-400 fs-2sm black mb-0">
+                          Basic Information
+                        </h2>
                         {/* ist input */}
-                        <label htmlFor="Name" className="fs-xs fw-400 mt-3 black">
+                        <label
+                          htmlFor="Name"
+                          className="fs-xs fw-400 mt-3 black"
+                        >
                           Name
                         </label>
                         <br />
@@ -601,12 +696,15 @@ const ParentCategories = () => {
                           id="Name"
                           value={editName}
                           onChange={(e) => setEditName(e.target.value)}
-                        />{' '}
+                        />{" "}
                         <br />
                         {/* 2nd input */}
-                        <label htmlFor="des" className="fs-xs fw-400 mt-3 black">
+                        <label
+                          htmlFor="des"
+                          className="fs-xs fw-400 mt-3 black"
+                        >
                           Category Image
-                        </label>{' '}
+                        </label>{" "}
                         <br />
                         <div className="d-flex flex-wrap  gap-4 mt-3 align-items-center">
                           {!editImg ? (
@@ -626,8 +724,8 @@ const ParentCategories = () => {
                                   // src={URL.createObjectURL(editImg)}
                                   src={
                                     editImg &&
-                                    typeof editImg === 'string' &&
-                                    editImg.startsWith('http')
+                                    typeof editImg === "string" &&
+                                    editImg.startsWith("http")
                                       ? editImg
                                       : URL.createObjectURL(editImg)
                                   }
@@ -646,7 +744,8 @@ const ParentCategories = () => {
                           {!editImg ? (
                             <label
                               htmlFor="file23"
-                              className="color_green cursor_pointer fs-sm addmedia_btn d-flex justify-content-center align-items-center">
+                              className="color_green cursor_pointer fs-sm addmedia_btn d-flex justify-content-center align-items-center"
+                            >
                               + Add Media
                             </label>
                           ) : null}
@@ -656,7 +755,9 @@ const ParentCategories = () => {
                         <Accordion className="w-100 rounded-none bg-white product_input py-0">
                           <Accordion.Header className="bg_grey fs-xs fw-400 white mb-0 bg-white d-flex justify-content-between">
                             <div className="d-flex justify-content-between w-100 py-3">
-                              <h3 className="fs-sm fw-400 black mb-0">Select Homepage Layout</h3>
+                              <h3 className="fs-sm fw-400 black mb-0">
+                                Select Homepage Layout
+                              </h3>
                             </div>
                           </Accordion.Header>
                           <Accordion.Body className="py-2 px-0">
@@ -667,12 +768,17 @@ const ParentCategories = () => {
                                     id="one"
                                     className="raido-black"
                                     type="radio"
-                                    onChange={() => handleEditLayoutChange('oneByThree')}
-                                    checked={EditSelectedLayout === 'oneByThree'}
+                                    onChange={() =>
+                                      handleEditLayoutChange("oneByThree")
+                                    }
+                                    checked={
+                                      EditSelectedLayout === "oneByThree"
+                                    }
                                   />
                                   <label
                                     htmlFor="one"
-                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer"
+                                  >
                                     1 x 3
                                   </label>
                                 </div>
@@ -684,12 +790,15 @@ const ParentCategories = () => {
                                     id="two"
                                     className="raido-black"
                                     type="radio"
-                                    onChange={() => handleEditLayoutChange('twoByTwo')}
-                                    checked={EditSelectedLayout === 'twoByTwo'}
+                                    onChange={() =>
+                                      handleEditLayoutChange("twoByTwo")
+                                    }
+                                    checked={EditSelectedLayout === "twoByTwo"}
                                   />
                                   <label
                                     htmlFor="two"
-                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer"
+                                  >
                                     2 x 2
                                   </label>
                                 </div>
@@ -701,12 +810,17 @@ const ParentCategories = () => {
                                     id="three"
                                     className="raido-black"
                                     type="radio"
-                                    onChange={() => handleEditLayoutChange('threeByTwo')}
-                                    checked={EditSelectedLayout === 'threeByTwo'}
+                                    onChange={() =>
+                                      handleEditLayoutChange("threeByTwo")
+                                    }
+                                    checked={
+                                      EditSelectedLayout === "threeByTwo"
+                                    }
                                   />
                                   <label
                                     htmlFor="three"
-                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer"
+                                  >
                                     3 x 2
                                   </label>
                                 </div>
@@ -719,12 +833,17 @@ const ParentCategories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
-                                    onChange={() => handleEditLayoutChange('threeByThree')}
-                                    checked={EditSelectedLayout === 'threeByThree'}
+                                    onChange={() =>
+                                      handleEditLayoutChange("threeByThree")
+                                    }
+                                    checked={
+                                      EditSelectedLayout === "threeByThree"
+                                    }
                                   />
                                   <label
                                     htmlFor="four"
-                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer"
+                                  >
                                     3 x 3
                                   </label>
                                 </div>
@@ -737,12 +856,17 @@ const ParentCategories = () => {
                                     className="raido-black"
                                     type="radio"
                                     name="minilayout"
-                                    onChange={() => handleEditLayoutChange('twoByTwoWithList')}
-                                    checked={EditSelectedLayout === 'twoByTwoWithList'}
+                                    onChange={() =>
+                                      handleEditLayoutChange("twoByTwoWithList")
+                                    }
+                                    checked={
+                                      EditSelectedLayout === "twoByTwoWithList"
+                                    }
                                   />
                                   <label
                                     htmlFor="five"
-                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer">
+                                    className="fs-xs fw-400 black mb-0 ms-2 cursor_pointer"
+                                  >
                                     2 x 2 Inline3
                                   </label>
                                 </div>
@@ -752,6 +876,23 @@ const ParentCategories = () => {
                           </Accordion.Body>
                         </Accordion>
                       </div>
+                      <div>
+                        <label
+                          htmlFor="Name"
+                          className="fs-xs fw-400 mt-3 black"
+                        >
+                          Category Number
+                        </label>
+                        <br />
+                        <input
+                          type="text"
+                          className="mt-2 product_input fade_grey fw-400"
+                          placeholder="Enter Category Number"
+                          id="Name"
+                          value={categorynumber}
+                          onChange={(e) => setCategoryNumber(e.target.value)}
+                        />{" "}
+                      </div>
                       <div className="mt-4">
                         <h2 className="fw-400 fs-2sm black mb-0">Status</h2>
                         <div className="d-flex align-items-center gap-5">
@@ -760,8 +901,10 @@ const ParentCategories = () => {
                               Published
                               <input
                                 ref={pubref}
-                                onChange={(e) => seteditPerentCatStatus('published')}
-                                checked={editPerentCatStatus === 'published'}
+                                onChange={(e) =>
+                                  seteditPerentCatStatus("published")
+                                }
+                                checked={editPerentCatStatus === "published"}
                                 type="checkbox"
                               />
                               <span class="checkmark"></span>
@@ -772,8 +915,10 @@ const ParentCategories = () => {
                               Hidden
                               <input
                                 ref={hidref}
-                                onChange={(e) => seteditPerentCatStatus('hidden')}
-                                checked={editPerentCatStatus == 'hidden'}
+                                onChange={(e) =>
+                                  seteditPerentCatStatus("hidden")
+                                }
+                                checked={editPerentCatStatus == "hidden"}
                                 type="checkbox"
                               />
                               <span class="checkmark"></span>
@@ -789,8 +934,12 @@ const ParentCategories = () => {
           </div>
           {selectAll.length > 1 ? (
             <div className="d-flex align-items-center gap-3 mt-3 pt-1">
-              <button className="change_to_draft fs-sm fw-400 black">Change To Draft</button>
-              <button className="change_to_live fs-sm fw-400 black">Change To Live</button>
+              <button className="change_to_draft fs-sm fw-400 black">
+                Change To Draft
+              </button>
+              <button className="change_to_live fs-sm fw-400 black">
+                Change To Live
+              </button>
             </div>
           ) : null}
           {/* categories details  */}
@@ -813,7 +962,12 @@ const ParentCategories = () => {
                           <p className="fw-400 fs-sm black mb-0">
                             Name
                             <span>
-                              <img className="ms-2" width={20} src={shortIcon} alt="short-icon" />
+                              <img
+                                className="ms-2"
+                                width={20}
+                                src={shortIcon}
+                                alt="short-icon"
+                              />
                             </span>
                           </p>
                         </div>
@@ -829,11 +983,15 @@ const ParentCategories = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className={`${selectAll.length > 1 ? 'table_body2' : 'table_body'}`}>
+                  <tbody
+                    className={`${
+                      selectAll.length > 1 ? "table_body2" : "table_body"
+                    }`}
+                  >
                     {categoreis
 
                       .filter((data) => {
-                        return search.toLowerCase() === ''
+                        return search.toLowerCase() === ""
                           ? data
                           : data.title.toLowerCase().includes(searchvalue);
                       })
@@ -856,7 +1014,9 @@ const ParentCategories = () => {
                                     <img src={value.image} alt="categoryImg" />
                                   </div>
                                   <div className="ps-3 ms-1">
-                                    <p className="fw-400 fs-sm black mb-0">{value.title}</p>
+                                    <p className="fw-400 fs-sm black mb-0">
+                                      {value.title}
+                                    </p>
                                   </div>
                                 </div>
                               </div>
@@ -878,7 +1038,8 @@ const ParentCategories = () => {
                                   type="button"
                                   id="dropdownMenuButton1"
                                   data-bs-toggle="dropdown"
-                                  aria-expanded="false">
+                                  aria-expanded="false"
+                                >
                                   <img
                                     // onClick={() => {
                                     //   handleDelete(value.id);
@@ -889,12 +1050,15 @@ const ParentCategories = () => {
                                 </button>
                                 <ul
                                   class="dropdown-menu categories_dropdown"
-                                  aria-labelledby="dropdownMenuButton1">
+                                  aria-labelledby="dropdownMenuButton1"
+                                >
                                   <li>
                                     <div class="dropdown-item" href="#">
                                       <div className="d-flex align-items-center categorie_dropdown_options">
                                         <img src={eye_icon} alt="" />
-                                        <p className="fs-sm fw-400 black mb-0 ms-2">View Details</p>
+                                        <p className="fs-sm fw-400 black mb-0 ms-2">
+                                          View Details
+                                        </p>
                                       </div>
                                     </div>
                                   </li>
@@ -907,9 +1071,15 @@ const ParentCategories = () => {
                                           SetEditCatId(value.id);
                                           seteditPerentCatStatus(value.status);
                                           setEditImg(value.image);
-                                          setEditSelectedLayout(value.homepagelayout);
+                                          setEditSelectedLayout(
+                                            value.homepagelayout
+                                          );
+                                          setCategoryNumber(
+                                            value.categorynumber
+                                          );
                                         }}
-                                        className="d-flex align-items-center categorie_dropdown_options">
+                                        className="d-flex align-items-center categorie_dropdown_options"
+                                      >
                                         <img src={pencil_icon} alt="" />
                                         <p className="fs-sm fw-400 black mb-0 ms-2">
                                           Edit Category
@@ -922,13 +1092,17 @@ const ParentCategories = () => {
                                       <div
                                         className="d-flex align-items-center categorie_dropdown_options"
                                         onClick={() => {
-                                          handleChangeStatus(value.id, value.status);
-                                        }}>
+                                          handleChangeStatus(
+                                            value.id,
+                                            value.status
+                                          );
+                                        }}
+                                      >
                                         <img src={updown_icon} alt="" />
                                         <p className="fs-sm fw-400 green  mb-0 ms-2">
-                                          {value.status === 'hidden'
-                                            ? 'change to  publish'
-                                            : 'Change to hidden'}
+                                          {value.status === "hidden"
+                                            ? "change to  publish"
+                                            : "Change to hidden"}
                                         </p>
                                       </div>
                                     </div>

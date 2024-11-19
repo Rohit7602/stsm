@@ -19,11 +19,17 @@ const Customers = () => {
   const [orderpricevalueselect, setOrderPriceValueSelect] = useState(0);
   const [filterpop, setFilterPop] = useState(false);
   const [selectAll, setSelectAll] = useState([]);
+  const [pincode, setPinCode] = useState("");
   const { orders } = useOrdercontext();
   const { customer } = useCustomerContext();
 
   // Function to calculate total spent by a customer/////////////////////////////////////
-
+  const uniquePincodes = [
+    ...new Set(
+      customer.flatMap((value) => value.addresses).map((value) => value.pincode)
+    ),
+  ];
+  
   const totalSpentByCustomer = customer.map((customer) => {
     const totalSpent = orders
       .filter((order) => order.uid === customer.id)
@@ -116,6 +122,21 @@ const Customers = () => {
                 )}
                 onChange={(e) => setOrderPriceValueSelect(e.target.value)}
               />
+            </div>
+            <div className="w-100 d-flex align-items-center gap-3 quantity_bg mt-4 rounded-3">
+              <select
+                required
+                value={pincode}
+                onChange={(e) => setPinCode(e.target.value)}
+                className="w-100  bg-transparent outline_none border-0"
+              >
+                <option value={"All"}>Select Pin Code</option>
+                {uniquePincodes.map((pincode) => (
+                  <option key={pincode} value={pincode}>
+                    {pincode}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className=" text-end mt-4">
               <button
@@ -224,6 +245,12 @@ const Customers = () => {
                         : value
                     )
                     .sort((a, b) => b.totalSpent - a.totalSpent)
+                    .filter((customer) =>
+                      customer.addresses.some(
+                        (address) => Number(pincode) ? address.pincode === Number(pincode) : customer
+                      )
+                  )
+                    
                     .map((item, index) => {
                       const {
                         id,

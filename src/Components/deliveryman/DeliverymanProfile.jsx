@@ -548,7 +548,7 @@ const DeliverymanProfile = () => {
                     type="date"
                     id="startDate"
                     value={startDate}
-                    max={startDate || new Date().toISOString().split("T")[0]}
+                    max={new Date().toISOString().split("T")[0]}
                     onChange={(e) => setStartDate(e.target.value)}
                     className="form-control"
                     placeholder="Start Date"
@@ -562,7 +562,7 @@ const DeliverymanProfile = () => {
                     type="date"
                     id="endDate"
                     value={endDate}
-                    max={endDate || new Date().toISOString().split("T")[0]}
+                    max={new Date().toISOString().split("T")[0]}
                     onChange={(e) => setEndDate(e.target.value)}
                     className="form-control"
                     placeholder="End Date"

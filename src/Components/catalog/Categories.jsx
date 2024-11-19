@@ -21,6 +21,7 @@ import {
   updateDoc,
   addDoc,
   collection,
+  writeBatch,
 } from "firebase/firestore";
 import minilayoutImgGroup3 from "../../Images/Png/minilayoutImgGroup3.png";
 import minilayoutImgGroup4 from "../../Images/Png/minilayoutImgGroup4.png";
@@ -175,6 +176,7 @@ const Categories = () => {
   /*  *******************************
       Edit  Category   functionality start 
    *********************************************   **/
+
   async function HandleEditCategory(e) {
     e.preventDefault();
     setEditCatPopup(false);
@@ -182,8 +184,9 @@ const Categories = () => {
     try {
       console.log("try is working");
       let imageUrl = null;
+
+      // Handle image upload if it is a file
       if (editCatImg instanceof File) {
-        // Handle the case where editCatImg is a File
         const filename = Math.floor(Date.now() / 1000) + "-" + editCatImg.name;
         const storageRef = ref(storage, `/Sub-categories/${filename}`);
         await uploadBytes(storageRef, editCatImg);
@@ -192,22 +195,56 @@ const Categories = () => {
         typeof editCatImg === "string" &&
         editCatImg.startsWith("http")
       ) {
-        // Handle the case where editCatImg is a URL
         imageUrl = editCatImg;
       }
+      const matchedCategory = data.find(
+        (value) => value.subcategorynumber === Number(categorynumber)
+      );
 
+      if (matchedCategory) {
+        const matchedCategoryRef = doc(
+          db,
+          "sub_categories",
+          matchedCategory.id
+        );
+        const currentCategoryRef = doc(
+          db,
+          "sub_categories",
+          selectedSubcategoryId
+        );
+
+        const matchedCategorySubcategoryNumber =
+          matchedCategory.subcategorynumber;
+        const currentCategorySubcategoryNumber = data.find(
+          (item) => item.id === selectedSubcategoryId
+        ).subcategorynumber;
+
+        const batch = writeBatch(db);
+        batch.update(matchedCategoryRef, {
+          subcategorynumber: currentCategorySubcategoryNumber,
+        });
+
+        batch.update(currentCategoryRef, {
+          subcategorynumber: matchedCategorySubcategoryNumber,
+        });
+        await batch.commit();
+
+        console.log("Swapped subcategorynumbers:", {
+          matchedCategory: matchedCategory.subcategorynumber,
+          currentCategory: Number(categorynumber),
+        });
+      }
       const updateData = {
         title: editCatName,
         status: editStatus,
         image: imageUrl,
         updated_at: Date.now(),
         cat_ID: cat_id,
+        subcategorynumber: Number(categorynumber),
       };
 
-      // Update the category ID only if a new category is selected
       if (selectedCategory && selectedCategory.id) {
         updateData.cat_ID = selectedCategory.id;
-
         let afterchange = selectedCategory.id;
 
         await updateDoc(doc(db, "categories", cat_id), {
@@ -304,7 +341,7 @@ const Categories = () => {
   // const [searchvalue, setSearchvalue] = useState('');
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
-
+  const [categorynumber, setCategoryNumber] = useState("");
   // context
   const { ImageisValidOrNot } = useImageHandleContext();
   const { updateData } = useMainCategories();
@@ -328,6 +365,8 @@ const Categories = () => {
   }
 
   const [selectedLayout, setSelectedLayout] = useState("oneByThree");
+
+  // console.log(data.map((value, index, array) => value.subcategorynumber));
 
   // ...
 
@@ -367,6 +406,7 @@ const Categories = () => {
           created_at: Date.now(),
           updated_at: Date.now(),
           noOfSubcateogry: 0,
+          categorynumber: categoreis.length + 1,
         });
         setloading(false);
         toast.success("Category added Successfully !", {
@@ -568,51 +608,128 @@ const Categories = () => {
   /*  *******************************
     Edit Parent  Category   functionality start 
  *********************************************   **/
-  async function HandleSaveEditCategory(e) {
-    e.preventDefault();
-    setEditPerCatPopup(false);
-    setLoaderstatus(true);
-    try {
-      let imageUrl = null;
-      if (editImg instanceof File) {
-        // Handle the case where editCatImg is a File
-        const filename = Math.floor(Date.now() / 1000) + "-" + editImg.name;
-        const storageRef = ref(storage, `/Parent-category/${filename}`);
-        await uploadBytes(storageRef, editImg);
-        imageUrl = await getDownloadURL(storageRef);
-      } else if (typeof editImg === "string" && editImg.startsWith("http")) {
-        // Handle the case where editCatImg is a URL
-        imageUrl = editImg;
-      }
+  // async function HandleSaveEditCategory(e) {
+  //   e.preventDefault();
+  //   setEditPerCatPopup(false);
+  //   setLoaderstatus(true);
+  //   try {
+  //     let imageUrl = null;
+  //     if (editImg instanceof File) {
+  //       // Handle the case where editCatImg is a File
+  //       const filename = Math.floor(Date.now() / 1000) + "-" + editImg.name;
+  //       const storageRef = ref(storage, `/Parent-category/${filename}`);
+  //       await uploadBytes(storageRef, editImg);
+  //       imageUrl = await getDownloadURL(storageRef);
+  //     } else if (typeof editImg === "string" && editImg.startsWith("http")) {
+  //       // Handle the case where editCatImg is a URL
+  //       imageUrl = editImg;
+  //     }
 
-      await updateDoc(doc(db, "categories", EditCatId), {
-        title: editName,
-        status: editPerentCatStatus,
-        image: imageUrl,
-        homepagelayout: EditSelectedLayout,
-        updated_at: Date.now(),
-      });
+  //     await updateDoc(doc(db, "categories", EditCatId), {
+  //       title: editName,
+  //       status: editPerentCatStatus,
+  //       image: imageUrl,
+  //       homepagelayout: EditSelectedLayout,
+  //       updated_at: Date.now(),
+  //     });
 
-      updateData({
-        EditCatId,
-        title: editName,
-        status: editPerentCatStatus,
-        image: imageUrl,
-        homepagelayout: EditSelectedLayout,
-        updated_at: Date.now(),
-      });
+  //     updateData({
+  //       EditCatId,
+  //       title: editName,
+  //       status: editPerentCatStatus,
+  //       image: imageUrl,
+  //       homepagelayout: EditSelectedLayout,
+  //       updated_at: Date.now(),
+  //     });
 
-      setLoaderstatus(false);
-      toast.success("Parent Category updated Successfully", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } catch (error) {
-      setLoaderstatus(false);
-      toast.error(error, {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+  //     setLoaderstatus(false);
+  //     toast.success("Parent Category updated Successfully", {
+  //       position: toast.POSITION.TOP_RIGHT,
+  //     });
+  //   } catch (error) {
+  //     setLoaderstatus(false);
+  //     toast.error(error, {
+  //       position: toast.POSITION.TOP_RIGHT,
+  //     });
+  //   }
+  // }
+
+async function HandleSaveEditCategory(e) {
+  e.preventDefault();
+  setEditPerCatPopup(false);
+  setLoaderstatus(true);
+  try {
+    let imageUrl = null;
+    // Handle image upload if it's a File
+    if (editImg instanceof File) {
+      const filename = Math.floor(Date.now() / 1000) + "-" + editImg.name;
+      const storageRef = ref(storage, `/Parent-category/${filename}`);
+      await uploadBytes(storageRef, editImg);
+      imageUrl = await getDownloadURL(storageRef);
+    } else if (typeof editImg === "string" && editImg.startsWith("http")) {
+      // Handle image URL
+      imageUrl = editImg;
     }
+    const matchedCategory = categoreis.find(
+      (value) => value.categorynumber === Number(categorynumber)
+    );
+    if (matchedCategory && matchedCategory.id !== EditCatId) {
+      const matchedCategoryRef = doc(db, "categories", matchedCategory.id);
+      const currentCategoryRef = doc(db, "categories", EditCatId);
+      const currentCategory = categoreis.find((item) => item.id === EditCatId);
+      if (matchedCategory && currentCategory) {
+        const matchedCategoryCategoryNumber = matchedCategory.categorynumber;
+        const currentCategoryCategoryNumber = currentCategory.categorynumber;
+        const batch = writeBatch(db); 
+        batch.update(matchedCategoryRef, {
+          categorynumber: currentCategoryCategoryNumber,
+        });
+        batch.update(currentCategoryRef, {
+          categorynumber: matchedCategoryCategoryNumber,
+        });
+        await batch.commit();
+        console.log("Swapped categorynumbers:", {
+          matchedCategory: matchedCategoryCategoryNumber,
+          currentCategory: currentCategoryCategoryNumber,
+        });
+      }
+    } else {
+      console.log("No matching category found or trying to swap with itself.");
+    }
+    // Update the current category details
+    const updateData = {
+      title: editName,
+      status: editPerentCatStatus,
+      image: imageUrl,
+      homepagelayout: EditSelectedLayout,
+      updated_at: Date.now(),
+      categorynumber: Number(categorynumber),
+    };
+    // Update the current category in Firestore
+    await updateDoc(doc(db, "categories", EditCatId), updateData);
+    // Update the local state after category update
+    updateData({
+      EditCatId,
+      title: editName,
+      status: editPerentCatStatus,
+      image: imageUrl,
+      categorynumber: Number(categorynumber),
+      homepagelayout: EditSelectedLayout,
+      updated_at: Date.now(),
+    });
+    setLoaderstatus(false);
+    toast.success("Parent Category updated Successfully", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+  } catch (error) {
+    setLoaderstatus(false);
+    toast.error(error, {
+      position: toast.POSITION.TOP_RIGHT,
+    });
   }
+}
+
+
 
   /*   *******************************
       Edit  Parent  Category  functionality end 
@@ -761,11 +878,27 @@ const Categories = () => {
                               ? item
                               : item.title.toLowerCase().includes(searchvalue);
                           })
+                          .sort((a, b) => {
+                            const priority = ["published", "other", "hidden"];
+                            const priorityA = priority.indexOf(
+                              a.status.toLowerCase()
+                            );
+                            const priorityB = priority.indexOf(
+                              b.status.toLowerCase()
+                            );
+                            return priorityA - priorityB;
+                          })
+
                           .map((value, index) => {
                             const subcategoryId = value.id;
                             const subcategoryImage = value.image;
                             return (
-                              <tr key={index} className="product_borderbottom">
+                              <tr
+                                key={index}
+                                className={`product_borderbottom ${
+                                  value.status === "hidden" ? "bg_layer" : ""
+                                }`}
+                              >
                                 <td className="py-3 ps-3 mx_220">
                                   <div className="d-flex align-items-center gap-3 min_width_230">
                                     <label class="check1 fw-400 fs-sm black mb-0">
@@ -858,6 +991,9 @@ const Categories = () => {
                                               );
                                               setEditStatus(value.status);
                                               setCat_ID(value.cat_ID);
+                                              setCategoryNumber(
+                                                value.subcategorynumber
+                                              );
                                             }}
                                             className="d-flex align-items-center categorie_dropdown_options"
                                           >
@@ -1309,6 +1445,7 @@ const Categories = () => {
                                     ) : null}
                                   </div>
                                 </div>
+
                                 <div className="banner_advertisement mt-4">
                                   <Accordion className="w-100 rounded-none bg-white product_input py-0">
                                     <Accordion.Header className="bg_grey fs-xs fw-400 white mb-0 bg-white d-flex justify-content-between">
@@ -1466,6 +1603,25 @@ const Categories = () => {
                                     </Accordion.Body>
                                   </Accordion>
                                 </div>
+                                <div>
+                                  <label
+                                    htmlFor="Name"
+                                    className="fs-xs fw-400 mt-3 black"
+                                  >
+                                    Category Number
+                                  </label>
+                                  <br />
+                                  <input
+                                    type="text"
+                                    className="mt-2 product_input fade_grey fw-400"
+                                    placeholder="Enter Category Number"
+                                    id="Name"
+                                    value={categorynumber}
+                                    onChange={(e) =>
+                                      setCategoryNumber(e.target.value)
+                                    }
+                                  />{" "}
+                                </div>
                                 <div className="mt-4">
                                   <h2 className="fw-400 fs-2sm black mb-0">
                                     Status
@@ -1612,6 +1768,7 @@ const Categories = () => {
                                               setEditSelectedLayout(
                                                 value.homepagelayout
                                               );
+                                              setCategoryNumber(value.categorynumber)
                                             }}
                                             className="cursor_pointer"
                                             src={pencil_icon}
@@ -1750,6 +1907,20 @@ const Categories = () => {
                   </div>
                 </div>
                 <div>
+                  <div>
+                    <label htmlFor="Name" className="fs-xs fw-400 mt-3 black">
+                      Category Number
+                    </label>
+                    <br />
+                    <input
+                      type="text"
+                      className="mt-2 product_input fade_grey fw-400"
+                      placeholder="Enter Category Number"
+                      id="Name"
+                      value={categorynumber}
+                      onChange={(e) => setCategoryNumber(e.target.value)}
+                    />{" "}
+                  </div>
                   <div className="mt-3 bg_white">
                     <div className="d-flex align-items-center justify-content-between">
                       <h2 className="fw-400 fs-2sm black mb-0">

@@ -312,25 +312,25 @@ const DeliveryBoyInventory = () => {
             let qty = existingDoc.exists()
               ? item.additionalQty ?? 0
               : item.quantity;
-            console.log(
-              docSnap.data().totalStocks,
-              "total stokes",
-              qty,
-              "----------------"
-            );
-            console.log(
-              Number(
-                ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(1)
-              ),
-              "total pending"
-            );
+            // console.log(
+            //   docSnap.data().totalStocks,
+            //   "total stokes",
+            //   qty,
+            //   "----------------"
+            // );
+            // console.log(
+            //   Number(
+            //     ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(1)
+            //   ),
+            //   "total pending"
+            // );
 
-            console.log(
-              typeof Number(
-                ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(1)
-              ),
-              "total type"
-            );
+            // console.log(
+            //   typeof Number(
+            //     ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(1)
+            //   ),
+            //   "total type"
+            // );
 
             batch.update(doc(db, `products/${item.productid}`), {
               totalStock:
@@ -346,7 +346,7 @@ const DeliveryBoyInventory = () => {
         }
         await batch.commit();
         setLoaderstatus(true);
-        // window.location.reload();
+        window.location.reload();
         setLoaderstatus(false);
         toast.success("Product added Successfully !", {
           position: toast.POSITION.TOP_RIGHT,
