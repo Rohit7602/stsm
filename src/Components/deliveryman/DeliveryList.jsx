@@ -327,7 +327,7 @@ const DeliveryList = () => {
                                   <div>
                                     <Link
                                       className="d-flex py-1 color_blue"
-                                      to={`viewcustomerdetails/${id}`}
+                                      to={`/customer/viewcustomerdetails/${uid}`}
                                     >
                                       {customer.name}
                                     </Link>

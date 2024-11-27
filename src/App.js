@@ -45,6 +45,7 @@ import { getDocs, collection, query } from "firebase/firestore";
 import { CrossIcons } from "./Common/Icon";
 import { useNotification } from "./context/NotificationContext";
 import DeliveryList from "./Components/deliveryman/DeliveryList";
+import Offers from "./Components/marketing/Offers";
 
 function App() {
   const { logoutUser } = useUserAuth();
@@ -235,6 +236,7 @@ function App() {
                             element={<BannersAdvertisement />}
                           />
                           <Route path="coupans" element={<Coupons />} />
+                          <Route path="Offers" element={<Offers />} />
                         </Route>
                         <Route path="communications">
                           <Route path="chats" element={<Chats />} />

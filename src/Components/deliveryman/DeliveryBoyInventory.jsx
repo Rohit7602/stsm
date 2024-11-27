@@ -221,8 +221,6 @@ const DeliveryBoyInventory = () => {
       ) {
         let productToUpdate = selectedproduct[0];
 
-        
-
         setAllItems((prevVariants) => {
           const existingItemIndex = prevVariants.findIndex(
             (item) =>
@@ -236,8 +234,8 @@ const DeliveryBoyInventory = () => {
           if (existingItemIndex !== -1) {
             const updatedItem = {
               ...prevVariants[existingItemIndex],
-              additionalQty: (prevVariants[existingItemIndex].additionalQty || 0) + quantity, // Add new quantity
-
+              additionalQty:
+                (prevVariants[existingItemIndex].additionalQty || 0) + quantity, // Add new quantity
             };
 
             return [
@@ -286,77 +284,74 @@ const DeliveryBoyInventory = () => {
     }
   }
 
-  async function UpdateEntry(e) {
-    e.preventDefault();
-    if (AllItems.length === 0) {
-      alert("please add item into van");
-    } else {
-      try {
-        let batch = writeBatch(db);
+async function UpdateEntry(e) {
+  e.preventDefault();
+  if (AllItems.length === 0) {
+    alert("please add item into van");
+  } else {
+    try {
+      let batch = writeBatch(db);
+      for (let item of AllItems) {
+        console.log(item);
 
-        for (let item of AllItems) {
-          const existingDoc = await getDoc(
-            doc(db, `Delivery/${id}/Van/${item.id}`)
-          );
+        const vanDocRef = doc(db, `Delivery/${id}/Van/${item.id}`);
+        const existingDoc = await getDoc(vanDocRef);
 
-          if (!existingDoc.exists()) {
-            await addDoc(collection(db, `Delivery/${id}/Van`), item);
-          } else {
-            batch.update(doc(db, `Delivery/${id}/Van/${item.id}`), {
-              quantity: existingDoc.data().quantity + (item.additionalQty ?? 0),
-            });
-          }
-          const docRef = doc(db, "products", item.productid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            let qty = existingDoc.exists()
-              ? item.additionalQty ?? 0
-              : item.quantity;
-            // console.log(
-            //   docSnap.data().totalStocks,
-            //   "total stokes",
-            //   qty,
-            //   "----------------"
-            // );
-            // console.log(
-            //   Number(
-            //     ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(1)
-            //   ),
-            //   "total pending"
-            // );
+        // Determine the quantity to subtract
+        const qtyToSubtract = item.additionalQty ?? item.quantity;
 
-            // console.log(
-            //   typeof Number(
-            //     ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(1)
-            //   ),
-            //   "total type"
-            // );
-
-            batch.update(doc(db, `products/${item.productid}`), {
-              totalStock:
-                item.stockUnitType === "GRAM"
-                  ? Number(
-                      ((docSnap.data().totalStock * 1000 - qty) / 1000).toFixed(
-                        1
-                      )
-                    )
-                  : docSnap.data().totalStock - qty,
-            });
-          }
+        if (!existingDoc.exists()) {
+          // First-time addition to the van
+          await addDoc(collection(db, `Delivery/${id}/Van`), {
+            ...item,
+            quantity: qtyToSubtract, // Add with the correct quantity
+          });
+        } else {
+          // Update existing document in the van
+          const existingQty = existingDoc.data().quantity || 0;
+          const newQty = existingQty + (item.additionalQty ?? 0);
+          batch.update(vanDocRef, { quantity: newQty });
         }
-        await batch.commit();
-        setLoaderstatus(true);
-        window.location.reload();
-        setLoaderstatus(false);
-        toast.success("Product added Successfully !", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      } catch (error) {
-        setLoaderstatus(false);
-        console.log("Error in Adding Data to Van", error);
+
+        // Update the product's stock in the database
+        const productDocRef = doc(db, "products", item.productid);
+        const productDocSnap = await getDoc(productDocRef);
+
+        if (productDocSnap.exists()) {
+          const productData = productDocSnap.data();
+
+          const updatedStock =
+            item.stockUnitType === "GRAM"
+              ? Number(
+                  (
+                    (productData.totalStock * 1000 - qtyToSubtract) /
+                    1000
+                  ).toFixed(1)
+                )
+              : productData.totalStock - qtyToSubtract;
+
+          batch.update(productDocRef, { totalStock: updatedStock });
+        }
       }
+
+      // Commit the batch updates
+      await batch.commit();
+      setLoaderstatus(true);
+      window.location.reload();
+      setLoaderstatus(false);
+
+      // Success toast message
+      toast.success("Product added Successfully!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      setLoaderstatus(false);
+      console.log("Error in Adding Data to Van", error);
     }
   }
+}
+
+
 
   const [selectAll, setSelectAll] = useState([]);
   function handleSelectAll() {
@@ -383,61 +378,70 @@ const DeliveryBoyInventory = () => {
     }
   }
 
-  async function handleWithdrow() {
-    try {
-      setLoaderstatus(true);
-      let totalStock;
-      const itemsToAdd = AllItems.filter((item) => selectAll.includes(item.id));
-      for (let item of itemsToAdd) {
-        const docRef = doc(db, "products", item.productid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          totalStock = docSnap.data().totalStock;
-        } else {
-          console.log("No such document!");
-        }
+async function handleWithdrow() {
+  try {
+    setLoaderstatus(true);
+    const itemsToAdd = AllItems.filter((item) => selectAll.includes(item.id));
+    for (let item of itemsToAdd) {
+      const docRef = doc(db, "products", item.productid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const productData = docSnap.data();
+        let totalStock = productData.totalStock; // Current stock
+        const stockUnitType = productData.stockUnitType || "KG"; // Default to KG
+        // Calculate the remaining quantity
         let quantity = item.quantity - (item.sold != null ? item.sold : 0);
-        const washingtonRef = doc(db, "products", item.productid);
-        await updateDoc(washingtonRef, {
-          totalStock: totalStock + quantity,
+        // Normalize to kilograms if the quantity is in grams
+        if (item.stockUnitType === "GRAM") {
+          quantity = quantity / 1000; // Convert grams to kilograms
+        }
+        // Update total stock
+        let updatedStock = totalStock + quantity;
+        // Ensure the updated stock is converted back to the correct unit type
+        if (stockUnitType === "GRAM") {
+          updatedStock = updatedStock * 1000; // Convert back to grams
+        }
+        // Update the product's stock in the database
+        const updateRef = doc(db, "products", item.productid);
+        await updateDoc(updateRef, {
+          totalStock: parseFloat(updatedStock.toFixed(3)),
         });
+      } else {
+        console.log(`No document found for product ID: ${item.productid}`);
       }
-      // Define the reference to the Van sub-collection
-      const vanCollectionRef = collection(db, `Delivery/${id}/Van`);
-
-      // Retrieve all documents in the Van sub-collection
-      const querySnapshot = await getDocs(vanCollectionRef);
-      const existingDocs = querySnapshot.docs;
-
-      // Delete all existing documents in the Van sub-collection
-      for (let doc of existingDocs) {
-        await deleteDoc(doc.ref);
-      }
-
-      // Add the updated items to the Van sub-collection
-      const updateVan = AllItems.filter((item) => !selectAll.includes(item.id));
-      for (let item of updateVan) {
-        await addDoc(vanCollectionRef, item);
-      }
-
-      // Update the local state
-      setAllItems(updateVan);
-      setLoaderstatus(false);
-      toast.success("Product withdrow Successfully !", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } catch (error) {
-      setLoaderstatus(false);
-      console.log("Error in withdrow product", error);
     }
+
+    // Van sub-collection operations
+    const vanCollectionRef = collection(db, `Delivery/${id}/Van`);
+    const querySnapshot = await getDocs(vanCollectionRef);
+
+    // Delete existing Van documents
+    for (let doc of querySnapshot.docs) {
+      await deleteDoc(doc.ref);
+    }
+
+    // Add updated items back to the Van sub-collection
+    const updateVan = AllItems.filter((item) => !selectAll.includes(item.id));
+    for (let item of updateVan) {
+      await addDoc(vanCollectionRef, item);
+    }
+
+    // Update local state
+    setAllItems(updateVan);
+    setLoaderstatus(false);
+    toast.success("Product withdrawn successfully!", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+  } catch (error) {
+    setLoaderstatus(false);
+    console.error("Error in withdrawing product:", error);
   }
+}
+
 
   /*  *******************************
       Checbox  functionality end 
     *********************************************   **/
-
-  console.log(AllItems, "-------------------------------");
 
   if (loaderstatus) {
     return <Loader></Loader>;
@@ -596,7 +600,8 @@ const DeliveryBoyInventory = () => {
                     type="text"
                     placeholder="Quantity"
                     value={quantity}
-                    onChange={(e) => {setquantity(Number(e.target.value) || 0)
+                    onChange={(e) => {
+                      setquantity(Number(e.target.value) || 0);
                     }}
                   />
                 </div>
