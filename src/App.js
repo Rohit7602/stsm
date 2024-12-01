@@ -46,6 +46,7 @@ import { CrossIcons } from "./Common/Icon";
 import { useNotification } from "./context/NotificationContext";
 import DeliveryList from "./Components/deliveryman/DeliveryList";
 import Offers from "./Components/marketing/Offers";
+import DeliveryBoyInventory2 from "./Components/deliveryman/DeliveryBoyInventory2";
 
 function App() {
   const { logoutUser } = useUserAuth();
@@ -225,9 +226,13 @@ function App() {
                             element={<DeliverymanProfile />}
                           />
                           {/* <Route path="deliveryorderlist" element={<DeliveryOrderList />} /> */}
-                          <Route
+                          {/* <Route
                             path="inventory/:id"
                             element={<DeliveryBoyInventory />}
+                          /> */}
+                          <Route
+                            path="inventory/:id"
+                            element={<DeliveryBoyInventory2 />}
                           />
                         </Route>
                         <Route path="marketing">

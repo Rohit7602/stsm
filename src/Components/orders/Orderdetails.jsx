@@ -764,9 +764,6 @@ export default function NewOrder() {
               });
             }
 
-
-
-
             if (showvandata.quantity >= item.quantity) {
               const newStatus = "OUT_FOR_DELIVERY";
 
@@ -1398,6 +1395,9 @@ export default function NewOrder() {
                       <p className="fs-xs fw-400 black mb-0 pt-1">
                         {item.alternateCustomer.phone}
                       </p>
+                      <p className="fs-xs fw-400 black mb-0 pt-1">
+                        {item.alternateCustomer.address}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -1405,13 +1405,16 @@ export default function NewOrder() {
                   <p className="fs-2sm fw-400 black mb-0">Shipping Info</p>
                   <p className="fs-md fw-400 black mb-0 pt-1 mt-3">
                     {item.shipping.address_title}
+                    {console.log(item)}
                   </p>
                   <p className="fs-xs fw-400 black mb-0 pt-1 mt-2">
                     {item.shipping.contact_person}
                   </p>
-                  <p className="fs-xs fw-400 black mb-0 mt-2">
-                    Father Name : {item.shipping.fathername}
-                  </p>
+                  {item.fathername && (
+                    <p className="fs-xs fw-400 black mb-0 mt-2">
+                      Father Name : {item.fathername}
+                    </p>
+                  )}
                   <p className="fs-xs fw-400 black mb-0 pt-1">
                     {item.shipping.address}
                   </p>
