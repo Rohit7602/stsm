@@ -35,14 +35,14 @@ function DeliveryBoyInventory2() {
   const [selectAll, setSelectAll] = useState([]);
   const [AllProducts, setAllProducts] = useState([]);
 
-  //////////////   filter delivryMan  ////////////////
+  //////////////   filter delivryMan data  ////////////////
 
   useEffect(() => {
     const DeliveryManDatas = DeliveryManData.filter((item) => item.id === id);
     setDeliveryMan(DeliveryManDatas);
   }, [id, delivryMan.length !== 0]);
 
-  //////////////   filter products  ////////////////
+  //////////////   filter products data  ////////////////
 
   useEffect(() => {
     let filterData = productData.filter(
@@ -51,7 +51,7 @@ function DeliveryBoyInventory2() {
     setselectedProduct(filterData);
   }, [productname]);
 
-  //////////////////// get all products in firebase //////////////
+  //////////////////// get all products in van firebase //////////////
 
   useEffect(() => {
     const Data = DeliveryManData.find((item) => item.id === id);
@@ -70,213 +70,6 @@ function DeliveryBoyInventory2() {
     }
   }, [id, DeliveryManData]);
 
-  ////////////  add product state  //////////
-
-  function HandleAddToVan(event) {
-    event.preventDefault();
-    if (!varienttype && selectedproduct[0]?.stockUnitType === "KG") {
-      toast.error("Please select each field", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } else {
-      let getproduct = selectedproduct[0];
-      if (
-        selectedproduct.length > 0 &&
-        addquantity > 0 &&
-        (selectedproduct[0].stockUnitType === "KG" && varienttype === "GRAM"
-          ? selectedproduct[0].totalStock * 1000 >= addquantity
-          : selectedproduct[0].totalStock >= addquantity)
-      ) {
-        setAllProducts((previousproduct) => {
-          const existingItem = previousproduct.findIndex(
-            (value) =>
-              value.productid === getproduct.id &&
-              value.stockUnitType ===
-                (selectedproduct[0].stockUnitType === "KG"
-                  ? varienttype
-                  : getproduct.stockUnitType)
-          );
-          if (existingItem !== -1) {
-            let getoldquantity = previousproduct.filter((value) => {
-              let producttype = varienttype
-                ? varienttype
-                : getproduct.stockUnitType;
-              return (
-                value.productid === getproduct.id &&
-                value.stockUnitType === producttype
-              );
-            });
-            const updatedItem = {
-              ...previousproduct[existingItem],
-              quantity: getoldquantity[0].quantity,
-              addquantity: getoldquantity[0].addquantity
-                ? getoldquantity[0].addquantity + addquantity
-                : addquantity,
-            };
-
-            return [
-              ...previousproduct.slice(0, existingItem),
-              updatedItem,
-              ...previousproduct.slice(existingItem + 1),
-            ];
-          } else {
-            const newItem = {
-              name: productname,
-              productImage: getproduct.productImages[0],
-              productid: getproduct.id,
-              salesprice: getproduct.salesprice,
-              quantity: addquantity,
-              sku: getproduct.sku,
-              brand: getproduct.brand.name,
-              stockUnitType:
-                selectedproduct[0].stockUnitType === "KG"
-                  ? varienttype
-                  : getproduct.stockUnitType,
-              tax: getproduct.Tax,
-              DeliveryCharge: getproduct.DeliveryCharge,
-              ServiceCharge: getproduct.ServiceCharge,
-              totalStocks: getproduct.totalStock,
-            };
-            return [...previousproduct, newItem];
-          }
-        });
-        setproductname("");
-        setselectedProduct([]);
-        setaddquantity(0);
-        setvarienttype("");
-      } else if (addquantity === 0 || selectedproduct.length === 0) {
-        toast.error("Please select each field", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      } else {
-        toast.warning("Product stock not available", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
-    }
-  }
-
-  ////////////  add product firebase  //////////
-
-  async function UpdateEntry(event) {
-    event.preventDefault();
-    setLoaderstatus(true);
-    if (AllProducts.length === 0) {
-      alert("please add item into van");
-    } else {
-      try {
-        let batch = writeBatch(db);
-        for (let item of AllProducts) {
-          let totalquantity =
-            item.addquantity !== undefined
-              ? item.addquantity + item.quantity
-              : item.quantity;
-          const vanDocRef = doc(db, `Delivery/${id}/Van/${item.id}`);
-          const existingDoc = await getDoc(vanDocRef);
-          let updatedItem = {
-            ...item,
-            quantity: totalquantity,
-          };
-          delete updatedItem.addquantity;
-          if (!existingDoc.exists()) {
-            await addDoc(collection(db, `Delivery/${id}/Van`), updatedItem);
-          } else {
-            const existingQty = existingDoc.data().quantity || 0;
-            const newQty = existingQty + (item.addquantity ?? 0);
-            batch.update(vanDocRef, { quantity: newQty });
-          }
-
-          // Update the product's stock in the database
-          const productDocRef = doc(db, "products", item.productid);
-          const productDocSnap = await getDoc(productDocRef);
-          let subtractquantity = !existingDoc.data()
-            ? (item.addquantity ?? 0) + item.quantity
-            : item.addquantity ?? 0;
-
-          if (productDocSnap.exists()) {
-            const productData = productDocSnap.data();
-            const updatedStock =
-              item.stockUnitType === "GRAM"
-                ? Number(
-                    (
-                      (productData.totalStock * 1000 - subtractquantity) /
-                      1000
-                    ).toFixed(1)
-                  )
-                : productData.totalStock - subtractquantity;
-
-            batch.update(productDocRef, { totalStock: updatedStock });
-          }
-        }
-        // Commit the batch updates
-        await batch.commit();
-        window.location.reload();
-        setLoaderstatus(false);
-
-        // Success toast message
-        toast.success("Product added Successfully!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      } catch (error) {
-        setLoaderstatus(false);
-        console.log("Error in Adding Data to Van", error);
-      }
-    }
-    setLoaderstatus(false);
-  }
-
-  ////////////  unload products //////////////
-
-  async function handleWithdrow() {
-    try {
-      setLoaderstatus(true);
-      const itemsToAdd = AllProducts.filter((item) =>
-        selectAll.includes(item.id)
-      );
-      for (let item of itemsToAdd) {
-        const docRef = doc(db, "products", item.productid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const productData = docSnap.data();
-          let totalStock = productData.totalStock; 
-          const stockUnitType = productData.stockUnitType || "KG";
-          let quantity = item.quantity - (item.sold != null ? item.sold : 0);
-          if (item.stockUnitType === "GRAM") {
-            quantity = quantity / 1000;
-          }
-          let updatedStock = totalStock + quantity;
-          if (stockUnitType === "GRAM") {
-            updatedStock = updatedStock * 1000;
-          }
-          const updateRef = doc(db, "products", item.productid);
-          await updateDoc(updateRef, {
-            totalStock: parseFloat(updatedStock.toFixed(3)),
-          });
-        } else {
-          console.log(`No document found for product ID: ${item.productid}`);
-        }
-      }
-      const vanCollectionRef = collection(db, `Delivery/${id}/Van`);
-      const querySnapshot = await getDocs(vanCollectionRef);
-      for (let doc of querySnapshot.docs) {
-        await deleteDoc(doc.ref);
-      }
-      const updateVan = AllProducts.filter(
-        (item) => !selectAll.includes(item.id)
-      );
-      for (let item of updateVan) {
-        await addDoc(vanCollectionRef, item);
-      }
-      setAllProducts(updateVan);
-      setLoaderstatus(false);
-      toast.success("Product withdrawn successfully!", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } catch (error) {
-      setLoaderstatus(false);
-      console.error("Error in withdrawing product:", error);
-    }
-  }
 
   ////////////  select only all product  //////////
 
@@ -339,14 +132,12 @@ function DeliveryBoyInventory2() {
                 })}
               <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
                 <button
-                  onClick={UpdateEntry}
                   className=" outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
                 >
                   Update Entry
                 </button>
                 {AllProducts.length !== 0 && (
                   <button
-                    onClick={handleWithdrow}
                     className=" outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400"
                   >
                     Unload Van
@@ -470,7 +261,6 @@ function DeliveryBoyInventory2() {
 
                 <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
                   <button
-                    onClick={HandleAddToVan}
                     className="addnewproduct_btn white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
                   >
                     <img
