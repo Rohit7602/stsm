@@ -34,6 +34,127 @@ function DeliveryBoyInventory2() {
   const [varienttype, setvarienttype] = useState("");
   const [selectAll, setSelectAll] = useState([]);
   const [AllProducts, setAllProducts] = useState([]);
+  const [itemSelect, setItemSelect] = useState({});
+  const[ disableUpload, setDisableUpload] = useState(false);
+
+  const [finalVanProducts, setFinalVanProducts] = useState([]);
+
+  function addToVan(e) {
+    e.preventDefault();
+    setDisableUpload(true);
+    let totalQuantity;
+    if (itemSelect.varient == "GRAM") {
+      totalQuantity = itemSelect.updatedQuantity / 1000;
+    } else {
+      totalQuantity = itemSelect.updatedQuantity;
+    }
+// //////////////// updating All state items /////////////////////
+
+ if(AllProducts.length>0){
+      let isPresent = AllProducts.some(
+        (item) => item.productid == itemSelect.item.id
+      );
+      console.log(isPresent)
+
+      if (isPresent) {
+        for (let i of AllProducts) {
+          if (i.productid == itemSelect.item.id) {
+            let previousQuantity = i.quantity;
+            i.quantity = totalQuantity + previousQuantity;
+          }
+        }
+      } else {
+        setAllProducts([
+          ...AllProducts,
+          {
+            productid: itemSelect.item.id,
+            DeliveryCharge: itemSelect.item.DeliveryCharge,
+            ServiceCharge: itemSelect.item.ServiceCharge,
+            brand: "",
+            stockUnitType: itemSelect.item.stockUnitType,
+            sku: itemSelect.item.sku,
+            quantity: totalQuantity,
+            name: itemSelect.item.name,
+          },
+        ]);
+      }
+
+}else{
+  setAllProducts([
+    ...AllProducts,
+    {
+      productid: itemSelect.item.id,
+      DeliveryCharge: itemSelect.item.DeliveryCharge,
+      ServiceCharge: itemSelect.item.ServiceCharge,
+      brand: "",
+      sku: itemSelect.item.sku,
+      quantity: totalQuantity,
+    },
+  ]);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // handling Updating State ///////////////////////////////
+    if (finalVanProducts.length > 0) {
+      for (let i of finalVanProducts) {
+        if (i.id == itemSelect.item.id) {
+          let previousQuantity = i.updatedQuantity;
+
+          const index = finalVanProducts.indexOf(i);
+          if (index !== -1) {
+            finalVanProducts.splice(index, 1);
+          }
+          setFinalVanProducts([
+            ...finalVanProducts,
+            {
+              ...itemSelect.item,
+              updatedQuantity: totalQuantity + previousQuantity,
+            },
+          ]);
+        } else {
+          setFinalVanProducts([
+            ...finalVanProducts,
+            { ...itemSelect.item, updatedQuantity: totalQuantity },
+          ]);
+        }
+      }
+    } else {
+      setFinalVanProducts([
+        ...finalVanProducts,
+        { ...itemSelect.item, updatedQuantity: totalQuantity },
+      ]);
+    }
+    //////////////////////////////////  clear data ////////////////////////////////
+
+    setItemSelect({});
+    setvarienttype("");
+    setproductname("");
+    setaddquantity(0);
+  }
+
+
+
+///////////////////////             update entry                      ////////////////////////////////////
+  function updateEntry(e) {
+    e.preventDefault();
+    setDisableUpload(false);
+     console.log(AllProducts,'all products in van or say firebase');
+    console.log(finalVanProducts);
+    console.log(itemSelect)
+  }
 
   //////////////   filter delivryMan data  ////////////////
 
@@ -69,7 +190,6 @@ function DeliveryBoyInventory2() {
       fetchVan();
     }
   }, [id, DeliveryManData]);
-
 
   ////////////  select only all product  //////////
 
@@ -132,14 +252,18 @@ function DeliveryBoyInventory2() {
                 })}
               <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
                 <button
+                  onClick={updateEntry}
                   className=" outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
                 >
                   Update Entry
                 </button>
                 {AllProducts.length !== 0 && (
                   <button
+              
+                    disabled={disableUpload}
                     className=" outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400"
                   >
+
                     Unload Van
                   </button>
                 )}
@@ -191,20 +315,26 @@ function DeliveryBoyInventory2() {
                           onChange={(e) => setFilterValue(e.target.value)}
                         />
                       </li>
-                      {product_names
+                      {productData
                         .filter((v) =>
-                          v.toLowerCase().includes(filtervalue.toLowerCase())
+                          v.name
+                            .toLowerCase()
+                            .includes(filtervalue.toLowerCase())
                         )
-                        .map((names, index) => (
+                        .map((item, index) => (
                           <li key={index}>
                             <div
                               onClick={() => {
-                                setproductname(names);
+                                setproductname(item.name);
+                                setItemSelect({ ...itemSelect, item: item });
+                                setvarienttype("");
                                 setFilterValue("");
                               }}
                               className="dropdown-item py-2"
                             >
-                              <p className="fs-sm fw-400 black m-0">{names}</p>
+                              <p className="fs-sm fw-400 black m-0">
+                                {item.name}
+                              </p>
                             </div>
                           </li>
                         ))}
@@ -239,6 +369,10 @@ function DeliveryBoyInventory2() {
                       placeholder="Quantity"
                       value={addquantity}
                       onChange={(e) => {
+                        setItemSelect({
+                          ...itemSelect,
+                          updatedQuantity: Number(e.target.value),
+                        });
                         setaddquantity(Number(e.target.value) || 0);
                       }}
                     />
@@ -248,7 +382,13 @@ function DeliveryBoyInventory2() {
                       <div className="w-100 d-flex align-items-center gap-3 quantity_bg">
                         <select
                           required
-                          onChange={(e) => setvarienttype(e.target.value)}
+                          onChange={(e) => {
+                            setItemSelect({
+                              ...itemSelect,
+                              varient: e.target.value,
+                            });
+                            setvarienttype(e.target.value);
+                          }}
                           className="w-100  bg-transparent outline_none border-0"
                         >
                           <option value={""}>Select Type</option>
@@ -261,6 +401,7 @@ function DeliveryBoyInventory2() {
 
                 <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
                   <button
+                    onClick={addToVan}
                     className="addnewproduct_btn white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
                   >
                     <img
@@ -353,14 +494,16 @@ function DeliveryBoyInventory2() {
                               </td>
                               <td className="ps-4 mw-200">
                                 <h3 className="fs-sm fw-400 black mb-0">
-                                  {item.brand === " " ? "N/A" : item.brand}
+                                  N/A{" "}
                                 </h3>
                               </td>
                               <td className="mx_140">
                                 <h3 className="fs-sm fw-400 black mb-0 color_green ms-3">
                                   {item.addquantity}
                                   <span className=" ms-1">
-                                    {item.stockUnitType}
+                                    {item.stockUnitType == "GRAM"
+                                      ? "KG"
+                                      : item.stockUnitType}
                                   </span>
                                 </h3>
                               </td>
