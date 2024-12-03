@@ -714,11 +714,6 @@ export default function NewOrder() {
             const q = query(
               collection(db, `Delivery/${filterdeliverymanid}/Van`)
             );
-
-            console.log(
-              filterdeliverymanid,
-              "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
-            );
             const querySnapshot = await getDocs(q);
             const vanDoc = querySnapshot.docs.find(
               (doc) => doc.data().productid === item.product_id
@@ -1276,83 +1271,6 @@ export default function NewOrder() {
                         </div>
                       ))}
                   </div>
-                  {/* <div className="d-flex align-items-center justify-content-between mt-3">
-                    <div className="d-flex align-items-center">
-                      <img src={orderPlaceed} alt="orderPlaceed" />
-                      <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">
-                        Order Placed
-                      </p>
-                    </div>
-                    
-                  </div>
-                  <div className="d-flex align-items-center justify-content-between mt-3">
-                    <div className="d-flex align-items-center">
-                      <img src={orderAccepted} className="bg-white" alt="orderAccepted" />
-                      <div className=" ps-3 ms-1">
-                        <p className="fs-sm fw-400 black mb-0">
-                          Order Accepted
-                        </p>
-                        <p className="fs-xxs fw-400 black mb-0">By : Admin</p>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="fs-xs fw-400 black mb-0">
-                        01-01-2024 <br />
-                        10:00 AM
-                      </p>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center justify-content-between mt-3">
-                    <div className="d-flex align-items-center">
-                      <img src={orderReject} className="bg-white" alt="orderReject" />
-                      <div className=" ps-3 ms-1">
-                        <p className="fs-sm fw-400 black mb-0">
-                          Order Rejected
-                        </p>
-                        <p className="fs-xxs fw-400 black mb-0">By : Admin</p>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="fs-xs fw-400 black mb-0">
-                        01-01-2024 <br />
-                        10:00 AM
-                      </p>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center justify-content-between mt-3">
-                    <div className="d-flex align-items-center">
-                      <img className="bg-white"
-                        src={orderDeliveryAssign}
-                        alt="orderDeliveryAssign"
-                      />
-                      <p className="fs-sm fw-400 black mb-0 ps-3 ms-1">
-                        Assigned for Delivery
-                      </p>
-                    </div>
-                    <div>
-                      <p className="fs-xs fw-400 black mb-0">
-                        01-01-2024 <br />
-                        10:00 AM
-                      </p>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center justify-content-between mt-3">
-                    <div className="d-flex align-items-center">
-                      <img className="bg-white" src={orderDelevered} alt="orderDelevered" />
-                      <div className=" ps-3 ms-1">
-                        <p className="fs-sm fw-400 black mb-0">
-                          Order Delivered
-                        </p>
-                        <p className="fs-xxs fw-400 black mb-0">By : Ramesh Kumar (Delivery Man)</p>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="fs-xs fw-400 black mb-0">
-                        01-01-2024 <br />
-                        10:00 AM
-                      </p>
-                    </div>
-                  </div> */}
                 </div>
                 {/* </div> */}
               </Col>

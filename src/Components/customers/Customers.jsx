@@ -20,21 +20,33 @@ const Customers = () => {
   const [filterpop, setFilterPop] = useState(false);
   const [selectAll, setSelectAll] = useState([]);
   const [pincode, setPinCode] = useState("");
+  const [servicearea, setServicearea] = useState("");
   const { orders } = useOrdercontext();
   const { customer } = useCustomerContext();
+  const [filtervalue, setFilterValue] = useState("");
 
   // Function to calculate total spent by a customer/////////////////////////////////////
-  const uniquePincodes = [
-    ...new Set(
-      customer.flatMap((value) => value.addresses).map((value) => value.pincode)
-    ),
+  const customeraddress = customer
+    .flatMap((value) => value.addresses)
+    .map((value) => value);
+
+  let uniquePincodes = [
+    ...new Set(customeraddress.map((value) => value.pincode)),
   ];
-  
+
+  let uniqueservice = customeraddress.filter(
+    (value) => value.pincode === Number(pincode)
+  );
+
+  let uniqueservicename = [
+    ...new Set(uniqueservice.map((value) => value.city)),
+  ];
+
   const totalSpentByCustomer = customer.map((customer) => {
     const totalSpent = orders
       .filter((order) => order.uid === customer.id)
+      .filter((value) => value.status.toUpperCase() === "DELIVERED")
       .reduce((total, order) => total + order.order_price, 0);
-
     return { ...customer, totalSpent };
   });
 
@@ -138,10 +150,77 @@ const Customers = () => {
                 ))}
               </select>
             </div>
+            <div className="dropdown w-100">
+              <button
+                style={{ height: "44px" }}
+                className="w-100 d-flex align-items-center gap-3 quantity_bg mt-4 rounded-3"
+                type="button"
+                id="dropdownMenuButton3"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <div className="d-flex align-items-center justify-content-between w-100">
+                  <p className="ff-outfit fw-400 fs_sm mb-0 ">
+                    {servicearea ? servicearea : "Select Service Area"}
+                  </p>
+                  <svg
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M7 10L12 15L17 10"
+                      stroke="black"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+              </button>
+              <ul
+                className="dropdown-menu delivery_man_dropdown w-100 pt-0 bg-white mt-3"
+                aria-labelledby="dropdownMenuButton3"
+              >
+                <li className="p-2 position-sticky start-0 top-0 bg-white">
+                  <input
+                    type="text"
+                    className="form-control shadow-none border-1 border-dark-subtle"
+                    placeholder="Search Service Area..."
+                    value={filtervalue}
+                    onChange={(e) => setFilterValue(e.target.value)}
+                  />
+                </li>
+                {uniqueservicename
+                  .filter((v) =>
+                    v.toLowerCase().includes(filtervalue.toLowerCase())
+                  )
+                  .map((servicearea, index) => (
+                    <li key={index}>
+                      <div
+                        onClick={() => {
+                          setServicearea(servicearea);
+                          setFilterValue("");
+                        }}
+                        className="dropdown-item py-2"
+                      >
+                        <p className="fs-sm fw-400 black m-0">{servicearea}</p>
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+
             <div className=" text-end mt-4">
               <button
                 type="button"
-                onClick={() => setOrderPriceValueSelect(0)}
+                onClick={() => (
+                  setOrderPriceValueSelect(0),
+                  setPinCode(""),
+                  setServicearea("")
+                )}
                 className="apply_btn fs-sm fw-normal"
               >
                 Reset
@@ -246,11 +325,21 @@ const Customers = () => {
                     )
                     .sort((a, b) => b.totalSpent - a.totalSpent)
                     .filter((customer) =>
-                      customer.addresses.some(
-                        (address) => Number(pincode) ? address.pincode === Number(pincode) : customer
+                      customer.addresses.some((address) =>
+                        Number(pincode)
+                          ? address.pincode === Number(pincode)
+                          : customer
                       )
-                  )
-                    
+                    )
+                    .filter((customer) =>
+                      customer.addresses.some((address) =>
+                        servicearea
+                          ? address.city.toLowerCase() ===
+                            servicearea.toLowerCase()
+                          : customer
+                      )
+                    )
+
                     .map((item, index) => {
                       const {
                         id,
@@ -263,6 +352,7 @@ const Customers = () => {
                         name,
                         image,
                         totalSpent,
+                        addresses,
                         created_at,
                       } = item;
                       const formatNumbers = function (num) {
@@ -319,7 +409,7 @@ const Customers = () => {
                             </td>
                             <td className="p-3 mw-300">
                               <h3 className="fs-sm fw-400 black mb-0">
-                                {city} / {state}
+                                {addresses[0].city} / {city} / {state}
                               </h3>
                             </td>
                             <td className="p-3 mw_160">

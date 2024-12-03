@@ -42,7 +42,6 @@ const DeliveryBoyInventory = () => {
   const [filtervalue, setFilterValue] = useState("");
   const [quantity, setquantity] = useState(0);
   const [qut, setQut] = useState(0);
-
   const [selectedproduct, setselectedProduct] = useState([]);
   const [AllItems, setAllItems] = useState([]);
   const [delivryMan, setDeliveryMan] = useState([]);

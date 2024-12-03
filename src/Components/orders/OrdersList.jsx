@@ -27,6 +27,8 @@ const OrderList = () => {
   const [selectedRange, setSelectedRange] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState([]);
 
+  
+
   const handleBillNumberClick = (invoiceNumber) => {
     const bill = orders.filter(
       (order) => order.invoiceNumber === invoiceNumber
@@ -441,6 +443,23 @@ const OrderList = () => {
                 <option value="Confirmed">Confirmed</option>
               </select>
             </div>
+            <div className="border border-dark-subtle mt-4 w-100 px-2">
+              <select
+                value={orderStatus}
+                onChange={handleOrderStatusChange}
+                className="w-100 outline_none py-2 border-0"
+              >
+                <option value=""> Select Delivery Man</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Rejected">Rejected</option>
+                <option value="New">New</option>
+                <option value="Processing">Processing</option>
+                <option value="Out_for_delivery">Out for Delivery</option>
+                <option value="Cancelled">Cancelled</option>
+                <option value="Confirmed">Confirmed</option>
+              </select>
+            </div>
+
             <div className="mb-3 mt-2">
               <label className="text-black fs-xs" htmlFor="Spent">
                 Select Order Date Range
@@ -528,7 +547,6 @@ const OrderList = () => {
                 </div>
               </div>
             )}
-
             <div className="text-end mt-4">
               <button
                 onClick={() => (
@@ -759,7 +777,6 @@ const OrderList = () => {
                     })
 
                     .map((orderTableData, index) => {
-                      
                       return (
                         <tr>
                           <td className="p-3 mw-200">
