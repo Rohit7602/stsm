@@ -499,9 +499,7 @@ function DeliveryBoyInventory2() {
                               </td>
                               <td className="mx_140">
                                 <h3 className="fs-sm fw-400 black mb-0 color_green ms-3">
-                                  {item.addquantity
-                                    ? item.quantity + item.addquantity
-                                    : item.quantity + 0}
+                                  {item.addquantity}
                                   <span className=" ms-1">
                                     {item.stockUnitType == "GRAM"
                                       ? "KG"
