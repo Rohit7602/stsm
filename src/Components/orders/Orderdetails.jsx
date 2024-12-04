@@ -52,6 +52,7 @@ export default function NewOrder() {
   const [orderid, setOrderid] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedDeliveryManId, setSelectedDeliveryManId] = useState(null);
+  const [selectedDeliveryManName, setSelectedDeliveryManName] = useState(null);
   const [filterallDeliverymans, setFilterAllDeliverymans] = useState(null);
   const [isDeliverymanPopup, setIssDeliverymanPopup] = useState(false);
   const [isfilterDeliverymanPopup, setIsFilterDeliverymanPopup] =
@@ -759,6 +760,10 @@ export default function NewOrder() {
               });
             }
 
+            let autoSelectedDeliveryManName = DeliveryManData.filter(
+              (value) => value.id === autoSelectedDeliveryManId
+            );
+
             if (showvandata.quantity >= item.quantity) {
               const newStatus = "OUT_FOR_DELIVERY";
 
@@ -768,6 +773,10 @@ export default function NewOrder() {
                   // OTP: otp,
                   invoiceNumber: invoiceNumber,
                   tokens: customertoken,
+                  deliveryname:
+                    deliverymenWithArea.length !== 0
+                      ? autoSelectedDeliveryManName[0].basic_info.name
+                      : selectedDeliveryManName,
                   assign_to:
                     deliverymenWithArea.length !== 0
                       ? autoSelectedDeliveryManId
@@ -777,6 +786,10 @@ export default function NewOrder() {
                 await updateDoc(orderDocRef, {
                   status: newStatus,
                   // OTP: otp,
+                  deliveryname:
+                    deliverymenWithArea.length !== 0
+                      ? autoSelectedDeliveryManName[0].basic_info.name
+                      : selectedDeliveryManName,
                   assign_to:
                     deliverymenWithArea.length !== 0
                       ? autoSelectedDeliveryManId
@@ -793,32 +806,6 @@ export default function NewOrder() {
             ///////////////////////////////////////
           }
         }
-        // let selecteddeliveryData = DeliveryManData.filter(
-        //   (item) =>
-        //     item.id === autoSelectedDeliveryManId ||
-        //     item.id === selectedDeliveryManId
-        // );
-
-        //  console.log(
-        //    selecteddeliveryData,
-        //    "selecteddeliveryData====================="
-        //  );
-
-        // updateData({
-        //   id,
-        //   status: newStatus,
-        //   OTP: otp,
-        //   invoiceNumber: invoiceNumber,
-        //   assign_to:
-        //     deliverymenWithArea.length !== 0
-        //       ? autoSelectedDeliveryManId
-        //       : selectedDeliveryManId,
-        // });
-        // console.log(
-        //   "messageewe============================= ",
-        //   autoSelectedDeliveryManId
-        // );
-        // console.log("message====================", selectedDeliveryManId);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -939,9 +926,12 @@ export default function NewOrder() {
                             <>
                               <td className="d-flex align-items-center py-1 w-100">
                                 <input
-                                  onChange={() =>
-                                    setSelectedDeliveryManId(items.uid)
-                                  }
+                                  onChange={() => (
+                                    setSelectedDeliveryManId(items.uid),
+                                    setSelectedDeliveryManName(
+                                      items.basic_info.name
+                                    )
+                                  )}
                                   type="checkbox"
                                   checked={selectedDeliveryManId === items.uid}
                                 />
@@ -950,7 +940,7 @@ export default function NewOrder() {
                                 </p>
                               </td>
                               {items.serviceArea.map((itm, ind) => {
-                                console.log(itm, " asfdasfasfsafafa");
+                                // console.log(itm, " asfdasfasfsafafa");
                                 return (
                                   <td key={ind} className="w-100">
                                     {itm.area_name} ({itm.pincode})
@@ -1323,7 +1313,7 @@ export default function NewOrder() {
                   <p className="fs-2sm fw-400 black mb-0">Shipping Info</p>
                   <p className="fs-md fw-400 black mb-0 pt-1 mt-3">
                     {item.shipping.address_title}
-                    {console.log(item)}
+                    {/* {console.log(item)} */}
                   </p>
                   <p className="fs-xs fw-400 black mb-0 pt-1 mt-2">
                     {item.shipping.contact_person}

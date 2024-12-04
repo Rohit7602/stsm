@@ -245,7 +245,7 @@ const AddProduct = () => {
       (datas) => datas.PostalCode === areaPinCode
     );
     const areaName = filterData[0]?.AreaName || "";
-    console.log(areaName);
+    // console.log(areaName);
     setAddMoreArea((prevVariants) =>
       prevVariants.map((v, i) =>
         i === index
@@ -669,7 +669,7 @@ const AddProduct = () => {
         serviceable_areas: addMoreArea,
       };
 
-      console.log("message---------------------", showweightfield);
+      // console.log("message---------------------", showweightfield);
 
       // Check if the selected category is different from the existing category
       if (selectedCategoryId === null) {

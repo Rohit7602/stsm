@@ -75,14 +75,14 @@ const DeliverymanProfile = () => {
   }
 
   function handlePincodeChange(index) {
-    console.log(areaPinCode);
+    // console.log(areaPinCode);
     const filterData = ServiceData.filter(
       (datas) => datas.PostalCode === addMoreArea[index].pincode
     );
 
     const areaName = filterData[0]?.AreaName || "";
-    console.log(addMoreArea[index].pincode);
-    console.log(filterData[0]?.AreaName);
+    // console.log(addMoreArea[index].pincode);
+    // console.log(filterData[0]?.AreaName);
     setAddMoreArea((prevVariants) =>
       prevVariants.map((v, i) =>
         i === index
@@ -104,7 +104,7 @@ const DeliverymanProfile = () => {
         i === index ? { ...v, terretory: newSelectedAreas } : v
       )
     );
-    console.log(addMoreArea);
+    // console.log(addMoreArea);
   }
 
   const cities = ["Jaipur", "Sri Ganganagar", "Bikaner", "Jodhpur"];
@@ -170,7 +170,7 @@ const DeliverymanProfile = () => {
       if (!pincode || !area_name || terretory.length === 0) {
         // Show an alert if any field in addMoreArea is empty
         alert("Please fill in all fields for the service area");
-        console.log("asdadfasf", pincode, area_name, terretory);
+        // console.log("asdadfasf", pincode, area_name, terretory);
         setLoading(false);
         return;
       }
@@ -202,7 +202,7 @@ const DeliverymanProfile = () => {
       querySnapshot.forEach((doc) => {
         const deliveryData = doc.data();
         if (deliveryData.d_id === id) {
-          console.log(deliveryData);
+          // console.log(deliveryData);
           updateDoc(doc.ref, { serviceArea: [] });
           // Set loader status to false
           setLoading(false);
@@ -263,14 +263,14 @@ const DeliverymanProfile = () => {
     let todayordersCount = 0;
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
-
     orders.forEach((order) => {
-      if (order.assign_to === DeliveryManId[0].id) {
+      if (
+        order.assign_to === DeliveryManId[0].id &&
+        order.status.toUpperCase() === "DELIVERED"
+      ) {
         ordersCount++;
-
         const dateToCompare = new Date(order.transaction.date);
         dateToCompare.setHours(0, 0, 0, 0);
-
         if (dateToCompare.getTime() === currentDate.getTime()) {
           todayordersCount++;
         }
@@ -466,7 +466,7 @@ const DeliverymanProfile = () => {
       end.setHours(23, 59, 59, 999);
 
       filterOrdersByDateRange(start, end);
-      console.log(`Fetching orders from ${startDate} to ${endDate}...`);
+      // console.log(`Fetching orders from ${startDate} to ${endDate}...`);
     } else {
       console.error(
         "Please select both start and end dates for the custom range."
@@ -477,6 +477,11 @@ const DeliverymanProfile = () => {
   const formatDate = (date) => {
     return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
   };
+
+console.log(filterData[0].id);
+
+ let totalorder = orders.filter((value) => value.assign_to === filterData[0].id)
+  
 
   if (loading) {
     return <Loader />;
@@ -1129,14 +1134,19 @@ const DeliverymanProfile = () => {
               </div>
             </div>
             <div className="d-flex align-items-center text-center bg_light_orange">
-              <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
+              <div className="profile_top_data_width d-flex align-items-center pt-3 flex-column">
                 <p className="fs-sm fw-400 black m-0">Total Delivery</p>
-                <p className="fs_24 fw_600 red m-0 mt-2">{totalOrders}</p>
+                <p className="fs_24 fw_600 red m-0 mt-3">{totalOrders}</p>
               </div>
               {/* <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
                 <p className="fs-sm fw-400 black m-0">On Site Orders</p>
                 <p className="fs_24 fw_600 black m-0 mt-2">{onSiteOrders}</p>
               </div> */}
+            </div>
+
+            <div className="profile_top_data_width d-flex align-items-center pt-3 flex-column bg_light_orange">
+              <p className="fs-sm fw-400 black m-0">View All Orders</p>
+              <p className="fs_24 fw_600 red m-0 mt-3">{totalorder.length}</p>
             </div>
             <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_green">
               <p className="fs-sm fw-400 black m-0">Wallet Balance</p>

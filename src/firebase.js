@@ -26,13 +26,13 @@ const storage = getStorage(app);
 const messaging = getMessaging(app);
 
 export async function permissionHandler() {
-  console.log("Permission handler working");
+  // console.log("Permission handler working");
 
   try {
     const permission = await Notification.requestPermission();
 
     if (permission === "granted") {
-      console.log("Permission granted");
+      // console.log("Permission granted");
 
       const currentToken = await getToken(messaging, {
         vapidKey:
@@ -40,7 +40,7 @@ export async function permissionHandler() {
       });
 
       if (currentToken) {
-        console.log("Client Token:", currentToken);
+        // console.log("Client Token:", currentToken);
 
         const docRef = doc(db, "User", "ti5NJbZ865UFK6iNb431iiHqCox1");
         const docSnap = await getDoc(docRef);
@@ -64,7 +64,7 @@ export async function permissionHandler() {
 }
 
 export function onMessageListener() {
-  console.log("Function is working");
+  // console.log("Function is working");
   onMessage(messaging, (payload) => {
     alert(`${payload.notification?.title}: ${payload.notification?.body}`);
   });

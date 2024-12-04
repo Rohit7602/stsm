@@ -51,7 +51,7 @@ export default function ComplainDetails() {
         sender_id: "admin",
       };
       const docRef = await addDoc(collection(db, `Complaints/${complainId}/Reply`), adminReply);
-      console.log("Document written with ID: ", docRef.id);
+      // console.log("Document written with ID: ", docRef.id);
       if (customerComplain.length === 1) {
         const resolveLog = {
           description: resolutionValue,

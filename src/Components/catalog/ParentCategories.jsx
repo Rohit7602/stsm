@@ -133,7 +133,7 @@ const ParentCategories = () => {
       toast.error(e, {
         position: toast.POSITION.TOP_RIGHT,
       });
-      console.log(e);
+      // console.log(e);
     }
   }
 
@@ -305,10 +305,10 @@ async function HandleSaveEditCategory(e) {
           categorynumber: matchedCategoryCategoryNumber,
         });
         await batch.commit();
-        console.log("Swapped categorynumbers:", {
-          matchedCategory: matchedCategoryCategoryNumber,
-          currentCategory: currentCategoryCategoryNumber,
-        });
+        // console.log("Swapped categorynumbers:", {
+        //   matchedCategory: matchedCategoryCategoryNumber,
+        //   currentCategory: currentCategoryCategoryNumber,
+        // });
       }
     } else {
       console.log("No matching category found or trying to swap with itself.");

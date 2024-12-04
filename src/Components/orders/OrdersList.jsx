@@ -11,9 +11,12 @@ import { exec } from "apexcharts";
 import viewBill from "../invoices/InvoiceBill";
 import { ReactToPrint } from "react-to-print";
 import billLogo from "../../Images/svgs/bill-logo.svg";
+import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
 const OrderList = () => {
   const componentRef = useRef();
   // context
+
+  const { DeliveryManData } = UseDeliveryManContext();
   const { orders, updateData } = useOrdercontext();
   const [searchvalue, setSearchvalue] = useState("");
   const [selectedBill, setSelectedBill] = useState("");
@@ -25,9 +28,9 @@ const OrderList = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedRange, setSelectedRange] = useState("");
+  const [deliveryname, setDeliveryName] = useState("");
+  const [deliveryid, setDeliveryId] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState([]);
-
-  
 
   const handleBillNumberClick = (invoiceNumber) => {
     const bill = orders.filter(
@@ -248,18 +251,33 @@ const OrderList = () => {
         width: 30,
       },
       {
+        header: "ServiceArea",
+        key: "ServiceArea",
+        width: 30,
+      },
+      {
         header: "Address",
         key: "Address",
         width: 70,
       },
       {
-        header: "DeliverymanId",
-        key: "DeliverymanId",
+        header: "Deliveryman Name",
+        key: "deliveryname",
         width: 35,
       },
       {
         header: "phoneNo",
         key: "phoneNo",
+        width: 15,
+      },
+      {
+        header: "Alternate Name",
+        key: "alternatname",
+        width: 15,
+      },
+      {
+        header: "Alternate PhoneNo",
+        key: "alternatephoneno",
         width: 15,
       },
 
@@ -281,11 +299,18 @@ const OrderList = () => {
         Customer: order.customer.name,
         PaymentStatus: order.transaction.status,
         OrderStatus: order.status,
+        alternatephoneno: order.alternateCustomer
+          ? order.alternateCustomer.phone
+          : "",
+        alternatname: order.alternateCustomer
+          ? order.alternateCustomer.name
+          : "",
+        ServiceArea: order.shipping.city,
         items: order.items.map((v) => `${v.title} - ${v.size}`).join(","),
         OrderPrice: order.order_price,
         Address: order.shipping.address,
         phoneNo: order.customer.phone,
-        DeliverymanId: order.assign_to,
+        deliveryname: order.deliveryname ?  order.deliveryname  : "",
       });
     });
 
@@ -302,6 +327,8 @@ const OrderList = () => {
       window.URL.revokeObjectURL(url);
     });
   }
+
+  
 
   /*  *******************************
   Export  Excel File end  here  
@@ -411,8 +438,18 @@ const OrderList = () => {
     );
   };
 
+  const onhandelchange = (event) => {
+    setDeliveryName(event.target.value);
+    if (event.target.value !== "All") {
+      let filterdeliveryid = DeliveryManData.filter(
+        (value) =>
+          value.basic_info.name.toLowerCase() ===
+          event.target.value.toLowerCase()
+      );
+      setDeliveryId(filterdeliveryid[0].id);
+    }
+  };
 
-  
   return (
     <div className="main_panel_wrapper overflow-x-hidden bg_light_grey w-100">
       {datepop ? <div className="bg_black_overlay"></div> : null}
@@ -445,18 +482,17 @@ const OrderList = () => {
             </div>
             <div className="border border-dark-subtle mt-4 w-100 px-2">
               <select
-                value={orderStatus}
-                onChange={handleOrderStatusChange}
+                required
+                value={deliveryname}
+                onChange={onhandelchange}
                 className="w-100 outline_none py-2 border-0"
               >
-                <option value=""> Select Delivery Man</option>
-                <option value="Delivered">Delivered</option>
-                <option value="Rejected">Rejected</option>
-                <option value="New">New</option>
-                <option value="Processing">Processing</option>
-                <option value="Out_for_delivery">Out for Delivery</option>
-                <option value="Cancelled">Cancelled</option>
-                <option value="Confirmed">Confirmed</option>
+                <option value={"All"}>Select Delivery</option>
+                {DeliveryManData.map((value, i) => (
+                  <option key={i} value={value.basic_info.name}>
+                    {value.basic_info.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -554,7 +590,9 @@ const OrderList = () => {
                   setStartDate(""),
                   setEndDate(""),
                   setSelectedRange(""),
-                  setSelectedStatuses([])
+                  setSelectedStatuses([]),
+                  setDeliveryId(""),
+                  setDeliveryName("")
                 )}
                 type="button"
                 className="apply_btn fs-sm fw-normal btn_bg_green"
@@ -759,6 +797,13 @@ const OrderList = () => {
                           value.status.toLowerCase() ===
                           data[searchdata].toLowerCase()
                         );
+                      }
+                    })
+                    .filter((value) => {
+                      if (deliveryid === "") {
+                        return true;
+                      } else {
+                        return value.assign_to === deliveryid;
                       }
                     })
 

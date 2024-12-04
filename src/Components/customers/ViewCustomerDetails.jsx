@@ -12,39 +12,31 @@ import { useCustomerContext } from "../../context/Customergetters";
 import { add, formatDistanceToNow } from "date-fns";
 import { useOrdercontext } from "../../context/OrderGetter";
 import { Link } from "react-router-dom";
+import filtericon from "../../Images/svgs/filtericon.svg";
 
 const ViewCustomerDetails = () => {
   const { orders } = useOrdercontext();
   const { customer } = useCustomerContext();
   const { id } = useParams();
+  const [filterpop, setFilterPop] = useState(false);
+  const [orderStatus, setOrderStatus] = useState("");
+  const [showCustomDate, setShowCustomDate] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [selectedRange, setSelectedRange] = useState("");
   let filterData = customer.filter((item) => item.id == id);
-  console.log(":ASDFASDF", filterData);
   const targetOrder = orders.filter((order) => order.uid === id);
-  if (targetOrder) {
-    // The order with the specified ID was found
-    console.log("Found Order:", targetOrder);
-  } else {
-    // Order with the specified ID was not found
-    console.log("Order not found");
-  }
-
   const mostRecentOrder = targetOrder.reduce((maxOrder, currentOrder) => {
-    // Compare the created_at timestamps
     const maxTimestamp = maxOrder ? new Date(maxOrder.created_at).getTime() : 0;
     const currentTimestamp = new Date(currentOrder.created_at).getTime();
-
     return currentTimestamp > maxTimestamp ? currentOrder : maxOrder;
   }, null);
   const totalSpent = targetOrder.reduce((sum, order) => {
     return order.status === "DELIVERED" ? sum + order.order_price : sum;
   }, 0);
-  // const totalSpent2 = targetOrder.map((sum, order) => sum.state, 0);
-  // console.log(totalSpent2 ,  "------------------------------------");
 
   const AvergaeOrderValue = totalSpent / targetOrder.length;
-  // console.log(AvergaeOrderValue);
 
-  // format date function start
   function formatDate(dateString) {
     const options = {
       year: "numeric",
@@ -59,20 +51,16 @@ const ViewCustomerDetails = () => {
     );
     return formattedDate.replace("at", "|");
   }
-  // format date function end
-
-  // calculate time start
   const calculateTimeAgo = (timestamp) => {
     return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
   };
 
-  //  order of this month calulation
   const now = new Date();
-  const currentMonth = now.getMonth() + 1; // Note: getMonth() returns 0-based index
+  const currentMonth = now.getMonth() + 1;
 
   const ordersThisMonth = targetOrder.filter((order) => {
     const orderDate = new Date(order.created_at);
-    const orderMonth = orderDate.getMonth() + 1; // Note: getMonth() returns 0-based index
+    const orderMonth = orderDate.getMonth() + 1;
 
     return orderMonth === currentMonth;
   });
@@ -98,11 +86,206 @@ const ViewCustomerDetails = () => {
   //   fetchData();
   // }, []);
 
-console.log(targetOrder ,);
+  // console.log(targetOrder);
+  const handleOrderStatusChange = (e) => {
+    const newStatus = e.target.value;
+    setOrderStatus(newStatus);
+  };
 
+  const handleDateRangeSelection = (range) => {
+    setSelectedRange(range);
+    const today = new Date();
+    switch (range) {
+      case "yesterday":
+        setStartDate(
+          new Date(today.setDate(today.getDate() - 1))
+            .toISOString()
+            .split("T")[0]
+        );
+        setEndDate(new Date().toISOString().split("T")[0]);
+        setShowCustomDate(false);
+        break;
+      case "week":
+        setStartDate(
+          new Date(today.setDate(today.getDate() - 7))
+            .toISOString()
+            .split("T")[0]
+        );
+        setEndDate(new Date().toISOString().split("T")[0]);
+        setShowCustomDate(false);
+        break;
+      case "month":
+        setStartDate(
+          new Date(today.setMonth(today.getMonth() - 1))
+            .toISOString()
+            .split("T")[0]
+        );
+        setEndDate(new Date().toISOString().split("T")[0]);
+        setShowCustomDate(false);
+        break;
+      case "six_months":
+        setStartDate(
+          new Date(today.setMonth(today.getMonth() - 6))
+            .toISOString()
+            .split("T")[0]
+        );
+        setEndDate(new Date().toISOString().split("T")[0]);
+        setShowCustomDate(false);
+        break;
+      case "custom":
+        setStartDate("");
+        setEndDate("");
+        setShowCustomDate(true);
+        break;
+      default:
+        setShowCustomDate(false);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const searchCriteria = {
+      orderStatus,
+      startDate: selectedRange === "custom" ? startDate : startDate,
+      endDate: selectedRange === "custom" ? endDate : endDate,
+    };
+  };
 
   return (
     <>
+      {filterpop ? <div className="bg_black_overlay"></div> : null}
+      {filterpop && (
+        <div className="customer_pop position-fixed center_pop overflow-auto xl_h_500">
+          <div className="text-end">
+            <button
+              className="border-0 bg-transparent px-1 fw-500 fs-4"
+              onClick={() => setFilterPop(false)}
+            >
+              ✗
+            </button>
+          </div>
+          <form onSubmit={handleSubmit}>
+            <div className="border border-dark-subtle mt-4 w-100 px-2">
+              <select
+                value={orderStatus}
+                onChange={handleOrderStatusChange}
+                className="w-100 outline_none py-2 border-0"
+              >
+                <option value="">Order Status</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Rejected">Rejected</option>
+                <option value="New">New</option>
+                <option value="Processing">Processing</option>
+                <option value="Out_for_delivery">Out for Delivery</option>
+                <option value="Cancelled">Cancelled</option>
+                <option value="Confirmed">Confirmed</option>
+              </select>
+            </div>
+            <div className="mb-3 mt-2">
+              <label className="text-black fs-xs" htmlFor="Spent">
+                Select Order Date Range
+              </label>
+              <div className="d-flex flex-column mt-2">
+                <button
+                  type="button"
+                  className={` ${
+                    selectedRange === "yesterday"
+                      ? " bg-secondary text-white"
+                      : ""
+                  } btn btn-outline-secondary mb-1`}
+                  onClick={() => handleDateRangeSelection("yesterday")}
+                >
+                  Yesterday
+                </button>
+                <button
+                  type="button"
+                  className={` ${
+                    selectedRange === "week" ? " bg-secondary text-white" : ""
+                  } btn btn-outline-secondary mb-1`}
+                  onClick={() => handleDateRangeSelection("week")}
+                >
+                  One Week
+                </button>
+                <button
+                  type="button"
+                  className={` ${
+                    selectedRange === "month" ? "bg-secondary text-white" : ""
+                  } btn btn-outline-secondary mb-1`}
+                  onClick={() => handleDateRangeSelection("month")}
+                >
+                  One Month
+                </button>
+                <button
+                  type="button"
+                  className={` ${
+                    selectedRange === "six_months"
+                      ? "bg-secondary text-white"
+                      : ""
+                  } btn btn-outline-secondary mb-1`}
+                  onClick={() => handleDateRangeSelection("six_months")}
+                >
+                  Six Months
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={() => handleDateRangeSelection("custom")}
+                >
+                  Custom
+                </button>
+              </div>
+            </div>
+
+            {showCustomDate && (
+              <div className="p-3 border rounded bg-light mt-2">
+                <div className="mb-2">
+                  <label htmlFor="startDate" className="form-label">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="form-control"
+                    placeholder="Start Date"
+                    max={new Date().toISOString().split("T")[0]}
+                  />
+                </div>
+                <div className="mb-2">
+                  <label htmlFor="endDate" className="form-label">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="form-control"
+                    placeholder="End Date"
+                    max={new Date().toISOString().split("T")[0]}
+                  />
+                </div>
+              </div>
+            )}
+            <div className="text-end mt-4">
+              <button
+                onClick={() => (
+                  setOrderStatus(""),
+                  setStartDate(""),
+                  setEndDate(""),
+                  setSelectedRange("")
+                )}
+                type="button"
+                className="apply_btn fs-sm fw-normal btn_bg_green"
+              >
+                Reset
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
       {filterData.map((Customerdata, index) => {
         return (
           <div
@@ -118,6 +301,18 @@ console.log(targetOrder ,);
                   </h1>
                 </div>
                 <div className="d-flex align-itmes-center gap-3">
+                  <button
+                    className="filter_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400  "
+                    onClick={() => setFilterPop(true)}
+                  >
+                    <img
+                      className="me-1"
+                      width={24}
+                      src={filtericon}
+                      alt="filtericon"
+                    />
+                    Filter
+                  </button>
                   <button className="reset_border">
                     <button className="fs-sm reset_btn  border-0 fw-400 ">
                       Block Customer
@@ -254,8 +449,29 @@ console.log(targetOrder ,);
                                   </th>
                                 </tr>
                               </thead>
-                              <tbody className="table_body costomer_order_table">
+                              <tbody className="table_body costomer_order_table">                   
                                 {targetOrder
+                                  .filter((item) =>
+                                    orderStatus 
+                                      ? item.status.toLowerCase() ===
+                                        orderStatus.toLowerCase()
+                                      : targetOrder
+                                  )
+                                  .filter((item) => {
+                                    if (!startDate && !endDate) return true;
+                                    const orderDate = new Date(item.created_at);
+                                    if (
+                                      startDate &&
+                                      orderDate <= new Date(startDate)
+                                    )
+                                      return false;
+                                    if (
+                                      endDate &&
+                                      orderDate >= new Date(endDate)
+                                    )
+                                      return false;
+                                    return true;
+                                  })
                                   .sort(
                                     (a, b) =>
                                       new Date(b.created_at) -

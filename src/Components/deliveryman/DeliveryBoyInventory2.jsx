@@ -25,7 +25,6 @@ function DeliveryBoyInventory2() {
   const { id } = useParams();
   const [loaderstatus, setLoaderstatus] = useState(false);
   const { productData } = useProductsContext();
-  const product_names = productData.map((product) => product.name);
   const [delivryMan, setDeliveryMan] = useState([]);
   const [filtervalue, setFilterValue] = useState("");
   const [productname, setproductname] = useState("");
@@ -35,12 +34,20 @@ function DeliveryBoyInventory2() {
   const [selectAll, setSelectAll] = useState([]);
   const [AllProducts, setAllProducts] = useState([]);
   const [itemSelect, setItemSelect] = useState({});
-  const[ disableUpload, setDisableUpload] = useState(false);
+  const [disableUpload, setDisableUpload] = useState(false);
 
   const [finalVanProducts, setFinalVanProducts] = useState([]);
 
+  
   function addToVan(e) {
     e.preventDefault();
+  if (
+    productname.length > 0 &&
+    addquantity > 0 &&
+    (itemSelect.item.stockUnitType === "KG" && varienttype === "GRAM"
+      ? itemSelect.item.totalStock * 1000 >= addquantity
+      : itemSelect.item.totalStock >= addquantity)
+  ) {
     setDisableUpload(true);
     let totalQuantity;
     if (itemSelect.varient == "GRAM") {
@@ -48,13 +55,12 @@ function DeliveryBoyInventory2() {
     } else {
       totalQuantity = itemSelect.updatedQuantity;
     }
-// //////////////// updating All state items /////////////////////
+    // //////////////// updating All state items /////////////////////
 
- if(AllProducts.length>0){
+    if (AllProducts.length > 0) {
       let isPresent = AllProducts.some(
         (item) => item.productid == itemSelect.item.id
       );
-      console.log(isPresent)
 
       if (isPresent) {
         for (let i of AllProducts) {
@@ -70,42 +76,37 @@ function DeliveryBoyInventory2() {
             productid: itemSelect.item.id,
             DeliveryCharge: itemSelect.item.DeliveryCharge,
             ServiceCharge: itemSelect.item.ServiceCharge,
-            brand: "",
+            brand: itemSelect.item.brand.name,
             stockUnitType: itemSelect.item.stockUnitType,
             sku: itemSelect.item.sku,
             quantity: totalQuantity,
             name: itemSelect.item.name,
+            totalStock: itemSelect.item.totalStock,
+            productImage: itemSelect.item.productImages[0],
+            salesprice: itemSelect.item.salesprice,
+            tax: itemSelect.item.Tax,
           },
         ]);
       }
-
-}else{
-  setAllProducts([
-    ...AllProducts,
-    {
-      productid: itemSelect.item.id,
-      DeliveryCharge: itemSelect.item.DeliveryCharge,
-      ServiceCharge: itemSelect.item.ServiceCharge,
-      brand: "",
-      sku: itemSelect.item.sku,
-      quantity: totalQuantity,
-    },
-  ]);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    } else {
+      setAllProducts([
+        ...AllProducts,
+        {
+          productid: itemSelect.item.id,
+          DeliveryCharge: itemSelect.item.DeliveryCharge,
+          ServiceCharge: itemSelect.item.ServiceCharge,
+          brand: itemSelect.item.brand.name,
+          stockUnitType: itemSelect.item.stockUnitType,
+          sku: itemSelect.item.sku,
+          quantity: totalQuantity,
+          name: itemSelect.item.name,
+          totalStock: itemSelect.item.totalStock,
+          productImage: itemSelect.item.productImages[0],
+          salesprice: itemSelect.item.salesprice,
+          tax: itemSelect.item.Tax,
+        },
+      ]);
+    }
 
     // handling Updating State ///////////////////////////////
     if (finalVanProducts.length > 0) {
@@ -143,17 +144,110 @@ function DeliveryBoyInventory2() {
     setvarienttype("");
     setproductname("");
     setaddquantity(0);
+  } else if (addquantity === 0 || productname.length === 0) {
+    toast.error("Please select each field", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+  } else {
+    toast.warning("Product stock not available", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+  }
   }
 
-
-
-///////////////////////             update entry                      ////////////////////////////////////
-  function updateEntry(e) {
+  ///////////////////////             update entry                      ////////////////////////////////////
+  async function updateEntry(e) {
     e.preventDefault();
     setDisableUpload(false);
-     console.log(AllProducts,'all products in van or say firebase');
-    console.log(finalVanProducts);
-    console.log(itemSelect)
+    let batch = writeBatch(db);
+    try {
+      for (const items of AllProducts) {
+        const vanDocRef = doc(db, `Delivery/${id}/Van/${items.id}`);
+        const existingDoc = await getDoc(vanDocRef);
+        if (!existingDoc.exists()) {
+          await addDoc(collection(db, `Delivery/${id}/Van`), items);
+        } else {
+          const newQty = items.quantity ?? 0;
+          batch.update(vanDocRef, { quantity: newQty });
+        }
+
+        for (const element of finalVanProducts) {
+          const productDocRef = doc(db, "products", element.id);
+          const productDocSnap = await getDoc(productDocRef);
+          if (productDocSnap.exists()) {
+            const productData = productDocSnap.data();
+            const updatedStock =
+              productData.totalStock - element.updatedQuantity;
+            let fixdstokes = updatedStock.toFixed(2)
+            batch.update(productDocRef, { totalStock: Number(fixdstokes) });
+          }
+        }
+      }
+    } catch (error) {
+      setLoaderstatus(false);
+      console.log("Error in Adding Data to Van", error);
+    }
+    setAllProducts([]);
+    await batch.commit();
+    setLoaderstatus(true);
+    window.location.reload();
+    setLoaderstatus(false);
+
+    // Success toast message
+    toast.success("Product added Successfully!", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+  }
+
+  //////////////////////////////////
+
+  async function handleWithdrow() {
+    try {
+      setLoaderstatus(true);
+      const itemsToAdd = AllProducts.filter((item) =>
+        selectAll.includes(item.id)
+      );
+      for (let item of itemsToAdd) {
+        const docRef = doc(db, "products", item.productid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const productData = docSnap.data();
+          let totalStock = productData.totalStock; // Current stock
+          let updatedStock = totalStock + item.quantity;
+          let fixedstokes = updatedStock.toFixed(2)
+          const updateRef = doc(db, "products", item.productid);
+          await updateDoc(updateRef, {
+            totalStock: Number(fixedstokes),
+          });
+        } else {
+          console.log(`No document found for product ID: ${item.productid}`);
+        }
+      }
+      // Van sub-collection operations
+      const vanCollectionRef = collection(db, `Delivery/${id}/Van`);
+      const querySnapshot = await getDocs(vanCollectionRef);
+      // Delete existing Van documents
+      for (let doc of querySnapshot.docs) {
+        await deleteDoc(doc.ref);
+      }
+      // Add updated items back to the Van sub-collection
+      const updateVan = AllProducts.filter(
+        (item) => !selectAll.includes(item.id)
+      );
+      for (let item of updateVan) {
+        await addDoc(vanCollectionRef, item);
+      }
+      // Update local state
+      setAllProducts(updateVan);
+       window.location.reload();
+      setLoaderstatus(false);
+      toast.success("Product withdrawn successfully!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      setLoaderstatus(false);
+      console.error("Error in withdrawing product:", error);
+    }
   }
 
   //////////////   filter delivryMan data  ////////////////
@@ -259,11 +353,12 @@ function DeliveryBoyInventory2() {
                 </button>
                 {AllProducts.length !== 0 && (
                   <button
-              
+                    onClick={handleWithdrow}
                     disabled={disableUpload}
-                    className=" outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400"
+                    className={`${
+                      disableUpload ? "opacity-50" : "opacity-100"
+                    } outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400`}
                   >
-
                     Unload Van
                   </button>
                 )}
@@ -354,7 +449,7 @@ function DeliveryBoyInventory2() {
                         Total Stokes :{" "}
                         {selectedproduct.length === 0
                           ? "N/A"
-                          : ` ${selectedproduct[0].totalStock}  ${selectedproduct[0].stockUnitType}`}
+                          : ` ${(selectedproduct[0].totalStock)}  ${selectedproduct[0].stockUnitType}`}
                       </p>
                     </div>
                   </div>
@@ -499,7 +594,7 @@ function DeliveryBoyInventory2() {
                               </td>
                               <td className="mx_140">
                                 <h3 className="fs-sm fw-400 black mb-0 color_green ms-3">
-                                  {item.addquantity}
+                                  {item.quantity}
                                   <span className=" ms-1">
                                     {item.stockUnitType == "GRAM"
                                       ? "KG"

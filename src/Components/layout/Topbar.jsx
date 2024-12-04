@@ -12,7 +12,7 @@ export default function Topbar({ setOpen, open }) {
   } = useNotification();
 
   const location = useLocation();
-  console.log();
+  // console.log();
 
   return (
     <nav className="top_bar  bg-white py-2 position-sticky">

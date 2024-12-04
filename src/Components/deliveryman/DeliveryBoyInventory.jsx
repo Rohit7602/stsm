@@ -210,14 +210,19 @@ const DeliveryBoyInventory = () => {
       toast.error("Please select each field", {
         position: toast.POSITION.TOP_RIGHT,
       });
-    } else {
+    }
+    
+    
+    else {
       if (
         selectedproduct.length > 0 &&
         quantity > 0 &&
         (selectedproduct[0].stockUnitType === "KG" && varienttype === "GRAM"
           ? selectedproduct[0].totalStock * 1000 >= quantity
           : selectedproduct[0].totalStock >= quantity)
-      ) {
+      )
+      
+      {
         let productToUpdate = selectedproduct[0];
 
         setAllItems((prevVariants) => {
@@ -271,7 +276,9 @@ const DeliveryBoyInventory = () => {
         setselectedProduct([]);
         setquantity(0);
         setvarienttype("");
-      } else if (quantity === 0 || selectedproduct.length === 0) {
+      }
+      
+      else if (quantity === 0 || selectedproduct.length === 0) {
         toast.error("Please select each field", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -291,7 +298,7 @@ async function UpdateEntry(e) {
     try {
       let batch = writeBatch(db);
       for (let item of AllItems) {
-        console.log(item);
+        // console.log(item);
 
         const vanDocRef = doc(db, `Delivery/${id}/Van/${item.id}`);
         const existingDoc = await getDoc(vanDocRef);

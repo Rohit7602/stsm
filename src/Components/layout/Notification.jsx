@@ -43,7 +43,7 @@ function Notification() {
     setShowbtn(false)
   }
 
-  console.log(storedata);
+  // console.log(storedata);
 
   return (
     <div

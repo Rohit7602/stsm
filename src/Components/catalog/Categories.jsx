@@ -182,7 +182,7 @@ const Categories = () => {
     setEditCatPopup(false);
     setloading(true);
     try {
-      console.log("try is working");
+      // console.log("try is working");
       let imageUrl = null;
 
       // Handle image upload if it is a file
@@ -229,10 +229,10 @@ const Categories = () => {
         });
         await batch.commit();
 
-        console.log("Swapped subcategorynumbers:", {
-          matchedCategory: matchedCategory.subcategorynumber,
-          currentCategory: Number(categorynumber),
-        });
+        // console.log("Swapped subcategorynumbers:", {
+        //   matchedCategory: matchedCategory.subcategorynumber,
+        //   currentCategory: Number(categorynumber),
+        // });
       }
       const updateData = {
         title: editCatName,
@@ -422,7 +422,7 @@ const Categories = () => {
       toast.error(e, {
         position: toast.POSITION.TOP_RIGHT,
       });
-      console.log(e);
+      // console.log(e);
     }
   }
 
@@ -688,10 +688,10 @@ async function HandleSaveEditCategory(e) {
           categorynumber: matchedCategoryCategoryNumber,
         });
         await batch.commit();
-        console.log("Swapped categorynumbers:", {
-          matchedCategory: matchedCategoryCategoryNumber,
-          currentCategory: currentCategoryCategoryNumber,
-        });
+        // console.log("Swapped categorynumbers:", {
+        //   matchedCategory: matchedCategoryCategoryNumber,
+        //   currentCategory: currentCategoryCategoryNumber,
+        // });
       }
     } else {
       console.log("No matching category found or trying to swap with itself.");

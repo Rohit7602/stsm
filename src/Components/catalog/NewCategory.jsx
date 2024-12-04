@@ -209,7 +209,7 @@ const NewCategory = () => {
       toast.error(e, {
         position: toast.POSITION.TOP_RIGHT,
       });
-      console.log(e);
+      // console.log(e);
     }
   }
 

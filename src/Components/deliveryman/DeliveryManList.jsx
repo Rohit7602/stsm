@@ -227,7 +227,7 @@ const DeliveryManList = () => {
                             orderCount[asignedOrder.assign_to]++;
                           }
                         }
-                        console.log(orderCount);
+                        // console.log(orderCount);
                         return (
                           <tr key={index} className="product_borderbottom">
                             <td className="py-3 ps-3 ">
