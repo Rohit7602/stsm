@@ -12,7 +12,6 @@ export function UserAuthContextProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      console.log(' CURRENT USER ', currentUser);
       if (currentUser) {
         const userSnapshot = await getDocs(
           query(collection(db, 'User'), where('uuid', '==', currentUser.uid))
@@ -22,7 +21,7 @@ export function UserAuthContextProvider({ children }) {
       } else {
         setUserData(null);
       }
-      setLoading(false); // Set loading to false after initial user data is set or user is logged out
+      setLoading(false);
     });
 
     return unsubscribe;

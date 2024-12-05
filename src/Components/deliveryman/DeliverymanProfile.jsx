@@ -9,18 +9,24 @@ import Loader from "../Loader";
 import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
 import { updateDoc, doc } from "firebase/firestore";
 import { ToastContainer, toast } from "react-toastify";
+import billLogo from "../../Images/svgs/bill-logo.svg";
 import "react-toastify/dist/ReactToastify.css";
+import dropdownDots from "../../Images/svgs/dots2.svg";
 import { db } from "../../firebase";
+import eye_icon from "../../Images/svgs/eye.svg";
+import shortIcon from "../../Images/svgs/short-icon.svg";
 import { UseServiceContext } from "../../context/ServiceAreasGetter";
 import filtericon from "../../Images/svgs/filtericon.svg";
 import { collection, getDocs } from "firebase/firestore";
 import { useOrdercontext } from "../../context/OrderGetter";
 import { CrossIcons } from "../../Common/Icon";
 import { useNotification } from "../../context/NotificationContext";
+import ReactToPrint from "react-to-print";
 // import { collection, getDocs } from 'firebase/firestore';
 const DeliverymanProfile = () => {
   const { DeliveryManData, updateDeliveryManData } = UseDeliveryManContext();
   const { ServiceData } = UseServiceContext();
+  const componentRef = useRef();
   const { id } = useParams();
   const [filterData, setfilterData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -32,6 +38,7 @@ const DeliverymanProfile = () => {
   const [rejectReason, setRejectReason] = useState("");
   const [totalOrders, setTotalOrders] = useState(0);
   const [totaldailyOrders, setTotalDailyOrders] = useState(0);
+  const [todaydailyOrders, setTodayDailyOrders] = useState(0);
   const [onSiteOrders, setOnSiteOrders] = useState(0);
   const [wallet, setWallet] = useState(0);
   const [areaPinCode, setAreaPinCode] = useState(null);
@@ -39,7 +46,9 @@ const DeliverymanProfile = () => {
   const { orders } = useOrdercontext();
   const [showCustomDate, setShowCustomDate] = useState(false);
   const [startDate, setStartDate] = useState("");
+  const [selectedBill, setSelectedBill] = useState("");
   const [endDate, setEndDate] = useState("");
+    const [selectAll, setSelectAll] = useState([]);
   const [addMoreArea, setAddMoreArea] = useState([
     {
       pincode: "",
@@ -67,6 +76,21 @@ const DeliverymanProfile = () => {
         terretory: [],
       },
     ]);
+  }
+
+  function formatDate2(dateString) {
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    };
+    const formattedDate = new Date(dateString).toLocaleDateString(
+      undefined,
+      options
+    );
+    return formattedDate.replace("at", "|");
   }
 
   function handleDeleteArea(index) {
@@ -261,6 +285,7 @@ const DeliverymanProfile = () => {
 
     let ordersCount = 0;
     let todayordersCount = 0;
+    let todayOrders = [];
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
     orders.forEach((order) => {
@@ -275,7 +300,21 @@ const DeliverymanProfile = () => {
           todayordersCount++;
         }
       }
+
+      if (order.assign_to === DeliveryManId[0].id) {
+        const orderdate = new Date(order.created_at);
+        const todaydate = new Date();
+        const isSameDate =
+          orderdate.getFullYear() === todaydate.getFullYear() &&
+          orderdate.getMonth() === todaydate.getMonth() &&
+          orderdate.getDate() === todaydate.getDate();
+        if (isSameDate) {
+          todayOrders.push(order);
+        }
+      }
     });
+
+    setTodayDailyOrders(todayOrders);
 
     setTotalOrders(ordersCount);
     setTotalDailyOrders(todayordersCount);
@@ -298,6 +337,13 @@ const DeliverymanProfile = () => {
   if (!id || filterData.length === 0) {
     return <Loader> </Loader>;
   }
+
+  const handleBillNumberClick = (invoiceNumber) => {
+    const bill = orders.filter(
+      (order) => order.invoiceNumber === invoiceNumber
+    );
+    setSelectedBill([...bill]);
+  };
 
   // useEffect(() => {
   //   if (filterData.length > 0) {
@@ -478,10 +524,34 @@ const DeliverymanProfile = () => {
     return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
   };
 
-console.log(filterData[0].id);
-
- let totalorder = orders.filter((value) => value.assign_to === filterData[0].id)
+    function handleSelectAll() {
+      if (orders.length === selectAll.length) {
+        setSelectAll([]);
+      } else {
+        let allCheck = orders.map((item) => {
+          return item.id;
+        });
+        setSelectAll(allCheck);
+      }
+  }
   
+    function handleSelect(e) {
+      let isChecked = e.target.checked;
+      let value = e.target.value;
+      if (isChecked) {
+        setSelectAll([...selectAll, value]);
+      } else {
+        setSelectAll((prev) =>
+          prev.filter((id) => {
+            return id != value;
+          })
+        );
+      }
+    }
+
+  let totalorder = orders.filter(
+    (value) => value.assign_to === filterData[0].id
+  );
 
   if (loading) {
     return <Loader />;
@@ -1124,30 +1194,32 @@ console.log(filterData[0].id);
         {datas.profile_status === "APPROVED" ? (
           <div className="d-flex align-items-center text-center gap-4 mt-4 pb-2 flex-wrap">
             <div className="d-flex align-items-center text-center bg_light_orange">
-              <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
-                <p className="fs-sm fw-400 black m-0">Today Delivery</p>
-                <p className="fs_24 fw_600 red m-0 mt-2">{totaldailyOrders}</p>
+              <div className="profile_top_data_width d-flex align-items-center py-3  flex-column">
+                <p className="fs-sm fw-400 black m-0">Today Order</p>
+                <p className="fs_24 fw_600 red m-0 mt-3">
+                  {todaydailyOrders.length}
+                </p>
               </div>
-              <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
+              <div className="profile_top_data_width d-flex align-items-center py-3  flex-column">
+                <p className="fs-sm fw-400 black m-0">Today Delivery</p>
+                <p className="fs_24 fw_600 red m-0 mt-3">{totaldailyOrders}</p>
+              </div>
+              <div className="profile_top_data_width d-flex align-items-center py-3  flex-column">
                 <p className="fs-sm fw-400 black m-0">On Site Orders</p>
-                <p className="fs_24 fw_600 black m-0 mt-2">{onSiteOrders}</p>
+                <p className="fs_24 fw_600 black m-0 mt-3">{onSiteOrders}</p>
               </div>
             </div>
             <div className="d-flex align-items-center text-center bg_light_orange">
-              <div className="profile_top_data_width d-flex align-items-center pt-3 flex-column">
+              <div className="profile_top_data_width d-flex align-items-center py-3  flex-column">
+                <p className="fs-sm fw-400 black m-0">All Orders</p>
+                <p className="fs_24 fw_600 red m-0 mt-3">{totalorder.length}</p>
+              </div>
+              <div className="profile_top_data_width d-flex align-items-center py-3 flex-column">
                 <p className="fs-sm fw-400 black m-0">Total Delivery</p>
                 <p className="fs_24 fw_600 red m-0 mt-3">{totalOrders}</p>
               </div>
-              {/* <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column">
-                <p className="fs-sm fw-400 black m-0">On Site Orders</p>
-                <p className="fs_24 fw_600 black m-0 mt-2">{onSiteOrders}</p>
-              </div> */}
             </div>
 
-            <div className="profile_top_data_width d-flex align-items-center pt-3 flex-column bg_light_orange">
-              <p className="fs-sm fw-400 black m-0">View All Orders</p>
-              <p className="fs_24 fw_600 red m-0 mt-3">{totalorder.length}</p>
-            </div>
             <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_green">
               <p className="fs-sm fw-400 black m-0">Wallet Balance</p>
               <p className="fs_24 fw_600 green m-0 mt-2">₹ {wallet}</p>
@@ -1171,6 +1243,287 @@ console.log(filterData[0].id);
             </div>
           </div>
         ) : null}
+
+        <div className=" my-5">
+          <div className="overflow-x-scroll line_scroll border bg-white">
+            <div style={{ minWidth: "1650px", height: "300px" }}>
+              <table className="w-100 d-flex flex-column">
+                <thead
+                  className="table_head w-100 position-sticky  bg-white"
+                  style={{ zIndex: "1" , top:'-1px'}}
+                >
+                  <tr className="product_borderbottom">
+                    <th className="mw-200 p-3 cursor_pointer">
+                      <div className="d-flex align-items-center">
+                        <label className="check1 fw-400 fs-sm black mb-0">
+                          <input
+                            type="checkbox"
+                            checked={selectAll.length === todaydailyOrders.length}
+                            onChange={handleSelectAll}
+                          />
+                          <span className="checkmark"></span>
+                        </label>
+                        <p className="fw-400 fs-sm black mb-0 ms-2">
+                          Order Number
+                          <span>
+                            <img
+                              className="ms-2 cursor_pointer"
+                              width={20}
+                              src={shortIcon}
+                              alt="short-icon"
+                            />
+                          </span>
+                        </p>
+                      </div>
+                    </th>
+                    <th className="mw-200 p-2">
+                      <h3 className="fs-sm fw-400 black mb-0">Invoice</h3>
+                    </th>
+                    <th className="mw-200 p-3">
+                      <h3 className="fs-sm fw-400 black mb-0">Date</h3>
+                    </th>
+                    <th className="mw-200 p-3">
+                      <h3 className="fs-sm fw-400 black mb-0">Customer </h3>
+                    </th>
+                    <th className="mw_160 p-3 cursor_pointer">
+                      <span className="d-flex align-items-center">
+                        <h3 className="fs-sm fw-400 black mb-0 white_space_nowrap text-capitalize">
+                          Payment Status
+                          <span>
+                            <img
+                              className="ms-2 cursor_pointer"
+                              width={20}
+                              src={shortIcon}
+                              alt="short-icon"
+                            />
+                          </span>
+                        </h3>
+                      </span>
+                    </th>
+                    <th className="mw_160 p-3 cursor_pointer">
+                      <h3 className="fs-sm fw-400 black mb-0">
+                        Order Status
+                        <span>
+                          <img
+                            className="ms-2 cursor_pointer"
+                            width={20}
+                            src={shortIcon}
+                            alt="short-icon"
+                          />
+                        </span>
+                      </h3>
+                    </th>
+                    <th className="mw_140 p-3">
+                      <h3 className="fs-sm fw-400 black mb-0">Items</h3>
+                    </th>
+                    <th className="mw_160 p-3 cursor_pointer">
+                      <h3 className="fs-sm fw-400 black mb-0">
+                        Order Price
+                        <span>
+                          <img
+                            className="ms-2 cursor_pointer"
+                            width={20}
+                            src={shortIcon}
+                            alt="short-icon"
+                          />
+                        </span>
+                      </h3>
+                    </th>
+                    <th className="mx_100 p-3 pe-4 text-center">
+                      <h3 className="fs-sm fw-400 black mb-0">Action</h3>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="table_body3 flex-grow-1 bg-white">
+                  {todaydailyOrders
+                    .sort(
+                      (a, b) => new Date(b.created_at) - new Date(a.created_at)
+                    )
+                    .map((orderTableData, index) => {
+                      return (
+                        <tr>
+                          <td className="p-3 mw-200">
+                            <span className="d-flex align-items-center">
+                              <label className="check1 fw-400 fs-sm black mb-0">
+                                <input
+                                  type="checkbox"
+                                  value={orderTableData.id}
+                                  checked={selectAll.includes(
+                                    orderTableData.id
+                                  )}
+                                  onChange={handleSelect}
+                                />
+                                <span className="checkmark"></span>
+                              </label>
+                              <Link
+                                className="fw-400 fs-sm color_blue ms-2"
+                                to={`/orders/orderdetails/${orderTableData.order_id}`}
+                              >
+                                # {orderTableData.order_id}
+                              </Link>
+                            </span>
+                          </td>
+                          <td className="p-2 mw-200">
+                            {orderTableData.invoiceNumber !== undefined && (
+                              <button
+                                onClick={() =>
+                                  handleBillNumberClick(
+                                    orderTableData.invoiceNumber
+                                  )
+                                }
+                                className="border-0 bg-white"
+                              >
+                                <ReactToPrint
+                                  trigger={() => {
+                                    return (
+                                      <h3 className="fs-xs fw-400 color_blue mb-0">
+                                        #{orderTableData.invoiceNumber}
+                                      </h3>
+                                    );
+                                  }}
+                                  content={() => componentRef.current}
+                                  documentTitle="Invoice"
+                                  pageStyle="print"
+                                />
+                              </button>
+                            )}
+                            {orderTableData.invoiceNumber === undefined && (
+                              <h3 className="fs-xs fw-400 color_blue mb-0">
+                                #N/A
+                              </h3>
+                            )}
+                          </td>
+                          <td className="p-3 mw-200">
+                            <h3 className="fs-xs fw-400 black mb-0">
+                              {formatDate2(orderTableData.created_at)}
+                            </h3>
+                          </td>
+                          <td className="p-3 mw-200">
+                            <Link
+                              to={
+                                orderTableData.order_created_by === "Van"
+                                  ? ""
+                                  : `/customer/viewcustomerdetails/${orderTableData.uid}`
+                              }
+                            >
+                              <h3 className="fs-sm fw-400 color_blue mb-0">
+                                {orderTableData.customer.name}
+                              </h3>
+                            </Link>
+                          </td>
+                          <td className="p-3 mw_160">
+                            <h3
+                              className={`fs-sm fw-400 mb-0 d-inline-block ${
+                                orderTableData.status
+                                  .toString()
+                                  .toUpperCase() !== "CANCELLED" &&
+                                orderTableData.status
+                                  .toString()
+                                  .toUpperCase() !== "REJECTED" &&
+                                orderTableData.status
+                                  .toString()
+                                  .toUpperCase() !== "RETURNED"
+                                  ? orderTableData.transaction.status
+                                      .toString()
+                                      .toLowerCase() === "paid"
+                                    ? "black stock_bg"
+                                    : orderTableData.transaction.status
+                                        .toString()
+                                        .toLowerCase() === "cod"
+                                    ? "black cancel_gray"
+                                    : orderTableData.transaction.status
+                                        .toString()
+                                        .toLowerCase() === "refund"
+                                    ? "new_order red"
+                                    : "color_brown on_credit_bg"
+                                  : ""
+                              }`}
+                            >
+                              {orderTableData.status
+                                .toString()
+                                .toUpperCase() !== "CANCELLED" &&
+                              orderTableData.status.toString().toUpperCase() !==
+                                "REJECTED" &&
+                              orderTableData.status.toString().toUpperCase() !==
+                                "RETURNED"
+                                ? orderTableData.transaction.status
+                                : null}
+                            </h3>
+                          </td>
+                          <td className="p-3 mw_190">
+                            <p
+                              className={`d-inline-block ${
+                                orderTableData.status
+                                  .toString()
+                                  .toLowerCase() === "new"
+                                  ? "fs-sm fw-400 red mb-0 new_order"
+                                  : orderTableData.status
+                                      .toString()
+                                      .toLowerCase() === "processing"
+                                  ? "fs-sm fw-400 mb-0 processing_skyblue"
+                                  : orderTableData.status
+                                      .toString()
+                                      .toLowerCase() === "delivered"
+                                  ? "fs-sm fw-400 mb-0 green stock_bg"
+                                  : "fs-sm fw-400 mb-0 black cancel_gray"
+                              }`}
+                            >
+                              {orderTableData.status}
+                            </p>
+                          </td>
+                          <td className="p-3 mw_140">
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              {orderTableData.items.length} items
+                            </h3>
+                          </td>
+                          <td className="p-3 mw_160">
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              ₹ {orderTableData.order_price}
+                            </h3>
+                          </td>
+                          <td className="text-center mx_100">
+                            <div className="dropdown">
+                              <button
+                                className="btn dropdown-toggle"
+                                type="button"
+                                id="dropdownMenuButton3"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                              >
+                                <abbr title="View">
+                                  <img src={dropdownDots} alt="dropdownDots" />
+                                </abbr>
+                              </button>
+                              <ul
+                                className="dropdown-menu categories_dropdown"
+                                aria-labelledby="dropdownMenuButton3"
+                              >
+                                <li>
+                                  <div className="dropdown-item" href="#">
+                                    <div className="d-flex align-items-center categorie_dropdown_options">
+                                      <img src={eye_icon} alt="" />
+                                      <Link
+                                        to={`/orders/orderdetails/${orderTableData.order_id}`}
+                                      >
+                                        <p className="fs-sm fw-400 black mb-0 ms-2">
+                                          View Details
+                                        </p>
+                                      </Link>
+                                    </div>
+                                  </div>
+                                </li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <Row className="mt-3">
           <Col xl={6}>
             <div className="p-2 bg-white product_shadow">
@@ -1391,6 +1744,228 @@ console.log(filterData[0].id);
             </div>
           </Col>
         </Row>
+        <div>
+          <div>
+            {selectedBill.length > 0
+              ? selectedBill.map((items) => {
+                  const subtotal = items.items.reduce(
+                    (acc, data) => acc + data.quantity * data.final_price,
+                    0
+                  );
+                  const savedDiscount = items.items.reduce(
+                    (acc, data) => acc + data.quantity * data.varient_discount,
+                    0
+                  );
+                  return (
+                    <div className="bill m-auto" ref={componentRef}>
+                      <div className="d-flex align-items-start justify-content-between">
+                        <img src={billLogo} alt="billLogo" />
+                        <div className="text-end">
+                          <h1 className="fs_24 fw-700 black mb-0">INVOICE</h1>
+                          <p className="fs-xxs fw_700 black mb-0">
+                            #{items.invoiceNumber}
+                          </p>
+                          <p className="fs-xs fw_400 green mb-0">
+                            {items.transaction.status}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-3">
+                        <div className="d-flex align-items-start justify-content-between gap-3">
+                          <div className="w-50">
+                            <p className="fs-xs fw-700 black mb-0">
+                              Save Time Save Money
+                            </p>
+                            <p className="fs-xs fw-400 black mb-0 mt-1">
+                              Near TVS Agency, Hansi Road, Barwala,
+                            </p>
+                            <p className="fs-xs fw-400 black mb-0 mt-1">
+                              Hisar, Haryana - 125121
+                            </p>
+                            <p className="fs-xs fw-400 black mb-0 mt-1">
+                              GSTIN : 06GWMPS2545Q1ZJ
+                            </p>
+                          </div>
+                          <div className="text-end w-50">
+                            <p className="fs-xxs fw-700 black mb-0">Bill To:</p>
+                            <p className="fs-xxs fw-700 black mb-0">
+                              {items.customer.name}
+                            </p>
+                            <p className="fs-xs fw-400 black mb-0 mt-1">
+                              {items.shipping.address}
+                            </p>
+                            <p className="fs-xs fw-400 black mb-0 mt-1">
+                              {items.shipping.city} {items.shipping.state}{" "}
+                            </p>
+                            <p className="fs-xs fw-400 black mb-0 mt-4 text-end">
+                              Invoice Date : {formatDate2(items.created_at)}
+                            </p>
+                          </div>
+                        </div>
+                        <table className="w-100 mt-3">
+                          <thead>
+                            <tr className="bg_dark_black">
+                              <th className="fs-xxs fw-400 white p_10">#</th>
+                              <th className="fs-xxs fw-400 white p_10">
+                                Item Description
+                              </th>
+                              <th className="fs-xxs fw-400 white p_10 text-center">
+                                Qty
+                              </th>
+                              <th className="fs-xxs fw-400 white p_10 text-end">
+                                Unit Cost
+                              </th>
+                              <th className="fs-xxs fw-400 white p_10 text-center">
+                                Tax
+                              </th>
+                              <th className="fs-xxs fw-400 white p_10 text-end">
+                                Line Total
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {items.items.map((data) => {
+                              return (
+                                <tr>
+                                  <td className="fs-xxs fw-400 black p_5_10">
+                                    1
+                                  </td>
+                                  <td className="p_5_10">
+                                    <span>
+                                      <p className="fs-xxs fw-400 black mb-0">
+                                        {data.title}
+                                      </p>
+                                      <span className="d-flex align-items-center gap-2">
+                                        <p className=" fs-xxxs fw-700 black mb-0">
+                                          ₹ {data.varient_discount} OFF
+                                        </p>
+                                        <p
+                                          className={`fs-xxxs fw-400 black mb-0  ${
+                                            data.varient_discount !== "0"
+                                              ? "strikethrough"
+                                              : null
+                                          }`}
+                                        >
+                                          MRP : {data.varient_price}
+                                        </p>
+                                      </span>
+                                      <span className="d-flex align-items-center gap-3">
+                                        <p className=" fs-xxxs fw-400 black mb-0">
+                                          {data.varient_name} {data.unitType}
+                                        </p>
+                                        <p className="fs-xxxs fw-400 black mb-0">
+                                          {data.color}
+                                        </p>
+                                      </span>
+                                    </span>
+                                  </td>
+                                  <td className="fs-xxs fw-400 black p_5_10 text-center">
+                                    {data.quantity}
+                                  </td>
+                                  <td className="fs-xxs fw-400 black p_5_10 text-end">
+                                    {data.final_price}
+                                  </td>
+                                  <td className="fs-xxs fw-400 black p_5_10 text-center">
+                                    {typeof data.Tax === "undefined"
+                                      ? "0"
+                                      : data.Tax}
+                                    %
+                                  </td>
+                                  <td className="fs-xxs fw-400 black p_5_10 text-end">
+                                    ₹
+                                    {data.quantity * data.final_price +
+                                      (typeof data.text === "undefined"
+                                        ? 0
+                                        : data.quantity *
+                                          data.final_price *
+                                          (data.Tax / 100))}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                        <div className="d-flex align-items-center justify-content-between mt-3">
+                          <div className="w-75 text-end">
+                            <p className="fs_xxs fw-700 black mb-0">
+                              Sub Total
+                            </p>
+                            <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">
+                              Promo Discount
+                            </p>
+                            <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">
+                              Total Amount
+                            </p>
+                          </div>
+                          <div className="text-end">
+                            <p className="fs_xxs fw-400 black mb-0">
+                              ₹{subtotal}
+                            </p>
+                            <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
+                              (-) ₹ {items.additional_discount.discount}
+                            </p>
+                            <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
+                              {/* {((data.quantity * data.final_price) * (data.Tax / 100))} */}
+                              {items.order_price}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <span className="mt-3 bill_border d-inline-block"></span>
+                      <p className=" fs-xxxs fw-400 black mb-0 mt-1">
+                        Note : You Saved{" "}
+                        <span className="fw-700"> ₹{savedDiscount} </span> on
+                        product discount.
+                      </p>
+                      {items.transaction.status === "Paid" ? (
+                        <div>
+                          <p className="fs_xxs fw-400 black mb-0 mt-3">
+                            Transactions:
+                          </p>
+                          <table className="mt-3 w-100">
+                            <thead>
+                              <tr>
+                                <th className="fs-xxs fw-400 black py_2">
+                                  Transaction ID
+                                </th>
+                                <th className="fs-xxs fw-400 black py_2">
+                                  Payment Mode
+                                </th>
+                                <th className="fs-xxs fw-400 black py_2">
+                                  Date
+                                </th>
+                                <th className="fs-xxs fw-400 black py_2">
+                                  Amount
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr className="bill_border">
+                                <td className="fs-xxs fw-400 black py-1">
+                                  {items.transaction.tx_id === ""
+                                    ? "N/A"
+                                    : items.transaction.tx_id}
+                                </td>
+                                <td className="fs-xxs fw-400 black py-1">
+                                  {items.transaction.mode}
+                                </td>
+                                <td className="fs-xxs fw-400 black py-1">
+                                  {formatDate2(items.transaction.date)}
+                                </td>
+                                <td className="fs-xxs fw-400 black py-1">
+                                  ₹{items.order_price}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })
+              : null}
+          </div>
+        </div>
         <ToastContainer></ToastContainer>
       </div>
     );

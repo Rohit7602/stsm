@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import { useCustomerContext } from "../../context/Customergetters";
 import { set } from "date-fns";
 import { useOrdercontext } from "../../context/OrderGetter";
+import { ArrowIcons } from "../../Common/Icon";
 
 const Customers = () => {
   const [searchvalue, setSearchvalue] = useState("");
@@ -325,19 +326,20 @@ const Customers = () => {
                     )
                     .sort((a, b) => b.totalSpent - a.totalSpent)
                     .filter((customer) =>
-                      customer.addresses.some((address) =>
-                        Number(pincode)
-                          ? address.pincode === Number(pincode)
-                          : customer
-                      )
+                      Number(pincode)
+                        ? customer.addresses.some(
+                            (address) => address.pincode === Number(pincode)
+                          )
+                        : customer
                     )
                     .filter((customer) =>
-                      customer.addresses.some((address) =>
-                        servicearea
-                          ? address.city.toLowerCase() ===
-                            servicearea.toLowerCase()
-                          : customer
-                      )
+                      servicearea
+                        ? customer.addresses.some(
+                            (address) =>
+                              address.city.toLowerCase() ===
+                              servicearea.toLowerCase()
+                          )
+                        : customer
                     )
 
                     .map((item, index) => {
@@ -409,7 +411,9 @@ const Customers = () => {
                             </td>
                             <td className="p-3 mw-300">
                               <h3 className="fs-sm fw-400 black mb-0">
-                                {addresses[0].city} / {city} / {state}
+                                {addresses[0]
+                                  ? `${addresses[0].city} / ${city} / ${state}`
+                                  : "Not Available Service Area"}
                               </h3>
                             </td>
                             <td className="p-3 mw_160">
@@ -450,27 +454,6 @@ const Customers = () => {
                                       </div>
                                     </Link>
                                   </li>
-                                  {/* <li> */}
-                                  {/*
-                                    <div class="dropdown-item" href="#">
-                                      <div className="d-flex align-items-center categorie_dropdown_options">
-                                        <img src={updown_icon} alt="" />
-                                        <p className="fs-sm fw-400 green mb-0 ms-2">
-                                          Change to Hidden
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </li>
-                                  <li>
-                                    <div class="dropdown-item" href="#">
-                                      <div className="d-flex align-items-center categorie_dropdown_options">
-                                        <img src={delete_icon} alt="" />
-                                        <p className="fs-sm fw-400 red mb-0 ms-2">
-                                          Delete
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </li> */}
                                 </ul>
                               </div>
                             </td>

@@ -12,7 +12,6 @@ export const useCouponcontext = () => {
 
 export const CouponContextProvider = ({ children }) => {
     const [allcoupons, setcoupons] = useState([])
-    const [isdatafetched, setIsDataFetched] = useState(false)
     useEffect(() => {
         const fetchCoupons = async () => {
             let list = []
@@ -21,30 +20,15 @@ export const CouponContextProvider = ({ children }) => {
                 snapshot.forEach((doc) => {
                     list.push({ id: doc.id, ...doc.data() });
                     setcoupons([...list])
-                    setIsDataFetched(true)
 
                 })
             } catch (error) {
                 console.error(error)
             }
         }
-        if (!isdatafetched) {
-            fetchCoupons();
-        }
-
-        const unsubscribe = onSnapshot(collection(db, 'Coupons'), (querySnapshot) => {
-            const updatedCoupons = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setcoupons(updatedCoupons);
-        });
-
-        return () => unsubscribe();
-
-
-
-
-
-
-    }, [isdatafetched])
+        
+        fetchCoupons();
+    }, [])
 
     const memodata = useMemo(() => allcoupons, [allcoupons])
 

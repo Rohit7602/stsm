@@ -9,35 +9,23 @@ export const useOrdercontext = () => {
 
 export const OrderContextProvider = ({ children }) => {
   const [orders, setorders] = useState([]);
-  const [isdatafetched, setIsDataFetched] = useState(false);
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        // const snapshot = await getDocs((collection(db, 'order')));
-        // snapshot.forEach((doc) => {
-        //     list.push({ id: doc.id, ...doc.data() });
-        //     setorders([...list])
-        //     setIsDataFetched(true)
-
-        // })
-
-        // unsubscribe
-        const unsubscribe = onSnapshot(collection(db, 'order'), (querySnapshot) => {
+         onSnapshot(collection(db, 'order'), (querySnapshot) => {
           let list = [];
           querySnapshot.forEach((doc) => {
             list.push({ id: doc.id, ...doc.data() });
           });
           setorders([...list]);
-          setIsDataFetched(true);
         });
+        
       } catch (error) {
         console.error(error);
       }
     };
-    if (!isdatafetched) {
-      fetchOrders();
-    }
-  }, [isdatafetched]);
+    fetchOrders();
+  }, []);
 
   const memodata = useMemo(() => orders, [orders]);
 
@@ -57,7 +45,6 @@ export const OrderContextProvider = ({ children }) => {
         }
       });
     } else if (Array.isArray(updatedProduct)) {
-      // Update the entire array
       setorders(updatedProduct);
     }
   };

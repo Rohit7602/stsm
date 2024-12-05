@@ -1602,12 +1602,14 @@ div.rich-text-editor .ql-editor {
   height: 100%;
   overflow-y: auto !important;
 }
-
-.table_body2 {
-  display: block !important;
-  height: calc(100vh - 330px) !important;
+.table_body3 {
   height: 100%;
+  display: block !important;
   overflow-y: auto !important;
+}
+
+.rotate_180{
+  transform: rotate(180deg);
 }
 
 .table_head,
@@ -1619,6 +1621,12 @@ div.rich-text-editor .ql-editor {
 
 .table_head,
 .table_body2 tr {
+  display: table !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+.table_head,
+.table_body3 tr {
   display: table !important;
   width: 100% !important;
   table-layout: fixed !important;

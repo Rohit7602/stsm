@@ -38,36 +38,54 @@ function DeliveryBoyInventory2() {
 
   const [finalVanProducts, setFinalVanProducts] = useState([]);
 
-  
   function addToVan(e) {
     e.preventDefault();
-  if (
-    productname.length > 0 &&
-    addquantity > 0 &&
-    (itemSelect.item.stockUnitType === "KG" && varienttype === "GRAM"
-      ? itemSelect.item.totalStock * 1000 >= addquantity
-      : itemSelect.item.totalStock >= addquantity)
-  ) {
-    setDisableUpload(true);
-    let totalQuantity;
-    if (itemSelect.varient == "GRAM") {
-      totalQuantity = itemSelect.updatedQuantity / 1000;
-    } else {
-      totalQuantity = itemSelect.updatedQuantity;
-    }
-    // //////////////// updating All state items /////////////////////
+    if (
+      productname.length > 0 &&
+      addquantity > 0 &&
+      (itemSelect.item.stockUnitType === "KG" && varienttype === "GRAM"
+        ? itemSelect.item.totalStock * 1000 >= addquantity
+        : itemSelect.item.totalStock >= addquantity)
+    ) {
+      setDisableUpload(true);
+      let totalQuantity;
+      if (itemSelect.varient == "GRAM") {
+        totalQuantity = itemSelect.updatedQuantity / 1000;
+      } else {
+        totalQuantity = itemSelect.updatedQuantity;
+      }
+      // //////////////// updating All state items /////////////////////
 
-    if (AllProducts.length > 0) {
-      let isPresent = AllProducts.some(
-        (item) => item.productid == itemSelect.item.id
-      );
+      if (AllProducts.length > 0) {
+        let isPresent = AllProducts.some(
+          (item) => item.productid == itemSelect.item.id
+        );
 
-      if (isPresent) {
-        for (let i of AllProducts) {
-          if (i.productid == itemSelect.item.id) {
-            let previousQuantity = i.quantity;
-            i.quantity = totalQuantity + previousQuantity;
+        if (isPresent) {
+          for (let i of AllProducts) {
+            if (i.productid == itemSelect.item.id) {
+              let previousQuantity = i.quantity;
+              i.quantity = totalQuantity + previousQuantity;
+            }
           }
+        } else {
+          setAllProducts([
+            ...AllProducts,
+            {
+              productid: itemSelect.item.id,
+              DeliveryCharge: itemSelect.item.DeliveryCharge,
+              ServiceCharge: itemSelect.item.ServiceCharge,
+              brand: itemSelect.item.brand.name,
+              stockUnitType: itemSelect.item.stockUnitType,
+              sku: itemSelect.item.sku,
+              quantity: totalQuantity,
+              name: itemSelect.item.name,
+              totalStock: itemSelect.item.totalStock,
+              productImage: itemSelect.item.productImages[0],
+              salesprice: itemSelect.item.salesprice,
+              tax: itemSelect.item.Tax,
+            },
+          ]);
         }
       } else {
         setAllProducts([
@@ -88,76 +106,58 @@ function DeliveryBoyInventory2() {
           },
         ]);
       }
-    } else {
-      setAllProducts([
-        ...AllProducts,
-        {
-          productid: itemSelect.item.id,
-          DeliveryCharge: itemSelect.item.DeliveryCharge,
-          ServiceCharge: itemSelect.item.ServiceCharge,
-          brand: itemSelect.item.brand.name,
-          stockUnitType: itemSelect.item.stockUnitType,
-          sku: itemSelect.item.sku,
-          quantity: totalQuantity,
-          name: itemSelect.item.name,
-          totalStock: itemSelect.item.totalStock,
-          productImage: itemSelect.item.productImages[0],
-          salesprice: itemSelect.item.salesprice,
-          tax: itemSelect.item.Tax,
-        },
-      ]);
-    }
 
-    // handling Updating State ///////////////////////////////
-    if (finalVanProducts.length > 0) {
-      for (let i of finalVanProducts) {
-        if (i.id == itemSelect.item.id) {
-          let previousQuantity = i.updatedQuantity;
+      // handling Updating State ///////////////////////////////
+      if (finalVanProducts.length > 0) {
+        for (let i of finalVanProducts) {
+          if (i.id == itemSelect.item.id) {
+            let previousQuantity = i.updatedQuantity;
 
-          const index = finalVanProducts.indexOf(i);
-          if (index !== -1) {
-            finalVanProducts.splice(index, 1);
+            const index = finalVanProducts.indexOf(i);
+            if (index !== -1) {
+              finalVanProducts.splice(index, 1);
+            }
+            setFinalVanProducts([
+              ...finalVanProducts,
+              {
+                ...itemSelect.item,
+                updatedQuantity: totalQuantity + previousQuantity,
+              },
+            ]);
+          } else {
+            setFinalVanProducts([
+              ...finalVanProducts,
+              { ...itemSelect.item, updatedQuantity: totalQuantity },
+            ]);
           }
-          setFinalVanProducts([
-            ...finalVanProducts,
-            {
-              ...itemSelect.item,
-              updatedQuantity: totalQuantity + previousQuantity,
-            },
-          ]);
-        } else {
-          setFinalVanProducts([
-            ...finalVanProducts,
-            { ...itemSelect.item, updatedQuantity: totalQuantity },
-          ]);
         }
+      } else {
+        setFinalVanProducts([
+          ...finalVanProducts,
+          { ...itemSelect.item, updatedQuantity: totalQuantity },
+        ]);
       }
-    } else {
-      setFinalVanProducts([
-        ...finalVanProducts,
-        { ...itemSelect.item, updatedQuantity: totalQuantity },
-      ]);
-    }
-    //////////////////////////////////  clear data ////////////////////////////////
+      //////////////////////////////////  clear data ////////////////////////////////
 
-    setItemSelect({});
-    setvarienttype("");
-    setproductname("");
-    setaddquantity(0);
-  } else if (addquantity === 0 || productname.length === 0) {
-    toast.error("Please select each field", {
-      position: toast.POSITION.TOP_RIGHT,
-    });
-  } else {
-    toast.warning("Product stock not available", {
-      position: toast.POSITION.TOP_RIGHT,
-    });
-  }
+      setItemSelect({});
+      setvarienttype("");
+      setproductname("");
+      setaddquantity(0);
+    } else if (addquantity === 0 || productname.length === 0) {
+      toast.error("Please select each field", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } else {
+      toast.warning("Product stock not available", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
   }
 
   ///////////////////////             update entry                      ////////////////////////////////////
   async function updateEntry(e) {
     e.preventDefault();
+    setLoaderstatus(true);
     setDisableUpload(false);
     let batch = writeBatch(db);
     try {
@@ -178,7 +178,7 @@ function DeliveryBoyInventory2() {
             const productData = productDocSnap.data();
             const updatedStock =
               productData.totalStock - element.updatedQuantity;
-            let fixdstokes = updatedStock.toFixed(2)
+            let fixdstokes = updatedStock.toFixed(2);
             batch.update(productDocRef, { totalStock: Number(fixdstokes) });
           }
         }
@@ -202,8 +202,8 @@ function DeliveryBoyInventory2() {
   //////////////////////////////////
 
   async function handleWithdrow() {
+    setLoaderstatus(true);
     try {
-      setLoaderstatus(true);
       const itemsToAdd = AllProducts.filter((item) =>
         selectAll.includes(item.id)
       );
@@ -214,7 +214,7 @@ function DeliveryBoyInventory2() {
           const productData = docSnap.data();
           let totalStock = productData.totalStock; // Current stock
           let updatedStock = totalStock + item.quantity;
-          let fixedstokes = updatedStock.toFixed(2)
+          let fixedstokes = updatedStock.toFixed(2);
           const updateRef = doc(db, "products", item.productid);
           await updateDoc(updateRef, {
             totalStock: Number(fixedstokes),
@@ -239,7 +239,7 @@ function DeliveryBoyInventory2() {
       }
       // Update local state
       setAllProducts(updateVan);
-       window.location.reload();
+      window.location.reload();
       setLoaderstatus(false);
       toast.success("Product withdrawn successfully!", {
         position: toast.POSITION.TOP_RIGHT,
@@ -449,7 +449,7 @@ function DeliveryBoyInventory2() {
                         Total Stokes :{" "}
                         {selectedproduct.length === 0
                           ? "N/A"
-                          : ` ${(selectedproduct[0].totalStock)}  ${selectedproduct[0].stockUnitType}`}
+                          : ` ${selectedproduct[0].totalStock}  ${selectedproduct[0].stockUnitType}`}
                       </p>
                     </div>
                   </div>

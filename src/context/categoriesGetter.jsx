@@ -12,7 +12,6 @@ export const useSubCategories = () => {
 
 export const SubCategoriesProvider = ({ children }) => {
   const [data, setData] = useState([]);
-  const [isdatafetched, setIsDataFetched] = useState(false);
 
   useEffect(() => {
     const fetchDataSubCategories = async () => {
@@ -23,23 +22,13 @@ export const SubCategoriesProvider = ({ children }) => {
           list.push({ id: doc.id, ...doc.data() });
         });
         setData([...list]);
-        console.log('sub_categories is fetched ');
-        setIsDataFetched(true);
       } catch (error) {
         console.log(error);
       }
     };
-    if (!isdatafetched) {
-      fetchDataSubCategories();
-    }
-
-    const unsubscribe = onSnapshot(collection(db, 'sub_categories'), (querySnapshot) => {
-      const updatedCategories = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setData(updatedCategories);
-    });
-
-    return () => unsubscribe();
-  }, [isdatafetched]);
+    
+    fetchDataSubCategories();
+  }, []);
 
   const memodata = useMemo(() => data, [data]);
 
@@ -88,7 +77,6 @@ export const useMainCategories = () => {
 
 export const MainCategoriesProvider = ({ children }) => {
   const [categoreis, setMainCategories] = useState([]);
-  const [ismaincategoriesfetched, setmaincategoryiesfetched] = useState(false);
 
   useEffect(() => {
     const getCategory = async () => {
@@ -99,24 +87,15 @@ export const MainCategoriesProvider = ({ children }) => {
           categoreis_list.push({ id: element.id, ...element.data() });
         });
         setMainCategories([...categoreis_list]);
-        console.log('categoreis  fetchData ');
-        setmaincategoryiesfetched(true);
+
       } catch (error) {
         console.log(error);
       }
     };
 
-    if (!ismaincategoriesfetched) {
-      getCategory();
-    }
+    getCategory();
 
-    const unsubscribe = onSnapshot(collection(db, 'categories'), (querySnapshot) => {
-      const updatedCategories = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setMainCategories(updatedCategories);
-    });
-
-    return () => unsubscribe();
-  }, [ismaincategoriesfetched]);
+  }, []);
 
   const memodata = useMemo(() => categoreis, [categoreis]);
 

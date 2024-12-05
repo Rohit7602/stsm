@@ -11,7 +11,6 @@ export const UseDeliveryManContext = () => {
 export const DeliverManContextProvider = ({ children }) => {
     // State for our global state.
     const [DeliveryManData, SetDeliveryManData] = useState([])
-    const [isdatafetched, setIsDataFetched] = useState(false);
     useEffect(() => {
         const fetchservice = async () => {
             let list = [];
@@ -21,24 +20,14 @@ export const DeliverManContextProvider = ({ children }) => {
                     list.push({ id: doc.id, ...doc.data() });
                 });
                 SetDeliveryManData([...list]);
-                console.log("Deliveryman Data  is fetched ")
-                setIsDataFetched(true)
             } catch (error) {
                 console.log(error);
             }
         };
-        if (!isdatafetched) {
-            fetchservice()
-        }
+        fetchservice()
 
-        const unsubscribe = onSnapshot(collection(db, 'Delivery'), (querySnapshot) => {
-            const updatedServices = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            SetDeliveryManData(updatedServices);
-        });
 
-        return () => unsubscribe();
-
-    }, [isdatafetched]);
+    }, []);
 
     const memodata = useMemo(() => DeliveryManData, [DeliveryManData])
 
