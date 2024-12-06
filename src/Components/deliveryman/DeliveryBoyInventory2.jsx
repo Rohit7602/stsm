@@ -157,6 +157,10 @@ function DeliveryBoyInventory2() {
   ///////////////////////             update entry                      ////////////////////////////////////
   async function updateEntry(e) {
     e.preventDefault();
+    if(finalVanProducts.length==0){
+
+      return null
+    }
     setLoaderstatus(true);
     setDisableUpload(false);
     let batch = writeBatch(db);
@@ -197,6 +201,8 @@ function DeliveryBoyInventory2() {
     toast.success("Product added Successfully!", {
       position: toast.POSITION.TOP_RIGHT,
     });
+
+    setFinalVanProducts([]);
   }
 
   //////////////////////////////////
