@@ -353,7 +353,9 @@ function DeliveryBoyInventory2() {
               <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
                 <button
                   onClick={updateEntry}
-                  className=" outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
+                  className={`${
+                    finalVanProducts.length==0 ? "opacity-50" : "opacity-100"
+                  } outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 `}
                 >
                   Update Entry
                 </button>
