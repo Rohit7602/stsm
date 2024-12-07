@@ -18,20 +18,22 @@ export const useProductsContext = () => {
 export const ProductsProvider = ({ children }) => {
   const [data, setData] = useState([]);
 
+  const fetchProducts = async () => {
+    try {
+      const snapshot = await getDocs(collection(db, "products"));
+      const productsList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setData(productsList);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, "products"));
-        const productsList = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setData(productsList);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchProducts();
+    console.log("ssssssssssss");
+    
   }, []);
 
   const memoizedData = useMemo(() => data, [data]);
@@ -87,6 +89,7 @@ export const ProductsProvider = ({ children }) => {
         updateProductData,
         addData,
         deleteData,
+        fetchProducts,
       }}
     >
       {children}

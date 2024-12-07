@@ -24,7 +24,7 @@ function DeliveryBoyInventory2() {
   const { DeliveryManData } = UseDeliveryManContext();
   const { id } = useParams();
   const [loaderstatus, setLoaderstatus] = useState(false);
-  const { productData } = useProductsContext();
+  const { productData, fetchProducts } = useProductsContext();
   const [delivryMan, setDeliveryMan] = useState([]);
   const [filtervalue, setFilterValue] = useState("");
   const [productname, setproductname] = useState("");
@@ -35,7 +35,6 @@ function DeliveryBoyInventory2() {
   const [AllProducts, setAllProducts] = useState([]);
   const [itemSelect, setItemSelect] = useState({});
   const [disableUpload, setDisableUpload] = useState(false);
-
   const [finalVanProducts, setFinalVanProducts] = useState([]);
 
   function addToVan(e) {
@@ -156,13 +155,9 @@ function DeliveryBoyInventory2() {
 
   ///////////////////////             update entry                      ////////////////////////////////////
   async function updateEntry(e) {
-    console.log(finalVanProducts,
-      "testing"
-    )
     e.preventDefault();
-    if(finalVanProducts.length==0){
-
-      return null
+    if (finalVanProducts.length == 0) {
+      return null;
     }
     setLoaderstatus(true);
     setDisableUpload(false);
@@ -179,14 +174,13 @@ function DeliveryBoyInventory2() {
         }
 
         for (const element of finalVanProducts) {
-         const washingtonRef = doc(db, "products", element.id);
+          const washingtonRef = doc(db, "products", element.id);
 
-         let finalvalue = element.totalStock - element.updatedQuantity;
-      
-         await updateDoc(washingtonRef, {
-           totalStock: finalvalue,
-         });
-          
+          let finalvalue = element.totalStock - element.updatedQuantity;
+
+          await updateDoc(washingtonRef, {
+            totalStock: finalvalue,
+          });
         }
       }
     } catch (error) {
@@ -196,7 +190,12 @@ function DeliveryBoyInventory2() {
     setAllProducts([]);
     await batch.commit();
     setLoaderstatus(true);
-    window.location.reload();
+    GetAllProductsInVan();
+    FeatchProductName();
+    setproductname("");
+    setaddquantity(0)
+     setvarienttype("");
+    fetchProducts();
     setLoaderstatus(false);
 
     // Success toast message
@@ -210,10 +209,10 @@ function DeliveryBoyInventory2() {
   //////////////////////////////////
 
   async function handleWithdrow() {
-
-    if (selectAll.length==0){
-      return null
-    } setLoaderstatus(true);
+    if (selectAll.length == 0) {
+      return null;
+    }
+    setLoaderstatus(true);
     try {
       const itemsToAdd = AllProducts.filter((item) =>
         selectAll.includes(item.id)
@@ -250,8 +249,11 @@ function DeliveryBoyInventory2() {
       }
       // Update local state
       setAllProducts(updateVan);
-      window.location.reload();
+      GetAllProductsInVan();
       setLoaderstatus(false);
+      FeatchProductName();
+      setproductname("");
+      fetchProducts();
       toast.success("Product withdrawn successfully!", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -270,18 +272,20 @@ function DeliveryBoyInventory2() {
 
   //////////////   filter products data  ////////////////
 
-  useEffect(() => {
+  function FeatchProductName() {
     let filterData = productData.filter(
       (product) => product.name === productname
     );
     setselectedProduct(filterData);
+  }
+
+  useEffect(() => {
+    FeatchProductName();
   }, [productname]);
 
   //////////////////// get all products in van firebase //////////////
 
-  
-
-  useEffect(() => {
+  function GetAllProductsInVan() {
     const Data = DeliveryManData.find((item) => item.id === id);
     if (Data) {
       const fetchVan = async () => {
@@ -296,6 +300,10 @@ function DeliveryBoyInventory2() {
       };
       fetchVan();
     }
+  }
+
+  useEffect(() => {
+    GetAllProductsInVan();
   }, [id, DeliveryManData]);
 
   ////////////  select only all product  //////////
@@ -371,7 +379,9 @@ function DeliveryBoyInventory2() {
                     onClick={handleWithdrow}
                     disabled={disableUpload}
                     className={`${
-                      disableUpload || selectAll.length==0 ? "opacity-50" : "opacity-100"
+                      disableUpload || selectAll.length == 0
+                        ? "opacity-50"
+                        : "opacity-100"
                     } outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400`}
                   >
                     Unload Van
