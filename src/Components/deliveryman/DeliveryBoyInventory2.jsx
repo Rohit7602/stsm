@@ -156,6 +156,9 @@ function DeliveryBoyInventory2() {
 
   ///////////////////////             update entry                      ////////////////////////////////////
   async function updateEntry(e) {
+    console.log(finalVanProducts,
+      "testing"
+    )
     e.preventDefault();
     if(finalVanProducts.length==0){
 
@@ -176,15 +179,14 @@ function DeliveryBoyInventory2() {
         }
 
         for (const element of finalVanProducts) {
-          const productDocRef = doc(db, "products", element.id);
-          const productDocSnap = await getDoc(productDocRef);
-          if (productDocSnap.exists()) {
-            const productData = productDocSnap.data();
-            const updatedStock =
-              productData.totalStock - element.updatedQuantity;
-            let fixdstokes = updatedStock.toFixed(2);
-            batch.update(productDocRef, { totalStock: Number(fixdstokes) });
-          }
+         const washingtonRef = doc(db, "products", element.id);
+
+         let finalvalue = element.totalStock - element.updatedQuantity;
+      
+         await updateDoc(washingtonRef, {
+           totalStock: finalvalue,
+         });
+          
         }
       }
     } catch (error) {
@@ -208,7 +210,10 @@ function DeliveryBoyInventory2() {
   //////////////////////////////////
 
   async function handleWithdrow() {
-    setLoaderstatus(true);
+
+    if (selectAll.length==0){
+      return null
+    } setLoaderstatus(true);
     try {
       const itemsToAdd = AllProducts.filter((item) =>
         selectAll.includes(item.id)
@@ -273,6 +278,8 @@ function DeliveryBoyInventory2() {
   }, [productname]);
 
   //////////////////// get all products in van firebase //////////////
+
+  
 
   useEffect(() => {
     const Data = DeliveryManData.find((item) => item.id === id);
@@ -354,7 +361,7 @@ function DeliveryBoyInventory2() {
                 <button
                   onClick={updateEntry}
                   className={`${
-                    finalVanProducts.length==0 ? "opacity-50" : "opacity-100"
+                    finalVanProducts.length == 0 ? "opacity-50" : "opacity-100"
                   } outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 `}
                 >
                   Update Entry
@@ -364,7 +371,7 @@ function DeliveryBoyInventory2() {
                     onClick={handleWithdrow}
                     disabled={disableUpload}
                     className={`${
-                      disableUpload ? "opacity-50" : "opacity-100"
+                      disableUpload || selectAll.length==0 ? "opacity-50" : "opacity-100"
                     } outline_none border-0 update_entry text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400`}
                   >
                     Unload Van
