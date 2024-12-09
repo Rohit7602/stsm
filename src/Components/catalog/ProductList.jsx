@@ -482,7 +482,7 @@ const ProductList = () => {
                                     (item.unitPrice * item.discountvalue) /
                                       100) * value.totalStock
                             )} */}
-                              {value.salesprice * value.totalStock}
+                              {Math.round(value.salesprice * value.totalStock)}
                             </h3>
                           </td>
                           <td className="p-3 mx_170">
