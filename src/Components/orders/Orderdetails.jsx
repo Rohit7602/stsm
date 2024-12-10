@@ -1149,7 +1149,7 @@ export default function NewOrder() {
                           </div>
                           <div className="d-flex align-items-center p-3">
                             <p className="fs-sm fw-400 black mb-0">
-                              ₹ {products.varient_price}{" "}
+                              ₹ {Math.round(products.varient_price)}{" "}
                               <span className="ms-4">X</span>
                             </p>
                             <p className="fs-sm fw-400 black mb-0 ps-4 ms-2 me-5">
@@ -1157,13 +1157,13 @@ export default function NewOrder() {
                             </p>
                             <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">
                               (-) ₹{" "}
-                              {products.varient_discount * products.quantity}
+                              {Math.round(products.varient_discount * products.quantity)}
                             </p>
                           </div>
                           <p className="fs-sm fw-400 black mb-0 p-3">
                             ₹{" "}
-                            {products.varient_price * products.quantity -
-                              products.varient_discount * products.quantity}
+                            {Math.round(products.varient_price * products.quantity) -
+                             Math.round( products.varient_discount * products.quantity)}
                           </p>
                         </div>
                       </>
@@ -1187,7 +1187,7 @@ export default function NewOrder() {
                   <div className="d-flex align-items-center justify-content-between mt-4">
                     <p className="fs-sm fw-400 black mb-0">Subtotal</p>
                     <p className="fs-sm fw-400 black mb-0">
-                      ₹{calculateSubtotal().toFixed(2)}
+                      ₹{calculateSubtotal().toFixed(0)}
                     </p>
                   </div>
                   <div className="d-flex align-items-center justify-content-between mt-2">
@@ -1207,7 +1207,7 @@ export default function NewOrder() {
                     <div className="d-flex align-items-center justify-content-between mt-4 mb-3">
                       <p className="fs-sm fw-400 black mb-0">Total</p>
                       <p className="fs-sm fw-700 black mb-0">
-                        ₹ {calculateTotal().toFixed(2)}
+                        ₹ {calculateTotal().toFixed(0)}
                       </p>
                     </div>
                   </div>
