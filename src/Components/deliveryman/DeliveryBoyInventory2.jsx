@@ -164,11 +164,16 @@ function DeliveryBoyInventory2() {
     let batch = writeBatch(db);
     try {
       for (const items of AllProducts) {
+   
         const vanDocRef = doc(db, `Delivery/${id}/Van/${items.id}`);
         const existingDoc = await getDoc(vanDocRef);
         if (!existingDoc.exists()) {
+          delete items.id;
+        
           await addDoc(collection(db, `Delivery/${id}/Van`), items);
         } else {
+          
+           delete items.id;
           const newQty = items.quantity ?? 0;
           batch.update(vanDocRef, { quantity: newQty });
         }
@@ -245,6 +250,7 @@ function DeliveryBoyInventory2() {
         (item) => !selectAll.includes(item.id)
       );
       for (let item of updateVan) {
+         delete item.id;
         await addDoc(vanCollectionRef, item);
       }
       // Update local state
@@ -254,6 +260,7 @@ function DeliveryBoyInventory2() {
       FeatchProductName();
       setproductname("");
       fetchProducts();
+      window.location.reload();
       toast.success("Product withdrawn successfully!", {
         position: toast.POSITION.TOP_RIGHT,
       });
