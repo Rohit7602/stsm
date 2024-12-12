@@ -12,7 +12,7 @@ import brandImg from "../../Images/svgs/brand-icon.svg";
 import { doc, deleteDoc, updateDoc, getDoc } from "firebase/firestore";
 import { deleteObject, getStorage, ref } from "firebase/storage";
 import { db } from "../../firebase";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { useProductsContext } from "../../context/productgetter";
 import Updatepopup from "../popups/Updatepopup";
 import Deletepopup from "../popups/Deletepopup";
@@ -24,6 +24,7 @@ const EditProductData = createContext();
 
 const ProductList = () => {
   const { productData, updateProductData, deleteData } = useProductsContext();
+  const location = useLocation();
 
   // states
   const [ProductId, setProductId] = useState(null);
@@ -228,6 +229,9 @@ const ProductList = () => {
  
      */
 
+  const filterlowstockproducts =
+    location.state === null ? productData : location.state;
+
   if (loading) {
     return <Loader />;
   }
@@ -381,7 +385,7 @@ const ProductList = () => {
                     selectAll.length >= 2 ? "table_body2" : "table_body"
                   }`}
                 >
-                  {productData
+                  {filterlowstockproducts
                     .filter((v) =>
                       v.name.toLowerCase().includes(filtervalue.toLowerCase())
                     )

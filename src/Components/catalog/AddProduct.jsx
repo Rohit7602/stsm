@@ -7,6 +7,7 @@ import deleteicon from "../../Images/svgs/deleteicon.svg";
 import deleteiconWithBg from "../../Images/svgs/delete-icon-with-bg.svg";
 import closeicon from "../../Images/svgs/closeicon.svg";
 import addIcon from "../../Images/svgs/addicon.svg";
+import editIcon from "../../Images/svgs/pencil.svg";
 import checkGreen from "../../Images/svgs/check-green-btn.svg";
 import closeRed from "../../Images/svgs/close-red-icon.svg";
 import dropdownImg from "../../Images/svgs/dropdown_icon.svg";
@@ -67,6 +68,7 @@ const AddProduct = () => {
   const [searchdata, setSearchdata] = useState([]);
   const [loaderstatus, setLoaderstatus] = useState(false);
   const [stockpopup, setStockpopup] = useState(false);
+  const [stockeditpopup, setStockEditpopup] = useState(false);
   const [DeliveryCharge, setDeliveryCharges] = useState();
   const [salesprice, setSalesPrice] = useState();
   const [ServiceCharge, setServiceCharge] = useState();
@@ -350,7 +352,6 @@ const AddProduct = () => {
     setPerUnitPrice("");
     setAreaPinCode("");
     setStoreColors([]);
-    setTotalStock("");
     setStockCount("");
     setTax("");
   }
@@ -922,7 +923,7 @@ const AddProduct = () => {
                                     required
                                     type="number"
                                     onWheel={(e) => {
-                                      e.target.blur(); 
+                                      e.target.blur();
                                     }}
                                     className="  fade_grey fw-400 border-0 w-100 outline_none"
                                     placeholder="Enter Pincode "
@@ -1200,7 +1201,7 @@ const AddProduct = () => {
                                     required
                                     type="number"
                                     onWheel={(e) => {
-                                      e.target.blur(); 
+                                      e.target.blur();
                                     }}
                                     className="mt-2 product_input fade_grey fw-400"
                                     placeholder="1"
@@ -1232,7 +1233,7 @@ const AddProduct = () => {
                                     required
                                     type="number"
                                     onWheel={(e) => {
-                                      e.target.blur(); 
+                                      e.target.blur();
                                     }}
                                     className="mt-2 product_input fade_grey fw-400"
                                     placeholder="₹ 0.00"
@@ -1266,7 +1267,7 @@ const AddProduct = () => {
                                       required
                                       type="number"
                                       onWheel={(e) => {
-                                        e.target.blur(); 
+                                        e.target.blur();
                                       }}
                                       className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                                       placeholder="₹ 0.00"
@@ -1302,7 +1303,7 @@ const AddProduct = () => {
                                       required
                                       type="number"
                                       onWheel={(e) => {
-                                        e.target.blur(); 
+                                        e.target.blur();
                                       }}
                                       className="mt-2 product_input fade_grey fw-400"
                                       placeholder="0"
@@ -1408,7 +1409,7 @@ const AddProduct = () => {
                                             required
                                             type="number"
                                             onWheel={(e) => {
-                                              e.target.blur(); 
+                                              e.target.blur();
                                             }}
                                             className="mt-2 product_input fade_grey fw-400"
                                             placeholder={
@@ -1546,7 +1547,7 @@ const AddProduct = () => {
                                   required
                                   type="number"
                                   onWheel={(e) => {
-                                    e.target.blur(); 
+                                    e.target.blur();
                                   }}
                                   className="mt-2 product_input fade_grey fw-400"
                                   placeholder="1"
@@ -1586,7 +1587,7 @@ const AddProduct = () => {
                                   required
                                   type="number"
                                   onWheel={(e) => {
-                                    e.target.blur(); 
+                                    e.target.blur();
                                   }}
                                   className="mt-2 product_input fade_grey fw-400"
                                   placeholder="₹ 0.00"
@@ -1629,7 +1630,7 @@ const AddProduct = () => {
                                     required
                                     type="number"
                                     onWheel={(e) => {
-                                      e.target.blur(); 
+                                      e.target.blur();
                                     }}
                                     className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                                     placeholder="₹ 0.00"
@@ -1673,7 +1674,7 @@ const AddProduct = () => {
                                   required
                                   type="number"
                                   onWheel={(e) => {
-                                    e.target.blur(); 
+                                    e.target.blur();
                                   }}
                                   className="mt-2 product_input fade_grey fw-400"
                                   placeholder="0"
@@ -1808,7 +1809,7 @@ const AddProduct = () => {
                                       required
                                       type="number"
                                       onWheel={(e) => {
-                                        e.target.blur(); 
+                                        e.target.blur();
                                       }}
                                       className="mt-2 product_input fade_grey fw-400"
                                       placeholder={
@@ -2043,7 +2044,7 @@ const AddProduct = () => {
                         required
                         type="number"
                         onWheel={(e) => {
-                          e.target.blur(); 
+                          e.target.blur();
                         }}
                         className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                         placeholder="₹ 0.00"
@@ -2064,7 +2065,7 @@ const AddProduct = () => {
                         required
                         type="number"
                         onWheel={(e) => {
-                          e.target.blur(); 
+                          e.target.blur();
                         }}
                         className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                         placeholder="%"
@@ -2085,7 +2086,7 @@ const AddProduct = () => {
                         required
                         type="number"
                         onWheel={(e) => {
-                          e.target.blur(); 
+                          e.target.blur();
                         }}
                         className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                         placeholder="Amount"
@@ -2197,12 +2198,53 @@ const AddProduct = () => {
                         id="total"
                         value={totalStock}
                       />
-                      <img
-                        onClick={() => setStockpopup(true)}
-                        src={addIcon}
-                        alt="addIcon"
-                      />
+                      <div className=" d-flex gap-3">
+                        {ProductsID && (
+                          <img
+                            onClick={() => setStockEditpopup(true)}
+                            src={editIcon}
+                            alt="addIcon"
+                          />
+                        )}
+                        <img
+                          onClick={() => setStockpopup(true)}
+                          src={addIcon}
+                          alt="addIcon"
+                        />
+                      </div>
                     </div>
+                    {stockeditpopup === true ? (
+                      <div className="stock_popup">
+                        <div
+                          onClick={() => setStockEditpopup(false)}
+                          className="text-end"
+                        >
+                          <img src={closeicon} alt="closeicon" />
+                        </div>
+                        <div className="d-flex flex-column mt-2">
+                          <label className="fs-xs fw-400 black">
+                            Total Stock
+                          </label>
+                          <input
+                            className="product_input fade_grey fw-400 mt-2"
+                            type="number"
+                            onWheel={(e) => {
+                              e.target.blur();
+                            }}
+                            placeholder="0.00"
+                            value={totalStock}
+                            onChange={(e) => setTotalStock(e.target.value)}
+                          />
+                        </div>
+                        <button
+                          className="stock_save_btn d-flex align-items-center"
+                          onClick={() => setStockEditpopup(false)}
+                        >
+                          <img src={whiteSaveicon} alt="whiteSaveicon" />
+                          <p className="fs-sm fw-400 white ms-2 mb-0">Save</p>
+                        </button>
+                      </div>
+                    ) : null}
                     {stockpopup === true ? (
                       <div className="stock_popup">
                         <div
@@ -2228,7 +2270,7 @@ const AddProduct = () => {
                             className="product_input fade_grey fw-400 mt-2"
                             type="number"
                             onWheel={(e) => {
-                              e.target.blur(); 
+                              e.target.blur();
                             }}
                             placeholder="0.00"
                             value={totalStockQun}
@@ -2288,7 +2330,7 @@ const AddProduct = () => {
                               className="product_input fade_grey fw-400 mt-2"
                               type="number"
                               onWheel={(e) => {
-                                e.target.blur(); 
+                                e.target.blur();
                               }}
                               placeholder="₹ 0.00"
                               value={perUnitPrice}
@@ -2313,7 +2355,7 @@ const AddProduct = () => {
                       required
                       type="number"
                       onWheel={(e) => {
-                        e.target.blur(); 
+                        e.target.blur();
                       }}
                       className="mt-2 product_input fade_grey fw-400"
                       placeholder="Enter alert count "
@@ -2337,7 +2379,7 @@ const AddProduct = () => {
                       required
                       type="number"
                       onWheel={(e) => {
-                        e.target.blur(); 
+                        e.target.blur();
                       }}
                       className="fade_grey fw-400 w-100 border-0 bg-white outline_none"
                       placeholder="₹ 0.00"

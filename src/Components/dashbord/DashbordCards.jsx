@@ -5,10 +5,12 @@ import Donut from "../charts/donatchart";
 import eyeIcon from "../../Images/svgs/eye-icon.svg";
 import printIcon from "../../Images/svgs/print-icon.svg";
 import { useOrdercontext } from "../../context/OrderGetter";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { min } from "date-fns";
 import { useNotification } from "../../context/NotificationContext";
 import { CrossIcons } from "../../Common/Icon";
+import alertgif from "../../Images/gif/altert Gif.gif";
+import { useProductsContext } from "../../context/productgetter";
 function DashbordCards() {
   const { orders } = useOrdercontext();
   const [showCustomDate, setShowCustomDate] = useState(false);
@@ -16,6 +18,8 @@ function DashbordCards() {
   const [endDate, setEndDate] = useState("");
   const [totalspent, setTotalSpent] = useState(0);
   const [showdeliverypop, setShowDeliveryPop] = useState(false);
+  const { productData } = useProductsContext();
+  const navigate = useNavigate();
   /**  ******************************************* Calculation of Average ORder value According to current Month
    * ****************************************    */
 
@@ -53,6 +57,10 @@ function DashbordCards() {
     acc[city] = ordersPerCity[city].length;
     return acc;
   }, {});
+
+  const filterlowproductsdata = productData.filter(
+    (value) => parseInt(value.totalStock) <= parseInt(value.stockAlert)
+  );
 
   // console.log(totalLengthPerCity);
   const totalActiveUsers = Object.values(totalLengthPerCity).reduce(
@@ -346,6 +354,34 @@ function DashbordCards() {
               <h1 className="fs-400   black fs-lg">Dashboard</h1>
             </div>
             {/* <button className="export_btn  white fs-xxs px-3 py-2 fw-400 border-0">Export</button> */}
+
+            {filterlowproductsdata.length !== 0 && (
+              <abbr className=" bg-transparent" title="Low Stock Notifications">
+                <button
+                  className=" border-0 position-relative bg-transparent"
+                  onClick={() =>
+                    navigate("/catalog/productlist", {
+                      state: filterlowproductsdata,
+                    })
+                  }
+                >
+                  {filterlowproductsdata.length !== 0 ? (
+                    <span
+                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                      style={{ fontSize: "10px" }}
+                    >
+                      {filterlowproductsdata.length >= 99
+                        ? `${filterlowproductsdata.length}+`
+                        : filterlowproductsdata.length}
+                    </span>
+                  ) : null}
+                  <span className=" fs-2sm fw-600" >
+                    Stock Alert
+                  </span>
+                  <img className=" ps-2" height={"50px"} src={alertgif} alt="alertgif" />
+                </button>
+              </abbr>
+            )}
           </div>
           <div className="row justify-content-star  mt-3">
             <div className="col-xl col-lg-4 col-md-6 mr-3  ">

@@ -8,6 +8,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { useLocation } from "react-router-dom";
 
 const productsContext = createContext();
 
@@ -17,6 +18,7 @@ export const useProductsContext = () => {
 
 export const ProductsProvider = ({ children }) => {
   const [data, setData] = useState([]);
+  const location = useLocation();
 
   const fetchProducts = async () => {
     try {
@@ -32,9 +34,7 @@ export const ProductsProvider = ({ children }) => {
   };
   useEffect(() => {
     fetchProducts();
-    console.log("ssssssssssss");
-    
-  }, []);
+  }, [location.pathname === "/catalog/productlist"]);
 
   const memoizedData = useMemo(() => data, [data]);
 
