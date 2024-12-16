@@ -178,6 +178,8 @@ function DeliveryBoyInventory2() {
           batch.update(vanDocRef, { quantity: newQty });
         }
 
+        
+
         for (const element of finalVanProducts) {
           const washingtonRef = doc(db, "products", element.id);
 
@@ -250,7 +252,7 @@ function DeliveryBoyInventory2() {
         (item) => !selectAll.includes(item.id)
       );
       for (let item of updateVan) {
-         delete item.id;
+        
         await addDoc(vanCollectionRef, item);
       }
       // Update local state
@@ -260,7 +262,7 @@ function DeliveryBoyInventory2() {
       FeatchProductName();
       setproductname("");
       fetchProducts();
-      window.location.reload();
+    
       toast.success("Product withdrawn successfully!", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -583,7 +585,17 @@ function DeliveryBoyInventory2() {
                         </th>
                         <th className="mx_140 cursor_pointer">
                           <p className="fw-400 fs-sm black mb-0 ms-2">
-                            Quantity
+                            Total Quantity
+                          </p>
+                        </th>
+                        <th className="mx_140 cursor_pointer">
+                          <p className="fw-400 fs-sm black mb-0 ms-3">
+                            Sold
+                          </p>
+                        </th>
+                        <th className="mx_140 cursor_pointer">
+                          <p className="fw-400 fs-sm black mb-0 ms-3">
+                            Available Quantity
                           </p>
                         </th>
                       </tr>
@@ -627,6 +639,26 @@ function DeliveryBoyInventory2() {
                               <td className="mx_140">
                                 <h3 className="fs-sm fw-400 black mb-0 color_green ms-3">
                                   {item.quantity}
+                                  <span className=" ms-1">
+                                    {item.stockUnitType == "GRAM"
+                                      ? "KG"
+                                      : item.stockUnitType}
+                                  </span>
+                                </h3>
+                              </td>
+                              <td className="mx_140">
+                                <h3 className="fs-sm fw-400 black mb-0 color_green ms-3">
+                                  {item.sold ? item.sold : 0}
+                                  <span className=" ms-1">
+                                    {item.stockUnitType == "GRAM"
+                                      ? "KG"
+                                      : item.stockUnitType}
+                                  </span>
+                                </h3>
+                              </td>
+                              <td className="mx_140">
+                                <h3 className="fs-sm fw-400 black mb-0 color_green ms-3">
+                                  {item.quantity - (item.sold ? item.sold : 0)}
                                   <span className=" ms-1">
                                     {item.stockUnitType == "GRAM"
                                       ? "KG"
