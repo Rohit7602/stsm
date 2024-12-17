@@ -63,12 +63,109 @@ const DeliverymanProfile = () => {
   const [addServiceAreaPopup, setAddServiceAreaPopup] = useState(false);
   const [deliveryhistory, setDeliveryHistory] = useState(0);
   const [deliveryhistorytime, setDeliveryHistoryTime] = useState("");
+  const [deliveryvanhistory, setDeliveryVanHistory] = useState([]);
   const [totalspent, setTotalSpent] = useState(0);
+  const [showlogspop, setShowLogsPop] = useState(false);
   const [selectarea, setSelectArea] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(
     Array(addMoreArea.length).fill(false)
   );
   const dropdownRef = useRef(null);
+
+  ////////////////////////   fetch van history      /////////////////////////////
+
+  const FetchDeliveryManVanHistory = async (deliverymanid) => {
+    let list = [];
+    try {
+      const querySnapshot = await getDocs(
+        collection(db, `Delivery/${deliverymanid.id}/history`)
+      );
+      querySnapshot.forEach((doc) => {
+        list.push({ ...doc.data() });
+      });
+      setDeliveryVanHistory(list);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
+    const DeliveryManId = DeliveryManData.filter((item) => {
+      if (item.d_id === id) {
+        return item.id;
+      }
+    });
+    FetchDeliveryManVanHistory(DeliveryManDatas[0]);
+
+    setfilterData(DeliveryManDatas);
+    if (DeliveryManDatas.length > 0) {
+      const allAreas = [];
+      DeliveryManDatas.forEach((data) => {
+        if (data.serviceArea) {
+          data.serviceArea.forEach((item) => {
+            allAreas.push({
+              area_name: item.area_name,
+              pincode: item.pincode,
+              terretory: item.terretory,
+            });
+          });
+        }
+      });
+      setAddMoreArea(allAreas);
+    }
+    let ordersCount = [];
+    let todayordersCount = 0;
+    let todayOrders = [];
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    orders.forEach((order) => {
+      if (
+        order.assign_to === DeliveryManId[0].id &&
+        order.status.toUpperCase() === "DELIVERED"
+      ) {
+        ordersCount.push(order);
+        const dateToCompare = new Date(order.transaction.date);
+        dateToCompare.setHours(0, 0, 0, 0);
+        if (dateToCompare.getTime() === currentDate.getTime()) {
+          todayordersCount++;
+        }
+      }
+
+      if (order.assign_to === DeliveryManId[0].id) {
+        const orderdate = new Date(order.created_at);
+        const todaydate = new Date();
+        const isSameDate =
+          orderdate.getFullYear() === todaydate.getFullYear() &&
+          orderdate.getMonth() === todaydate.getMonth() &&
+          orderdate.getDate() === todaydate.getDate();
+        if (isSameDate) {
+          todayOrders.push(order);
+        }
+      }
+    });
+
+    setTodayDailyOrders(todayOrders);
+
+    setTotalOrders(ordersCount);
+    setTotalDailyOrders(todayordersCount);
+
+    let onSiteOrdersCount = 0;
+    orders.forEach((order) => {
+      if (
+        order.assign_to === DeliveryManId[0].id &&
+        order.order_created_by === "Van"
+      ) {
+        onSiteOrdersCount++;
+      }
+    });
+    setOnSiteOrders(onSiteOrdersCount);
+    DeliveryManDatas.map((item) => {
+      setWallet(item.wallet);
+    });
+
+    // setWallet(DeliveryManDatas[0].wallet);
+  }, [DeliveryManData, id]);
 
   function handlAddMoreAreas() {
     setAddMoreArea((prevareas) => [
@@ -242,101 +339,6 @@ const DeliverymanProfile = () => {
     }
   }
 
-  useEffect(() => {
-    const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
-    const DeliveryManId = DeliveryManData.filter((item) => {
-      if (item.d_id === id) {
-        return item.id;
-      }
-    });
-    setfilterData(DeliveryManDatas);
-    if (DeliveryManDatas.length > 0) {
-      const allAreas = [];
-      DeliveryManDatas.forEach((data) => {
-        if (data.serviceArea) {
-          data.serviceArea.forEach((item) => {
-            allAreas.push({
-              area_name: item.area_name,
-              pincode: item.pincode,
-              terretory: item.terretory,
-            });
-          });
-        }
-      });
-      setAddMoreArea(allAreas);
-    }
-    // let ordersCount = 0;
-    // orders.forEach((order) => {
-    //   if (order.assign_to === DeliveryManId[0].id) {
-    //     ordersCount++;
-    //   }
-    // });
-    // setTotalOrders(ordersCount);
-
-    // let todayordersCount = 0;
-    // orders.forEach((order) => {
-    //   if (order.assign_to === DeliveryManId[0].id) {
-    //     todayordersCount++;
-    //   }
-    //   const dateToCompare = new Date(order.transaction.date);
-    //   const currentDate = new Date();
-    //   if (dateToCompare.getTime() === currentDate.getTime()) {
-    //    todayordersCount++;
-    //   }
-    // });
-    // setTotalDailyOrders(todayordersCount);
-
-    let ordersCount = [];
-    let todayordersCount = 0;
-    let todayOrders = [];
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-    orders.forEach((order) => {
-      if (
-        order.assign_to === DeliveryManId[0].id &&
-        order.status.toUpperCase() === "DELIVERED"
-      ) {
-        ordersCount.push(order);
-        const dateToCompare = new Date(order.transaction.date);
-        dateToCompare.setHours(0, 0, 0, 0);
-        if (dateToCompare.getTime() === currentDate.getTime()) {
-          todayordersCount++;
-        }
-      }
-
-      if (order.assign_to === DeliveryManId[0].id) {
-        const orderdate = new Date(order.created_at);
-        const todaydate = new Date();
-        const isSameDate =
-          orderdate.getFullYear() === todaydate.getFullYear() &&
-          orderdate.getMonth() === todaydate.getMonth() &&
-          orderdate.getDate() === todaydate.getDate();
-        if (isSameDate) {
-          todayOrders.push(order);
-        }
-      }
-    });
-
-    setTodayDailyOrders(todayOrders);
-
-    setTotalOrders(ordersCount);
-    setTotalDailyOrders(todayordersCount);
-
-    let onSiteOrdersCount = 0;
-    orders.forEach((order) => {
-      if (
-        order.assign_to === DeliveryManId[0].id &&
-        order.order_created_by === "Van"
-      ) {
-        onSiteOrdersCount++;
-      }
-    });
-    setOnSiteOrders(onSiteOrdersCount);
-    DeliveryManDatas.map((item) => {
-      setWallet(item.wallet);
-    });
-    // setWallet(DeliveryManDatas[0].wallet);
-  }, [DeliveryManData, id]);
   if (!id || filterData.length === 0) {
     return <Loader> </Loader>;
   }
@@ -433,7 +435,7 @@ const DeliverymanProfile = () => {
     setLoading(false);
   }
 
-  //////////////////////////////////////////
+  ///////////////////////     delivery history      ///////////////////
 
   const handleDateRangeSelection = (range) => {
     setStartDate("");
@@ -446,7 +448,7 @@ const DeliverymanProfile = () => {
     switch (range) {
       case "yesterday":
         start = new Date(today);
-        start.setDate(today.getDate() - 1);
+        start.setDate(today.getDate());
         end = new Date(start);
         break;
       case "week":
@@ -466,7 +468,7 @@ const DeliverymanProfile = () => {
         break;
       case "custom":
         setShowCustomDate(true);
-        return; // Display custom date inputs and exit
+        return;
       default:
         return;
     }
@@ -515,7 +517,6 @@ const DeliverymanProfile = () => {
       end.setHours(23, 59, 59, 999);
 
       filterOrdersByDateRange(start, end);
-      // console.log(`Fetching orders from ${startDate} to ${endDate}...`);
     } else {
       console.error(
         "Please select both start and end dates for the custom range."
@@ -526,6 +527,8 @@ const DeliverymanProfile = () => {
   const formatDate = (date) => {
     return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
   };
+
+  /////////////////////////////////
 
   function handleSelectAll() {
     if (orders.length === selectAll.length) {
@@ -556,6 +559,15 @@ const DeliverymanProfile = () => {
     (value) => value.assign_to === filterData[0].id
   );
 
+  ////////////////////////////////
+
+  const filterhistory = deliveryvanhistory.filter(
+    (value) =>
+      value.formattedDate >= startDate &&
+      endDate !== new Date() &&
+      value.formattedDate <= endDate
+  );
+
   if (loading) {
     return <Loader />;
   }
@@ -563,6 +575,122 @@ const DeliverymanProfile = () => {
   return filterData.map((datas, index) => {
     return (
       <div className="my-4">
+        {showlogspop && (
+          <div className="bg-white p-4 rounded-4 w_500 position-fixed center_pop overflow-auto xl_h_500">
+            <div className="d-flex align-items-center justify-content-between">
+              <h2 className="text-black fw-700 fs-2sm mb-0">Van History</h2>
+              <button
+                className="border-0 bg-white"
+                onClick={() => (
+                  setShowLogsPop(false),
+                  setStartDate(""),
+                  setEndDate(""),
+                  setShowCustomDate(false)
+                )}
+              >
+                <CrossIcons />
+              </button>
+            </div>
+            <div className="black_line my-3"></div>
+
+            {/* Date Selection Options */}
+            <div className="mb-3">
+              <label className="text-black fw-400 fs-sm mb-2">
+                Select Range
+              </label>
+              <div className="d-flex flex-column">
+                <button
+                  className="btn btn-outline-secondary mb-1"
+                  onClick={() => handleDateRangeSelection("yesterday")}
+                >
+                  Yesterday
+                </button>
+                <button
+                  className="btn btn-outline-secondary mb-1"
+                  onClick={() => handleDateRangeSelection("week")}
+                >
+                  One Week
+                </button>
+                <button
+                  className="btn btn-outline-secondary mb-1"
+                  onClick={() => handleDateRangeSelection("month")}
+                >
+                  One Month
+                </button>
+                <button
+                  className="btn btn-outline-secondary mb-1"
+                  onClick={() => handleDateRangeSelection("six_months")}
+                >
+                  Six Months
+                </button>
+                <button
+                  className="btn btn-outline-secondary"
+                  onClick={() => handleDateRangeSelection("custom")}
+                >
+                  Custom
+                </button>
+              </div>
+            </div>
+            {showCustomDate && (
+              <div className="p-3 border rounded bg-light mt-2">
+                <div className="mb-2">
+                  <label htmlFor="startDate" className="form-label">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    value={startDate}
+                    max={new Date().toISOString().split("T")[0]}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="form-control"
+                    placeholder="Start Date"
+                  />
+                </div>
+                <div className="mb-2">
+                  <label htmlFor="endDate" className="form-label">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    value={endDate}
+                    max={new Date().toISOString().split("T")[0]}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="form-control"
+                    placeholder="End Date"
+                  />
+                </div>
+                <button
+                  onClick={handleCustomDateSelection}
+                  className="apply_btn mt-2"
+                >
+                  Apply Custom Date Range
+                </button>
+              </div>
+            )}
+            <div className="d-flex align-items-center justify-content-between mt-3">
+              <h4 className="text-black fw-400 fs-sm mb-0">Total Results</h4>
+              <h2 className="text-black fw-700 fs-sm mb-0">
+                {filterhistory.length}
+              </h2>
+            </div>
+            {filterhistory.length !== 0 && (
+              <div className=" mt-3 text-center">
+                <NavLink
+                  to={`/viewhistory`}
+                  state={{
+                    deliverydata: filterData,
+                    filterhistory: filterhistory,
+                  }}
+                >
+                  Show Van History
+                </NavLink>
+              </div>
+            )}
+          </div>
+        )}
+        {/* /////////////////////////////////////////// */}
         {showdeliverypop && (
           <div className="bg-white p-4 rounded-4 w_500 position-fixed center_pop overflow-auto xl_h_500">
             <div className="d-flex align-items-center justify-content-between">
@@ -571,7 +699,12 @@ const DeliverymanProfile = () => {
               </h2>
               <button
                 className="border-0 bg-white"
-                onClick={() => setShowDeliveryPop(false)}
+                onClick={() => (
+                  setShowDeliveryPop(false),
+                  setStartDate(""),
+                  setEndDate(""),
+                  setShowCustomDate(false)
+                )}
               >
                 <CrossIcons />
               </button>
@@ -714,7 +847,8 @@ const DeliverymanProfile = () => {
         {approvePopup ||
         rejectPopup ||
         addServiceAreaPopup ||
-        showdeliverypop ? (
+        showdeliverypop ||
+        showlogspop ? (
           <div className="bg_black_overlay"></div>
         ) : null}
         {approvePopup ? (
@@ -1057,42 +1191,30 @@ const DeliverymanProfile = () => {
                   >
                     Reject profile
                   </button>
-
-                  {/* <button className="reset_border">
-                  <button className="fs-sm reset_btn border-0 fw-400  d-flex align-items-center gap-2 transition_04">
-                    <svg
-                      width="14"
-                      height="18"
-                      viewBox="0 0 14 18"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        d="M1 16C1 16.5304 1.21071 17.0391 1.58579 17.4142C1.96086 17.7893 2.46957 18 3 18H11C11.5304 18 12.0391 17.7893 12.4142 17.4142C12.7893 17.0391 13 16.5304 13 16V4H1V16ZM3 6H11V16H3V6ZM10.5 1L9.5 0H4.5L3.5 1H0V3H14V1H10.5Z"
-                        fill="#D73A60"
-                      />
-                    </svg>
-                    Delete Delivery Man
-                  </button>
-                </button> */}
-                  {/* <svg
-                  className="cursor_pointer"
-                  width="44"
-                  height="48"
-                  viewBox="0 0 44 48"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <rect width="44" height="48" rx="10" fill="white" />
-                  <path
-                    d="M25 17.9997L28 20.9997M23 31.9997H31M15 27.9997L14 31.9997L18 30.9997L29.586 19.4137C29.9609 19.0386 30.1716 18.53 30.1716 17.9997C30.1716 17.4694 29.9609 16.9608 29.586 16.5857L29.414 16.4137C29.0389 16.0388 28.5303 15.8281 28 15.8281C27.4697 15.8281 26.9611 16.0388 26.586 16.4137L15 27.9997Z"
-                    stroke="black"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg> */}
                 </div>
               ) : datas.profile_status === "APPROVED" ? (
                 <div className="d-flex align-itmes-center gap-3">
+                  <button
+                    onClick={() => setShowLogsPop(true)}
+                    className="filter_btn black d-flex align-items-center gap-2 fs-sm px-sm-3 px-2 py-2 fw-400 "
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="10"></circle>
+
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    View History
+                  </button>
                   <button
                     onClick={() => setShowDeliveryPop(true)}
                     className="filter_btn black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "

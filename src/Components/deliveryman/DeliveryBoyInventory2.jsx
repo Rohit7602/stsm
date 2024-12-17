@@ -16,6 +16,7 @@ import {
   getDocs,
   query,
   updateDoc,
+  where,
   writeBatch,
 } from "firebase/firestore";
 import { db } from "../../firebase";
@@ -155,6 +156,7 @@ function DeliveryBoyInventory2() {
 
   ///////////////////////             update entry                      ////////////////////////////////////
   async function updateEntry(e) {
+    let loaditems = [];
     e.preventDefault();
     if (finalVanProducts.length == 0) {
       return null;
@@ -164,32 +166,31 @@ function DeliveryBoyInventory2() {
     let batch = writeBatch(db);
     try {
       for (const items of AllProducts) {
-   
         const vanDocRef = doc(db, `Delivery/${id}/Van/${items.id}`);
         const existingDoc = await getDoc(vanDocRef);
         if (!existingDoc.exists()) {
           delete items.id;
-        
+
           await addDoc(collection(db, `Delivery/${id}/Van`), items);
         } else {
-          
-           delete items.id;
+          delete items.id;
           const newQty = items.quantity ?? 0;
           batch.update(vanDocRef, { quantity: newQty });
         }
-
-        
-
-        for (const element of finalVanProducts) {
-          const washingtonRef = doc(db, "products", element.id);
-
-          let finalvalue = element.totalStock - element.updatedQuantity;
-
-          await updateDoc(washingtonRef, {
-            totalStock: finalvalue,
-          });
-        }
       }
+
+      for (const element of finalVanProducts) {
+        loaditems.push(element);
+        const washingtonRef = doc(db, "products", element.id);
+        let finalvalue = element.totalStock - element.updatedQuantity;
+        await updateDoc(washingtonRef, {
+          totalStock: finalvalue,
+        });
+      }
+
+      addDailyDoc(loaditems, []);
+
+      ////////////////////////////////    create history van    ////////////////////////////////////////////
     } catch (error) {
       setLoaderstatus(false);
       console.log("Error in Adding Data to Van", error);
@@ -200,8 +201,8 @@ function DeliveryBoyInventory2() {
     GetAllProductsInVan();
     FeatchProductName();
     setproductname("");
-    setaddquantity(0)
-     setvarienttype("");
+    setaddquantity(0);
+    setvarienttype("");
     fetchProducts();
     setLoaderstatus(false);
 
@@ -216,6 +217,7 @@ function DeliveryBoyInventory2() {
   //////////////////////////////////
 
   async function handleWithdrow() {
+    let unloaditems = [];
     if (selectAll.length == 0) {
       return null;
     }
@@ -225,13 +227,14 @@ function DeliveryBoyInventory2() {
         selectAll.includes(item.id)
       );
       for (let item of itemsToAdd) {
+        unloaditems.push(item);
         const docRef = doc(db, "products", item.productid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const productData = docSnap.data();
           let totalStock = productData.totalStock; // Current stock
-          let updatedStock = totalStock + item.quantity;
-          let fixedstokes = updatedStock.toFixed(2);
+          let updatedStock = totalStock + Number(item.quantity);
+          let fixedstokes = Number(updatedStock).toFixed(2);
           const updateRef = doc(db, "products", item.productid);
           await updateDoc(updateRef, {
             totalStock: Number(fixedstokes),
@@ -252,7 +255,7 @@ function DeliveryBoyInventory2() {
         (item) => !selectAll.includes(item.id)
       );
       for (let item of updateVan) {
-        
+         delete item.id;
         await addDoc(vanCollectionRef, item);
       }
       // Update local state
@@ -262,13 +265,109 @@ function DeliveryBoyInventory2() {
       FeatchProductName();
       setproductname("");
       fetchProducts();
-    
+
       toast.success("Product withdrawn successfully!", {
         position: toast.POSITION.TOP_RIGHT,
       });
+      addDailyDoc([], unloaditems);
     } catch (error) {
       setLoaderstatus(false);
       console.error("Error in withdrawing product:", error);
+    }
+  }
+
+  async function addDailyDoc(loaditems, unloaditems) {
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString("en-CA", {
+      timeZone: "Asia/Kolkata",
+    });
+
+    try {
+      const historyRef = collection(db, `Delivery/${id}/history`);
+      const q = query(historyRef, where("formattedDate", "==", formattedDate));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        await addDoc(historyRef, {
+          loaditems: loaditems,
+          unloaditems: unloaditems,
+          formattedDate,
+          formattedTime: today.toLocaleTimeString("en-GB", {
+            timeZone: "Asia/Kolkata",
+          }),
+        });
+      } else {
+        let historyDocId = null;
+        let filterloaditems = [];
+        let filterunloaditems = [];
+        querySnapshot.forEach((doc) => {
+          historyDocId = doc.id;
+          filterloaditems = doc.data().loaditems || [];
+          filterunloaditems = doc.data().unloaditems || [];
+        });
+
+        if (historyDocId) {
+          //////////////////////////     load items   //////////////////////////////////////
+          const updatedLoadItems = filterloaditems.map((filterItem) => {
+            const match = loaditems.find(
+              (loadItem) => loadItem.id === filterItem.id
+            );
+            if (match) {
+              return {
+                ...filterItem,
+                ...match,
+                updatedQuantity:
+                  (filterItem.updatedQuantity || 0) +
+                  (match.updatedQuantity || 0),
+              };
+            }
+            return filterItem;
+          });
+          //////////////////////////   update  load items   //////////////////////////////////////
+          const unmatchedLoadItems = loaditems.filter(
+            (loadItem) =>
+              !filterloaditems.some(
+                (filterItem) => filterItem.id === loadItem.id
+              )
+          );
+          const finalLoadItems = [...updatedLoadItems, ...unmatchedLoadItems];
+          //////////////////////////////  unload items  ////////////////////////////////////////
+          const updatedUnloadItems = filterunloaditems.map((filterItem) => {
+            const match = unloaditems.find(
+              (unloadItem) => unloadItem.productid === filterItem.productid
+            );
+            if (match) {
+              return {
+                ...filterItem,
+                ...match,
+                quantity: filterItem.quantity + match.quantity,
+              };
+            }
+            return filterItem;
+          });
+          //////////////////////////////  update unload items  ////////////////////////////////////////
+          const unmatchedUnloadItems = unloaditems.filter(
+            (unloadItem) =>
+              !filterunloaditems.some(
+                (filterItem) => filterItem.productid === unloadItem.productid
+              )
+          );
+
+          const finalUnloadItems = [
+            ...updatedUnloadItems,
+            ...unmatchedUnloadItems,
+          ];
+          const vanDocRef = doc(db, `Delivery/${id}/history/${historyDocId}`);
+          await updateDoc(vanDocRef, {
+            loaditems: finalLoadItems,
+            unloaditems: finalUnloadItems,
+          });
+        } else {
+          console.error("Failed to retrieve history document ID.");
+        }
+      }
+    } catch (error) {
+      console.error("Error creating daily document:", error);
     }
   }
 
@@ -589,9 +688,7 @@ function DeliveryBoyInventory2() {
                           </p>
                         </th>
                         <th className="mx_140 cursor_pointer">
-                          <p className="fw-400 fs-sm black mb-0 ms-3">
-                            Sold
-                          </p>
+                          <p className="fw-400 fs-sm black mb-0 ms-3">Sold</p>
                         </th>
                         <th className="mx_140 cursor_pointer">
                           <p className="fw-400 fs-sm black mb-0 ms-3">

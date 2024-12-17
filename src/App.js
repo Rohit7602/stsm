@@ -47,6 +47,7 @@ import { useNotification } from "./context/NotificationContext";
 import DeliveryList from "./Components/deliveryman/DeliveryList";
 import Offers from "./Components/marketing/Offers";
 import DeliveryBoyInventory2 from "./Components/deliveryman/DeliveryBoyInventory2";
+import VanHistoryLogs from "./Components/deliveryman/VanHistoryLogs";
 
 function App() {
   const { logoutUser } = useUserAuth();
@@ -215,6 +216,10 @@ function App() {
                           />
                         </Route>
                         <Route path="deliverylist" element={<DeliveryList />} />
+                          <Route
+                            path="viewhistory"
+                            element={<VanHistoryLogs />}
+                          />
                         <Route path="deliveryman">
                           <Route index element={<DeliveryManList />} />
                           <Route

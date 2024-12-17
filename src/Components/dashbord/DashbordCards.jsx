@@ -178,7 +178,7 @@ function DashbordCards() {
     switch (range) {
       case "yesterday":
         start = new Date(today);
-        start.setDate(today.getDate() - 1);
+        start.setDate(today.getDate());
         end = new Date(start);
         break;
       case "week":
