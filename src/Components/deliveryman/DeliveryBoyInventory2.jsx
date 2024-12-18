@@ -282,6 +282,13 @@ function DeliveryBoyInventory2() {
       timeZone: "Asia/Kolkata",
     });
 
+    ///////////////////////////////   subtract sold value in Quantity  //////////////////////////
+
+    let newupdateUnloadItems = unloaditems.map((value) => ({
+  ...value,
+  quantity: value.quantity - Number(value.sold || 0),
+}));
+
     try {
       const historyRef = collection(db, `Delivery/${id}/history`);
       const q = query(historyRef, where("formattedDate", "==", formattedDate));
@@ -290,7 +297,7 @@ function DeliveryBoyInventory2() {
       if (querySnapshot.empty) {
         await addDoc(historyRef, {
           loaditems: loaditems,
-          unloaditems: unloaditems,
+          unloaditems: newupdateUnloadItems,
           formattedDate,
           formattedTime: today.toLocaleTimeString("en-GB", {
             timeZone: "Asia/Kolkata",
@@ -333,7 +340,7 @@ function DeliveryBoyInventory2() {
           const finalLoadItems = [...updatedLoadItems, ...unmatchedLoadItems];
           //////////////////////////////  unload items  ////////////////////////////////////////
           const updatedUnloadItems = filterunloaditems.map((filterItem) => {
-            const match = unloaditems.find(
+            const match = newupdateUnloadItems.find(
               (unloadItem) => unloadItem.productid === filterItem.productid
             );
             if (match) {
@@ -346,7 +353,7 @@ function DeliveryBoyInventory2() {
             return filterItem;
           });
           //////////////////////////////  update unload items  ////////////////////////////////////////
-          const unmatchedUnloadItems = unloaditems.filter(
+          const unmatchedUnloadItems = newupdateUnloadItems.filter(
             (unloadItem) =>
               !filterunloaditems.some(
                 (filterItem) => filterItem.productid === unloadItem.productid

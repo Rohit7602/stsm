@@ -7,7 +7,7 @@ import { Col, Row } from "react-bootstrap";
 import { Link, NavLink, useParams } from "react-router-dom";
 import Loader from "../Loader";
 import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
-import { updateDoc, doc } from "firebase/firestore";
+import { updateDoc, doc, getDoc } from "firebase/firestore";
 import { ToastContainer, toast } from "react-toastify";
 import billLogo from "../../Images/svgs/bill-logo.svg";
 import "react-toastify/dist/ReactToastify.css";
@@ -76,16 +76,18 @@ const DeliverymanProfile = () => {
 
   const FetchDeliveryManVanHistory = async (deliverymanid) => {
     let list = [];
-    try {
-      const querySnapshot = await getDocs(
-        collection(db, `Delivery/${deliverymanid.id}/history`)
-      );
-      querySnapshot.forEach((doc) => {
-        list.push({ ...doc.data() });
-      });
-      setDeliveryVanHistory(list);
-    } catch (error) {
-      console.log(error);
+    if (deliverymanid) {
+      try {
+        const querySnapshot = await getDocs(
+          collection(db, `Delivery/${deliverymanid.id}/history`)
+        );
+        querySnapshot.forEach((doc) => {
+          list.push({ id: doc.id, ...doc.data() });
+        });
+        setDeliveryVanHistory(list);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -425,14 +427,31 @@ const DeliverymanProfile = () => {
   }
 
   async function handleCollectBalance() {
+    let newdate = new Date();
     const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
-    setLoading(true);
+    ///////////////////////////////
+    let filtertodaylogs = deliveryvanhistory.filter(
+      (value) => value.formattedDate === newdate.toISOString().split("T")[0]
+    );
+
+    const querySnapshot = doc(
+      db,
+      `Delivery/${DeliveryManDatas[0].id}/history`,
+      filtertodaylogs[0].id
+    );
+    const docSnapshot = await getDoc(querySnapshot);
+    let currentAmount = 0;
+    if (docSnapshot.exists()) {
+      currentAmount = docSnapshot.data().totalamount || 0;
+    }
+    const newAmount = currentAmount + wallet;
+    await updateDoc(querySnapshot, { totalamount: newAmount });
     const washingtonRef = doc(db, "Delivery", DeliveryManDatas[0].id);
     await updateDoc(washingtonRef, {
       wallet: 0,
     });
+    window.location.reload()
     setShowpop(!showpop);
-    setLoading(false);
   }
 
   ///////////////////////     delivery history      ///////////////////
