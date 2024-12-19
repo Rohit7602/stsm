@@ -65,7 +65,9 @@ function DeliveryBoyInventory2() {
           for (let i of AllProducts) {
             if (i.productid == itemSelect.item.id) {
               let previousQuantity = i.quantity;
-              i.quantity = (totalQuantity + previousQuantity).toFixed(3);
+              i.quantity = (
+                Number(totalQuantity) + Number(previousQuantity)
+              ).toFixed(3);
             }
           }
         } else {
@@ -78,7 +80,7 @@ function DeliveryBoyInventory2() {
               brand: itemSelect.item.brand.name,
               stockUnitType: itemSelect.item.stockUnitType,
               sku: itemSelect.item.sku,
-              quantity: totalQuantity,
+              quantity: (Number(totalQuantity)).toFixed(3),
               name: itemSelect.item.name,
               totalStock: itemSelect.item.totalStock,
               productImage: itemSelect.item.productImages[0],
@@ -97,7 +99,7 @@ function DeliveryBoyInventory2() {
             brand: itemSelect.item.brand.name,
             stockUnitType: itemSelect.item.stockUnitType,
             sku: itemSelect.item.sku,
-            quantity: totalQuantity,
+            quantity: (Number(totalQuantity)).toFixed(3),
             name: itemSelect.item.name,
             totalStock: itemSelect.item.totalStock,
             productImage: itemSelect.item.productImages[0],

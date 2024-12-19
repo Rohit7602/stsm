@@ -698,7 +698,7 @@ const DeliverymanProfile = () => {
             {filterhistory.length !== 0 && (
               <div className=" mt-3 text-center">
                 <button
-                  className=" border-0 bg-transparent"
+                  className=" px-4 py-1 rounded-2 border-black text-black  bg-transparent"
                   onClick={() =>
                     navigate("/deliveryman/viewhistory", {
                       state: {
@@ -825,7 +825,7 @@ const DeliverymanProfile = () => {
             {deliveryhistory.length > 0 && (
               <div className=" mt-3 text-center">
                 <button
-                  className=" border-0 bg-transparent"
+                  className=" px-4 py-1 rounded-2 border-black text-black bg-transparent"
                   onClick={() =>
                     navigate("/deliveryman/deliverylist", {
                       state: { deliverydata: deliveryhistory },
