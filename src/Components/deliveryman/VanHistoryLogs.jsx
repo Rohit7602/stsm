@@ -152,10 +152,16 @@ function VanHistoryLogs() {
                               </td>
                               <td className=" col-1 text-center">
                                 <button
-                                  onClick={() => setViewLogsPop(index)}
+                                  onClick={() =>
+                                    setViewLogsPop((prev) =>
+                                      prev === index ? null : index
+                                    )
+                                  }
                                   className="border-0 bg-transparent text-primary"
                                 >
-                                  view all
+                                  {viewlogspop === index
+                                    ? "hide all"
+                                    : "view all"}
                                 </button>
                               </td>
                             </tr>
@@ -267,20 +273,6 @@ function VanHistoryLogs() {
                                 </tbody>
                               </table>
                             </div>
-                            // <div
-                            //   className="bg-white border d-flex position-relative mx-auto my-4 justify-content-center p-4 overflow-y-auto rounded-2"
-                            //   style={{ height: "200px", width: "90%" }}
-                            // >
-                            //   <div className="position-absolute end-0 top-0 p-2">
-                            //     <button
-                            //       className="border-0 bg-transparent"
-                            //       onClick={() => setViewLogsPop(null)}
-                            //     >
-                            //       <CrossIcons />
-                            //     </button>
-                            //   </div>
-
-                            // </div>
                           )}
                         </div>
                       );

@@ -4,7 +4,7 @@ import dropdownImg from "../../Images/svgs/dropdown_icon.svg";
 import checkGreen from "../../Images/svgs/check-green-btn.svg";
 import deleteiconWithBg from "../../Images/svgs/delete-icon-with-bg.svg";
 import { Col, Row } from "react-bootstrap";
-import { Link, NavLink, useParams } from "react-router-dom";
+import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
 import Loader from "../Loader";
 import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
 import { updateDoc, doc, getDoc } from "firebase/firestore";
@@ -72,6 +72,7 @@ const DeliverymanProfile = () => {
   );
   const dropdownRef = useRef(null);
 
+  const navigate = useNavigate();
   ////////////////////////   fetch van history      /////////////////////////////
 
   const FetchDeliveryManVanHistory = async (deliverymanid) => {
@@ -450,7 +451,7 @@ const DeliverymanProfile = () => {
     await updateDoc(washingtonRef, {
       wallet: 0,
     });
-    window.location.reload()
+    window.location.reload();
     setShowpop(!showpop);
   }
 
@@ -696,15 +697,19 @@ const DeliverymanProfile = () => {
             </div>
             {filterhistory.length !== 0 && (
               <div className=" mt-3 text-center">
-                <NavLink
-                  to={`/viewhistory`}
-                  state={{
-                    deliverydata: filterData,
-                    filterhistory: filterhistory,
-                  }}
+                <button
+                  className=" border-0 bg-transparent"
+                  onClick={() =>
+                    navigate("/deliveryman/viewhistory", {
+                      state: {
+                        deliverydata: filterData,
+                        filterhistory: filterhistory,
+                      },
+                    })
+                  }
                 >
                   Show Van History
-                </NavLink>
+                </button>
               </div>
             )}
           </div>
@@ -819,12 +824,16 @@ const DeliverymanProfile = () => {
             </div>
             {deliveryhistory.length > 0 && (
               <div className=" mt-3 text-center">
-                <NavLink
-                  to={`/deliverylist`}
-                  state={{ deliverydata: deliveryhistory }}
+                <button
+                  className=" border-0 bg-transparent"
+                  onClick={() =>
+                    navigate("/deliveryman/deliverylist", {
+                      state: { deliverydata: deliveryhistory },
+                    })
+                  }
                 >
                   Show Dilvery List
-                </NavLink>
+                </button>
               </div>
             )}
           </div>

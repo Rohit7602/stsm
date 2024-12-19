@@ -1,6 +1,12 @@
 import "./App.css";
 import CategoriesView from "./Components/catalog/Categories";
-import { Route, Routes, useLocation, useParams } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import Sidebar from "./Components/layout/Sidebar";
 import DashbordCards from "./Components/dashbord/DashbordCards";
 import ProductList from "./Components/catalog/ProductList";
@@ -52,16 +58,45 @@ import VanHistoryLogs from "./Components/deliveryman/VanHistoryLogs";
 function App() {
   const { logoutUser } = useUserAuth();
   const [user, setUser] = useState(null);
+  const [distributor, setDistributor] = useState(null);
   const [loading, setloading] = useState(true);
   const location = useLocation();
   const [deletPopup, setDeletPopup] = useState(false);
   const { showpop, setShowpop } = useNotification();
+  const navigate = useNavigate();
+  const loction = useLocation();
+  
+  useEffect(() => {
+    let distributorstatus = localStorage.getItem("distributor");
+    if (distributorstatus === "true") {
+      setDistributor(true);
+      navigate("/deliveryman");
+    } else {
+      setDistributor(false);
+    }
+
+        // console.log("hel;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
+  }, [distributor && loction.pathname !== "deliveryman"]);
+
+  useEffect(() => {
+    let distributorstatus = localStorage.getItem("distributor");
+    if (distributorstatus === "true") {
+      setDistributor(true);
+      navigate("/deliveryman");
+    } else {
+      setDistributor(false);
+    }
+
+    // console.log("helooooooooooooooooooooooooooooooooooo");
+    
+  }, [loction.pathname === "/"]);
+
   useEffect(() => {
     permissionHandler();
     onMessageListener();
 
     window.addEventListener("load", () => {
-      setloading(false); // Set loading to false when the page has finished loading
+      setloading(false); 
     });
 
     return () => {
@@ -113,6 +148,8 @@ function App() {
       await logoutUser();
       // Update the user state to trigger the rendering of the Login component
       localStorage.removeItem("isAdmin", "true");
+      localStorage.removeItem("distributor");
+      setDistributor(null);
       setUser(true);
     } catch (error) {
       console.error("Error signing out:", error.message);
@@ -180,96 +217,141 @@ function App() {
                   <div className="content d-flex flex-column  position-relative">
                     <Topbar />
                     <Notification />
-                    <div className="h-100 px-3 bg_light_grey">
-                      <Routes>
-                        <Route path="" element={<DashbordCards />} />
-                        <Route path="catalog">
-                          <Route index element={<CategoriesView />} />
-                          <Route path="newcategory" element={<NewCategory />} />
-                          <Route
-                            path="parentcategories"
-                            element={<ParentCategories />}
-                          />
-                          <Route path="productlist" element={<ProductList />} />
-                          <Route
-                            path="/catalog/addproduct/:id?"
-                            element={<AddProduct />}
-                          />
+                    {!distributor ? (
+                      <div className="h-100 px-3 bg_light_grey">
+                        <Routes>
+                          <Route path="" element={<DashbordCards />} />
+                          <Route path="catalog">
+                            <Route index element={<CategoriesView />} />
+                            <Route
+                              path="newcategory"
+                              element={<NewCategory />}
+                            />
+                            <Route
+                              path="parentcategories"
+                              element={<ParentCategories />}
+                            />
+                            <Route
+                              path="productlist"
+                              element={<ProductList />}
+                            />
+                            <Route
+                              path="/catalog/addproduct/:id?"
+                              element={<AddProduct />}
+                            />
 
+                            <Route
+                              path="serviceareas"
+                              element={<ServiceAreas />}
+                            />
+                          </Route>
+                          <Route path="customer">
+                            <Route index element={<Customers />} />
+                            <Route
+                              path="viewcustomerdetails/:id"
+                              element={<ViewCustomerDetails />}
+                            />
+                          </Route>
+                          <Route path="orders">
+                            <Route index element={<OrdersList />} />
+                            <Route
+                              path="orderdetails/:id"
+                              element={<Orderdetails />}
+                            />
+                          </Route>
+                          <Route path="deliveryman">
+                            <Route index element={<DeliveryManList />} />
+                            <Route
+                              path="deliverylist"
+                              element={<DeliveryList />}
+                            />
+                            <Route
+                              path="viewhistory"
+                              element={<VanHistoryLogs />}
+                            />
+                            <Route
+                              path="addnewdeliveryman/:id?"
+                              element={<AddDeliveryMan />}
+                            />
+                            <Route
+                              path="deliverymanprofile/:id"
+                              element={<DeliverymanProfile />}
+                            />
+                            <Route
+                              path="inventory/:id"
+                              element={<DeliveryBoyInventory2 />}
+                            />
+                          </Route>
+
+                          <Route path="marketing">
+                            <Route
+                              path="bannersadvertisement"
+                              element={<BannersAdvertisement />}
+                            />
+                            <Route path="coupans" element={<Coupons />} />
+                            <Route path="Offers" element={<Offers />} />
+                          </Route>
+                          <Route path="communications">
+                            <Route path="chats" element={<Chats />} />
+                            <Route path="complains" element={<Complains />} />
+                            <Route
+                              path="complaindetails/:complainId"
+                              element={<ComplainDetails />}
+                            />
+                          </Route>
                           <Route
-                            path="serviceareas"
-                            element={<ServiceAreas />}
+                            path="privacypolicy"
+                            element={<PrivacyPolicy />}
                           />
-                        </Route>
-                        <Route path="customer">
-                          <Route index element={<Customers />} />
+                          <Route path="setting">
+                            <Route path="brands" element={<Brands />} />
+                            {/* <Route path="products" element={< />} /> */}
+                          </Route>
+                          <Route path="term" element={<TermConditions />} />
+                          <Route path="FAQ" element={<Faqs />} />
+                          <Route path="invoices" element={<Invoices />} />
                           <Route
-                            path="viewcustomerdetails/:id"
-                            element={<ViewCustomerDetails />}
+                            path="invoicesbill"
+                            element={<InvoiceBill />}
                           />
-                        </Route>
-                        <Route path="orders">
-                          <Route index element={<OrdersList />} />
-                          <Route
-                            path="orderdetails/:id"
-                            element={<Orderdetails />}
-                          />
-                        </Route>
-                        <Route path="deliverylist" element={<DeliveryList />} />
-                          <Route
-                            path="viewhistory"
-                            element={<VanHistoryLogs />}
-                          />
-                        <Route path="deliveryman">
-                          <Route index element={<DeliveryManList />} />
-                          <Route
-                            path="addnewdeliveryman/:id?"
-                            element={<AddDeliveryMan />}
-                          />
-                          <Route
-                            path="deliverymanprofile/:id"
-                            element={<DeliverymanProfile />}
-                          />
-                          {/* <Route path="deliveryorderlist" element={<DeliveryOrderList />} /> */}
-                          {/* <Route
-                            path="inventory/:id"
-                            element={<DeliveryBoyInventory />}
-                          /> */}
-                          <Route
-                            path="inventory/:id"
-                            element={<DeliveryBoyInventory2 />}
-                          />
-                        </Route>
-                        <Route path="marketing">
-                          <Route
-                            path="bannersadvertisement"
-                            element={<BannersAdvertisement />}
-                          />
-                          <Route path="coupans" element={<Coupons />} />
-                          <Route path="Offers" element={<Offers />} />
-                        </Route>
-                        <Route path="communications">
-                          <Route path="chats" element={<Chats />} />
-                          <Route path="complains" element={<Complains />} />
-                          <Route
-                            path="complaindetails/:complainId"
-                            element={<ComplainDetails />}
-                          />
-                        </Route>
-                        <Route
-                          path="privacypolicy"
-                          element={<PrivacyPolicy />}
-                        />
-                        <Route path="setting">
-                          <Route path="brands" element={<Brands />} />
-                          {/* <Route path="products" element={< />} /> */}
-                        </Route>
-                        <Route path="term" element={<TermConditions />} />
-                        <Route path="FAQ" element={<Faqs />} />
-                        <Route path="invoices" element={<Invoices />} />
-                        <Route path="invoicesbill" element={<InvoiceBill />} />
-                      </Routes>
-                    </div>
+                        </Routes>
+                      </div>
+                    ) : (
+                      <div className="h-100 px-3 bg_light_grey">
+                        <Routes>
+                          <Route path="customer">
+                            <Route index element={<Customers />} />
+                            <Route
+                              path="viewcustomerdetails/:id"
+                              element={<ViewCustomerDetails />}
+                            />
+                          </Route>
+                          <Route path="deliveryman">
+                            <Route
+                              path="deliverylist"
+                              element={<DeliveryList />}
+                            />
+                            <Route
+                              path="viewhistory"
+                              element={<VanHistoryLogs />}
+                            />
+                            <Route index element={<DeliveryManList />} />
+                            <Route
+                              path="addnewdeliveryman/:id?"
+                              element={<AddDeliveryMan />}
+                            />
+                            <Route
+                              path="deliverymanprofile/:id"
+                              element={<DeliverymanProfile />}
+                            />
+                            <Route
+                              path="inventory/:id"
+                              element={<DeliveryBoyInventory2 />}
+                            />
+                          </Route>
+                        </Routes>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (

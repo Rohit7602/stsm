@@ -65,7 +65,7 @@ function DeliveryBoyInventory2() {
           for (let i of AllProducts) {
             if (i.productid == itemSelect.item.id) {
               let previousQuantity = i.quantity;
-              i.quantity = totalQuantity + previousQuantity;
+              i.quantity = (totalQuantity + previousQuantity).toFixed(2);
             }
           }
         } else {
@@ -255,7 +255,7 @@ function DeliveryBoyInventory2() {
         (item) => !selectAll.includes(item.id)
       );
       for (let item of updateVan) {
-         delete item.id;
+        delete item.id;
         await addDoc(vanCollectionRef, item);
       }
       // Update local state
@@ -282,12 +282,13 @@ function DeliveryBoyInventory2() {
       timeZone: "Asia/Kolkata",
     });
 
+
     ///////////////////////////////   subtract sold value in Quantity  //////////////////////////
 
     let newupdateUnloadItems = unloaditems.map((value) => ({
-  ...value,
-  quantity: value.quantity - Number(value.sold || 0),
-}));
+      ...value,
+      quantity: value.quantity - Number(value.sold || 0),
+    }));
 
     try {
       const historyRef = collection(db, `Delivery/${id}/history`);

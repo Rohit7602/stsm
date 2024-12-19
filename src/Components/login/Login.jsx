@@ -7,40 +7,43 @@ import { app, firestore, db } from "../../firebase";
 import { getDocs, collection, query, where } from "firebase/firestore";
 import Loader from "../Loader";
 // import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { useUserAuth } from '../../context/Authcontext'
+import { useUserAuth } from "../../context/Authcontext";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import 'firebase/firestore';
 import { useState } from "react";
 // const auth = getAuth(app);
 export default function Login(props) {
-  const [loading , setloading ] = useState(false)
+  const [loading, setloading] = useState(false);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState("password");
-  const { loginUser, logoutUser } = useUserAuth()
+  const { loginUser, logoutUser } = useUserAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setloading(true)
+    setloading(true);
     try {
       const { user } = await loginUser(email, password);
-      const userSnapshot = await getDocs(query(collection(db, 'User'), where('uuid', '==', user.uid)));
+      const userSnapshot = await getDocs(
+        query(collection(db, "User"), where("uuid", "==", user.uid))
+      );
       const userData = userSnapshot.docs[0]?.data();
       if (userData?.is_admin) {
-        localStorage.setItem('isAdmin', 'true');
+        localStorage.setItem("isAdmin", "true");
+        localStorage.setItem("distributor", userData.distributor);
         navigate("");
-        setloading(false)
+        setloading(false);
       } else {
-        await logoutUser()
-        setloading(false)
+        await logoutUser();
+        setloading(false);
         toast.error("User is not an admin", {
           position: toast.POSITION.TOP_CENTER,
         });
       }
     } catch (error) {
-      setloading(false)
+      setloading(false);
       console.error("Error signing in:", error.message);
       // Show a toast notification for the error
       toast.error("Invalid email or password", {
@@ -49,10 +52,8 @@ export default function Login(props) {
     }
   };
 
-
-
   if (loading) {
-    return <Loader></Loader>
+    return <Loader></Loader>;
   } else {
     return (
       <>
@@ -107,9 +108,7 @@ export default function Login(props) {
             <ToastContainer />
           </div>
         </div>
-      
-      
       </>
-    )
+    );
   }
 }
