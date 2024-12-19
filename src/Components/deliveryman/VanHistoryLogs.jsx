@@ -14,6 +14,7 @@ function VanHistoryLogs() {
         )
     ),
   }));
+console.log(updatedFilterHistory);
 
   return (
     <div className="main_panel_wrapper bg_light_grey w-100">
@@ -223,10 +224,13 @@ function VanHistoryLogs() {
                                             <span>
                                               {item.loaditems[rowIndex].name}
                                             </span>
-                                            <span>
+                                            <span className=" text-nowrap">
+                                              {item.loaditems[
+                                                rowIndex
+                                              ].updatedQuantity.toFixed(3)}{" "}
                                               {
                                                 item.loaditems[rowIndex]
-                                                  .updatedQuantity
+                                                  .stockUnitType
                                               }
                                             </span>
                                           </div>
@@ -240,10 +244,13 @@ function VanHistoryLogs() {
                                             <span>
                                               {item.unloaditems[rowIndex].name}
                                             </span>
-                                            <span>
+                                            <span className=" text-nowrap">
+                                              {item.unloaditems[
+                                                rowIndex
+                                              ].quantity.toFixed(3)}{" "}
                                               {
                                                 item.unloaditems[rowIndex]
-                                                  .quantity
+                                                  .stockUnitType
                                               }
                                             </span>
                                           </div>
@@ -257,10 +264,13 @@ function VanHistoryLogs() {
                                             <span>
                                               {item.pendingitems[rowIndex].name}
                                             </span>
-                                            <span>
+                                            <span className=" text-nowrap">
+                                              {item.pendingitems[
+                                                rowIndex
+                                              ].updatedQuantity.toFixed(3)}{" "}
                                               {
                                                 item.pendingitems[rowIndex]
-                                                  .updatedQuantity
+                                                  .stockUnitType
                                               }
                                             </span>
                                           </div>

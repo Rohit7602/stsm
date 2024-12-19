@@ -65,7 +65,7 @@ function DeliveryBoyInventory2() {
           for (let i of AllProducts) {
             if (i.productid == itemSelect.item.id) {
               let previousQuantity = i.quantity;
-              i.quantity = (totalQuantity + previousQuantity).toFixed(2);
+              i.quantity = (totalQuantity + previousQuantity).toFixed(3);
             }
           }
         } else {
@@ -234,7 +234,7 @@ function DeliveryBoyInventory2() {
           const productData = docSnap.data();
           let totalStock = productData.totalStock; // Current stock
           let updatedStock = totalStock + Number(item.quantity);
-          let fixedstokes = Number(updatedStock).toFixed(2);
+          let fixedstokes = Number(updatedStock).toFixed(3);
           const updateRef = doc(db, "products", item.productid);
           await updateDoc(updateRef, {
             totalStock: Number(fixedstokes),

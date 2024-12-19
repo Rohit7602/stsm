@@ -348,7 +348,7 @@ const ProductList = () => {
                     {/* <th className="mw_160 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Brand</h3>
                     </th> */}
-                    <th className="mw_130 p-3">
+                    <th className="mx_180 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">Stock</h3>
                     </th>
                     <th className="mw_160 p-3">
@@ -455,7 +455,7 @@ const ProductList = () => {
                               {value.salesprice}
                             </h3>
                           </td>
-                          <td className="p-3 mw_130">
+                          <td className="p-3 mx_180">
                             <h3
                               className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${
                                 parseInt(value.totalStock) === 0
@@ -470,8 +470,12 @@ const ProductList = () => {
                                 ? `Out of Stock`
                                 : parseInt(value.totalStock) >=
                                   parseInt(value.stockAlert)
-                                ? `${value.totalStock} in Stock`
-                                : `${value.totalStock} Left`}
+                                ? `${value.totalStock} ${
+                                    value.stockUnitType
+                                  }  ${" "} in Stock`
+                                : `${value.totalStock}  ${
+                                    value.stockUnitType
+                                  } ${" "}  Left`}
                             </h3>
                           </td>
 
