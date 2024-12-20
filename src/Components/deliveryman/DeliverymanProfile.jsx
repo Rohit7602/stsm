@@ -44,6 +44,7 @@ const DeliverymanProfile = () => {
   const [onSiteOrders, setOnSiteOrders] = useState(0);
   const [showordertabel, setShowOrderTabel] = useState(false);
   const [wallet, setWallet] = useState(0);
+  const [amountupi, setAmountUpi] = useState(0);
   const [areaPinCode, setAreaPinCode] = useState(null);
   const [showdeliverypop, setShowDeliveryPop] = useState(false);
   const { orders } = useOrdercontext();
@@ -165,6 +166,7 @@ const DeliverymanProfile = () => {
     setOnSiteOrders(onSiteOrdersCount);
     DeliveryManDatas.map((item) => {
       setWallet(item.wallet);
+      setAmountUpi(item.UPI);
     });
 
     // setWallet(DeliveryManDatas[0].wallet);
@@ -442,14 +444,21 @@ const DeliverymanProfile = () => {
     );
     const docSnapshot = await getDoc(querySnapshot);
     let currentAmount = 0;
+    let currentAmountUpi = 0
     if (docSnapshot.exists()) {
       currentAmount = docSnapshot.data().totalamount || 0;
+      currentAmountUpi = docSnapshot.data().totalamountupi || 0;
     }
     const newAmount = currentAmount + wallet;
-    await updateDoc(querySnapshot, { totalamount: newAmount });
+    const newAmountupi = currentAmountUpi + amountupi;
+    await updateDoc(querySnapshot, {
+      totalamount: newAmount,
+      totalamountupi: newAmountupi,
+    });
     const washingtonRef = doc(db, "Delivery", DeliveryManDatas[0].id);
     await updateDoc(washingtonRef, {
       wallet: 0,
+      UPI:0,
     });
     window.location.reload();
     setShowpop(!showpop);
@@ -858,9 +867,15 @@ const DeliverymanProfile = () => {
             <div className="black_line my-3"></div>
             <div className=" d-flex align-items-center justify-content-between">
               <h4 className=" text-black fw-400 fs-sm mb-0">
-                Today’s Collection
+                Today’s Collection Cash
               </h4>
               <h2 className=" text-black fw-700 fs-sm mb-0">₹ {wallet}</h2>
+            </div>
+            <div className=" d-flex align-items-center justify-content-between mt-3">
+              <h4 className=" text-black fw-400 fs-sm mb-0">
+                Today’s Collection UPI
+              </h4>
+              <h2 className=" text-black fw-700 fs-sm mb-0">₹ {amountupi}</h2>
             </div>
             <div className=" mt-4 pt-2 d-flex justify-content-end">
               <button
@@ -1413,9 +1428,17 @@ const DeliverymanProfile = () => {
               </div>
             </div>
 
-            <div className="profile_top_data_width d-flex align-items-center justify-content-center flex-column bg_light_green">
-              <p className="fs-sm fw-400 black m-0">Wallet Balance</p>
-              <p className="fs_24 fw_600 green m-0 mt-2">₹ {wallet}</p>
+            <div className="profile_top_data_width_amount  pt-3 bg_light_green">
+              <div className="d-flex justify-content-around">
+                <div>
+                  <p className="fs-sm fw-400 black m-0">Cash Amount</p>
+                  <p className="fs_24 fw_600 green m-0 mt-2">₹ {wallet}</p>
+                </div>
+                <div>
+                  <p className="fs-sm fw-400 black m-0">UPI Amount</p>
+                  <p className="fs_24 fw_600 green m-0 mt-2">₹ {amountupi}</p>
+                </div>
+              </div>
               <button
                 onClick={() => setShowpop(!showpop)}
                 className="fs_sm fw_600 color_blue m-0 mt-2 bg-transparent border-0"

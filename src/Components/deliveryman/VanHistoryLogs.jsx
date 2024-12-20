@@ -95,9 +95,14 @@ console.log(updatedFilterHistory);
                         Pending Items
                       </p>
                     </th>
-                    <th className=" col-2">
+                    <th className=" col-3">
                       <p className="fw-400 fs-sm black mb-0 ms-0">
-                        Total Amount
+                        Cash Amount
+                      </p>
+                    </th>
+                    <th className=" col-3">
+                      <p className="fw-400 fs-sm black mb-0 ms-0">
+                        UPI Amount
                       </p>
                     </th>
                     <th className=" col-1 text-center">
@@ -144,10 +149,17 @@ console.log(updatedFilterHistory);
                                   {item.pendingitems.length}
                                 </h3>
                               </td>
-                              <td className=" col-2">
+                              <td className=" col-3">
                                 <h3 className="fs-sm fw-400 black mb-0 ">
                                   {item.totalamount
-                                    ? item.totalamount
+                                    ? `₹  ${item.totalamount}`
+                                    : "No amount collect"}
+                                </h3>
+                              </td>
+                              <td className=" col-3">
+                                <h3 className="fs-sm fw-400 black mb-0 ">
+                                  {item.totalamountupi
+                                    ? `₹  ${item.totalamountupi}`
                                     : "No amount collect"}
                                 </h3>
                               </td>

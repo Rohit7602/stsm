@@ -719,12 +719,14 @@ export default function NewOrder() {
             const vanDoc = querySnapshot.docs.find(
               (doc) => doc.data().productid === item.product_id
             );
+
             const showvandata = vanDoc ? vanDoc.data() : null;
             if (showvandata) {
               const filterorder = filterData
                 .flatMap((value) => value.items)
                 .filter((filterid) => filterid.product_id === item.product_id);
-              if (filterorder[0].quantity > showvandata.quantity) {
+
+              if (filterorder[0].quantity > Number(showvandata.quantity)) {
                 const matchingDeliverymanData = await Promise.all(
                   deliverymenWithArea.map(async (value) => {
                     const q = query(collection(db, `Delivery/${value.id}/Van`));
@@ -736,6 +738,8 @@ export default function NewOrder() {
                     const filterquatity = filterproduct.filter(
                       (van) => van.quantity > filterorder[0].quantity
                     );
+                    console.log(filterquatity);
+
                     if (filterquatity.length > 0) {
                       return value;
                     }
@@ -764,7 +768,7 @@ export default function NewOrder() {
               (value) => value.id === autoSelectedDeliveryManId
             );
 
-            if (showvandata.quantity >= item.quantity) {
+            if (showvandata.quantity >= item.quantity * item.size) {
               const newStatus = "OUT_FOR_DELIVERY";
 
               if (!orderData.hasOwnProperty("invoiceNumber")) {
@@ -1157,13 +1161,19 @@ export default function NewOrder() {
                             </p>
                             <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">
                               (-) ₹{" "}
-                              {Math.round(products.varient_discount * products.quantity)}
+                              {Math.round(
+                                products.varient_discount * products.quantity
+                              )}
                             </p>
                           </div>
                           <p className="fs-sm fw-400 black mb-0 p-3">
                             ₹{" "}
-                            {Math.round(products.varient_price * products.quantity) -
-                             Math.round( products.varient_discount * products.quantity)}
+                            {Math.round(
+                              products.varient_price * products.quantity
+                            ) -
+                              Math.round(
+                                products.varient_discount * products.quantity
+                              )}
                           </p>
                         </div>
                       </>

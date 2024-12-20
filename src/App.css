@@ -2151,6 +2151,11 @@ min_width_230 {
   height: 128px;
   padding: 10px;
 }
+.profile_top_data_width_amount {
+  width: 300px;
+  height: 128px;
+  padding: 10px;
+}
 
 .profile_top_data_width .progress_bar {
   width: 100%;
