@@ -929,26 +929,22 @@ const OrderList = () => {
                                 ? orderTableData.transaction.status
                                 : null}
                             </h3>
-                            {orderTableData.status.toString().toUpperCase() !==
-                              "CANCELLED" &&
-                              orderTableData.status.toString().toUpperCase() !==
-                                "REJECTED" &&
-                              orderTableData.status.toString().toUpperCase() !==
-                                "RETURNED" && (
-                                <span className=" ms-2">
-                                  {" "}
-                                  {orderTableData.transaction.mode ===
-                                  "Cash on Delivery" ? (
-                                    <span className=" border py-1 px-2 rounded-2 border_text">
-                                      Cash
-                                    </span>
-                                  ) : (
-                                    <span className=" border py-1 px-2 rounded-2 border_text">
-                                      UPI
-                                    </span>
-                                  )}
-                                </span>
-                              )}
+                            {orderTableData.status.toString().toUpperCase() ===
+                              "DELIVERED" && (
+                              <span className=" ms-2">
+                                {" "}
+                                {orderTableData.transaction.mode ===
+                                "Cash on Delivery" ? (
+                                  <span className=" border py-1 px-2 rounded-2 border_text">
+                                    Cash
+                                  </span>
+                                ) : (
+                                  <span className=" border py-1 px-2 rounded-2 border_text text-danger">
+                                    UPI
+                                  </span>
+                                )}
+                              </span>
+                            )}
                           </td>
                           <td className="p-3 mw_190">
                             <p
