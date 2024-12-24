@@ -144,6 +144,10 @@ input[type="range"] {
   color: var(--color-green);
 }
 
+.border_text {
+  border: 1px solid #54b43533;
+}
+
 .color_blue {
   color: var(--color-blue);
 }

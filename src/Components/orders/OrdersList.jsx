@@ -310,7 +310,7 @@ const OrderList = () => {
         OrderPrice: order.order_price,
         Address: order.shipping.address,
         phoneNo: order.customer.phone,
-        deliveryname: order.deliveryname ?  order.deliveryname  : "",
+        deliveryname: order.deliveryname ? order.deliveryname : "",
       });
     });
 
@@ -327,8 +327,6 @@ const OrderList = () => {
       window.URL.revokeObjectURL(url);
     });
   }
-
-  
 
   /*  *******************************
   Export  Excel File end  here  
@@ -706,7 +704,7 @@ const OrderList = () => {
                     </th>
                     <th
                       onClick={() => sorting("transaction.status")}
-                      className="mw_160 p-3 cursor_pointer"
+                      className="mw-200 p-3 cursor_pointer"
                     >
                       <span className="d-flex align-items-center">
                         <h3 className="fs-sm fw-400 black mb-0 white_space_nowrap text-capitalize">
@@ -893,9 +891,9 @@ const OrderList = () => {
                               </h3>
                             </Link>
                           </td>
-                          <td className="p-3 mw_160">
+                          <td className="p-3 mw-200">
                             <h3
-                              className={`fs-sm fw-400 mb-0 d-inline-block ${
+                              className={`fs-sm fw-400 mb-0 d-inline-block  ${
                                 orderTableData.status
                                   .toString()
                                   .toUpperCase() !== "CANCELLED" &&
@@ -931,6 +929,26 @@ const OrderList = () => {
                                 ? orderTableData.transaction.status
                                 : null}
                             </h3>
+                            {orderTableData.status.toString().toUpperCase() !==
+                              "CANCELLED" &&
+                              orderTableData.status.toString().toUpperCase() !==
+                                "REJECTED" &&
+                              orderTableData.status.toString().toUpperCase() !==
+                                "RETURNED" && (
+                                <span className=" ms-2">
+                                  {" "}
+                                  {orderTableData.transaction.mode ===
+                                  "Cash on Delivery" ? (
+                                    <span className=" border py-1 px-2 rounded-2 border_text">
+                                      Cash
+                                    </span>
+                                  ) : (
+                                    <span className=" border py-1 px-2 rounded-2 border_text">
+                                      UPI
+                                    </span>
+                                  )}
+                                </span>
+                              )}
                           </td>
                           <td className="p-3 mw_190">
                             <p
