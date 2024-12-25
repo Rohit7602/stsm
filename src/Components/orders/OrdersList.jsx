@@ -933,14 +933,13 @@ const OrderList = () => {
                               "DELIVERED" && (
                               <span className=" ms-2">
                                 {" "}
-                                {orderTableData.transaction.mode ===
-                                "Cash on Delivery" ? (
-                                  <span className=" border py-1 px-2 rounded-2 border_text">
-                                    Cash
-                                  </span>
-                                ) : (
+                                {orderTableData.transaction.type === "UPI" ? (
                                   <span className=" border py-1 px-2 rounded-2 border_text text-danger">
                                     UPI
+                                  </span>
+                                ) : (
+                                  <span className=" border py-1 px-2 rounded-2 border_text">
+                                    Cash
                                   </span>
                                 )}
                               </span>
