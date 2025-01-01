@@ -12,7 +12,7 @@ import viewBill from "../invoices/InvoiceBill";
 import { ReactToPrint } from "react-to-print";
 import billLogo from "../../Images/svgs/bill-logo.svg";
 import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
-const OrderList = () => {
+const OrderList = ({ distributor }) => {
   const componentRef = useRef();
   // context
 
@@ -22,6 +22,8 @@ const OrderList = () => {
   const [selectedBill, setSelectedBill] = useState("");
   const [searchdata, setSearchData] = useState(0);
   const [searchprice, setSearchPrice] = useState(0);
+  const [totalspend, setTotalSpend] = useState(0);
+  const [totalspendupi, setTotalSpendUpi] = useState(0);
   const [datepop, setDatePop] = useState(false);
   const [orderStatus, setOrderStatus] = useState([]);
   const [showCustomDate, setShowCustomDate] = useState(false);
@@ -65,26 +67,110 @@ const OrderList = () => {
   function handleSelectAll() {
     if (orders.length === selectAll.length) {
       setSelectAll([]);
+      setTotalSpend(0);
+      setTotalSpendUpi(0);
     } else {
-      let allCheck = orders.map((item) => {
-        return item.id;
-      });
+      const allCheck = orders.map((item) => item.id);
       setSelectAll(allCheck);
+      const total = orders
+        .filter((item) => {
+          return (
+            searchvalue.toLowerCase() === "" ||
+            item.customer.name.toLowerCase().includes(searchvalue)
+          );
+        })
+
+        .filter((item) => {
+          if (selectedStatuses.length === 0) return true;
+          return selectedStatuses.some(
+            (status) => status.toLowerCase() === item.status.toLowerCase()
+          );
+        })
+
+        .filter((item) => {
+          if (!startDate && !endDate) return true;
+
+          const orderDate = new Date(item.created_at);
+          const start = startDate ? new Date(startDate) : null;
+          const end = endDate ? new Date(endDate) : null;
+          if (start) start.setHours(0, 0, 0, 0);
+          if (end) end.setHours(23, 59, 59, 999);
+          if (start && orderDate < start) return false;
+          if (end && orderDate > end) return false;
+
+          return true;
+        })
+
+        .filter((value) => {
+          if (data[searchdata] === "All") {
+            return true;
+          } else {
+            return (
+              value.status.toLowerCase() === data[searchdata].toLowerCase()
+            );
+          }
+        })
+        .filter((value) => {
+          if (deliveryid === "") {
+            return true;
+          } else {
+            return value.assign_to === deliveryid;
+          }
+        })
+
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+
+        .sort((a, b) => {
+          if (sortingprice[searchprice] === "all") {
+            return 0;
+          } else if (sortingprice[searchprice] === "topprice") {
+            return b.order_price - a.order_price;
+          } else {
+            return a.order_price - b.order_price;
+          }
+        });
+
+      const cashTotal = total
+        .filter((value) => value.transaction.type === "Cash")
+        .reduce((sum, item) => sum + item.order_price, 0);
+
+      const upiTotal = total
+        .filter((value) => value.transaction.type === "UPI")
+        .reduce((sum, item) => sum + item.order_price, 0);
+
+      // Update the state variables
+      setTotalSpend(cashTotal);
+      setTotalSpendUpi(upiTotal);
     }
   }
-  function handleSelect(e) {
+
+  function handleSelect(e, id, orderPrice, type, status) {
     let isChecked = e.target.checked;
     let value = e.target.value;
-    if (isChecked) {
-      setSelectAll([...selectAll, value]);
-    } else {
-      setSelectAll((prev) =>
-        prev.filter((id) => {
-          return id != value;
-        })
-      );
+
+    // Update the selectAll state
+    setSelectAll((prevSelected) => {
+      if (isChecked) {
+        return [...prevSelected, value];
+      } else {
+        return prevSelected.filter((selectedId) => selectedId !== value);
+      }
+    });
+
+    // Only update totals if the status is "DELIVERED"
+    if (status === "DELIVERED") {
+      if (type === "Cash") {
+        setTotalSpend((prevSpend) =>
+          isChecked ? prevSpend + orderPrice : prevSpend - orderPrice
+        );
+      } else if (type === "UPI") {
+        setTotalSpendUpi((prevSpend) =>
+          isChecked ? prevSpend + orderPrice : prevSpend - orderPrice
+        );
+      }
     }
   }
+
   // const handleMainCheckboxChange = () => {
   //   const updatedData = orders.map((item) => ({
   //     ...item,
@@ -195,10 +281,6 @@ const OrderList = () => {
   };
 
   /*  *******************************
-      Sorting Functionality end from here  
-    *********************************************   **/
-
-  /*  *******************************
     Export  Excel File start from here  
   *********************************************   **/
   const ExcelJS = require("exceljs");
@@ -288,31 +370,87 @@ const OrderList = () => {
       },
     ];
 
-    orders.map((order) => {
-      excelSheet.addRow({
-        OrderNumber: order.order_id,
-        Invoice:
-          typeof order.invoiceNumber === "undefined"
-            ? "N/A"
-            : order.invoiceNumber,
-        Date: formatDate(order.created_at),
-        Customer: order.customer.name,
-        PaymentStatus: order.transaction.status,
-        OrderStatus: order.status,
-        alternatephoneno: order.alternateCustomer
-          ? order.alternateCustomer.phone
-          : "",
-        alternatname: order.alternateCustomer
-          ? order.alternateCustomer.name
-          : "",
-        ServiceArea: order.shipping.city,
-        items: order.items.map((v) => `${v.title} - ${v.size}`).join(","),
-        OrderPrice: order.order_price,
-        Address: order.shipping.address,
-        phoneNo: order.customer.phone,
-        deliveryname: order.deliveryname ? order.deliveryname : "",
+    orders
+      .filter((item) => {
+        return (
+          searchvalue.toLowerCase() === "" ||
+          item.customer.name.toLowerCase().includes(searchvalue)
+        );
+      })
+
+      .filter((item) => {
+        if (selectedStatuses.length === 0) return true;
+        return selectedStatuses.some(
+          (status) => status.toLowerCase() === item.status.toLowerCase()
+        );
+      })
+
+      .filter((item) => {
+        if (!startDate && !endDate) return true;
+
+        const orderDate = new Date(item.created_at);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+        if (start) start.setHours(0, 0, 0, 0);
+        if (end) end.setHours(23, 59, 59, 999);
+        if (start && orderDate < start) return false;
+        if (end && orderDate > end) return false;
+
+        return true;
+      })
+
+      .filter((value) => {
+        if (data[searchdata] === "All") {
+          return true;
+        } else {
+          return value.status.toLowerCase() === data[searchdata].toLowerCase();
+        }
+      })
+      .filter((value) => {
+        if (deliveryid === "") {
+          return true;
+        } else {
+          return value.assign_to === deliveryid;
+        }
+      })
+
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+
+      .sort((a, b) => {
+        if (sortingprice[searchprice] === "all") {
+          return 0;
+        } else if (sortingprice[searchprice] === "topprice") {
+          return b.order_price - a.order_price;
+        } else {
+          return a.order_price - b.order_price;
+        }
+      })
+
+      .map((order) => {
+        excelSheet.addRow({
+          OrderNumber: order.order_id,
+          Invoice:
+            typeof order.invoiceNumber === "undefined"
+              ? "N/A"
+              : order.invoiceNumber,
+          Date: formatDate(order.created_at),
+          Customer: order.customer.name,
+          PaymentStatus: order.transaction.status,
+          OrderStatus: order.status,
+          alternatephoneno: order.alternateCustomer
+            ? order.alternateCustomer.phone
+            : "",
+          alternatname: order.alternateCustomer
+            ? order.alternateCustomer.name
+            : "",
+          ServiceArea: order.shipping.city,
+          items: order.items.map((v) => `${v.title} - ${v.size}`).join(","),
+          OrderPrice: order.order_price,
+          Address: order.shipping.address,
+          phoneNo: order.customer.phone,
+          deliveryname: order.deliveryname ? order.deliveryname : "",
+        });
       });
-    });
 
     workbook.xlsx.writeBuffer().then((data) => {
       let blob = new Blob([data], {
@@ -362,6 +500,9 @@ const OrderList = () => {
   const handleOrderStatusChange = (e) => {
     const newStatus = e.target.value;
     setOrderStatus(newStatus);
+    setSelectAll([]);
+    setTotalSpend(0);
+    setTotalSpendUpi(0);
     setSelectedStatuses((prevStatuses) => {
       if (!prevStatuses.includes(newStatus) && newStatus !== "") {
         return [...prevStatuses, newStatus];
@@ -372,6 +513,9 @@ const OrderList = () => {
 
   const handleDateRangeSelection = (range) => {
     setSelectedRange(range);
+    setSelectAll([]);
+    setTotalSpend(0);
+    setTotalSpendUpi(0);
     const today = new Date();
     switch (range) {
       case "yesterday":
@@ -438,6 +582,9 @@ const OrderList = () => {
 
   const onhandelchange = (event) => {
     setDeliveryName(event.target.value);
+    setSelectAll([]);
+    setTotalSpend(0);
+    setTotalSpendUpi(0);
     if (event.target.value !== "All") {
       let filterdeliveryid = DeliveryManData.filter(
         (value) =>
@@ -590,7 +737,9 @@ const OrderList = () => {
                   setSelectedRange(""),
                   setSelectedStatuses([]),
                   setDeliveryId(""),
-                  setDeliveryName("")
+                  setDeliveryName(""),
+                  setTotalSpend(0),
+                  setTotalSpendUpi(0)
                 )}
                 type="button"
                 className="apply_btn fs-sm fw-normal btn_bg_green"
@@ -604,8 +753,18 @@ const OrderList = () => {
 
       <div className="w-100 px-sm-3 pb-4 bg_body mt-4">
         <div className="d-flex  align-items-center flex-column flex-sm-row  gap-2 gap-sm-0 justify-content-between">
-          <div className="d-flex">
+          <div className="d-flex gap-5 align-items-center">
             <h1 className="fw-500  mb-0 black fs-lg">Orders</h1>
+            <div className=" d-flex gap-4">
+              <h5 className="fw-500  mb-0 black">
+                Total Spend Cash ={" "}
+                <span className=" text-success ms-1">₹ {totalspend}</span>
+              </h5>
+              <h5 className="fw-500  mb-0 black">
+                Total Spend UPI ={" "}
+                <span className=" text-success ms-1">₹ {totalspendupi}</span>
+              </h5>
+            </div>
           </div>
           <div className="d-flex align-itmes-center gap-3">
             <form
@@ -635,12 +794,14 @@ const OrderList = () => {
               Filter
             </button>
 
-            <button
-              onClick={exportExcelFile}
-              className="export_btn  white fs-xxs px-3 py-2 fw-400 border-0"
-            >
-              Export
-            </button>
+            {!distributor && (
+              <button
+                onClick={exportExcelFile}
+                className="export_btn  white fs-xxs px-3 py-2 fw-400 border-0"
+              >
+                Export
+              </button>
+            )}
           </div>
         </div>
         {/* product details  */}
@@ -779,11 +940,15 @@ const OrderList = () => {
 
                     .filter((item) => {
                       if (!startDate && !endDate) return true;
+
                       const orderDate = new Date(item.created_at);
-                      if (startDate && orderDate <= new Date(startDate))
-                        return false;
-                      if (endDate && orderDate >= new Date(endDate))
-                        return false;
+                      const start = startDate ? new Date(startDate) : null;
+                      const end = endDate ? new Date(endDate) : null;
+                      if (start) start.setHours(0, 0, 0, 0);
+                      if (end) end.setHours(23, 59, 59, 999);
+                      if (start && orderDate < start) return false;
+                      if (end && orderDate > end) return false;
+
                       return true;
                     })
 
@@ -828,13 +993,31 @@ const OrderList = () => {
                                 <input
                                   type="checkbox"
                                   value={orderTableData.id}
-                                  checked={selectAll.includes(
-                                    orderTableData.id
-                                  )}
-                                  onChange={handleSelect}
+                                  checked={
+                                    orderTableData.status
+                                      .toString()
+                                      .toUpperCase() !== "DELIVERED"
+                                      ? false
+                                      : selectAll.includes(orderTableData.id)
+                                  }
+                                  onChange={(e) =>
+                                    handleSelect(
+                                      e,
+                                      orderTableData.id,
+                                      orderTableData.order_price,
+                                      orderTableData.transaction.type,
+                                      orderTableData.status
+                                    )
+                                  }
+                                  disabled={
+                                    orderTableData.status
+                                      .toString()
+                                      .toUpperCase() !== "DELIVERED"
+                                  } // Disable if status is DELIVERY
                                 />
                                 <span className="checkmark"></span>
                               </label>
+
                               <Link
                                 className="fw-400 fs-sm color_blue ms-2"
                                 to={`orderdetails/${orderTableData.order_id}`}

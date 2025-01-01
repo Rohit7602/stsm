@@ -4,22 +4,27 @@ import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
 import { useParams } from "react-router-dom";
 import addicon from "../../Images/svgs/addicon.svg";
 import shortIcon from "../../Images/svgs/short-icon.svg";
+import closeIcon from "../../Images/svgs/closeicon.svg";
 import profile_image from "../../Images/Png/customer_profile.png";
 import { useProductsContext } from "../../context/productgetter";
 import Loader from "../Loader";
 import {
   addDoc,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
   getDoc,
   getDocs,
   query,
+  setDoc,
   updateDoc,
   where,
   writeBatch,
 } from "firebase/firestore";
 import { db } from "../../firebase";
+import { ActionIcon } from "../../Common/Icon";
+import { ButtonGroup } from "react-bootstrap";
 
 function DeliveryBoyInventory2() {
   const { DeliveryManData } = UseDeliveryManContext();
@@ -37,6 +42,7 @@ function DeliveryBoyInventory2() {
   const [itemSelect, setItemSelect] = useState({});
   const [disableUpload, setDisableUpload] = useState(false);
   const [finalVanProducts, setFinalVanProducts] = useState([]);
+  const [conformpop, setConFormPop] = useState(false);
 
   function addToVan(e) {
     e.preventDefault();
@@ -80,7 +86,7 @@ function DeliveryBoyInventory2() {
               brand: itemSelect.item.brand.name,
               stockUnitType: itemSelect.item.stockUnitType,
               sku: itemSelect.item.sku,
-              quantity: (Number(totalQuantity)).toFixed(3),
+              quantity: Number(totalQuantity).toFixed(3),
               name: itemSelect.item.name,
               totalStock: itemSelect.item.totalStock,
               productImage: itemSelect.item.productImages[0],
@@ -99,7 +105,7 @@ function DeliveryBoyInventory2() {
             brand: itemSelect.item.brand.name,
             stockUnitType: itemSelect.item.stockUnitType,
             sku: itemSelect.item.sku,
-            quantity: (Number(totalQuantity)).toFixed(3),
+            quantity: Number(totalQuantity).toFixed(3),
             name: itemSelect.item.name,
             totalStock: itemSelect.item.totalStock,
             productImage: itemSelect.item.productImages[0],
@@ -191,8 +197,6 @@ function DeliveryBoyInventory2() {
       }
 
       addDailyDoc(loaditems, []);
-
-      ////////////////////////////////    create history van    ////////////////////////////////////////////
     } catch (error) {
       setLoaderstatus(false);
       console.log("Error in Adding Data to Van", error);
@@ -278,12 +282,13 @@ function DeliveryBoyInventory2() {
     }
   }
 
+  ////////////////////////////////    create history van    ////////////////////////////////////////////
+
   async function addDailyDoc(loaditems, unloaditems) {
     const today = new Date();
     const formattedDate = today.toLocaleDateString("en-CA", {
       timeZone: "Asia/Kolkata",
     });
-
 
     ///////////////////////////////   subtract sold value in Quantity  //////////////////////////
 
@@ -453,12 +458,100 @@ function DeliveryBoyInventory2() {
     }
   }
 
+  ////////////  time history  //////////
+
+  async function onHandleLoadVan(vandata) {
+    setLoaderstatus(true);
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString("en-CA", {
+      timeZone: "Asia/Kolkata",
+    });
+    const formattedTime = today.toLocaleTimeString("en-GB", {
+      timeZone: "Asia/Kolkata",
+    });
+
+    try {
+      const historyRef = collection(db, `Delivery/${id}/history`);
+      const q = query(historyRef, where("formattedDate", "==", formattedDate));
+      const querySnapshot = await getDocs(q);
+      const historyKey =
+        vandata === "loadOutvan" ? "LoadOutVanHistory" : "LoadInVanHistory";
+      const newEntry = { date: formattedDate, time: formattedTime };
+
+      if (querySnapshot.empty) {
+        await addDoc(historyRef, {
+          formattedDate,
+          [historyKey]: [newEntry],
+        });
+      } else {
+        let historyDocId = null;
+        let vanHistoryData = [];
+        querySnapshot.forEach((doc) => {
+          historyDocId = doc.id;
+          vanHistoryData = doc.data()[historyKey] || [];
+        });
+        vanHistoryData.push(newEntry);
+        const vanDocRef = doc(db, `Delivery/${id}/history/${historyDocId}`);
+        await updateDoc(vanDocRef, {
+          [historyKey]: vanHistoryData,
+        });
+      }
+      setLoaderstatus(false);
+    } catch (error) {
+      console.error("Error adding van entry:", error);
+      setLoaderstatus(false);
+    }
+  }
+
   if (loaderstatus) {
     return <Loader></Loader>;
   } else {
     return (
       <div>
         <div className="main_panel_wrapper bg_light_grey w-100">
+          {/* conform pop */}
+          {conformpop ? <div className="bg_black_overlay"></div> : null}
+          {conformpop && (
+            <div className={`position-relative ${conformpop ? "" : "d-none"}`}>
+              <div className="Logout_popup">
+                <div onClick={() => setConFormPop(false)} className="text-end">
+                  <img
+                    width={40}
+                    className="cursor_pointer"
+                    src={closeIcon}
+                    alt="closeIcon"
+                  />
+                </div>
+                <p className="fs-2sm fw-700 black mb-0 text-center">
+                  {conformpop === "loadInvan"
+                    ? "Load Into Van"
+                    : "Unload From Van"}
+                </p>
+                <p className="fs-sm fw-500 black text-center mt-4">
+                  Are you sure you want to{" "}
+                  {conformpop === "loadInvan" ? "Load Into" : "Unload From"} the
+                  Van?
+                </p>
+                <div className="d-flex align-items-center justify-content-center gap-4 mt-4 pt-2">
+                  <button
+                    onClick={() => setConFormPop(false)}
+                    className="cancel_btn fs-sm fw-400 color_brown"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => (
+                      onHandleLoadVan(conformpop), setConFormPop(false)
+                    )}
+                    className="delete_btn"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
             <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between ">
               {delivryMan.length > 0 &&
@@ -638,6 +731,20 @@ function DeliveryBoyInventory2() {
                 </div>
 
                 <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
+                  <button
+                    onClick={() => setConFormPop("loadOutvan")}
+                    className="addnewproduct_btn  gap-2 white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
+                  >
+                    <ActionIcon />
+                    <span>Load Out Van</span>
+                  </button>
+                  <button
+                    onClick={() => setConFormPop("loadInvan")}
+                    className="addnewproduct_btn gap-2 white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
+                  >
+                    <ActionIcon />
+                    <span>Load In Van</span>
+                  </button>
                   <button
                     onClick={addToVan}
                     className="addnewproduct_btn white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "

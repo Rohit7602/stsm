@@ -74,8 +74,6 @@ function App() {
     } else {
       setDistributor(false);
     }
-
-        // console.log("hel;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
   }, [distributor && loction.pathname !== "deliveryman"]);
 
   useEffect(() => {
@@ -319,6 +317,16 @@ function App() {
                     ) : (
                       <div className="h-100 px-3 bg_light_grey">
                         <Routes>
+                          <Route path="orders">
+                            <Route
+                              index
+                              element={<OrdersList distributor={distributor} />}
+                            />
+                            <Route
+                              path="orderdetails/:id"
+                              element={<Orderdetails />}
+                            />
+                          </Route>
                           <Route path="customer">
                             <Route index element={<Customers />} />
                             <Route

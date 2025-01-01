@@ -5,23 +5,126 @@ import { CrossIcons } from "../../Common/Icon";
 function VanHistoryLogs() {
   const location = useLocation();
   const [viewlogspop, setViewLogsPop] = useState(null);
+  const [viewhistorypop, setViewHistoryPop] = useState(false);
   const updatedFilterHistory = location.state.filterhistory.map((entry) => ({
     ...entry,
-    pendingitems: entry.loaditems.filter(
+    pendingitems: entry.loaditems?.filter(
       (loadItem) =>
         !entry.unloaditems.some(
           (unloadItem) => unloadItem.productid === loadItem.id
         )
     ),
   }));
-console.log(updatedFilterHistory);
+
+  console.log(viewhistorypop.LoadInVanHistory);
 
   return (
     <div className="main_panel_wrapper bg_light_grey w-100">
+      {viewhistorypop ? <div className="bg_black_overlay"></div> : null}
+      {viewhistorypop && (
+        <div className="history_van_pop position-fixed center_pop overflow-auto xl_h_500 p-4 bg-light rounded shadow-lg">
+          <div className="text-end mb-3">
+            <button
+              className="border-0 bg-transparent px-2 fw-bold fs-4 text-danger"
+              onClick={() => setViewHistoryPop(false)}
+            >
+              ✗
+            </button>
+          </div>
+          <div className="border border-dark-subtle rounded p-3 bg-white">
+            <div className="d-flex gap-4 justify-content-between">
+              {/* Load In Van History */}
+              <div className="w-50">
+                <h5 className="fw-bold text-primary mb-3 text-center">
+                  Load In Van History
+                </h5>
+                <table className="table table-striped table-bordered">
+                  <thead>
+                    <tr>
+                      <th className="text-center">Time</th>
+                      <th className="text-center">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {viewhistorypop.LoadInVanHistory?.map((value, index) => {
+                      const currentDate = new Date()
+                        .toISOString()
+                        .split("T")[0];
+                      const formattedTime = new Date(
+                        `${currentDate}T${value.time}`
+                      ).toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      });
+
+                      const formattedDate = new Date(
+                        value.date
+                      ).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      });
+                      return (
+                        <tr key={index}>
+                          <td className="text-center">{formattedTime}</td>
+                          <td className="text-center">{formattedDate}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Load Out Van History */}
+              <div className="w-50">
+                <h5 className="fw-bold text-primary mb-3 text-center">
+                  Load Out Van History
+                </h5>
+                <table className="table table-striped table-bordered">
+                  <thead>
+                    <tr>
+                      <th className="text-center">Time</th>
+                      <th className="text-center">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {viewhistorypop.LoadOutVanHistory?.map((value, index) => {
+                      const currentDate = new Date()
+                        .toISOString()
+                        .split("T")[0]; // Get today's date in "YYYY-MM-DD" format
+                      const formattedTime = new Date(
+                        `${currentDate}T${value.time}`
+                      ).toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      });
+
+                      const formattedDate = new Date(
+                        value.date
+                      ).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      });
+                      return (
+                        <tr key={index}>
+                          <td className="text-center">{formattedTime}</td>
+                          <td className="text-center">{formattedDate}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="w-100 px-sm-3 pb-4 mt-4 bg_body">
         <div className="d-flex flex-column flex-md-row align-items-center gap-2 gap-sm-0 justify-content-between ">
           <div>
-            {location.state.deliverydata.length > 0 &&
+            {location.state.deliverydata?.length > 0 &&
               location.state.deliverydata.map((data) => {
                 return (
                   <div className="d-flex align-items-center mw-300 p-2">
@@ -77,7 +180,7 @@ console.log(updatedFilterHistory);
               <table className="w-100 ">
                 <thead className="w-100 table_head">
                   <tr className="product_borderbottom">
-                    <th className="py-3 col-2">
+                    <th className="py-3 col-3">
                       <h3 className="fs-sm fw-400 black mb-0">Date</h3>
                     </th>
                     <th className=" col-3">
@@ -95,18 +198,16 @@ console.log(updatedFilterHistory);
                         Pending Items
                       </p>
                     </th>
-                    <th className=" col-3">
+                    <th className=" col-4">
                       <p className="fw-400 fs-sm black mb-0 ms-0">
                         Cash Amount
                       </p>
                     </th>
-                    <th className=" col-3">
-                      <p className="fw-400 fs-sm black mb-0 ms-0">
-                        UPI Amount
-                      </p>
+                    <th className=" col-4">
+                      <p className="fw-400 fs-sm black mb-0 ms-0">UPI Amount</p>
                     </th>
-                    <th className=" col-1 text-center">
-                      <p className="fw-400 fs-sm black mb-0 ms-0">Actions</p>
+                    <th className=" col-4 ps-4">
+                      <p className="fw-400 fs-sm black mb-0 ms-0 ps-2">Actions</p>
                     </th>
                   </tr>
                 </thead>
@@ -125,7 +226,7 @@ console.log(updatedFilterHistory);
                         <div key={index}>
                           <div>
                             <tr className="product_borderbottom">
-                              <td className=" py-3 col-2">
+                              <td className=" py-3 col-3">
                                 <h3 className="fs-sm fw-400 black mb-0 ">
                                   {item.formattedDate
                                     .split("-")
@@ -135,42 +236,53 @@ console.log(updatedFilterHistory);
                               </td>
                               <td className=" col-3">
                                 <h3 className="fs-sm fw-400 black mb-0 ">
-                                  {item.loaditems.length}
+                                  {item.loaditems?.length}
                                 </h3>
                               </td>
 
                               <td className=" col-3">
                                 <h3 className="fs-sm fw-400 black mb-0 ">
-                                  {item.unloaditems.length}
+                                  {item.unloaditems?.length}
                                 </h3>
                               </td>
                               <td className=" col-3">
                                 <h3 className="fs-sm fw-400 black mb-0 ">
-                                  {item.pendingitems.length}
+                                  {item.pendingitems?.length}
                                 </h3>
                               </td>
-                              <td className=" col-3">
+                              <td className=" col-4">
                                 <h3 className="fs-sm fw-400 black mb-0 ">
                                   {item.totalamount
                                     ? `₹  ${item.totalamount}`
                                     : "No amount collect"}
                                 </h3>
                               </td>
-                              <td className=" col-3">
+                              <td className=" col-4">
                                 <h3 className="fs-sm fw-400 black mb-0 ">
                                   {item.totalamountupi
                                     ? `₹  ${item.totalamountupi}`
                                     : "No amount collect"}
                                 </h3>
                               </td>
-                              <td className=" col-1 text-center">
+                              <td className=" col-4 text-center">
+                                <button
+                                  onClick={() =>
+                                    setViewHistoryPop({
+                                      LoadInVanHistory: item.LoadInVanHistory,
+                                      LoadOutVanHistory: item.LoadOutVanHistory,
+                                    })
+                                  }
+                                  className="border-0 bg-transparent text-primary"
+                                >
+                                  van history
+                                </button>
                                 <button
                                   onClick={() =>
                                     setViewLogsPop((prev) =>
                                       prev === index ? null : index
                                     )
                                   }
-                                  className="border-0 bg-transparent text-primary"
+                                  className="border-0 bg-transparent text-primary ms-3"
                                 >
                                   {viewlogspop === index
                                     ? "hide all"
@@ -224,9 +336,9 @@ console.log(updatedFilterHistory);
                                   {/* Render rows dynamically */}
                                   {Array.from({
                                     length: Math.max(
-                                      item.loaditems.length,
-                                      item.unloaditems.length,
-                                      item.pendingitems.length
+                                      item.loaditems?.length,
+                                      item.unloaditems?.length,
+                                      item.pendingitems?.length
                                     ),
                                   }).map((_, rowIndex) => (
                                     <tr key={rowIndex}>

@@ -449,29 +449,33 @@ const ViewCustomerDetails = () => {
                                   </th>
                                 </tr>
                               </thead>
-                              <tbody className="table_body costomer_order_table">                   
+                              <tbody className="table_body costomer_order_table">
                                 {targetOrder
                                   .filter((item) =>
-                                    orderStatus 
+                                    orderStatus
                                       ? item.status.toLowerCase() ===
                                         orderStatus.toLowerCase()
                                       : targetOrder
                                   )
                                   .filter((item) => {
                                     if (!startDate && !endDate) return true;
+
                                     const orderDate = new Date(item.created_at);
-                                    if (
-                                      startDate &&
-                                      orderDate <= new Date(startDate)
-                                    )
+                                    const start = startDate
+                                      ? new Date(startDate)
+                                      : null;
+                                    const end = endDate
+                                      ? new Date(endDate)
+                                      : null;
+                                    if (start) start.setHours(0, 0, 0, 0);
+                                    if (end) end.setHours(23, 59, 59, 999);
+                                    if (start && orderDate < start)
                                       return false;
-                                    if (
-                                      endDate &&
-                                      orderDate >= new Date(endDate)
-                                    )
-                                      return false;
+                                    if (end && orderDate > end) return false;
+
                                     return true;
                                   })
+
                                   .sort(
                                     (a, b) =>
                                       new Date(b.created_at) -
