@@ -33,10 +33,10 @@ function VanHistoryLogs() {
           </div>
           <div className="border border-dark-subtle rounded p-3 bg-white">
             <div className="d-flex gap-4 justify-content-between">
-              {/* Load In Van History */}
+              {/* Load Out Van History */}
               <div className="w-50">
                 <h5 className="fw-bold text-primary mb-3 text-center">
-                  Load In Van History
+                  Load Out Van History
                 </h5>
                 <table className="table table-striped table-bordered">
                   <thead>
@@ -46,10 +46,10 @@ function VanHistoryLogs() {
                     </tr>
                   </thead>
                   <tbody>
-                    {viewhistorypop.LoadInVanHistory?.map((value, index) => {
+                    {viewhistorypop.LoadOutVanHistory?.map((value, index) => {
                       const currentDate = new Date()
                         .toISOString()
-                        .split("T")[0];
+                        .split("T")[0]; // Get today's date in "YYYY-MM-DD" format
                       const formattedTime = new Date(
                         `${currentDate}T${value.time}`
                       ).toLocaleTimeString("en-US", {
@@ -74,11 +74,10 @@ function VanHistoryLogs() {
                   </tbody>
                 </table>
               </div>
-
-              {/* Load Out Van History */}
+              {/* Load In Van History */}
               <div className="w-50">
                 <h5 className="fw-bold text-primary mb-3 text-center">
-                  Load Out Van History
+                  Load In Van History
                 </h5>
                 <table className="table table-striped table-bordered">
                   <thead>
@@ -88,10 +87,10 @@ function VanHistoryLogs() {
                     </tr>
                   </thead>
                   <tbody>
-                    {viewhistorypop.LoadOutVanHistory?.map((value, index) => {
+                    {viewhistorypop.LoadInVanHistory?.map((value, index) => {
                       const currentDate = new Date()
                         .toISOString()
-                        .split("T")[0]; // Get today's date in "YYYY-MM-DD" format
+                        .split("T")[0];
                       const formattedTime = new Date(
                         `${currentDate}T${value.time}`
                       ).toLocaleTimeString("en-US", {
@@ -207,7 +206,9 @@ function VanHistoryLogs() {
                       <p className="fw-400 fs-sm black mb-0 ms-0">UPI Amount</p>
                     </th>
                     <th className=" col-4 ps-4">
-                      <p className="fw-400 fs-sm black mb-0 ms-0 ps-2">Actions</p>
+                      <p className="fw-400 fs-sm black mb-0 ms-0 ps-2">
+                        Actions
+                      </p>
                     </th>
                   </tr>
                 </thead>
