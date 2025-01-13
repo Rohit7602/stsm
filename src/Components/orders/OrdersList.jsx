@@ -427,6 +427,8 @@ const OrderList = ({ distributor }) => {
       })
 
       .map((order) => {
+        console.log(order);
+        
         excelSheet.addRow({
           OrderNumber: order.order_id,
           Invoice:
@@ -444,7 +446,9 @@ const OrderList = ({ distributor }) => {
             ? order.alternateCustomer.name
             : "",
           ServiceArea: order.shipping.city,
-          items: order.items.map((v) => `${v.title} - ${v.size}`).join(","),
+          items: order.items
+            .map((v) => `${v.title} - ${v.quantity} `)
+            .join(","),
           OrderPrice: order.order_price,
           Address: order.shipping.address,
           phoneNo: order.customer.phone,

@@ -7,7 +7,7 @@ import { Col, Row } from "react-bootstrap";
 import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
 import Loader from "../Loader";
 import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
-import { updateDoc, doc, getDoc } from "firebase/firestore";
+import { updateDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import { ToastContainer, toast } from "react-toastify";
 import billLogo from "../../Images/svgs/bill-logo.svg";
 import "react-toastify/dist/ReactToastify.css";
@@ -355,23 +355,7 @@ const DeliverymanProfile = () => {
     setSelectedBill([...bill]);
   };
 
-  // useEffect(() => {
-  //   if (filterData.length > 0) {
-  //     const allAreas = [];
-  //     filterData.forEach((data) => {
-  //       if (data.serviceArea) {
-  //         data.serviceArea.forEach((item) => {
-  //           allAreas.push({
-  //             area_name: item.area_name,
-  //             pincode: item.pincode,
-  //             terretory: item.terretory
-  //           });
-  //         });
-  //       }
-  //     });
-  //     setAddMoreArea(allAreas);
-  //   }
-  // }, [filterData]);
+ 
 
   async function ApprovedDelivermanProfile(id) {
     try {
@@ -432,36 +416,60 @@ const DeliverymanProfile = () => {
   async function handleCollectBalance() {
     let newdate = new Date();
     const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
-    ///////////////////////////////
-    let filtertodaylogs = deliveryvanhistory.filter(
-      (value) => value.formattedDate === newdate.toISOString().split("T")[0]
-    );
 
-    const querySnapshot = doc(
-      db,
-      `Delivery/${DeliveryManDatas[0].id}/history`,
-      filtertodaylogs[0].id
-    );
-    const docSnapshot = await getDoc(querySnapshot);
-    let currentAmount = 0;
-    let currentAmountUpi = 0
-    if (docSnapshot.exists()) {
-      currentAmount = docSnapshot.data().totalamount || 0;
-      currentAmountUpi = docSnapshot.data().totalamountupi || 0;
+    if (wallet !== 0 || amountupi !== 0) {
+      if (DeliveryManDatas.length === 0) {
+        console.error("No delivery man data found for the given ID.");
+        return;
+      }
+
+      const deliveryManId = DeliveryManDatas[0].id;
+      const historyRef = collection(db, `Delivery/${deliveryManId}/history`);
+      let filtertodaylogs = deliveryvanhistory.filter(
+        (value) => value.formattedDate === newdate.toISOString().split("T")[0]
+      );
+
+      let querySnapshot;
+      let currentAmount = 0;
+      let currentAmountUpi = 0;
+
+      if (filtertodaylogs.length > 0) {
+        querySnapshot = doc(historyRef, filtertodaylogs[0].id);
+        const docSnapshot = await getDoc(querySnapshot);
+
+        if (docSnapshot.exists()) {
+          currentAmount = docSnapshot.data().totalamount || 0;
+          currentAmountUpi = docSnapshot.data().totalamountupi || 0;
+        }
+      } else {
+        querySnapshot = doc(historyRef);
+        await setDoc(querySnapshot, {
+          formattedDate: newdate.toISOString().split("T")[0],
+          totalamount: 0,
+          totalamountupi: 0,
+        });
+      }
+
+      const newAmount = currentAmount + wallet;
+      const newAmountupi = currentAmountUpi + amountupi;
+      await updateDoc(querySnapshot, {
+        totalamount: newAmount,
+        totalamountupi: newAmountupi,
+      });
+
+      const deliveryManRef = doc(db, "Delivery", deliveryManId);
+      await updateDoc(deliveryManRef, {
+        wallet: 0,
+        UPI: 0,
+      });
+
+      window.location.reload();
+      setShowpop(!showpop);
     }
-    const newAmount = currentAmount + wallet;
-    const newAmountupi = currentAmountUpi + amountupi;
-    await updateDoc(querySnapshot, {
-      totalamount: newAmount,
-      totalamountupi: newAmountupi,
-    });
-    const washingtonRef = doc(db, "Delivery", DeliveryManDatas[0].id);
-    await updateDoc(washingtonRef, {
-      wallet: 0,
-      UPI:0,
-    });
-    window.location.reload();
-    setShowpop(!showpop);
+
+    else {
+      setShowpop(!showpop);
+    }
   }
 
   ///////////////////////     delivery history      ///////////////////
