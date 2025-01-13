@@ -821,7 +821,7 @@ const OrderList = ({ distributor }) => {
             })}
           </div>
           <div className="overflow-x-scroll line_scroll">
-            <div style={{ minWidth: "1650px" }}>
+            <div style={{ minWidth: "1750px" }}>
               <table className="w-100">
                 <thead className="table_head w-100">
                   <tr className="product_borderbottom">
@@ -895,6 +895,11 @@ const OrderList = ({ distributor }) => {
                             alt="short-icon"
                           />
                         </span>
+                      </h3>
+                    </th>
+                    <th className="py-3 ps-5 mw-300">
+                      <h3 className="fs-sm fw-400 black mb-0">
+                        Delivered Date
                       </h3>
                     </th>
                     <th className="mw_140 p-3">
@@ -1148,6 +1153,13 @@ const OrderList = ({ distributor }) => {
                             >
                               {orderTableData.status}
                             </p>
+                          </td>
+                          <td className="py-3 ps-5 mw-300">
+                            <h3 className="fs-sm fw-400 black mb-0">
+                              {orderTableData.transaction.date && formatDate(
+                                orderTableData.transaction.date
+                              )}
+                            </h3>
                           </td>
                           <td className="p-3 mw_140">
                             <h3 className="fs-sm fw-400 black mb-0">
