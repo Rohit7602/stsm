@@ -1204,7 +1204,7 @@ const AddProduct = () => {
                                       e.target.blur();
                                     }}
                                     className="mt-2 product_input fade_grey fw-400"
-                                    placeholder="1"
+                                    placeholder="0"
                                     id="origi"
                                     value={variant.totalunit}
                                     onChange={(e) =>
@@ -1550,7 +1550,7 @@ const AddProduct = () => {
                                     e.target.blur();
                                   }}
                                   className="mt-2 product_input fade_grey fw-400"
-                                  placeholder="1"
+                                  placeholder="0"
                                   id="origi"
                                   value={
                                     variants.length === 0

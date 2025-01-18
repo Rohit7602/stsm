@@ -126,7 +126,7 @@ const AddSmallPattiBanner = (props) => {
                     <p className="fs-sm fw-400 black mb-0">Priority</p>
                     <input
                       className="fs-xxs fw-400 priority ms-3 mb-0"
-                      placeholder="1"
+                      placeholder="0"
                       onWheel={(e) => {
                         e.target.blur();
                       }}
