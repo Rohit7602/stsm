@@ -32,6 +32,7 @@ const OrderList = ({ distributor }) => {
   const [selectedRange, setSelectedRange] = useState("");
   const [deliveryname, setDeliveryName] = useState("");
   const [deliveryid, setDeliveryId] = useState("");
+  const [deliverydate, setDeliverydate] = useState(false);
   const [selectedStatuses, setSelectedStatuses] = useState([]);
 
   const handleBillNumberClick = (invoiceNumber) => {
@@ -833,7 +834,17 @@ const OrderList = ({ distributor }) => {
                       <h3 className="fs-sm fw-400 black mb-0">Invoice</h3>
                     </th>
                     <th className="mw-200 p-3">
-                      <h3 className="fs-sm fw-400 black mb-0">Date</h3>
+                      <h3 className="fs-sm fw-400 black mb-0 d-flex">
+                        Date{" "}
+                        <span onClick={() => setDeliverydate(false)}>
+                          <img
+                            className="ms-2 cursor_pointer"
+                            width={20}
+                            src={shortIcon}
+                            alt="short-icon"
+                          />
+                        </span>
+                      </h3>
                     </th>
                     <th
                       className="mw-200 p-3"
@@ -875,9 +886,17 @@ const OrderList = ({ distributor }) => {
                         </span>
                       </h3>
                     </th>
-                    <th className="py-3 ps-5 mw-300">
-                      <h3 className="fs-sm fw-400 black mb-0">
+                    <th className="py-3 ps-5 mw-300 ">
+                      <h3 className="fs-sm fw-400 black mb-0 d-flex">
                         Delivered Date
+                        <span onClick={() => setDeliverydate(true)}>
+                          <img
+                            className="ms-2 cursor_pointer"
+                            width={20}
+                            src={shortIcon}
+                            alt="short-icon"
+                          />
+                        </span>
                       </h3>
                     </th>
                     <th className="mw_140 p-3">
@@ -952,11 +971,15 @@ const OrderList = ({ distributor }) => {
                       }
                     })
 
-                    .sort(
-                      (a, b) =>
-                        new Date(b.transaction.date) -
-                        new Date(a.transaction.date)
-                    )
+                    .sort((a, b) => {
+                      if (deliverydate) {
+                        return (
+                          new Date(b.transaction.date) -
+                          new Date(a.transaction.date)
+                        );
+                      }
+                      return new Date(b.created_at) - new Date(a.created_at);
+                    })
 
                     .sort((a, b) => {
                       if (sortingprice[searchprice] === "all") {
