@@ -635,77 +635,57 @@ const DeliverymanProfile = () => {
               <label className="text-black fw-400 fs-sm mb-2">
                 Select Range
               </label>
-              <div className="d-flex flex-column">
-                <button
-                  className="btn btn-outline-secondary mb-1"
-                  onClick={() => handleDateRangeSelection("yesterday")}
-                >
-                  Yesterday
-                </button>
-                <button
-                  className="btn btn-outline-secondary mb-1"
-                  onClick={() => handleDateRangeSelection("week")}
-                >
-                  One Week
-                </button>
-                <button
-                  className="btn btn-outline-secondary mb-1"
-                  onClick={() => handleDateRangeSelection("month")}
-                >
-                  One Month
-                </button>
-                <button
-                  className="btn btn-outline-secondary mb-1"
-                  onClick={() => handleDateRangeSelection("six_months")}
-                >
-                  Six Months
-                </button>
-                <button
-                  className="btn btn-outline-secondary"
-                  onClick={() => handleDateRangeSelection("custom")}
-                >
-                  Custom
-                </button>
-              </div>
+              <select
+                className="form-select"
+                onChange={(e) => handleDateRangeSelection(e.target.value)}
+              >
+                <option value="yesterday">Yesterday</option>
+                <option value="week">One Week</option>
+                <option value="month">One Month</option>
+                <option value="six_months">Six Months</option>
+                <option value="custom">Custom</option>
+              </select>
+
+              {showCustomDate && (
+                <div className="p-3 border rounded bg-light mt-2">
+                  <div className="mb-2">
+                    <label htmlFor="startDate" className="form-label">
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      id="startDate"
+                      value={startDate}
+                      max={new Date().toISOString().split("T")[0]}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="form-control"
+                      placeholder="Start Date"
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label htmlFor="endDate" className="form-label">
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      id="endDate"
+                      value={endDate}
+                      max={new Date().toISOString().split("T")[0]}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="form-control"
+                      placeholder="End Date"
+                    />
+                  </div>
+                  <button
+                    onClick={handleCustomDateSelection}
+                    className="apply_btn mt-2"
+                  >
+                    Apply Custom Date Range
+                  </button>
+                </div>
+              )}
             </div>
-            {showCustomDate && (
-              <div className="p-3 border rounded bg-light mt-2">
-                <div className="mb-2">
-                  <label htmlFor="startDate" className="form-label">
-                    Start Date
-                  </label>
-                  <input
-                    type="date"
-                    id="startDate"
-                    value={startDate}
-                    max={new Date().toISOString().split("T")[0]}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="form-control"
-                    placeholder="Start Date"
-                  />
-                </div>
-                <div className="mb-2">
-                  <label htmlFor="endDate" className="form-label">
-                    End Date
-                  </label>
-                  <input
-                    type="date"
-                    id="endDate"
-                    value={endDate}
-                    max={new Date().toISOString().split("T")[0]}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="form-control"
-                    placeholder="End Date"
-                  />
-                </div>
-                <button
-                  onClick={handleCustomDateSelection}
-                  className="apply_btn mt-2"
-                >
-                  Apply Custom Date Range
-                </button>
-              </div>
-            )}
+
             <div className="d-flex align-items-center justify-content-between mt-3">
               <h4 className="text-black fw-400 fs-sm mb-0">Total Results</h4>
               <h2 className="text-black fw-700 fs-sm mb-0">
@@ -757,77 +737,59 @@ const DeliverymanProfile = () => {
               <label className="text-black fw-400 fs-sm mb-2">
                 Select Order Date Range
               </label>
-              <div className="d-flex flex-column">
-                <button
-                  className="btn btn-outline-secondary mb-1"
-                  onClick={() => handleDateRangeSelection("yesterday")}
-                >
-                  Yesterday
-                </button>
-                <button
-                  className="btn btn-outline-secondary mb-1"
-                  onClick={() => handleDateRangeSelection("week")}
-                >
-                  One Week
-                </button>
-                <button
-                  className="btn btn-outline-secondary mb-1"
-                  onClick={() => handleDateRangeSelection("month")}
-                >
-                  One Month
-                </button>
-                <button
-                  className="btn btn-outline-secondary mb-1"
-                  onClick={() => handleDateRangeSelection("six_months")}
-                >
-                  Six Months
-                </button>
-                <button
-                  className="btn btn-outline-secondary"
-                  onClick={() => handleDateRangeSelection("custom")}
-                >
-                  Custom
-                </button>
-              </div>
+              <select
+                className="form-select"
+                onChange={(e) => handleDateRangeSelection(e.target.value)}
+              >
+                <option value="" disabled selected>
+                  Choose a date range
+                </option>
+                <option value="yesterday">Yesterday</option>
+                <option value="week">One Week</option>
+                <option value="month">One Month</option>
+                <option value="six_months">Six Months</option>
+                <option value="custom">Custom</option>
+              </select>
+
+              {showCustomDate && (
+                <div className="p-3 border rounded bg-light mt-2">
+                  <div className="mb-2">
+                    <label htmlFor="startDate" className="form-label">
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      id="startDate"
+                      value={startDate}
+                      max={new Date().toISOString().split("T")[0]}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="form-control"
+                      placeholder="Start Date"
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label htmlFor="endDate" className="form-label">
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      id="endDate"
+                      value={endDate}
+                      max={new Date().toISOString().split("T")[0]}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="form-control"
+                      placeholder="End Date"
+                    />
+                  </div>
+                  <button
+                    onClick={handleCustomDateSelection}
+                    className="apply_btn mt-2"
+                  >
+                    Apply Custom Date Range
+                  </button>
+                </div>
+              )}
             </div>
-            {showCustomDate && (
-              <div className="p-3 border rounded bg-light mt-2">
-                <div className="mb-2">
-                  <label htmlFor="startDate" className="form-label">
-                    Start Date
-                  </label>
-                  <input
-                    type="date"
-                    id="startDate"
-                    value={startDate}
-                    max={new Date().toISOString().split("T")[0]}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="form-control"
-                    placeholder="Start Date"
-                  />
-                </div>
-                <div className="mb-2">
-                  <label htmlFor="endDate" className="form-label">
-                    End Date
-                  </label>
-                  <input
-                    type="date"
-                    id="endDate"
-                    value={endDate}
-                    max={new Date().toISOString().split("T")[0]}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="form-control"
-                    placeholder="End Date"
-                  />
-                </div>
-                <button
-                  onClick={handleCustomDateSelection}
-                  className="apply_btn mt-2"
-                >
-                  Apply Custom Date Range
-                </button>
-              </div>
-            )}
 
             <div className="d-flex align-items-center justify-content-between mt-3">
               <h4 className="text-black fw-400 fs-sm mb-0">Total Delivery</h4>

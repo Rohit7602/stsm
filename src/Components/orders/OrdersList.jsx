@@ -644,94 +644,57 @@ const OrderList = ({ distributor }) => {
                 ))}
               </select>
             </div>
-
             <div className="mb-3 mt-2">
-              <label className="text-black fs-xs" htmlFor="Spent">
+              <label className="text-black fs-xs" htmlFor="orderDateRange">
                 Select Order Date Range
               </label>
-              <div className="d-flex flex-column mt-2">
-                <button
-                  type="button"
-                  className={` ${
-                    selectedRange === "yesterday"
-                      ? " bg-secondary text-white"
-                      : ""
-                  } btn btn-outline-secondary mb-1`}
-                  onClick={() => handleDateRangeSelection("yesterday")}
-                >
-                  Yesterday
-                </button>
-                <button
-                  type="button"
-                  className={` ${
-                    selectedRange === "week" ? " bg-secondary text-white" : ""
-                  } btn btn-outline-secondary mb-1`}
-                  onClick={() => handleDateRangeSelection("week")}
-                >
-                  One Week
-                </button>
-                <button
-                  type="button"
-                  className={` ${
-                    selectedRange === "month" ? "bg-secondary text-white" : ""
-                  } btn btn-outline-secondary mb-1`}
-                  onClick={() => handleDateRangeSelection("month")}
-                >
-                  One Month
-                </button>
-                <button
-                  type="button"
-                  className={` ${
-                    selectedRange === "six_months"
-                      ? "bg-secondary text-white"
-                      : ""
-                  } btn btn-outline-secondary mb-1`}
-                  onClick={() => handleDateRangeSelection("six_months")}
-                >
-                  Six Months
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary"
-                  onClick={() => handleDateRangeSelection("custom")}
-                >
-                  Custom
-                </button>
-              </div>
+              <select
+                id="orderDateRange"
+                className="form-select mt-2"
+                value={selectedRange}
+                onChange={(e) => handleDateRangeSelection(e.target.value)}
+              >
+                <option value="yesterday">Yesterday</option>
+                <option value="week">One Week</option>
+                <option value="month">One Month</option>
+                <option value="six_months">Six Months</option>
+                <option value="custom">Custom</option>
+              </select>
+
+              {selectedRange === "custom" && (
+                <div className="p-3 border rounded bg-light mt-2">
+                  <div className="mb-2">
+                    <label htmlFor="startDate" className="form-label">
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      id="startDate"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="form-control"
+                      placeholder="Start Date"
+                      max={new Date().toISOString().split("T")[0]}
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label htmlFor="endDate" className="form-label">
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      id="endDate"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="form-control"
+                      placeholder="End Date"
+                      max={new Date().toISOString().split("T")[0]}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
-            {showCustomDate && (
-              <div className="p-3 border rounded bg-light mt-2">
-                <div className="mb-2">
-                  <label htmlFor="startDate" className="form-label">
-                    Start Date
-                  </label>
-                  <input
-                    type="date"
-                    id="startDate"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="form-control"
-                    placeholder="Start Date"
-                    max={new Date().toISOString().split("T")[0]}
-                  />
-                </div>
-                <div className="mb-2">
-                  <label htmlFor="endDate" className="form-label">
-                    End Date
-                  </label>
-                  <input
-                    type="date"
-                    id="endDate"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="form-control"
-                    placeholder="End Date"
-                    max={new Date().toISOString().split("T")[0]}
-                  />
-                </div>
-              </div>
-            )}
             <div className=" d-flex justify-content-end gap-4">
               <div className="text-end mt-4">
                 <button
