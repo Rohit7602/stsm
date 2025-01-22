@@ -925,6 +925,15 @@ const OrderList = ({ distributor }) => {
                 </thead>
                 <tbody className="table_body">
                   {orders
+                    .sort((a, b) => {
+                      if (deliverydate) {
+                        return (
+                          new Date(b.transaction.date) -
+                          new Date(a.transaction.date)
+                        );
+                      }
+                      return new Date(b.created_at) - new Date(a.created_at);
+                    })
                     .filter((item) => {
                       return (
                         searchvalue.toLowerCase() === "" ||
@@ -969,16 +978,6 @@ const OrderList = ({ distributor }) => {
                       } else {
                         return value.assign_to === deliveryid;
                       }
-                    })
-
-                    .sort((a, b) => {
-                      if (deliverydate) {
-                        return (
-                          new Date(b.transaction.date) -
-                          new Date(a.transaction.date)
-                        );
-                      }
-                      return new Date(b.created_at) - new Date(a.created_at);
                     })
 
                     .sort((a, b) => {
