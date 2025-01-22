@@ -428,7 +428,7 @@ const OrderList = ({ distributor }) => {
 
       .map((order) => {
         console.log(order);
-        
+
         excelSheet.addRow({
           OrderNumber: order.order_id,
           Invoice:
@@ -732,24 +732,35 @@ const OrderList = ({ distributor }) => {
                 </div>
               </div>
             )}
-            <div className="text-end mt-4">
-              <button
-                onClick={() => (
-                  setOrderStatus(""),
-                  setStartDate(""),
-                  setEndDate(""),
-                  setSelectedRange(""),
-                  setSelectedStatuses([]),
-                  setDeliveryId(""),
-                  setDeliveryName(""),
-                  setTotalSpend(0),
-                  setTotalSpendUpi(0)
-                )}
-                type="button"
-                className="apply_btn fs-sm fw-normal btn_bg_green"
-              >
-                Reset
-              </button>
+            <div className=" d-flex justify-content-end gap-4">
+              <div className="text-end mt-4">
+                <button
+                  onClick={() => (
+                    setOrderStatus(""),
+                    setStartDate(""),
+                    setEndDate(""),
+                    setSelectedRange(""),
+                    setSelectedStatuses([]),
+                    setDeliveryId(""),
+                    setDeliveryName(""),
+                    setTotalSpend(0),
+                    setTotalSpendUpi(0)
+                  )}
+                  type="button"
+                  className="apply_btn fs-sm fw-normal btn_bg_green"
+                >
+                  Reset
+                </button>
+              </div>
+              <div className="text-end mt-4">
+                <button
+                  onClick={() => setDatePop(false)}
+                  type="button"
+                  className="apply_btn fs-sm fw-normal btn_bg_green"
+                >
+                  Save
+                </button>
+              </div>
             </div>
           </form>
         </div>
@@ -949,7 +960,6 @@ const OrderList = ({ distributor }) => {
 
                     .filter((item) => {
                       if (!startDate && !endDate) return true;
-
                       const orderDate = new Date(item.created_at);
                       const start = startDate ? new Date(startDate) : null;
                       const end = endDate ? new Date(endDate) : null;
@@ -980,7 +990,9 @@ const OrderList = ({ distributor }) => {
                     })
 
                     .sort(
-                      (a, b) => new Date(b.created_at) - new Date(a.created_at)
+                      (a, b) =>
+                        new Date(b.transaction.date) -
+                        new Date(a.transaction.date)
                     )
 
                     .sort((a, b) => {
@@ -1160,9 +1172,8 @@ const OrderList = ({ distributor }) => {
                           </td>
                           <td className="py-3 ps-5 mw-300">
                             <h3 className="fs-sm fw-400 black mb-0">
-                              {orderTableData.transaction.date && formatDate(
-                                orderTableData.transaction.date
-                              )}
+                              {orderTableData.transaction.date &&
+                                formatDate(orderTableData.transaction.date)}
                             </h3>
                           </td>
                           <td className="p-3 mw_140">

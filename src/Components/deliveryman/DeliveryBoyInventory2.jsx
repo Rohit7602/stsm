@@ -238,8 +238,9 @@ function DeliveryBoyInventory2() {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const productData = docSnap.data();
-          let totalStock = productData.totalStock; // Current stock
-          let updatedStock = totalStock + Number(item.quantity);
+          let totalStock = productData.totalStock;
+          let updatedStock =
+            totalStock + Number(item.quantity - (item.sold ? item.sold : 0));
           let fixedstokes = Number(updatedStock).toFixed(3);
           const updateRef = doc(db, "products", item.productid);
           await updateDoc(updateRef, {
@@ -872,7 +873,9 @@ function DeliveryBoyInventory2() {
                               </td>
                               <td className="mx_140">
                                 <h3 className="fs-sm fw-400 black mb-0 color_green ms-3">
-                                  {item.quantity - (item.sold ? item.sold : 0)}
+                                  {Number(
+                                    item.quantity - (item.sold ? item.sold : 0)
+                                  ).toFixed(3)}
                                   <span className=" ms-1">
                                     {item.stockUnitType == "GRAM"
                                       ? "KG"
