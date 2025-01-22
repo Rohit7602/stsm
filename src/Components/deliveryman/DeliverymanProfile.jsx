@@ -639,6 +639,7 @@ const DeliverymanProfile = () => {
                 className="form-select"
                 onChange={(e) => handleDateRangeSelection(e.target.value)}
               >
+                <option value="">Select  Date</option>
                 <option value="yesterday">Yesterday</option>
                 <option value="week">One Week</option>
                 <option value="month">One Month</option>
@@ -744,6 +745,7 @@ const DeliverymanProfile = () => {
                 <option value="" disabled selected>
                   Choose a date range
                 </option>
+                <option value="">Select Order Date</option>
                 <option value="yesterday">Yesterday</option>
                 <option value="week">One Week</option>
                 <option value="month">One Month</option>

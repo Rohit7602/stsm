@@ -655,6 +655,7 @@ const OrderList = ({ distributor }) => {
                 value={selectedRange}
                 onChange={(e) => handleDateRangeSelection(e.target.value)}
               >
+                <option value="">Select Order Date</option>
                 <option value="yesterday">Yesterday</option>
                 <option value="week">One Week</option>
                 <option value="month">One Month</option>
@@ -925,15 +926,7 @@ const OrderList = ({ distributor }) => {
                 </thead>
                 <tbody className="table_body">
                   {orders
-                    .sort((a, b) => {
-                      if (deliverydate) {
-                        return (
-                          new Date(b.transaction.date) -
-                          new Date(a.transaction.date)
-                        );
-                      }
-                      return new Date(b.created_at) - new Date(a.created_at);
-                    })
+
                     .filter((item) => {
                       return (
                         searchvalue.toLowerCase() === "" ||
@@ -961,7 +954,27 @@ const OrderList = ({ distributor }) => {
 
                       return true;
                     })
+                    .sort((a, b) => {
+                      if (deliverydate) {
+                        const dateA = a.transaction.date
+                          ? new Date(a.transaction.date)
+                          : new Date("1980-01-13T15:57:54.368533");
+                        const dateB = b.transaction.date
+                          ? new Date(b.transaction.date)
+                          : new Date("1980-01-13T15:57:54.368533");
 
+                        return dateB - dateA; 
+                      }
+
+                      const createdA = a.created_at
+                        ? new Date(a.created_at)
+                        : new Date("1980-01-13T15:57:54.368533");
+                      const createdB = b.created_at
+                        ? new Date(b.created_at)
+                        : new Date("1980-01-13T15:57:54.368533");
+
+                      return createdB - createdA; 
+                    })
                     .filter((value) => {
                       if (data[searchdata] === "All") {
                         return true;
@@ -989,8 +1002,9 @@ const OrderList = ({ distributor }) => {
                         return a.order_price - b.order_price;
                       }
                     })
-
                     .map((orderTableData, index) => {
+                      console.log(orderTableData);
+
                       return (
                         <tr>
                           <td className="p-3 mw-200">
