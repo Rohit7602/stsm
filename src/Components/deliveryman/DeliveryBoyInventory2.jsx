@@ -239,8 +239,9 @@ function DeliveryBoyInventory2() {
         if (docSnap.exists()) {
           const productData = docSnap.data();
           let totalStock = productData.totalStock;
+           let changesold = Number(item.sold ? item.sold : 0);
           let updatedStock =
-            totalStock + Number(item.quantity - (item.sold ? item.sold : 0));
+            totalStock + Number(item.quantity - changesold);
           let fixedstokes = Number(updatedStock).toFixed(3);
           const updateRef = doc(db, "products", item.productid);
           await updateDoc(updateRef, {
