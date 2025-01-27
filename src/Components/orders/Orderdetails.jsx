@@ -551,8 +551,6 @@ export default function NewOrder() {
             areas.terretory.some((t) => t.toLowerCase() === area)
         )
     );
-    // console.log(deliverymenWithArea);
-    // setAllDeliverymans(deliverymenWithArea);
     if (deliverymenWithArea.length !== 0 || selectedDeliveryManId !== null) {
       try {
         const orderDocRef = doc(db, "order", id);
@@ -579,20 +577,15 @@ export default function NewOrder() {
         if (deliverymenWithArea.length > 1) {
           let orderProductsIds = [];
           let deliverymanIds = [];
-          // Collect product IDs from filterData
           filterData.forEach((item) =>
             item.items.forEach((product) =>
               orderProductsIds.push(product.product_id)
             )
           );
-
-          // Iterate over each deliveryman to fetch their van data
           for (let deliveryman of deliverymenWithArea) {
             const q = query(collection(db, `Delivery/${deliveryman.id}/Van`));
             const querySnapshot = await getDocs(q);
             const vans = querySnapshot.docs.map((doc) => doc.data());
-
-            // Check if this van contains all orderProductsIds and has sufficient quantity
             if (
               orderProductsIds.every((id) =>
                 vans.some(
@@ -687,12 +680,7 @@ export default function NewOrder() {
               let idIndex = Math.floor(Math.random() * lowOrder.length);
               deliverymanWithFewestOrders = lowOrder[idIndex];
             }
-            // console.log(
-            //   "Deliveryman with the fewest orders2:",
-            //   deliverymanWithFewestOrders
-            // );
             autoSelectedDeliveryManId = deliverymanWithFewestOrders;
-            // console.log(lowOrder);
           } else {
             autoSelectedDeliveryManId = deliverymanIds[0];
             console.log("working", autoSelectedDeliveryManId);
@@ -704,110 +692,134 @@ export default function NewOrder() {
 
         if (orderData && orderData.items) {
           //  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-          for (const item of orderData.items) {
-            const productDocRef = doc(db, "products", item.product_id);
-            const productDoc = await getDoc(productDocRef);
-            const productData = productDoc.data();
-            const filterdeliverymanid =
-              selectedDeliveryManId !== null
-                ? selectedDeliveryManId
-                : autoSelectedDeliveryManId;
-            const q = query(
-              collection(db, `Delivery/${filterdeliverymanid}/Van`)
+          // ////////////////    check all products match into van        ////////////////
+          const filterdeliverymanid =
+            selectedDeliveryManId !== null
+              ? selectedDeliveryManId
+              : autoSelectedDeliveryManId;
+          const q = query(
+            collection(db, `Delivery/${filterdeliverymanid}/Van`)
+          );
+          const querySnapshot = await getDocs(q);
+          const vanProductIds = new Set(
+            querySnapshot.docs.map((doc) => doc.data().productid)
+          );
+          const allMatch = orderData.items.every((item) =>
+            vanProductIds.has(item.product_id)
+          );
+
+          if (allMatch) {
+            // ////////////////    order quantity        ////////////////
+            const filterorder = orderData.items.map((item) => item.quantity);
+            const vanQuantities = querySnapshot.docs.map((doc) =>
+              Number(doc.data().quantity)
             );
-            const querySnapshot = await getDocs(q);
-            const vanDoc = querySnapshot.docs.find(
-              (doc) => doc.data().productid === item.product_id
-            );
+            const allSufficient = filterorder.every((orderQty, index) => {
+              return vanQuantities[index] >= orderQty;
+            });
 
-            const showvandata = vanDoc ? vanDoc.data() : null;
-            if (showvandata) {
-              const filterorder = filterData
-                .flatMap((value) => value.items)
-                .filter((filterid) => filterid.product_id === item.product_id);
-
-              if (filterorder[0].quantity > Number(showvandata.quantity)) {
-                const matchingDeliverymanData = await Promise.all(
-                  deliverymenWithArea.map(async (value) => {
-                    const q = query(collection(db, `Delivery/${value.id}/Van`));
-                    const querySnapshot = await getDocs(q);
-                    const vans = querySnapshot.docs.map((doc) => doc.data());
-                    const filterproduct = vans.filter(
-                      (van) => van.productid === item.product_id
+            if (allSufficient) {
+              for (const item of orderData.items) {
+                const vanDoc = querySnapshot.docs.find(
+                  (doc) => doc.data().productid === item.product_id
+                );
+                const showvandata = vanDoc ? vanDoc.data() : null;
+                if (showvandata) {
+                  if (filterorder[0].quantity > Number(showvandata.quantity)) {
+                    const matchingDeliverymanData = await Promise.all(
+                      deliverymenWithArea.map(async (value) => {
+                        const q = query(
+                          collection(db, `Delivery/${value.id}/Van`)
+                        );
+                        const querySnapshot = await getDocs(q);
+                        const vans = querySnapshot.docs.map((doc) =>
+                          doc.data()
+                        );
+                        const filterproduct = vans.filter(
+                          (van) => van.productid === item.product_id
+                        );
+                        const filterquatity = filterproduct.filter(
+                          (van) => van.quantity > filterorder[0].quantity
+                        );
+                        if (filterquatity.length > 0) {
+                          return value;
+                        }
+                        return null;
+                      })
                     );
-                    const filterquatity = filterproduct.filter(
-                      (van) => van.quantity > filterorder[0].quantity
+                    const validDeliverymanData = matchingDeliverymanData.filter(
+                      (data) => data !== null
                     );
-                    console.log(filterquatity);
-
-                    if (filterquatity.length > 0) {
-                      return value;
+                    if (validDeliverymanData.length !== 0) {
+                      setFilterAllDeliverymans(validDeliverymanData);
+                    } else {
+                      setIsFilterDeliverymanPopup(true);
                     }
-                    return null;
-                  })
-                );
-                const validDeliverymanData = matchingDeliverymanData.filter(
-                  (data) => data !== null
-                );
-                console.log(matchingDeliverymanData);
-                console.log(validDeliverymanData);
-                if (validDeliverymanData.length !== 0) {
-                  setFilterAllDeliverymans(validDeliverymanData);
+                  }
                 } else {
-                  setIsFilterDeliverymanPopup(true);
+                  console.warn(
+                    "Van data not found for product:",
+                    item.product_id
+                  );
+                  toast.warning("Van data for this product is unavailable", {
+                    position: toast.POSITION.TOP_RIGHT,
+                  });
+                }
+
+                // ////////////////    assign order driver and change status        ////////////////
+
+                let autoSelectedDeliveryManName = DeliveryManData.filter(
+                  (value) => value.id === autoSelectedDeliveryManId
+                );
+                if (showvandata.quantity >= item.quantity * item.size) {
+                  const newStatus = "OUT_FOR_DELIVERY";
+
+                  if (!orderData.hasOwnProperty("invoiceNumber")) {
+                    await updateDoc(orderDocRef, {
+                      status: newStatus,
+                      // OTP: otp,
+                      invoiceNumber: invoiceNumber,
+                      tokens: customertoken,
+                      deliveryname:
+                        deliverymenWithArea.length !== 0
+                          ? autoSelectedDeliveryManName[0].basic_info.name
+                          : selectedDeliveryManName,
+                      assign_to:
+                        deliverymenWithArea.length !== 0
+                          ? autoSelectedDeliveryManId
+                          : selectedDeliveryManId,
+                    });
+                  } else {
+                    await updateDoc(orderDocRef, {
+                      status: newStatus,
+                      // OTP: otp,
+                      deliveryname:
+                        deliverymenWithArea.length !== 0
+                          ? autoSelectedDeliveryManName[0].basic_info.name
+                          : selectedDeliveryManName,
+                      assign_to:
+                        deliverymenWithArea.length !== 0
+                          ? autoSelectedDeliveryManId
+                          : selectedDeliveryManId,
+                    });
+                    setLoading(false);
+                  }
+                } else {
+                  toast.warning("product Stocks not available", {
+                    position: toast.POSITION.TOP_RIGHT,
+                  });
                 }
               }
             } else {
-              console.warn("Van data not found for product:", item.product_id);
-              toast.warning("Van data for this product is unavailable", {
-                position: toast.POSITION.TOP_RIGHT,
-              });
+              setIsFilterDeliverymanPopup(true);
             }
+          }
 
-            let autoSelectedDeliveryManName = DeliveryManData.filter(
-              (value) => value.id === autoSelectedDeliveryManId
-            );
-
-            if (showvandata.quantity >= item.quantity * item.size) {
-              const newStatus = "OUT_FOR_DELIVERY";
-
-              if (!orderData.hasOwnProperty("invoiceNumber")) {
-                await updateDoc(orderDocRef, {
-                  status: newStatus,
-                  // OTP: otp,
-                  invoiceNumber: invoiceNumber,
-                  tokens: customertoken,
-                  deliveryname:
-                    deliverymenWithArea.length !== 0
-                      ? autoSelectedDeliveryManName[0].basic_info.name
-                      : selectedDeliveryManName,
-                  assign_to:
-                    deliverymenWithArea.length !== 0
-                      ? autoSelectedDeliveryManId
-                      : selectedDeliveryManId,
-                });
-              } else {
-                await updateDoc(orderDocRef, {
-                  status: newStatus,
-                  // OTP: otp,
-                  deliveryname:
-                    deliverymenWithArea.length !== 0
-                      ? autoSelectedDeliveryManName[0].basic_info.name
-                      : selectedDeliveryManName,
-                  assign_to:
-                    deliverymenWithArea.length !== 0
-                      ? autoSelectedDeliveryManId
-                      : selectedDeliveryManId,
-                });
-                setLoading(false);
-              }
-            } else {
-              toast.warning("product Stocks not available", {
-                position: toast.POSITION.TOP_RIGHT,
-              });
-            }
-
-            ///////////////////////////////////////
+          // ////////////////       ////////////////
+          else {
+            toast.warning("Van data for this product is unavailable", {
+              position: toast.POSITION.TOP_RIGHT,
+            });
           }
         }
         setLoading(false);
@@ -820,8 +832,6 @@ export default function NewOrder() {
       setIssDeliverymanPopup(true);
     }
   }
-
-  // console.log(validDeliverymanData , "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
 
   const renderLogIcon = (status) => {
     switch (status) {

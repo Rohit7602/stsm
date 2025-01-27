@@ -1003,8 +1003,6 @@ const OrderList = ({ distributor }) => {
                       }
                     })
                     .map((orderTableData, index) => {
-                      console.log(orderTableData);
-
                       return (
                         <tr>
                           <td className="p-3 mw-200">
