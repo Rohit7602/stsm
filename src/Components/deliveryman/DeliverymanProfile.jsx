@@ -94,80 +94,84 @@ const DeliverymanProfile = () => {
   };
 
   useEffect(() => {
-    const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
-    const DeliveryManId = DeliveryManData.filter((item) => {
-      if (item.d_id === id) {
-        return item.id;
-      }
-    });
-    FetchDeliveryManVanHistory(DeliveryManDatas[0]);
-
-    setfilterData(DeliveryManDatas);
-    if (DeliveryManDatas.length > 0) {
-      const allAreas = [];
-      DeliveryManDatas.forEach((data) => {
-        if (data.serviceArea) {
-          data.serviceArea.forEach((item) => {
-            allAreas.push({
-              area_name: item.area_name,
-              pincode: item.pincode,
-              terretory: item.terretory,
-            });
-          });
+    if (DeliveryManData.length !== 0) {
+      const DeliveryManDatas = DeliveryManData.filter(
+        (item) => item.d_id === id
+      );
+      const DeliveryManId = DeliveryManData.filter((item) => {
+        if (item.d_id === id) {
+          return item.id;
         }
       });
-      setAddMoreArea(allAreas);
+      FetchDeliveryManVanHistory(DeliveryManDatas[0]);
+
+      setfilterData(DeliveryManDatas);
+      if (DeliveryManDatas.length > 0) {
+        const allAreas = [];
+        DeliveryManDatas.forEach((data) => {
+          if (data.serviceArea) {
+            data.serviceArea.forEach((item) => {
+              allAreas.push({
+                area_name: item.area_name,
+                pincode: item.pincode,
+                terretory: item.terretory,
+              });
+            });
+          }
+        });
+        setAddMoreArea(allAreas);
+      }
+      let ordersCount = [];
+      let todayordersCount = 0;
+      let todayOrders = [];
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+      orders.forEach((order) => {
+        if (
+          order.assign_to === DeliveryManId[0].id &&
+          order.status.toUpperCase() === "DELIVERED"
+        ) {
+          ordersCount.push(order);
+          const dateToCompare = new Date(order.transaction.date);
+          dateToCompare.setHours(0, 0, 0, 0);
+          if (dateToCompare.getTime() === currentDate.getTime()) {
+            todayordersCount++;
+          }
+        }
+
+        if (order.assign_to === DeliveryManId[0].id) {
+          const orderdate = new Date(order.created_at);
+          const todaydate = new Date();
+          const isSameDate =
+            orderdate.getFullYear() === todaydate.getFullYear() &&
+            orderdate.getMonth() === todaydate.getMonth() &&
+            orderdate.getDate() === todaydate.getDate();
+          if (isSameDate) {
+            todayOrders.push(order);
+          }
+        }
+      });
+
+      setTodayDailyOrders(todayOrders);
+
+      setTotalOrders(ordersCount);
+      setTotalDailyOrders(todayordersCount);
+
+      let onSiteOrdersCount = 0;
+      orders.forEach((order) => {
+        if (
+          order.assign_to === DeliveryManId[0].id &&
+          order.order_created_by === "Van"
+        ) {
+          onSiteOrdersCount++;
+        }
+      });
+      setOnSiteOrders(onSiteOrdersCount);
+      DeliveryManDatas.map((item) => {
+        setWallet(item.wallet);
+        setAmountUpi(item.UPI);
+      });
     }
-    let ordersCount = [];
-    let todayordersCount = 0;
-    let todayOrders = [];
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-    orders.forEach((order) => {
-      if (
-        order.assign_to === DeliveryManId[0].id &&
-        order.status.toUpperCase() === "DELIVERED"
-      ) {
-        ordersCount.push(order);
-        const dateToCompare = new Date(order.transaction.date);
-        dateToCompare.setHours(0, 0, 0, 0);
-        if (dateToCompare.getTime() === currentDate.getTime()) {
-          todayordersCount++;
-        }
-      }
-
-      if (order.assign_to === DeliveryManId[0].id) {
-        const orderdate = new Date(order.created_at);
-        const todaydate = new Date();
-        const isSameDate =
-          orderdate.getFullYear() === todaydate.getFullYear() &&
-          orderdate.getMonth() === todaydate.getMonth() &&
-          orderdate.getDate() === todaydate.getDate();
-        if (isSameDate) {
-          todayOrders.push(order);
-        }
-      }
-    });
-
-    setTodayDailyOrders(todayOrders);
-
-    setTotalOrders(ordersCount);
-    setTotalDailyOrders(todayordersCount);
-
-    let onSiteOrdersCount = 0;
-    orders.forEach((order) => {
-      if (
-        order.assign_to === DeliveryManId[0].id &&
-        order.order_created_by === "Van"
-      ) {
-        onSiteOrdersCount++;
-      }
-    });
-    setOnSiteOrders(onSiteOrdersCount);
-    DeliveryManDatas.map((item) => {
-      setWallet(item.wallet);
-      setAmountUpi(item.UPI);
-    });
 
     // setWallet(DeliveryManDatas[0].wallet);
   }, [DeliveryManData, id]);
@@ -355,8 +359,6 @@ const DeliverymanProfile = () => {
     setSelectedBill([...bill]);
   };
 
- 
-
   async function ApprovedDelivermanProfile(id) {
     try {
       setLoading(true);
@@ -465,9 +467,7 @@ const DeliverymanProfile = () => {
 
       window.location.reload();
       setShowpop(!showpop);
-    }
-
-    else {
+    } else {
       setShowpop(!showpop);
     }
   }
@@ -639,7 +639,7 @@ const DeliverymanProfile = () => {
                 className="form-select"
                 onChange={(e) => handleDateRangeSelection(e.target.value)}
               >
-                <option value="">Select  Date</option>
+                <option value="">Select Date</option>
                 <option value="yesterday">Yesterday</option>
                 <option value="week">One Week</option>
                 <option value="month">One Month</option>
