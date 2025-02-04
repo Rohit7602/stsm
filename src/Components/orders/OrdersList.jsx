@@ -428,8 +428,6 @@ const OrderList = ({ distributor }) => {
       })
 
       .map((order) => {
-        console.log(order);
-
         excelSheet.addRow({
           OrderNumber: order.order_id,
           Invoice:

@@ -75,6 +75,101 @@ const Customers = () => {
     }
   }
 
+
+  //////////////////////  Export Excel File  //////////////////////////
+
+  const ExcelJS = require("exceljs");
+    function exportExcelFile() {
+      const workbook = new ExcelJS.Workbook();
+      const excelSheet = workbook.addWorksheet("Order List");
+      excelSheet.properties.defaultRowHeight = 20;
+
+      excelSheet.getRow(1).font = {
+        name: "Conic Sans MS",
+        family: 4,
+        size: 14,
+        bold: true,
+      };
+      excelSheet.columns = [
+        {
+          header: "CustomerName",
+          key: "CustomerName",
+          width: 40,
+        },
+        {
+          header: "City",
+          key: "City",
+          width: 30,
+        },
+        {
+          header: "State",
+          key: "State",
+          width: 25,
+        },
+        {
+          header: "Colony",
+          key: "Colony",
+          width: 25,
+        },
+      ];
+
+     totalSpentByCustomer
+       .filter((data) => {
+         return searchvalue.toLowerCase() === ""
+           ? data
+           : data.name.toLowerCase().includes(searchvalue);
+       })
+       .sort((a, b) => {
+         const dateA = new Date(a.created_at);
+         const dateB = new Date(b.created_at);
+         return dateB - dateA;
+       })
+       .filter((value) =>
+         Number(orderpricevalueselect)
+           ? value.totalSpent < Number(orderpricevalueselect)
+           : value
+       )
+       .sort((a, b) => b.totalSpent - a.totalSpent)
+       .filter((customer) =>
+         Number(pincode)
+           ? customer.addresses.some(
+               (address) => address.pincode === Number(pincode)
+             )
+           : customer
+       )
+       .filter((customer) =>
+         servicearea
+           ? customer.addresses.some(
+               (address) =>
+                 address.city.toLowerCase() === servicearea.toLowerCase()
+             )
+           : customer
+       )
+       .map((customer) => {
+         excelSheet.addRow({
+           CustomerName: customer?.name,
+           City: customer.addresses[0]?.city,
+           State: customer?.state,
+           PhoneNo: customer?.phone,
+           Colony: customer.addresses[0]?.colony,
+         });
+       });
+
+      workbook.xlsx.writeBuffer().then((data) => {
+        let blob = new Blob([data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = "customerList.xlsx";
+        anchor.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+  
+  
   return (
     <div className="main_panel_wrapper overflow-x-hidden bg_light_grey w-100">
       {filterpop ? <div className="bg_black_overlay"></div> : null}
@@ -257,6 +352,12 @@ const Customers = () => {
                 alt="filtericon"
               />
               Filter
+            </button>
+            <button
+              onClick={exportExcelFile}
+              className="export_btn  white fs-xxs px-3 py-2 fw-400 border-0"
+            >
+              Export
             </button>
           </div>
         </div>
