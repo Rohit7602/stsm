@@ -725,6 +725,11 @@ const AddProduct = () => {
         const formattedDate = today.toLocaleDateString("en-CA", {
           timeZone: "Asia/Kolkata",
         });
+   const formattedTime = new Date().toLocaleTimeString("en-IN", {
+     timeZone: "Asia/Kolkata",
+     hour12: true,
+   });
+          const newEntry = { date: formattedDate, time: formattedTime };
         try {
           const historyRef = collection(db, `Productslogs`);
           const q = query(
@@ -736,17 +741,18 @@ const AddProduct = () => {
           if (querySnapshot.empty) {
             await addDoc(historyRef, {
               formattedDate,
-              logs: [updateDatas],
+              logs: [{...updateDatas , producttime:newEntry}],
             });
           } else {
             let historyDocId = null;
             let LogsData = [];
             querySnapshot.forEach((doc) => {
               historyDocId = doc.id;
-              LogsData = [...doc.data().logs, updateDatas];
+              LogsData = [...doc.data().logs, {...updateDatas , producttime:newEntry}];
             });
             const vanDocRef = doc(db, `Productslogs/${historyDocId}`);
             await updateDoc(vanDocRef, {
+              formattedTime,
               logs: LogsData,
             });
           }
