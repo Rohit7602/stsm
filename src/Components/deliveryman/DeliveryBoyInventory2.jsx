@@ -484,7 +484,8 @@ function DeliveryBoyInventory2() {
           formattedDate,
           [historyKey]: [newEntry],
         });
-      } else {
+      }
+      else {
         let historyDocId = null;
         let vanHistoryData = [];
         querySnapshot.forEach((doc) => {

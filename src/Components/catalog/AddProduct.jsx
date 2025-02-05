@@ -15,7 +15,15 @@ import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import { Col, DropdownButton, Row } from "react-bootstrap";
-import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  doc,
+  updateDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -595,8 +603,6 @@ const AddProduct = () => {
     e.preventDefault();
     setLoaderstatus(true);
     try {
-      // console.log(VarintName, "eeeeeeeeeeeee");
-
       const imagelinksupdate = [];
       for await (const file of imageUpload22) {
         let imageUrl = null;
@@ -669,7 +675,6 @@ const AddProduct = () => {
 
         serviceable_areas: addMoreArea,
       };
-
       // console.log("message---------------------", showweightfield);
 
       // Check if the selected category is different from the existing category
@@ -709,12 +714,46 @@ const AddProduct = () => {
           totalProducts: increment(1),
         });
       }
+
       if (variants.every((item) => item.VarientName != "")) {
         await updateDoc(doc(db, "products", ProductsID), updateDatas);
         updateProductData({
           ProductsID,
           ...updateDatas,
         });
+        const today = new Date();
+        const formattedDate = today.toLocaleDateString("en-CA", {
+          timeZone: "Asia/Kolkata",
+        });
+        try {
+          const historyRef = collection(db, `Productslogs`);
+          const q = query(
+            historyRef,
+            where("formattedDate", "==", formattedDate)
+          );
+          const querySnapshot = await getDocs(q);
+
+          if (querySnapshot.empty) {
+            await addDoc(historyRef, {
+              formattedDate,
+              logs: [updateDatas],
+            });
+          } else {
+            let historyDocId = null;
+            let LogsData = [];
+            querySnapshot.forEach((doc) => {
+              historyDocId = doc.id;
+              LogsData = [...doc.data().logs, updateDatas];
+            });
+            const vanDocRef = doc(db, `Productslogs/${historyDocId}`);
+            await updateDoc(vanDocRef, {
+              logs: LogsData,
+            });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+
         toast.success("Product updated Successfully !", {
           position: toast.POSITION.TOP_RIGHT,
         });

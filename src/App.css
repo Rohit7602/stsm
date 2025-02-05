@@ -1184,6 +1184,9 @@ delivery_man_dropdown::-webkit-scrollbar {
 .min_width_1350 {
   min-width: 1550px;
 }
+.min_width_1850 {
+  min-width: 1750px;
+}
 
 .min_width_1120 {
   min-width: 1120px;

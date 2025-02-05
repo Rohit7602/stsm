@@ -54,6 +54,7 @@ import DeliveryList from "./Components/deliveryman/DeliveryList";
 import Offers from "./Components/marketing/Offers";
 import DeliveryBoyInventory2 from "./Components/deliveryman/DeliveryBoyInventory2";
 import VanHistoryLogs from "./Components/deliveryman/VanHistoryLogs";
+import Productlogs from "./Components/brands/Productlogs";
 
 function App() {
   const { logoutUser } = useUserAuth();
@@ -65,7 +66,7 @@ function App() {
   const { showpop, setShowpop } = useNotification();
   const navigate = useNavigate();
   const loction = useLocation();
-  
+
   useEffect(() => {
     let distributorstatus = localStorage.getItem("distributor");
     if (distributorstatus === "true") {
@@ -86,7 +87,6 @@ function App() {
     }
 
     // console.log("helooooooooooooooooooooooooooooooooooo");
-    
   }, [loction.pathname === "/"]);
 
   useEffect(() => {
@@ -94,7 +94,7 @@ function App() {
     onMessageListener();
 
     window.addEventListener("load", () => {
-      setloading(false); 
+      setloading(false);
     });
 
     return () => {
@@ -303,7 +303,10 @@ function App() {
                           />
                           <Route path="setting">
                             <Route path="brands" element={<Brands />} />
-                            {/* <Route path="products" element={< />} /> */}
+                            <Route
+                              path="productslogs"
+                              element={<Productlogs />}
+                            />
                           </Route>
                           <Route path="term" element={<TermConditions />} />
                           <Route path="FAQ" element={<Faqs />} />

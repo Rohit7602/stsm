@@ -16,8 +16,6 @@ function VanHistoryLogs() {
     ),
   }));
 
-  console.log(viewhistorypop.LoadInVanHistory);
-
   return (
     <div className="main_panel_wrapper bg_light_grey w-100">
       {viewhistorypop ? <div className="bg_black_overlay"></div> : null}
