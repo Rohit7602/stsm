@@ -36,7 +36,7 @@ function Productlogs() {
         style={{ height: "78vh" }}
       >
         <div className="overflow-x-scroll line_scroll">
-          <div className="min_width_1850">
+          <div className="min_width_1350">
             <table className="w-100">
               <thead className="table_head w-100">
                 <tr className="product_borderbottom">
@@ -74,9 +74,6 @@ function Productlogs() {
                   <th className="mw_160 p-3">
                     <h3 className="fs-sm fw-400 black mb-0">Unit Sale Price</h3>
                   </th>
-                  {/* <th className="mw_160 p-3">
-                      <h3 className="fs-sm fw-400 black mb-0">Brand</h3>
-                    </th> */}
                   <th className="mx_180 p-3">
                     <h3 className="fs-sm fw-400 black mb-0">Stock</h3>
                   </th>
