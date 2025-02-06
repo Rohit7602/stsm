@@ -76,6 +76,8 @@ const Customers = () => {
     }
   }
 
+  
+
   //////////////////////  Export Excel File  //////////////////////////
 
   const ExcelJS = require("exceljs");
@@ -91,6 +93,11 @@ const Customers = () => {
       bold: true,
     };
     excelSheet.columns = [
+      {
+        header: "CustomerVisit",
+        key: "CustomerVisit",
+        width: 40,
+      },
       {
         header: "CustomerName",
         key: "CustomerName",
@@ -173,11 +180,19 @@ const Customers = () => {
           : new Date(b.created_at) - new Date(a.created_at)
       )
       .map((customer) => {
+        let date = new Date(customer.created_at);
         excelSheet.addRow({
+          CustomerVisit: `${String(date.getDate()).padStart(2, "0")}-${String(
+            date.getMonth() + 1
+          ).padStart(2, "0")}-${date.getFullYear()}`,
           CustomerName: customer?.name,
           Email: customer?.email,
           City: customer.addresses[0]?.city,
-          Pincode: `${customer.addresses[0]?.pincode ? customer.addresses[0]?.pincode : " "}`,
+          Pincode: `${
+            customer.addresses[0]?.pincode
+              ? customer.addresses[0]?.pincode
+              : " "
+          }`,
           State: customer?.state,
           PhoneNo: customer?.phone,
           Colony: customer.addresses[0]?.colony,
@@ -199,7 +214,6 @@ const Customers = () => {
     });
   }
 
-  console.log(totalSpentByCustomer);
 
   return (
     <div className="main_panel_wrapper overflow-x-hidden bg_light_grey w-100">
