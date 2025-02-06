@@ -110,12 +110,13 @@ function Productlogs() {
                                 <td className="p-3 d-flex align-items-center">
                                   <td className="p-3 mx_180 me-3">
                                     <h3 className="fs-sm fw-400 black mb-0 text-nowrap">
-                                      {`${value.producttime.date
+                                      {value.producttime.date
                                         .split("-")
                                         .reverse()
-                                        .join("-")} , ${
-                                        value.producttime.time
-                                      }`}
+                                        .join("-")}
+                                    </h3>
+                                    <h3 className="fs-sm fw-400 black mb-0 text-nowrap mt-1">
+                                      {value.producttime.time}
                                     </h3>
                                   </td>
                                   <div className="d-flex align-items-center ms-2">
