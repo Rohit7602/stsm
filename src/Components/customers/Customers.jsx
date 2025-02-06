@@ -97,10 +97,16 @@ const Customers = () => {
         width: 40,
       },
       {
-        header: "City",
-        key: "City",
-        width: 30,
+        header: "Email",
+        key: "Email",
+        width: 40,
       },
+      {
+        header: "PhoneNo",
+        key: "PhoneNo",
+        width: 25,
+      },
+
       {
         header: "State",
         key: "State",
@@ -109,6 +115,22 @@ const Customers = () => {
       {
         header: "Colony",
         key: "Colony",
+        width: 25,
+      },
+      {
+        header: "City",
+        key: "City",
+        width: 30,
+      },
+      {
+        header: "Pincode",
+        key: "Pincode",
+        width: 20,
+      },
+
+      {
+        header: "totalSpent",
+        key: "totalSpent",
         width: 25,
       },
     ];
@@ -153,10 +175,13 @@ const Customers = () => {
       .map((customer) => {
         excelSheet.addRow({
           CustomerName: customer?.name,
+          Email: customer?.email,
           City: customer.addresses[0]?.city,
+          Pincode: `${customer.addresses[0]?.pincode ? customer.addresses[0]?.pincode : " "}`,
           State: customer?.state,
           PhoneNo: customer?.phone,
           Colony: customer.addresses[0]?.colony,
+          totalSpent: `₹ ${customer?.totalSpent}`,
         });
       });
 
@@ -173,6 +198,8 @@ const Customers = () => {
       window.URL.revokeObjectURL(url);
     });
   }
+
+  console.log(totalSpentByCustomer);
 
   return (
     <div className="main_panel_wrapper overflow-x-hidden bg_light_grey w-100">

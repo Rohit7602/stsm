@@ -609,10 +609,12 @@ export default function NewOrder() {
               result = false;
               break;
             }
-            if (
-              matchingVanProduct.quantity <
-              orderItem.quantity * orderItem.size
-            ) {
+
+            let soldquantity = Number(
+              matchingVanProduct.sold ? matchingVanProduct.sold : 0
+            );
+            let correctquantity = matchingVanProduct.quantity - soldquantity;
+            if (correctquantity < orderItem.quantity) {
               result = false;
               break;
             }
@@ -643,21 +645,16 @@ export default function NewOrder() {
           } else {
             setIsFilterDeliverymanPopup(true);
           }
-        }
-        else {
+        } else {
           toast.warning("Van data for this product is unavailable", {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-      }
-      
-      else {
+      } else {
         if (selectedDeliveryManId === null) {
           setAllDeliverymans(deliverymenWithArea);
           setIssDeliverymanPopup(true);
-        }
-        
-        else {
+        } else {
           const filterautoselectdeliverymandata = DeliveryManData.filter(
             (value) => value.id === selectedDeliveryManId
           );
@@ -689,10 +686,12 @@ export default function NewOrder() {
                 result = false;
                 break;
               }
-              if (
-                matchingVanProduct.quantity <
-                orderItem.quantity * orderItem.size
-              ) {
+              let soldquantity = Number(
+                matchingVanProduct.sold ? matchingVanProduct.sold : 0
+              );
+              let correctquantity = matchingVanProduct.quantity - soldquantity;
+
+              if (correctquantity < orderItem.quantity) {
                 result = false;
                 break;
               }
@@ -731,14 +730,8 @@ export default function NewOrder() {
             });
           }
         }
-
       }
-
-
-    }
-    
-    
-    else {
+    } else {
       toast.warning("No Delivery Man Found In this Area", {
         position: toast.POSITION.TOP_RIGHT,
       });
