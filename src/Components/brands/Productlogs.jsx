@@ -24,8 +24,30 @@ function Productlogs() {
   return (
     <>
       <div className="main_panel_wrapper overflow-x-hidden bg_light_grey w-100">
-        <div className="d-flex my-4">
+        <div className="d-flex my-4 justify-content-between">
           <h1 className="fw-500  mb-0 black fs-lg">Products Logs</h1>
+          <div>
+            <button
+              onClick={() => window.history.back()}
+              className={`outline_none border-0 update_entry d-flex gap-2 text-white d-flex align-items-center fs-sm px-sm-3 px-2 py-3 fw-400`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M19 12H5" />
+                <path d="M12 19l-7-7 7-7" />
+              </svg>
+              <span> Go Back</span>
+            </button>
+          </div>
         </div>
         <div
           className="p-3 mt-3 bg-white product_shadow mt-4 overflow-scroll"
