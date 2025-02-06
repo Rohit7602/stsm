@@ -54,19 +54,19 @@ function Productlogs() {
           style={{ height: "78vh" }}
         >
           <div className="overflow-x-scroll line_scroll">
-            <div className="min_width_1850">
+            <div className="min_width_1350">
               <table className="w-100">
                 <thead className="table_head w-100">
                   <tr className="product_borderbottom">
                     <th className="p-3 cursor_pointer mx_180">
                       <div className="d-flex align-items-center">
-                        <p className="fw-400 fs-sm black mb-0 ms-2">
+                        <p className="fw-400 fs-sm black mb-0 ">
                           Product Date
                         </p>
                       </div>
                     </th>
                     <th className="p-3 cursor_pointer ">
-                      <div className="d-flex align-items-center ms-4">
+                      <div className="d-flex align-items-center">
                         <p className="fw-400 fs-sm black mb-0 ms-2">
                           Product{" "}
                           <span>
@@ -130,7 +130,7 @@ function Productlogs() {
                             return (
                               <tr key={index}>
                                 <td className="p-3 d-flex align-items-center">
-                                  <td className="p-3 mx_180 me-3">
+                                  <td className="p-3 mx_180">
                                     <h3 className="fs-sm fw-400 black mb-0 text-nowrap">
                                       {value.producttime.date
                                         .split("-")
@@ -141,7 +141,7 @@ function Productlogs() {
                                       {value.producttime.time}
                                     </h3>
                                   </td>
-                                  <div className="d-flex align-items-center ms-2">
+                                  <div className="d-flex align-items-center">
                                     <div className="w_40">
                                       <img src={value.productImages} alt="" />
                                     </div>
