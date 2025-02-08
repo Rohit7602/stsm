@@ -597,28 +597,105 @@ export default function NewOrder() {
         //////////////////    order aviable or not        ////////////////
 
         if (allMatch) {
-          // Create a map to store van item quantities by product ID
-          const vanProduct = querySnapshot.docs.map((doc) => doc.data());
-          const orderitems = orderData.items.map((item) => item);
-          let result = true;
-          for (let orderItem of orderitems) {
-            const matchingVanProduct = vanProduct.find(
+          const vanProducts = querySnapshot.docs.map((doc) => doc.data());
+          const orderItems = orderData.items; // No need to `.map()` as it's already an array.
+
+          let result = orderItems.every((orderItem) => {
+            const matchingVanProduct = vanProducts.find(
               (product) => product.productid === orderItem.product_id
             );
-            if (!matchingVanProduct) {
-              result = false;
-              break;
-            }
 
-            let soldquantity = Number(
-              matchingVanProduct.sold ? matchingVanProduct.sold : 0
-            );
-            let correctquantity = matchingVanProduct.quantity - soldquantity;
-            if (correctquantity < orderItem.quantity) {
-              result = false;
-              break;
+            if (!matchingVanProduct) return false; // If no matching product, return false immediately.
+
+            let soldQuantity = Number(matchingVanProduct.sold || 0);
+            let correctQuantity = matchingVanProduct.quantity - soldQuantity;
+
+            // console.log(
+            //   `Order Quantity: ${orderItem.quantity * orderItem.size}, Available: ${correctQuantity}`
+            // );
+
+            return orderItem.quantity * orderItem.size <= correctQuantity; // Check only order quantity
+          });
+
+          //////////////////    check order quantity        ////////////////
+
+          if (result) {
+            const newStatus = "OUT_FOR_DELIVERY";
+            //////////////////    check invoiceNumber        ////////////////
+            if (!orderData.hasOwnProperty("invoiceNumber")) {
+              await updateDoc(orderDocRef, {
+                status: newStatus,
+                // OTP: otp,
+                invoiceNumber: orderData.invoiceNumber,
+                tokens: customertoken,
+                deliveryname: deliverymenWithArea[0].basic_info.name,
+                assign_to: deliverymenWithArea[0].id,
+              });
+            } else {
+              await updateDoc(orderDocRef, {
+                status: newStatus,
+                // OTP: otp,
+                deliveryname: deliverymenWithArea[0].basic_info.name,
+                assign_to: deliverymenWithArea[0].id,
+              });
+              setLoading(false);
             }
           }
+          else {
+            setIsFilterDeliverymanPopup(true);
+          }
+        }
+        else {
+          toast.warning("Van data for this product is unavailable", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        }
+      } else {
+        if (selectedDeliveryManId === null) {
+          setAllDeliverymans(deliverymenWithArea);
+          setIssDeliverymanPopup(true);
+        } else {
+          const filterautoselectdeliverymandata = DeliveryManData.filter(
+            (value) => value.id === selectedDeliveryManId
+          );
+          const q = query(
+            collection(
+              db,
+              `Delivery/${filterautoselectdeliverymandata[0].id}/Van`
+            )
+          );
+          const querySnapshot = await getDocs(q);
+          const vanProductIds = new Set(
+            querySnapshot.docs.map((doc) => doc.data().productid)
+          );
+          const allMatch = orderData.items.every((item) =>
+            vanProductIds.has(item.product_id)
+          );
+          //////////////////    order aviable or not        ////////////////
+
+        if (allMatch) {
+          const vanProducts = querySnapshot.docs.map((doc) => doc.data());
+          const orderItems = orderData.items; // No need to `.map()` as it's already an array.
+
+          let result = orderItems.every((orderItem) => {
+            const matchingVanProduct = vanProducts.find(
+              (product) => product.productid === orderItem.product_id
+            );
+
+            if (!matchingVanProduct) return false; // If no matching product, return false immediately.
+
+            let soldQuantity = Number(matchingVanProduct.sold || 0);
+            let correctQuantity = matchingVanProduct.quantity - soldQuantity;
+
+            // console.log(
+            //   `Order Quantity: ${
+            //     orderItem.quantity * orderItem.size
+            //   }, Available: ${correctQuantity}`
+            // );
+
+            return orderItem.quantity * orderItem.size <= correctQuantity; // Check only order quantity
+          });
+
           //////////////////    check order quantity        ////////////////
 
           if (result) {
@@ -650,85 +727,6 @@ export default function NewOrder() {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-      } else {
-        if (selectedDeliveryManId === null) {
-          setAllDeliverymans(deliverymenWithArea);
-          setIssDeliverymanPopup(true);
-        } else {
-          const filterautoselectdeliverymandata = DeliveryManData.filter(
-            (value) => value.id === selectedDeliveryManId
-          );
-          const q = query(
-            collection(
-              db,
-              `Delivery/${filterautoselectdeliverymandata[0].id}/Van`
-            )
-          );
-          const querySnapshot = await getDocs(q);
-          const vanProductIds = new Set(
-            querySnapshot.docs.map((doc) => doc.data().productid)
-          );
-          const allMatch = orderData.items.every((item) =>
-            vanProductIds.has(item.product_id)
-          );
-          //////////////////    order aviable or not        ////////////////
-
-          if (allMatch) {
-            // Create a map to store van item quantities by product ID
-            const vanProduct = querySnapshot.docs.map((doc) => doc.data());
-            const orderitems = orderData.items.map((item) => item);
-            let result = true;
-            for (let orderItem of orderitems) {
-              const matchingVanProduct = vanProduct.find(
-                (product) => product.productid === orderItem.product_id
-              );
-              if (!matchingVanProduct) {
-                result = false;
-                break;
-              }
-              let soldquantity = Number(
-                matchingVanProduct.sold ? matchingVanProduct.sold : 0
-              );
-              let correctquantity = matchingVanProduct.quantity - soldquantity;
-
-              if (correctquantity < orderItem.quantity) {
-                result = false;
-                break;
-              }
-            }
-            //////////////////    check order quantity        ////////////////
-
-            if (result) {
-              const newStatus = "OUT_FOR_DELIVERY";
-              //////////////////    check invoiceNumber        ////////////////
-              if (!orderData.hasOwnProperty("invoiceNumber")) {
-                await updateDoc(orderDocRef, {
-                  status: newStatus,
-                  // OTP: otp,
-                  invoiceNumber: orderData.invoiceNumber,
-                  tokens: customertoken,
-                  deliveryname:
-                    filterautoselectdeliverymandata[0].basic_info.name,
-                  assign_to: filterautoselectdeliverymandata[0].id,
-                });
-              } else {
-                await updateDoc(orderDocRef, {
-                  status: newStatus,
-                  // OTP: otp,
-                  deliveryname:
-                    filterautoselectdeliverymandata[0].basic_info.name,
-                  assign_to: filterautoselectdeliverymandata[0].id,
-                });
-                setLoading(false);
-              }
-            } else {
-              setIsFilterDeliverymanPopup(true);
-            }
-          } else {
-            toast.warning("Van data for this product is unavailable", {
-              position: toast.POSITION.TOP_RIGHT,
-            });
-          }
         }
       }
     } else {
