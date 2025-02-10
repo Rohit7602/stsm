@@ -416,60 +416,71 @@ const DeliverymanProfile = () => {
   }
 
   async function handleCollectBalance() {
-    let newdate = new Date();
-    const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
-
-    if (wallet !== 0 || amountupi !== 0) {
-      if (DeliveryManDatas.length === 0) {
-        console.error("No delivery man data found for the given ID.");
-        return;
-      }
-
-      const deliveryManId = DeliveryManDatas[0].id;
-      const historyRef = collection(db, `Delivery/${deliveryManId}/history`);
-      let filtertodaylogs = deliveryvanhistory.filter(
-        (value) => value.formattedDate === newdate.toISOString().split("T")[0]
+    setLoading(true);
+    try {
+      let newdate = new Date();
+      const DeliveryManDatas = DeliveryManData.filter(
+        (item) => item.d_id === id
       );
 
-      let querySnapshot;
-      let currentAmount = 0;
-      let currentAmountUpi = 0;
-
-      if (filtertodaylogs.length > 0) {
-        querySnapshot = doc(historyRef, filtertodaylogs[0].id);
-        const docSnapshot = await getDoc(querySnapshot);
-
-        if (docSnapshot.exists()) {
-          currentAmount = docSnapshot.data().totalamount || 0;
-          currentAmountUpi = docSnapshot.data().totalamountupi || 0;
+      if (wallet !== 0 || amountupi !== 0) {
+        if (DeliveryManDatas.length === 0) {
+          console.error("No delivery man data found for the given ID.");
+          return;
         }
-      } else {
-        querySnapshot = doc(historyRef);
-        await setDoc(querySnapshot, {
-          formattedDate: newdate.toISOString().split("T")[0],
-          totalamount: 0,
-          totalamountupi: 0,
+
+        const deliveryManId = DeliveryManDatas[0].id;
+        const historyRef = collection(db, `Delivery/${deliveryManId}/history`);
+        let filtertodaylogs = deliveryvanhistory.filter(
+          (value) => value.formattedDate === newdate.toISOString().split("T")[0]
+        );
+
+        let querySnapshot;
+        let currentAmount = 0;
+        let currentAmountUpi = 0;
+
+        if (filtertodaylogs.length > 0) {
+          querySnapshot = doc(historyRef, filtertodaylogs[0].id);
+          const docSnapshot = await getDoc(querySnapshot);
+
+          if (docSnapshot.exists()) {
+            currentAmount = docSnapshot.data().totalamount || 0;
+            currentAmountUpi = docSnapshot.data().totalamountupi || 0;
+          }
+        } else {
+          querySnapshot = doc(historyRef);
+          await setDoc(querySnapshot, {
+            formattedDate: newdate.toISOString().split("T")[0],
+            totalamount: 0,
+            totalamountupi: 0,
+          });
+        }
+
+        const newAmount = currentAmount + wallet;
+        const newAmountupi = currentAmountUpi + amountupi;
+        await updateDoc(querySnapshot, {
+          totalamount: newAmount,
+          totalamountupi: newAmountupi,
         });
+
+        const deliveryManRef = doc(db, "Delivery", deliveryManId);
+        await updateDoc(deliveryManRef, {
+          wallet: 0,
+          UPI: 0,
+        });
+
+        window.location.reload();
+        setShowpop(!showpop);
+      } else {
+        setShowpop(!showpop);
       }
-
-      const newAmount = currentAmount + wallet;
-      const newAmountupi = currentAmountUpi + amountupi;
-      await updateDoc(querySnapshot, {
-        totalamount: newAmount,
-        totalamountupi: newAmountupi,
-      });
-
-      const deliveryManRef = doc(db, "Delivery", deliveryManId);
-      await updateDoc(deliveryManRef, {
-        wallet: 0,
-        UPI: 0,
-      });
-
-      window.location.reload();
-      setShowpop(!showpop);
-    } else {
-      setShowpop(!showpop);
+    } catch (error) {
+      console.log(error);
     }
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
   }
 
   ///////////////////////     delivery history      ///////////////////
