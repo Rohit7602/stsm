@@ -650,11 +650,15 @@ export default function NewOrder() {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-      } else {
+      }
+      
+      
+      else {
         if (selectedDeliveryManId === null) {
           setAllDeliverymans(deliverymenWithArea);
           setIssDeliverymanPopup(true);
-        } else {
+        }
+        else {
           const filterautoselectdeliverymandata = DeliveryManData.filter(
             (value) => value.id === selectedDeliveryManId
           );
@@ -707,22 +711,27 @@ export default function NewOrder() {
                 // OTP: otp,
                 invoiceNumber: orderData.invoiceNumber,
                 tokens: customertoken,
-                deliveryname: deliverymenWithArea[0].basic_info.name,
-                assign_to: deliverymenWithArea[0].id,
+                deliveryname:
+                  filterautoselectdeliverymandata[0].basic_info.name,
+                assign_to: filterautoselectdeliverymandata[0].id,
               });
             } else {
               await updateDoc(orderDocRef, {
                 status: newStatus,
                 // OTP: otp,
-                deliveryname: deliverymenWithArea[0].basic_info.name,
-                assign_to: deliverymenWithArea[0].id,
+                deliveryname:
+                  filterautoselectdeliverymandata[0].basic_info.name,
+                assign_to: filterautoselectdeliverymandata[0].id,
               });
               setLoading(false);
             }
-          } else {
+          }
+          
+          else {
             setIsFilterDeliverymanPopup(true);
           }
-        } else {
+        }
+        else {
           toast.warning("Van data for this product is unavailable", {
             position: toast.POSITION.TOP_RIGHT,
           });
