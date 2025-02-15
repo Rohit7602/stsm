@@ -458,18 +458,22 @@ const ProductList = () => {
                           <td className="p-3 mx_180">
                             <h3
                               className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${
-                                parseInt(Number(value.totalStock).toFixed(3)) === 0
+                                parseInt(
+                                  Number(value.totalStock).toFixed(3)
+                                ) === 0
                                   ? "stock_bg_red text-white"
-                                  : parseInt(Number(value.totalStock).toFixed(3)) <=
-                                    parseInt(value.stockAlert)
+                                  : parseInt(
+                                      Number(value.totalStock).toFixed(3)
+                                    ) <= parseInt(value.stockAlert)
                                   ? "stock_bg_orange"
                                   : "px-2 stock_bg"
                               } `}
                             >
-                              {parseInt(Number(value.totalStock).toFixed(3)) === 0
+                              {Number(value.totalStock) === 0
                                 ? `Out of Stock`
-                                : parseInt(Number(value.totalStock).toFixed(3)) >=
-                                  parseInt(value.stockAlert)
+                                : parseInt(
+                                    Number(value.totalStock).toFixed(3)
+                                  ) >= parseInt(value.stockAlert)
                                 ? `${Number(value.totalStock).toFixed(3)} ${
                                     value.stockUnitType
                                   }  ${" "} in Stock`

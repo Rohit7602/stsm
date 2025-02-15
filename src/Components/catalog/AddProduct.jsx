@@ -501,7 +501,7 @@ const AddProduct = () => {
         if (items.shortDescription) setShortDes(items.shortDescription);
         if (items.longDescription) setLongDes(items.longDescription);
         if (items.status) setStatus(items.status);
-        if (items.totalStock) setTotalStock(items.totalStock);
+        if (items.totalStock) setTotalStock(Number(items.totalStock).toFixed(3));
         if (items.sku) setSku(items.sku);
         if (items.isMultipleVariant) setisVarient(items.isMultipleVariant);
         if (items.varients && items.varients.VarientName)
