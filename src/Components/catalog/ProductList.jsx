@@ -352,7 +352,7 @@ const ProductList = () => {
                       <h3 className="fs-sm fw-400 black mb-0">Stock</h3>
                     </th>
                     <th className="mw_160 p-3">
-                      <h3 className="fs-sm fw-400 black mb-0">Total Value</h3>
+                      <h3 className="fs-sm fw-400 black mb-0 ms-3">Total Value</h3>
                     </th>
                     <th className=" mx_170 p-3">
                       <h3 className="fs-sm fw-400 black mb-0">
@@ -458,29 +458,29 @@ const ProductList = () => {
                           <td className="p-3 mx_180">
                             <h3
                               className={`fs-sm fw-400 black mb-0  white_space_nowrap  ${
-                                parseInt(value.totalStock) === 0
+                                parseInt(Number(value.totalStock).toFixed(3)) === 0
                                   ? "stock_bg_red text-white"
-                                  : parseInt(value.totalStock) <=
+                                  : parseInt(Number(value.totalStock).toFixed(3)) <=
                                     parseInt(value.stockAlert)
                                   ? "stock_bg_orange"
                                   : "px-2 stock_bg"
                               } `}
                             >
-                              {parseInt(value.totalStock) === 0
+                              {parseInt(Number(value.totalStock).toFixed(3)) === 0
                                 ? `Out of Stock`
-                                : parseInt(value.totalStock) >=
+                                : parseInt(Number(value.totalStock).toFixed(3)) >=
                                   parseInt(value.stockAlert)
-                                ? `${value.totalStock} ${
+                                ? `${Number(value.totalStock).toFixed(3)} ${
                                     value.stockUnitType
                                   }  ${" "} in Stock`
-                                : `${value.totalStock}  ${
+                                : `${Number(value.totalStock).toFixed(3)}  ${
                                     value.stockUnitType
                                   } ${" "}  Left`}
                             </h3>
                           </td>
 
-                          <td className="p-3 mw_160">
-                            <h3 className="fs-sm fw-400 black mb-0">
+                          <td className="p-3 mw_160 ">
+                            <h3 className="fs-sm fw-400 black mb-0 ms-4">
                               ₹{" "}
                               {/* {value.varients.map(
                               (item) =>
