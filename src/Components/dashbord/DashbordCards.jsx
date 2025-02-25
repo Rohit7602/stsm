@@ -59,8 +59,10 @@ function DashbordCards() {
   }, {});
 
   const filterlowproductsdata = productData.filter(
-    (value) => parseInt(value.totalStock) <= parseInt(value.stockAlert)
-  );
+    (value) =>
+      parseInt(value.totalStock) <= parseInt(value.stockAlert) ||
+      Number(value.totalStock) === 0
+  );  
 
   // console.log(totalLengthPerCity);
   const totalActiveUsers = Object.values(totalLengthPerCity).reduce(
