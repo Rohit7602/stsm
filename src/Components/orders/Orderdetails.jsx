@@ -560,7 +560,9 @@ export default function NewOrder() {
     const orderDocRef = doc(db, "order", id);
     const orderDoc = await getDoc(orderDocRef);
     const orderData = orderDoc.data();
-    let area = orderData.shipping.area.toLowerCase();
+    let area = orderData.shipping.city.toLowerCase();
+    console.log(orderData,'test vikash'
+    )
     ////////////////////////////  Filter the deliverymen whose service areas include the desired area  ////////////////////////////
 
     const deliverymenWithArea = DeliveryManData.filter(
