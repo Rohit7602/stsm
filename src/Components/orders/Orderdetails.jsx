@@ -560,9 +560,8 @@ export default function NewOrder() {
     const orderDocRef = doc(db, "order", id);
     const orderDoc = await getDoc(orderDocRef);
     const orderData = orderDoc.data();
-    let area = orderData.shipping.city.toLowerCase();
-    console.log(orderData,'test vikash'
-    )
+    let area = orderData.shipping.area.toLowerCase();
+    console.log(orderData, "test vikash");
     ////////////////////////////  Filter the deliverymen whose service areas include the desired area  ////////////////////////////
 
     const deliverymenWithArea = DeliveryManData.filter(
@@ -579,12 +578,12 @@ export default function NewOrder() {
             )
         )
     );
-
+ 
     ////////////////////////////  Check deliveryman  if many given pop selct custom deliveryman   ////////////////////////////
 
     if (deliverymenWithArea.length !== 0 || selectedDeliveryManId !== null) {
       ////////////////////////////  check deliveyman multiple or only one       ////////////////////////////
-
+     
       if (deliverymenWithArea.length === 1 && selectedDeliveryManId === null) {
         const q = query(
           collection(db, `Delivery/${deliverymenWithArea[0].id}/Van`)
@@ -596,6 +595,7 @@ export default function NewOrder() {
         const allMatch = orderData.items.every((item) =>
           vanProductIds.has(item.product_id)
         );
+      
         //////////////////    order aviable or not        ////////////////
 
         if (allMatch) {
@@ -642,25 +642,19 @@ export default function NewOrder() {
               });
               setLoading(false);
             }
-          }
-          else {
+          } else {
             setIsFilterDeliverymanPopup(true);
           }
-        }
-        else {
+        } else {
           toast.warning("Van data for this product is unavailable", {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-      }
-      
-      
-      else {
+      } else {
         if (selectedDeliveryManId === null) {
           setAllDeliverymans(deliverymenWithArea);
           setIssDeliverymanPopup(true);
-        }
-        else {
+        } else {
           const filterautoselectdeliverymandata = DeliveryManData.filter(
             (value) => value.id === selectedDeliveryManId
           );
@@ -679,65 +673,62 @@ export default function NewOrder() {
           );
           //////////////////    order aviable or not        ////////////////
 
-        if (allMatch) {
-          const vanProducts = querySnapshot.docs.map((doc) => doc.data());
-          const orderItems = orderData.items; // No need to `.map()` as it's already an array.
+          if (allMatch) {
+            const vanProducts = querySnapshot.docs.map((doc) => doc.data());
+            const orderItems = orderData.items; // No need to `.map()` as it's already an array.
 
-          let result = orderItems.every((orderItem) => {
-            const matchingVanProduct = vanProducts.find(
-              (product) => product.productid === orderItem.product_id
-            );
+            let result = orderItems.every((orderItem) => {
+              const matchingVanProduct = vanProducts.find(
+                (product) => product.productid === orderItem.product_id
+              );
 
-            if (!matchingVanProduct) return false; // If no matching product, return false immediately.
+              if (!matchingVanProduct) return false; // If no matching product, return false immediately.
 
-            let soldQuantity = Number(matchingVanProduct.sold || 0);
-            let correctQuantity = matchingVanProduct.quantity - soldQuantity;
+              let soldQuantity = Number(matchingVanProduct.sold || 0);
+              let correctQuantity = matchingVanProduct.quantity - soldQuantity;
 
-            // console.log(
-            //   `Order Quantity: ${
-            //     orderItem.quantity * orderItem.size
-            //   }, Available: ${correctQuantity}`
-            // );
+              // console.log(
+              //   `Order Quantity: ${
+              //     orderItem.quantity * orderItem.size
+              //   }, Available: ${correctQuantity}`
+              // );
 
-            return orderItem.quantity * orderItem.size <= correctQuantity; // Check only order quantity
-          });
+              return orderItem.quantity * orderItem.size <= correctQuantity; // Check only order quantity
+            });
 
-          //////////////////    check order quantity        ////////////////
+            //////////////////    check order quantity        ////////////////
 
-          if (result) {
-            const newStatus = "OUT_FOR_DELIVERY";
-            //////////////////    check invoiceNumber        ////////////////
-            if (!orderData.hasOwnProperty("invoiceNumber")) {
-              await updateDoc(orderDocRef, {
-                status: newStatus,
-                // OTP: otp,
-                invoiceNumber: orderData.invoiceNumber,
-                tokens: customertoken,
-                deliveryname:
-                  filterautoselectdeliverymandata[0].basic_info.name,
-                assign_to: filterautoselectdeliverymandata[0].id,
-              });
+            if (result) {
+              const newStatus = "OUT_FOR_DELIVERY";
+              //////////////////    check invoiceNumber        ////////////////
+              if (!orderData.hasOwnProperty("invoiceNumber")) {
+                await updateDoc(orderDocRef, {
+                  status: newStatus,
+                  // OTP: otp,
+                  invoiceNumber: orderData.invoiceNumber,
+                  tokens: customertoken,
+                  deliveryname:
+                    filterautoselectdeliverymandata[0].basic_info.name,
+                  assign_to: filterautoselectdeliverymandata[0].id,
+                });
+              } else {
+                await updateDoc(orderDocRef, {
+                  status: newStatus,
+                  // OTP: otp,
+                  deliveryname:
+                    filterautoselectdeliverymandata[0].basic_info.name,
+                  assign_to: filterautoselectdeliverymandata[0].id,
+                });
+                setLoading(false);
+              }
             } else {
-              await updateDoc(orderDocRef, {
-                status: newStatus,
-                // OTP: otp,
-                deliveryname:
-                  filterautoselectdeliverymandata[0].basic_info.name,
-                assign_to: filterautoselectdeliverymandata[0].id,
-              });
-              setLoading(false);
+              setIsFilterDeliverymanPopup(true);
             }
+          } else {
+            toast.warning("Van data for this product is unavailable", {
+              position: toast.POSITION.TOP_RIGHT,
+            });
           }
-          
-          else {
-            setIsFilterDeliverymanPopup(true);
-          }
-        }
-        else {
-          toast.warning("Van data for this product is unavailable", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        }
         }
       }
     } else {
