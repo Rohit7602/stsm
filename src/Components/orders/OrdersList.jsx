@@ -13,11 +13,31 @@ import { ReactToPrint } from "react-to-print";
 import billLogo from "../../Images/svgs/bill-logo.svg";
 import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
 const OrderList = ({ distributor }) => {
+
+
+
+// infinite scoll data call for orders 
+    
+  const observer = useRef();
+
+  const lastOrderRef = (node) => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore) {
+        fetchMoreOrders();
+      }
+    });
+
+    if (node) observer.current.observe(node);
+  };
   const componentRef = useRef();
   // context
 
   const { DeliveryManData } = UseDeliveryManContext();
-  const { orders, updateData } = useOrdercontext();
+  const { orders, updateData, fetchMoreOrders, loading, hasMore } =
+    useOrdercontext();
   const [searchvalue, setSearchvalue] = useState("");
   const [selectedBill, setSelectedBill] = useState("");
   const [searchdata, setSearchData] = useState(0);
@@ -1002,7 +1022,12 @@ const OrderList = ({ distributor }) => {
                     })
                     .map((orderTableData, index) => {
                       return (
-                        <tr>
+                        <tr
+                          key={orderTableData.id}
+                          ref={
+                            index === orders.length - 1 ? lastOrderRef : null
+                          }
+                        >
                           <td className="p-3 mw-200">
                             <span className="d-flex align-items-center">
                               <label className="check1 fw-400 fs-sm black mb-0">

@@ -19,6 +19,7 @@ export const DeliverManContextProvider = ({ children }) => {
                 querySnapshot.forEach((doc) => {
                     list.push({ id: doc.id, ...doc.data() });
                 });
+           
                 SetDeliveryManData([...list]);
             } catch (error) {
                 console.log(error);

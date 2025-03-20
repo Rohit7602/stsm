@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import filtericon from "../../Images/svgs/filtericon.svg";
 import manicon from "../../Images/svgs/manicon.svg";
 import threedot from "../../Images/svgs/threedot.svg";
@@ -10,7 +10,7 @@ import updown_icon from "../../Images/svgs/arross.svg";
 import manimage from "../../Images/Png/manimage.jpg";
 import shortIcon from "../../Images/svgs/short-icon.svg";
 import { Link } from "react-router-dom";
-import { useCustomerContext } from "../../context/Customergetters";
+import { CustomersProvider, useCustomerContext } from "../../context/Customergetters";
 import { set } from "date-fns";
 import { useOrdercontext } from "../../context/OrderGetter";
 import { ArrowIcons } from "../../Common/Icon";
@@ -23,9 +23,43 @@ const Customers = () => {
   const [pincode, setPinCode] = useState("");
   const [servicearea, setServicearea] = useState("");
   const { orders } = useOrdercontext();
-  const { customer } = useCustomerContext();
+  const { customer, fetchMoreCustomers, loading, hasMore } =
+    useCustomerContext();
   const [filtervalue, setFilterValue] = useState("");
   const [customerdate, setCustomerdate] = useState(false);
+
+
+
+
+
+
+// infinite customer calls
+
+  const observer = useRef();
+
+  const lastOrderRef = (node) => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore) {
+        fetchMoreCustomers();
+      }
+    });
+
+    if (node) observer.current.observe(node);
+  };
+
+
+
+
+
+
+
+
+
+
+
 
   // Function to calculate total spent by a customer/////////////////////////////////////
   const customeraddress = customer
@@ -532,7 +566,12 @@ const Customers = () => {
                       const newDate = formatDate(newval);
                       return (
                         <>
-                          <tr>
+                          <tr
+                            key={id}
+                            ref={
+                              index === customer.length - 1 ? lastOrderRef : null
+                            }
+                          >
                             <td className="py-2 px-3 w-100">
                               <div className="d-flex align-items-center gap-3 min_width_300">
                                 <label class="check1 fw-400 fs-sm black mb-0  align-items-center d-flex">

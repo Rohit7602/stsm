@@ -43,7 +43,7 @@ function DeliveryBoyInventory2() {
   const [disableUpload, setDisableUpload] = useState(false);
   const [finalVanProducts, setFinalVanProducts] = useState([]);
   const [conformpop, setConFormPop] = useState(false);
-
+  const [orders, setOrders] = useState([]);
   function addToVan(e) {
     e.preventDefault();
     if (
@@ -484,8 +484,7 @@ function DeliveryBoyInventory2() {
           formattedDate,
           [historyKey]: [newEntry],
         });
-      }
-      else {
+      } else {
         let historyDocId = null;
         let vanHistoryData = [];
         querySnapshot.forEach((doc) => {
@@ -504,6 +503,60 @@ function DeliveryBoyInventory2() {
       setLoaderstatus(false);
     }
   }
+
+  async function getDeliverman() {
+    let list = [];
+
+    const querySnapshot = await getDocs(collection(db, "Delivery"));
+    querySnapshot.forEach((doc) => {
+      list.push({ id: doc.id, ...doc.data() });
+    });
+    const DeliveryManval = list.filter((item) => item.id === id);
+
+     
+    const allTerritories = DeliveryManval[0].serviceArea.flatMap(
+      (area) => area.terretory
+    );
+
+    return allTerritories;
+  }
+
+  const fetchOrders = async () => {
+
+
+    const allTerritories = await getDeliverman();
+    console.log(allTerritories,
+      'areas'
+    )
+
+
+    try {
+      const ordersRef = collection(db, "order");
+      const q = query(
+        ordersRef,
+        where("shipping.area", "in", allTerritories),
+        where("status", "==", "PROCESSING")
+      );
+      const querySnapshot = await getDocs(q);
+
+      const ordersList = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log(ordersList, "check");
+      setOrders(ordersList);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
+  };
+  // fetching orders
+  useEffect(() => {
+   
+
+    
+
+    fetchOrders();
+  }, []);
 
   if (loaderstatus) {
     return <Loader></Loader>;

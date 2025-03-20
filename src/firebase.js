@@ -4,6 +4,16 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { doc, updateDoc, getDoc, arrayUnion } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  writeBatch,
+  orderBy,
+  query,
+  limit,
+  startAfter,
+} from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAnDazUpRDmNMYIF5V5GAZZeBO2Ovn0v6Q",
@@ -69,5 +79,61 @@ export function onMessageListener() {
     alert(`${payload.notification?.title}: ${payload.notification?.body}`);
   });
 }
+
+
+// const batchSize = 500; // Firestore allows a maximum of 500 writes per batch
+
+// const batchUpdateTimestamps = async () => {
+//   let lastDoc = null;
+//   let totalUpdated = 0;
+
+//   while (true) {
+//     let ordersQuery = query(collection(db, "products"), limit(batchSize));
+
+//     if (lastDoc) {
+//       ordersQuery = query(
+//         collection(db, "products"),
+//         startAfter(lastDoc),
+//         limit(batchSize)
+//       );
+//     }
+
+//     const snapshot = await getDocs(ordersQuery);
+
+//     if (snapshot.empty) break; // Stop when there are no more documents
+
+//     const batch = writeBatch(db);
+//     let count = 0;
+
+//     snapshot.docs.forEach((orderDoc) => {
+//       const orderData = orderDoc.data();
+//       console.log('p')
+
+//       if (orderData.created_at instanceof Timestamp) {
+//         batch.update(doc(db, "products", orderDoc.id), {
+//           created_at: orderData.created_at.toMillis(), // Convert Timestamp to milliseconds
+//         });
+//         count++;
+//       }
+//     });
+
+//     // Commit the batch
+//     if (count > 0) {
+//       await batch.commit();
+//       totalUpdated += count;
+//       console.log(`Batch committed. Total updated: ${totalUpdated}`);
+//     }
+
+//     lastDoc = snapshot.docs[snapshot.docs.length - 1]; // Move to the next batch
+//   }
+
+//   console.log(`✅ Migration completed. Total updated orders: ${totalUpdated}`);
+// };
+
+// batchUpdateTimestamps();
+
+
+
+
 
 export { auth, firestore, storage, db, app, messaging };

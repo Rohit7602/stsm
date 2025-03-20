@@ -1,5 +1,12 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { getDocs, collection, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import Loader from "../Components/Loader";
 
@@ -9,34 +16,64 @@ export const useOrdercontext = () => {
 };
 
 export const OrderContextProvider = ({ children }) => {
-  const [orders, setorders] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const fetchOrders = async () => {
-      setLoading(true);
-      try {
-        onSnapshot(collection(db, "order"), (querySnapshot) => {
-          let list = [];
-          querySnapshot.forEach((doc) => {
-            list.push({ id: doc.id, ...doc.data() });
-          });
-          setorders([...list]);
-          setLoading(false);
-        });
-      } catch (error) {
-        console.error(error);
-        setLoading(false);
-      }
-    };
+  const [lastDoc, setLastDoc] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
 
+  // Fetch initial orders
+  const fetchOrders = async () => {
+    setLoading(true);
+    const orderQuery = query(
+      collection(db, "order"),
+      orderBy("created_at", "desc"),
+      limit(100)
+    );
+    const querySnapshot = await getDocs(orderQuery);
+
+
+    if (!querySnapshot.empty) {
+      setOrders(
+        querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      );
+      setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
+    }
+
+    setLoading(false);
+  };
+
+  // Fetch next batch of orders
+  const fetchMoreOrders = async () => {
+    if (!lastDoc || !hasMore || loading) return;
+
+    setLoading(true);
+    const nextQuery = query(
+      collection(db, "order"),
+      orderBy("created_at", "desc"),
+      startAfter(lastDoc),
+      limit(100)
+    );
+
+    const querySnapshot = await getDocs(nextQuery);
+    if (!querySnapshot.empty) {
+      setOrders((prev) => [
+        ...prev,
+        ...querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+      ]);
+      setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
+    } else {
+      setHasMore(false);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
     fetchOrders();
   }, []);
 
-  const memodata = useMemo(() => orders, [orders]);
-
   const updateData = (updatedProduct) => {
     if (typeof updatedProduct === "object" && updatedProduct.id) {
-      setorders((prevData) => {
+      setOrders((prevData) => {
         const existingProductIndex = prevData.findIndex(
           (product) => product.id === updatedProduct.id
         );
@@ -53,7 +90,7 @@ export const OrderContextProvider = ({ children }) => {
         }
       });
     } else if (Array.isArray(updatedProduct)) {
-      setorders(updatedProduct);
+      setOrders(updatedProduct);
     }
   };
 
@@ -62,7 +99,9 @@ export const OrderContextProvider = ({ children }) => {
   }
 
   return (
-    <OrderContext.Provider value={{ orders: memodata, updateData }}>
+    <OrderContext.Provider
+      value={{ orders, updateData, fetchMoreOrders, loading, hasMore }}
+    >
       {children}
     </OrderContext.Provider>
   );
