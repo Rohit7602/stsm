@@ -561,7 +561,7 @@ export default function NewOrder() {
     const orderDoc = await getDoc(orderDocRef);
     const orderData = orderDoc.data();
     let area = orderData.shipping.area.toLowerCase();
-    console.log(orderData, "test vikash");
+    
     ////////////////////////////  Filter the deliverymen whose service areas include the desired area  ////////////////////////////
 
     const deliverymenWithArea = DeliveryManData.filter(

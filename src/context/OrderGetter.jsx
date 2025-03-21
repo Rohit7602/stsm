@@ -6,6 +6,7 @@ import {
   limit,
   startAfter,
   getDocs,
+  onSnapshot,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import Loader from "../Components/Loader";
@@ -23,23 +24,23 @@ export const OrderContextProvider = ({ children }) => {
 
   // Fetch initial orders
   const fetchOrders = async () => {
-    setLoading(true);
     const orderQuery = query(
       collection(db, "order"),
       orderBy("created_at", "desc"),
       limit(100)
     );
-    const querySnapshot = await getDocs(orderQuery);
-
-
-    if (!querySnapshot.empty) {
-      setOrders(
-        querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-      );
+    const unsubscribe = onSnapshot(orderQuery, (querySnapshot) => {
+      const newOrders = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+   
+      setOrders(newOrders);
       setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
-    }
+      setLoading(false)
+    });
 
-    setLoading(false);
+    return unsubscribe; // Clean up when the component unmounts
   };
 
   // Fetch next batch of orders
@@ -53,19 +54,27 @@ export const OrderContextProvider = ({ children }) => {
       startAfter(lastDoc),
       limit(100)
     );
-
     const querySnapshot = await getDocs(nextQuery);
     if (!querySnapshot.empty) {
+
       setOrders((prev) => [
         ...prev,
         ...querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
       ]);
       setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
     } else {
+           
       setHasMore(false);
     }
     setLoading(false);
   };
+    useEffect(() => {
+      const unsubscribe = fetchOrders(); // Real-time listener
+
+      return () => {
+        unsubscribe(); // Clean up listener on component unmount
+      };
+    }, []);
 
   useEffect(() => {
     fetchOrders();

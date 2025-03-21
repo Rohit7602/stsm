@@ -8,6 +8,7 @@ import closeIcon from "../../Images/svgs/closeicon.svg";
 import profile_image from "../../Images/Png/customer_profile.png";
 import { useProductsContext } from "../../context/productgetter";
 import Loader from "../Loader";
+
 import {
   addDoc,
   arrayUnion,
@@ -25,6 +26,7 @@ import {
 import { db } from "../../firebase";
 import { ActionIcon } from "../../Common/Icon";
 import { ButtonGroup } from "react-bootstrap";
+import {RandomPopup} from "../popups/RandomPopup";
 
 function DeliveryBoyInventory2() {
   const { DeliveryManData } = UseDeliveryManContext();
@@ -43,7 +45,23 @@ function DeliveryBoyInventory2() {
   const [disableUpload, setDisableUpload] = useState(false);
   const [finalVanProducts, setFinalVanProducts] = useState([]);
   const [conformpop, setConFormPop] = useState(false);
+
   const [orders, setOrders] = useState([]);
+
+
+
+
+
+
+  const [showModal, setShowModal] = useState(false);
+
+  const handleShow = () => setShowModal(true);
+  const handleClose = () => setShowModal(false);
+
+
+
+
+
   function addToVan(e) {
     e.preventDefault();
     if (
@@ -525,9 +543,7 @@ function DeliveryBoyInventory2() {
 
 
     const allTerritories = await getDeliverman();
-    console.log(allTerritories,
-      'areas'
-    )
+
 
 
     try {
@@ -543,7 +559,7 @@ function DeliveryBoyInventory2() {
         id: doc.id,
         ...doc.data(),
       }));
-      console.log(ordersList, "check");
+
       setOrders(ordersList);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -563,6 +579,7 @@ function DeliveryBoyInventory2() {
   } else {
     return (
       <div>
+        <RandomPopup showModal={showModal} handleClose={handleClose} data={orders} />
         <div className="main_panel_wrapper bg_light_grey w-100">
           {/* conform pop */}
           {conformpop ? <div className="bg_black_overlay"></div> : null}
@@ -786,6 +803,12 @@ function DeliveryBoyInventory2() {
                 </div>
 
                 <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
+                  <button
+                    onClick={() => setShowModal(true)}
+                    className="addnewproduct_btn2  gap-2 white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
+                  >
+                    <span>Process All Orders</span>
+                  </button>
                   <button
                     onClick={() => setConFormPop("loadOutvan")}
                     className="addnewproduct_btn  gap-2 white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
