@@ -36,8 +36,17 @@ const OrderList = ({ distributor }) => {
   // context
 
   const { DeliveryManData } = UseDeliveryManContext();
-  const { orders, updateData, fetchMoreOrders, loading, hasMore } =
-    useOrdercontext();
+  const {
+    orders,
+    updateData,
+    fetchMoreOrders,
+    loading,
+    hasMore,
+    fetchOrdersBasedQuery,
+    setIsFiltering,
+    isFiltering,
+    fetchOrders,
+  } = useOrdercontext();
   const [searchvalue, setSearchvalue] = useState("");
   const [selectedBill, setSelectedBill] = useState("");
   const [searchdata, setSearchData] = useState(0);
@@ -54,6 +63,27 @@ const OrderList = ({ distributor }) => {
   const [deliveryid, setDeliveryId] = useState("");
   const [deliverydate, setDeliverydate] = useState(false);
   const [selectedStatuses, setSelectedStatuses] = useState([]);
+
+     const [qstatus, setQstatus] = useState(""); // Default to empty string for no filter
+     const [qdeliveryname, setQdeliveryname] = useState("");
+     const [qoption, setQoption] = useState("week");
+
+
+    async function handleQuery(e){
+      e.preventDefault()
+      setIsFiltering(true);
+   
+     await fetchOrdersBasedQuery(qdeliveryname,qstatus,qoption)
+      setDatePop(false);
+    }
+
+
+    async function handleReset(){
+await fetchOrders();
+      setDatePop(false);
+    }
+
+
 
   const handleBillNumberClick = (invoiceNumber) => {
     const bill = orders.filter(
@@ -521,70 +551,12 @@ const OrderList = ({ distributor }) => {
   };
 
   const handleOrderStatusChange = (e) => {
-    const newStatus = e.target.value;
-    setOrderStatus(newStatus);
-    setSelectAll([]);
-    setTotalSpend(0);
-    setTotalSpendUpi(0);
-    setSelectedStatuses((prevStatuses) => {
-      if (!prevStatuses.includes(newStatus) && newStatus !== "") {
-        return [...prevStatuses, newStatus];
-      }
-      return prevStatuses;
-    });
+
+  setQstatus(e.target.value)
   };
 
   const handleDateRangeSelection = (range) => {
-    setSelectedRange(range);
-    setSelectAll([]);
-    setTotalSpend(0);
-    setTotalSpendUpi(0);
-    const today = new Date();
-    switch (range) {
-      case "yesterday":
-        setStartDate(
-          new Date(today.setDate(today.getDate() - 1))
-            .toISOString()
-            .split("T")[0]
-        );
-        setEndDate(new Date().toISOString().split("T")[0]);
-        setShowCustomDate(false);
-        break;
-      case "week":
-        setStartDate(
-          new Date(today.setDate(today.getDate() - 7))
-            .toISOString()
-            .split("T")[0]
-        );
-        setEndDate(new Date().toISOString().split("T")[0]);
-        setShowCustomDate(false);
-        break;
-      case "month":
-        setStartDate(
-          new Date(today.setMonth(today.getMonth() - 1))
-            .toISOString()
-            .split("T")[0]
-        );
-        setEndDate(new Date().toISOString().split("T")[0]);
-        setShowCustomDate(false);
-        break;
-      case "six_months":
-        setStartDate(
-          new Date(today.setMonth(today.getMonth() - 6))
-            .toISOString()
-            .split("T")[0]
-        );
-        setEndDate(new Date().toISOString().split("T")[0]);
-        setShowCustomDate(false);
-        break;
-      case "custom":
-        setStartDate("");
-        setEndDate("");
-        setShowCustomDate(true);
-        break;
-      default:
-        setShowCustomDate(false);
-    }
+    setQoption(range)
   };
 
   const handleSubmit = (e) => {
@@ -604,18 +576,8 @@ const OrderList = ({ distributor }) => {
   };
 
   const onhandelchange = (event) => {
-    setDeliveryName(event.target.value);
-    setSelectAll([]);
-    setTotalSpend(0);
-    setTotalSpendUpi(0);
-    if (event.target.value !== "All") {
-      let filterdeliveryid = DeliveryManData.filter(
-        (value) =>
-          value.basic_info.name.toLowerCase() ===
-          event.target.value.toLowerCase()
-      );
-      setDeliveryId(filterdeliveryid[0].id);
-    }
+    setQdeliveryname(event.target.value)
+
   };
 
   return (
@@ -639,13 +601,13 @@ const OrderList = ({ distributor }) => {
                 className="w-100 outline_none py-2 border-0"
               >
                 <option value="">Order Status</option>
-                <option value="Delivered">Delivered</option>
-                <option value="Rejected">Rejected</option>
-                <option value="New">New</option>
-                <option value="Processing">Processing</option>
-                <option value="Out_for_delivery">Out for Delivery</option>
-                <option value="Cancelled">Cancelled</option>
-                <option value="Confirmed">Confirmed</option>
+                <option value="DELIVERED">Delivered</option>
+                <option value="REJECTED">Rejected</option>
+                <option value="NEW">New</option>
+                <option value="PROCESSING">Processing</option>
+                <option value="OUT_FOR_DELIVERY">Out for Delivery</option>
+                <option value="CANCELLED">Cancelled</option>
+                <option value="CONFIRMED">Confirmed</option>
               </select>
             </div>
             <div className="border border-dark-subtle mt-4 w-100 px-2">
@@ -657,7 +619,7 @@ const OrderList = ({ distributor }) => {
               >
                 <option value={"All"}>Select Delivery</option>
                 {DeliveryManData.map((value, i) => (
-                  <option key={i} value={value.basic_info.name}>
+                  <option key={i} value={value.id}>
                     {value.basic_info.name}
                   </option>
                 ))}
@@ -678,10 +640,10 @@ const OrderList = ({ distributor }) => {
                 <option value="week">One Week</option>
                 <option value="month">One Month</option>
                 <option value="six_months">Six Months</option>
-                <option value="custom">Custom</option>
+                {/* <option value="custom">Custom</option> */}
               </select>
 
-              {selectedRange === "custom" && (
+              {/* {selectedRange === "custom" && (
                 <div className="p-3 border rounded bg-light mt-2">
                   <div className="mb-2">
                     <label htmlFor="startDate" className="form-label">
@@ -712,23 +674,13 @@ const OrderList = ({ distributor }) => {
                     />
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
 
             <div className=" d-flex justify-content-end gap-4">
               <div className="text-end mt-4">
                 <button
-                  onClick={() => (
-                    setOrderStatus(""),
-                    setStartDate(""),
-                    setEndDate(""),
-                    setSelectedRange(""),
-                    setSelectedStatuses([]),
-                    setDeliveryId(""),
-                    setDeliveryName(""),
-                    setTotalSpend(0),
-                    setTotalSpendUpi(0)
-                  )}
+                  onClick={() => handleReset()}
                   type="button"
                   className="apply_btn fs-sm fw-normal btn_bg_green"
                 >
@@ -737,7 +689,7 @@ const OrderList = ({ distributor }) => {
               </div>
               <div className="text-end mt-4">
                 <button
-                  onClick={() => setDatePop(false)}
+                  onClick={(e) => handleQuery(e)}
                   type="button"
                   className="apply_btn fs-sm fw-normal btn_bg_green"
                 >
@@ -789,7 +741,7 @@ const OrderList = ({ distributor }) => {
                 src={filtericon}
                 alt="filtericon"
               />
-              Filter
+              {isFiltering == true ? "Filterd" : "Filter"}
             </button>
 
             {!distributor && (
@@ -981,7 +933,7 @@ const OrderList = ({ distributor }) => {
                           ? new Date(b.transaction.date)
                           : new Date("1980-01-13T15:57:54.368533");
 
-                        return dateB - dateA; 
+                        return dateB - dateA;
                       }
 
                       const createdA = a.created_at
@@ -991,7 +943,7 @@ const OrderList = ({ distributor }) => {
                         ? new Date(b.created_at)
                         : new Date("1980-01-13T15:57:54.368533");
 
-                      return createdB - createdA; 
+                      return createdB - createdA;
                     })
                     .filter((value) => {
                       if (data[searchdata] === "All") {
