@@ -9,10 +9,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { min } from "date-fns";
 import { useNotification } from "../../context/NotificationContext";
 import { CrossIcons } from "../../Common/Icon";
-import alertgif from "../../Images/gif/altert Gif.gif";
+import alertgif from "../../Images/gif/altert Gif.gif"; 
 import { useProductsContext } from "../../context/productgetter";
 function DashbordCards() {
-  const { orders } = useOrdercontext();
+  const { ordersAll } = useOrdercontext();
   const [showCustomDate, setShowCustomDate] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -31,7 +31,7 @@ function DashbordCards() {
     currentDate.getTime() - 20 * 24 * 60 * 60 * 1000
   ); // Calculate date 20 days ago
 
-  const ordersLast20Days = orders.filter(
+  const ordersLast20Days = ordersAll.filter(
     (order) => new Date(order.created_at) >= last20DaysDate
   );
 
@@ -73,10 +73,10 @@ function DashbordCards() {
   // console.log("ORder of Last 20 days", ordersLast20Days);
 
   // Filter orders for the current month and last month
-  const ordersThisMonth = orders.filter(
+  const ordersThisMonth = ordersAll.filter(
     (order) => new Date(order.created_at).getMonth() === currentMonth
   );
-  const ordersLastMonth = orders.filter(
+  const ordersLastMonth = ordersAll.filter(
     (order) => new Date(order.created_at).getMonth() === lastMonth
   );
   // console.log("ordrethismonth", ordersThisMonth.length)
@@ -120,7 +120,7 @@ function DashbordCards() {
 
   // Filter  the New orders
 
-  const NewOrders = orders.filter((order) => order.status === "NEW");
+  const NewOrders = ordersAll.filter((order) => order.status === "NEW");
 
   /**  ******************************************* Filter the Recent orders of last week End here
    * ****************************************    */
@@ -128,7 +128,7 @@ function DashbordCards() {
   /**  ******************************************* Calculate Total Sales of ORder
    * ****************************************    */
 
-  let DeliverdOrder = orders.filter(
+  let DeliverdOrder = ordersAll.filter(
     (item) => item.status.toString().toLowerCase() === "delivered"
   );
   // console.log(DeliverdOrder)
@@ -465,7 +465,7 @@ function DashbordCards() {
                 </div>
 
                 <div className="d-flex justify-content-between   align-items-center bg_white">
-                  <h3 className="fw-500 black mb-0 fs-lg">{orders.length}</h3>
+                  <h3 className="fw-500 black mb-0 fs-lg">{ordersAll.length}</h3>
                   <div className="d-flex flex-column   justify-content-between">
                     <h3 className="color_green fs-xxs mb-0 text-end">
                       {isNaN(percentageChangeOfOrderMonth)
@@ -523,7 +523,7 @@ function DashbordCards() {
                 <div className="d-flex justify-content-between   bg-white">
                   <h3 className="fw-400 black fs-xs">Order Statistics</h3>
                 </div>
-                <ApexBarChart className="w-100" orderData={orders} />
+                <ApexBarChart className="w-100" orderData={ordersAll} />
               </div>
             </div>
           </div>

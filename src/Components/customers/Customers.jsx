@@ -30,10 +30,10 @@ const Customers = () => {
     useCustomerContext();
   const [filtervalue, setFilterValue] = useState("");
   const [customerdate, setCustomerdate] = useState(false);
-  const [orders, setOrders] = useState([]);
+
   const [loader, setLoader]=useState(false)
 
-
+ const {ordersAll}=useOrdercontext()
 
 
 // infinite customer calls
@@ -82,7 +82,7 @@ const Customers = () => {
   ];
 
   const totalSpentByCustomer = customer.map((customer) => {
-    const totalSpent = orders
+    const totalSpent = ordersAll
       .filter((order) => order.uid === customer.id)
       .filter((value) => value.status.toUpperCase() === "DELIVERED")
       .reduce((total, order) => total + order.order_price, 0);
@@ -252,29 +252,7 @@ const Customers = () => {
   }
 
 
-   useEffect(() => {
-     const fetchOrders = async () => {
-       try {
-         setLoader(true);
-         const ordersRef = collection(db, "order");
-         const querySnapshot = await getDocs(ordersRef);
 
-         const ordersData = querySnapshot.docs.map((doc) => ({
-           id: doc.id,
-           ...doc.data(),
-         }));
-
-
-         setOrders(ordersData);
-       } catch (error) {
-         console.error("Error fetching orders:", error);
-       } finally {
-         setLoader(false);
-       }
-     };
-
-     fetchOrders();
-   }, []);
 
  if (loader) {
    return <Loader />;
