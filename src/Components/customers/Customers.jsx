@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import filtericon from "../../Images/svgs/filtericon.svg";
 import manicon from "../../Images/svgs/manicon.svg";
 import threedot from "../../Images/svgs/threedot.svg";
@@ -14,6 +14,9 @@ import { CustomersProvider, useCustomerContext } from "../../context/Customerget
 import { set } from "date-fns";
 import { useOrdercontext } from "../../context/OrderGetter";
 import { ArrowIcons } from "../../Common/Icon";
+import { db } from "../../firebase";
+import { collection, getDocs } from "firebase/firestore";
+import Loader from "../Loader";
 
 const Customers = () => {
   const [searchvalue, setSearchvalue] = useState("");
@@ -22,13 +25,13 @@ const Customers = () => {
   const [selectAll, setSelectAll] = useState([]);
   const [pincode, setPinCode] = useState("");
   const [servicearea, setServicearea] = useState("");
-  const { orders } = useOrdercontext();
+
   const { customer, fetchMoreCustomers, loading, hasMore } =
     useCustomerContext();
   const [filtervalue, setFilterValue] = useState("");
   const [customerdate, setCustomerdate] = useState(false);
-
-
+  const [orders, setOrders] = useState([]);
+  const [loader, setLoader]=useState(false)
 
 
 
@@ -249,6 +252,33 @@ const Customers = () => {
   }
 
 
+   useEffect(() => {
+     const fetchOrders = async () => {
+       try {
+         setLoader(true);
+         const ordersRef = collection(db, "order");
+         const querySnapshot = await getDocs(ordersRef);
+
+         const ordersData = querySnapshot.docs.map((doc) => ({
+           id: doc.id,
+           ...doc.data(),
+         }));
+
+
+         setOrders(ordersData);
+       } catch (error) {
+         console.error("Error fetching orders:", error);
+       } finally {
+         setLoader(false);
+       }
+     };
+
+     fetchOrders();
+   }, []);
+
+ if (loader) {
+   return <Loader />;
+ }
   return (
     <div className="main_panel_wrapper overflow-x-hidden bg_light_grey w-100">
       {filterpop ? <div className="bg_black_overlay"></div> : null}

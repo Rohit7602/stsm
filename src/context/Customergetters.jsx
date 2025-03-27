@@ -55,7 +55,7 @@ export const CustomersProvider = ({ children }) => {
       where("is_customer", "==", true), // Filter orders where is_customer is true
       orderBy("created_at", "desc"),
       startAfter(lastDoc),
-      limit(100)
+      limit(1500)
     );
 
     const querySnapshot = await getDocs(nextQuery);

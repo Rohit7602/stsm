@@ -6,16 +6,16 @@ import { Col, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useCustomerContext } from "../../context/Customergetters";
 import { add, formatDistanceToNow } from "date-fns";
 import { useOrdercontext } from "../../context/OrderGetter";
 import { Link } from "react-router-dom";
 import filtericon from "../../Images/svgs/filtericon.svg";
+import Loader from "../Loader";
 
 const ViewCustomerDetails = () => {
-  const { orders } = useOrdercontext();
   const { customer } = useCustomerContext();
   const { id } = useParams();
   const [filterpop, setFilterPop] = useState(false);
@@ -24,8 +24,11 @@ const ViewCustomerDetails = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedRange, setSelectedRange] = useState("");
+  const [loader, setLoader] = useState(false);
+
+  const [targetOrder, setTargetOrder] = useState([]);
   let filterData = customer.filter((item) => item.id == id);
-  const targetOrder = orders.filter((order) => order.uid === id);
+
   const mostRecentOrder = targetOrder.reduce((maxOrder, currentOrder) => {
     const maxTimestamp = maxOrder ? new Date(maxOrder.created_at).getTime() : 0;
     const currentTimestamp = new Date(currentOrder.created_at).getTime();
@@ -65,6 +68,35 @@ const ViewCustomerDetails = () => {
     return orderMonth === currentMonth;
   });
 
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoader(true);
+         const ordersRef = collection(db, "order");
+         const q = query(ordersRef, where("uid", "==", id));
+         const querySnapshot = await getDocs(q);
+
+        const ordersData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+    console.log(id,'test')
+    console.log(ordersData,'test')
+
+        setTargetOrder(ordersData);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      } finally {
+        setLoader(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  if (loader) {
+    return <Loader />;
+  }
   // calculate  time end
 
   // useEffect(() => {

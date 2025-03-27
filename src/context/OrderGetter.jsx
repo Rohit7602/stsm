@@ -218,6 +218,7 @@ async function fetchOrdersBasedQuery(
         fetchOrdersBasedQuery,
         setIsFiltering,
         fetchOrders,
+        setLoading,
       }}
     >
       {children}
