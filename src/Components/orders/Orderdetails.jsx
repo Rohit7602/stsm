@@ -46,8 +46,9 @@ export default function NewOrder() {
   let AdminId = userData.uuid;
   // console.log("Asmin ", AdminId)
   const { id } = useParams();
+
   const { DeliveryManData } = UseDeliveryManContext();
-  const { orders, updateData } = useOrdercontext();
+  const { ordersAll, updateData } = useOrdercontext();
   const [filterData, setfilterData] = useState([]);
   const [orderid, setOrderid] = useState("");
   const [loading, setLoading] = useState(false);
@@ -73,15 +74,15 @@ export default function NewOrder() {
   }, [filterData]);
 
   useEffect(() => {
-    if (orders.length !== 0) {
-      const orderData = orders.filter((item) => item.order_id === id);
+    if (ordersAll.length !== 0) {
+      const orderData = ordersAll.filter((item) => item.order_id === id);
       setOrderid(orderData[0].id);
       setfilterData(orderData);
     }
-  }, [orders, id]);
+  }, [ordersAll, id]);
 
   useEffect(() => {
-    const order = orders.find((item) => item.order_id === id);
+    const order = ordersAll.find((item) => item.order_id === id);
     if (order) {
       const fetchLogs = async () => {
         const q = query(collection(db, `order/${order.id}/logs`));
@@ -94,7 +95,7 @@ export default function NewOrder() {
       };
       fetchLogs();
     }
-  }, [id, orders]);
+  }, [id, ordersAll]);
 
   if (!id || filterData.length === 0) {
     return <Loader> </Loader>;
