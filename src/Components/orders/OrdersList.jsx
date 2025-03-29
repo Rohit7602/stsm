@@ -904,74 +904,74 @@ await fetchOrders();
                       );
                     })
 
-                    .filter((item) => {
-                      if (selectedStatuses.length === 0) return true;
-                      return selectedStatuses.some(
-                        (status) =>
-                          status.toLowerCase() === item.status.toLowerCase()
-                      );
-                    })
+                    // .filter((item) => {
+                    //   if (selectedStatuses.length === 0) return true;
+                    //   return selectedStatuses.some(
+                    //     (status) =>
+                    //       status.toLowerCase() === item.status.toLowerCase()
+                    //   );
+                    // })
 
-                    .filter((item) => {
-                      if (!startDate && !endDate) return true;
-                      const orderDate = new Date(item.created_at);
-                      const start = startDate ? new Date(startDate) : null;
-                      const end = endDate ? new Date(endDate) : null;
-                      if (start) start.setHours(0, 0, 0, 0);
-                      if (end) end.setHours(23, 59, 59, 999);
-                      if (start && orderDate < start) return false;
-                      if (end && orderDate > end) return false;
+                    // .filter((item) => {
+                    //   if (!startDate && !endDate) return true;
+                    //   const orderDate = new Date(item.created_at);
+                    //   const start = startDate ? new Date(startDate) : null;
+                    //   const end = endDate ? new Date(endDate) : null;
+                    //   if (start) start.setHours(0, 0, 0, 0);
+                    //   if (end) end.setHours(23, 59, 59, 999);
+                    //   if (start && orderDate < start) return false;
+                    //   if (end && orderDate > end) return false;
 
-                      return true;
-                    })
-                    .sort((a, b) => {
-                      if (deliverydate) {
-                        const dateA = a.transaction.date
-                          ? new Date(a.transaction.date)
-                          : new Date("1980-01-13T15:57:54.368533");
-                        const dateB = b.transaction.date
-                          ? new Date(b.transaction.date)
-                          : new Date("1980-01-13T15:57:54.368533");
+                    //   return true;
+                    // })
+                    // .sort((a, b) => {
+                    //   if (deliverydate) {
+                    //     const dateA = a.transaction.date
+                    //       ? new Date(a.transaction.date)
+                    //       : new Date("1980-01-13T15:57:54.368533");
+                    //     const dateB = b.transaction.date
+                    //       ? new Date(b.transaction.date)
+                    //       : new Date("1980-01-13T15:57:54.368533");
 
-                        return dateB - dateA;
-                      }
+                    //     return dateB - dateA;
+                    //   }
 
-                      const createdA = a.created_at
-                        ? new Date(a.created_at)
-                        : new Date("1980-01-13T15:57:54.368533");
-                      const createdB = b.created_at
-                        ? new Date(b.created_at)
-                        : new Date("1980-01-13T15:57:54.368533");
+                    //   const createdA = a.created_at
+                    //     ? new Date(a.created_at)
+                    //     : new Date("1980-01-13T15:57:54.368533");
+                    //   const createdB = b.created_at
+                    //     ? new Date(b.created_at)
+                    //     : new Date("1980-01-13T15:57:54.368533");
 
-                      return createdB - createdA;
-                    })
-                    .filter((value) => {
-                      if (data[searchdata] === "All") {
-                        return true;
-                      } else {
-                        return (
-                          value.status.toLowerCase() ===
-                          data[searchdata].toLowerCase()
-                        );
-                      }
-                    })
-                    .filter((value) => {
-                      if (deliveryid === "") {
-                        return true;
-                      } else {
-                        return value.assign_to === deliveryid;
-                      }
-                    })
+                    //   return createdB - createdA;
+                    // })
+                    // .filter((value) => {
+                    //   if (data[searchdata] === "All") {
+                    //     return true;
+                    //   } else {
+                    //     return (
+                    //       value.status.toLowerCase() ===
+                    //       data[searchdata].toLowerCase()
+                    //     );
+                    //   }
+                    // })
+                    // .filter((value) => {
+                    //   if (deliveryid === "") {
+                    //     return true;
+                    //   } else {
+                    //     return value.assign_to === deliveryid;
+                    //   }
+                    // })
 
-                    .sort((a, b) => {
-                      if (sortingprice[searchprice] === "all") {
-                        return 0;
-                      } else if (sortingprice[searchprice] === "topprice") {
-                        return b.order_price - a.order_price;
-                      } else {
-                        return a.order_price - b.order_price;
-                      }
-                    })
+                    // .sort((a, b) => {
+                    //   if (sortingprice[searchprice] === "all") {
+                    //     return 0;
+                    //   } else if (sortingprice[searchprice] === "topprice") {
+                    //     return b.order_price - a.order_price;
+                    //   } else {
+                    //     return a.order_price - b.order_price;
+                    //   }
+                    // })
                     .map((orderTableData, index) => {
                       return (
                         <tr

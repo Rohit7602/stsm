@@ -48,7 +48,7 @@ export default function NewOrder() {
   const { id } = useParams();
 
   const { DeliveryManData } = UseDeliveryManContext();
-  const { ordersAll, updateData } = useOrdercontext();
+  const { orders, updateData } = useOrdercontext();
   const [filterData, setfilterData] = useState([]);
   const [orderid, setOrderid] = useState("");
   const [loading, setLoading] = useState(false);
@@ -74,15 +74,15 @@ export default function NewOrder() {
   }, [filterData]);
 
   useEffect(() => {
-    if (ordersAll.length !== 0) {
-      const orderData = ordersAll.filter((item) => item.order_id === id);
+    if (orders.length !== 0) {
+      const orderData = orders.filter((item) => item.order_id === id);
       setOrderid(orderData[0].id);
       setfilterData(orderData);
     }
-  }, [ordersAll, id]);
+  }, [orders, id]);
 
   useEffect(() => {
-    const order = ordersAll.find((item) => item.order_id === id);
+    const order = orders.find((item) => item.order_id === id);
     if (order) {
       const fetchLogs = async () => {
         const q = query(collection(db, `order/${order.id}/logs`));
@@ -95,7 +95,7 @@ export default function NewOrder() {
       };
       fetchLogs();
     }
-  }, [id, ordersAll]);
+  }, [id, orders]);
 
   if (!id || filterData.length === 0) {
     return <Loader> </Loader>;
