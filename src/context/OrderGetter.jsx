@@ -24,6 +24,8 @@ export const OrderContextProvider = ({ children }) => {
   const [lastDoc, setLastDoc] = useState(null);
   const [hasMore, setHasMore] = useState(true);
   const [isFiltering, setIsFiltering] = useState(false);
+  const [orderAccordingDelivary, setOrderAccordingDelivary] = useState([])
+  const [delivaryManId, setDelivaryManId] = useState('')
   // Fetch initial orders
   const fetchOrders = async () => {
     const orderQuery = query(
@@ -69,6 +71,7 @@ export const OrderContextProvider = ({ children }) => {
     }
     setLoading(false);
   };
+
   useEffect(() => {
     const unsubscribe = fetchOrders(); // Real-time listener
 
@@ -140,6 +143,73 @@ export const OrderContextProvider = ({ children }) => {
     };
   }
 
+  async function getDeliverman() {
+    // fetch and build list
+    const list = [];
+    const qs = await getDocs(collection(db, "Delivery"));
+    qs.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+
+    // find the matching document
+    const match = list.find(item => item.id === delivaryManId);
+    if (!match) {
+      console.warn("DeliveryManData.id not found:", delivaryManId);
+      return [];
+    }
+
+    // ensure serviceArea is iterable
+    const serviceArea = Array.isArray(match.serviceArea) ? match.serviceArea : [];
+    return serviceArea.flatMap(area =>
+      Array.isArray(area.terretory) ? area.terretory : []
+    );
+  }
+  async function fetchDelivaryManOrders(assign_to) {
+    console.log("fetchDelivaryManOrders for ID:", assign_to);
+
+    // Get all Delivery docs
+    const qs = await getDocs(collection(db, "Delivery"));
+    const docs = qs.docs.map(d => ({ id: d.id, ...d.data() }));
+    console.log("All delivery IDs:", docs.map(d => d.id));
+
+    // Find the one we want
+    const match = docs.find(d => d.id === assign_to);
+    console.log("Match:", match);
+
+    if (!match || !Array.isArray(match.serviceArea)) {
+      console.warn("No valid serviceArea for", assign_to);
+      setOrderAccordingDelivary([]);
+      return;
+    }
+
+    // Extract territories
+    const territories = match.serviceArea.flatMap(a =>
+      Array.isArray(a.terretory) ? a.terretory : []
+    );
+    console.log("Territories:", territories);
+
+    if (!territories.length) {
+      console.warn("No territories inside serviceArea for", assign_to);
+      setOrderAccordingDelivary([]);
+      return;
+    }
+
+    // Now fetch only PROCESSING in those areas
+    try {
+      const q = query(
+        collection(db, "order"),
+        where("shipping.area", "in", territories),
+        where("status", "==", "PROCESSING")
+      );
+      const snap = await getDocs(q);
+      const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      console.log("Found PROCESSING orders:", list);
+      setOrderAccordingDelivary(list);
+    } catch (e) {
+      console.error(e);
+      setOrderAccordingDelivary([]);
+    }
+  }
+
+
   async function fetchOrdersBasedQuery(
     assign_to,
     status,
@@ -147,18 +217,41 @@ export const OrderContextProvider = ({ children }) => {
     customStartDate,
     customEndDate
   ) {
+    setDelivaryManId(assign_to);
     setLoading(true);
+    // If they asked for PROCESSING, use your special per‑man loader:
+    if (status === "PROCESSING") {
+      console.log("Filtering PROCESSING for:", assign_to);
+      // fetch territories
+      const qs = await getDocs(collection(db, "Delivery"));
+      const docs = qs.docs.map(d => ({ id: d.id, ...d.data() }));
+      const match = docs.find(d => d.id === assign_to);
+      const territories = match?.serviceArea?.flatMap(a => a.terretory) || [];
+
+      // run the orders query
+      if (territories.length) {
+        const q = query(
+          collection(db, "order"),
+          where("shipping.area", "in", territories),
+          where("status", "==", "PROCESSING")
+        );
+        const snap = await getDocs(q);
+        setOrders(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } else {
+        setOrders([]);  // no territories → no orders
+      }
+
+      setLoading(false);
+      return;
+    }
     console.log(assign_to, status, created_at_option);
     try {
       const ordersRef = collection(db, "order");
       let queryConstraints = [];
+      queryConstraints.push(where("status", "==", status));
 
-      if (assign_to) {
-        queryConstraints.push(where("assign_to", "==", assign_to));
-      }
-      if (status) {
-        queryConstraints.push(where("status", "==", status));
-      }
+      queryConstraints.push(where("assign_to", "==", assign_to));
+
 
       const { start, end } = getCreatedAtTimestamp(
         created_at_option,
@@ -197,7 +290,7 @@ export const OrderContextProvider = ({ children }) => {
       return [];
     }
   }
-
+    console.log(orderAccordingDelivary)
   // all orders fetched
   useEffect(() => {
     const fetchOrdersall = async () => {
@@ -239,10 +332,11 @@ export const OrderContextProvider = ({ children }) => {
         setIsFiltering,
         fetchOrders,
         setLoading,
-        ordersAll,
+        ordersAll, setOrders
       }}
     >
       {children}
     </OrderContext.Provider>
   );
 };
+

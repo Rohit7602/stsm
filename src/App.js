@@ -5,7 +5,6 @@ import {
   Routes,
   useLocation,
   useNavigate,
-  useParams,
 } from "react-router-dom";
 import Sidebar from "./Components/layout/Sidebar";
 import DashbordCards from "./Components/dashbord/DashbordCards";
@@ -22,33 +21,29 @@ import ParentCategories from "./Components/catalog/ParentCategories";
 import ServiceAreas from "./Components/catalog/SearviceAreas";
 import Login from "./Components/login/Login";
 import AccountDelete from "./Components/AccountDelete";
-import { useEffect, useRef, useState } from "react";
-import { auth, messaging, onMessageListener } from "./firebase";
+import { useEffect, useState } from "react";
+import { auth, onMessageListener } from "./firebase";
 import HashLoader from "react-spinners/HashLoader";
 import CheckConnection from "./Components/CheckConnection";
 import Brands from "./Components/brands/Brands";
 import Invoices from "./Components/invoices/Invoices";
 import { permissionHandler } from "./firebase";
 import DeliveryManList from "./Components/deliveryman/DeliveryManList";
-import { ToastContainer, toast } from "react-toastify";
 import PrivacyPolicy from "./Components/PrivacyPolicy/PrivacyPolicy";
 import TermConditions from "./Components/Security/TermConditions/TermConditions";
 import AddDeliveryMan from "./Components/deliveryman/AddDeliveryMan";
 import Faqs from "./Components/faqs/Faqs";
 import Logout from "./Components/login/Logout";
 import DeliverymanProfile from "./Components/deliveryman/DeliverymanProfile";
-import DeliveryOrderList from "./Components/deliveryman/DeliveryOrderList";
-import DeliveryBoyInventory from "./Components/deliveryman/DeliveryBoyInventory";
 import { useUserAuth } from "./context/Authcontext";
 import Coupons from "./Components/marketing/Coupons";
 import InvoiceBill from "./Components/invoices/InvoiceBill";
 import Chats from "./Components/communications/Chats";
 import Complains from "./Components/communications/Complains";
 import ComplainDetails from "./Components/communications/ComplainDetails";
-import { firebase, db } from "./firebase";
+import {  db } from "./firebase";
 import Notification from "./Components/layout/Notification";
 import { getDocs, collection, query } from "firebase/firestore";
-import { CrossIcons } from "./Common/Icon";
 import { useNotification } from "./context/NotificationContext";
 import DeliveryList from "./Components/deliveryman/DeliveryList";
 import Offers from "./Components/marketing/Offers";
@@ -86,7 +81,6 @@ function App() {
       setDistributor(false);
     }
 
-    // console.log("helooooooooooooooooooooooooooooooooooo");
   }, [loction.pathname === "/"]);
 
   useEffect(() => {

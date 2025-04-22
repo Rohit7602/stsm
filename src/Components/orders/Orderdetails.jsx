@@ -1035,7 +1035,7 @@ export default function NewOrder() {
               <Col xxl={8}>
                 <div className="p-3 bg-white product_shadow">
                   <p className="fs-2sm fw-400 black mb-0">Items</p>
-                  {item.items.map((products, index) => {
+                  {item.items.filter((products) => products.quantity > 0).map((products, index) => {
                     return (
                       <>
                         <div className="d-flex align-items-center justify-content-between mt-3">
@@ -1097,20 +1097,7 @@ export default function NewOrder() {
                       </>
                     );
                   })}
-                  {/* <div className="d-flex align-items-center justify-content-between mt-3">
-                  <div className="d-flex align-items-center mw-300 p-2">
-                    <img src={mobileicon} alt="mobileicon" />
-                    <div className="ps-3">
-                      <p className="fs-sm fw-400 black mb-0">Vivo V3 Pro</p>
-                      <p className="fs-xxs fw-400 fade_grey mb-0">ID : 1022</p>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center p-3">
-                    <p className="fs-sm fw-400 black mb-0">₹ 300.00</p>
-                    <p className="fs-sm fw-400 black mb-0 ps-4 ms-2">1</p>
-                  </div>
-                  <p className="fs-sm fw-400 black mb-0 p-3">₹ 300.00</p>
-                </div> */}
+                 
                   <div className="product_borderbottom mt-3"></div>
                   <div className="d-flex align-items-center justify-content-between mt-4">
                     <p className="fs-sm fw-400 black mb-0">Subtotal</p>

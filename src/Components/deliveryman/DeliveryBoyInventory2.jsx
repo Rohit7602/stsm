@@ -48,14 +48,13 @@ function DeliveryBoyInventory2() {
 
   const [orders, setOrders] = useState([]);
 
-
+console.log(orders,"order")
 
 
 
 
   const [showModal, setShowModal] = useState(false);
 
-  const handleShow = () => setShowModal(true);
   const handleClose = () => setShowModal(false);
 
 
@@ -532,7 +531,7 @@ function DeliveryBoyInventory2() {
     const DeliveryManval = list.filter((item) => item.id === id);
 
      
-    const allTerritories = DeliveryManval[0].serviceArea.flatMap(
+    const allTerritories = DeliveryManval[0].serviceArea?.flatMap(
       (area) => area.terretory
     );
 
@@ -565,21 +564,35 @@ function DeliveryBoyInventory2() {
       console.error("Error fetching orders:", error);
     }
   };
+  const updateAllOrdersStatus = async () => {
+    try {
+      const batch = writeBatch(db);
+
+      orders.forEach((order) => {
+        const orderRef = doc(db, "order", order.id);
+        batch.update(orderRef, { status: "OUT FOR DELIVERY", assigned_to:id });
+      });
+
+      await batch.commit();
+      console.log("All orders updated to OUT FOR DELIVERY ✅");
+    } catch (error) {
+      console.error("Error updating all orders:", error);
+    }
+  };
+
+  
   // fetching orders
   useEffect(() => {
-   
-
-    
-
     fetchOrders();
   }, []);
+
 
   if (loaderstatus) {
     return <Loader></Loader>;
   } else {
     return (
       <div>
-        <RandomPopup showModal={showModal} handleClose={handleClose} data={orders} />
+        <RandomPopup showModal={showModal} handleClose={handleClose} data={orders} updateAllOrdersStatus={updateAllOrdersStatus} />
         <div className="main_panel_wrapper bg_light_grey w-100">
           {/* conform pop */}
           {conformpop ? <div className="bg_black_overlay"></div> : null}

@@ -12,6 +12,8 @@ import viewBill from "../invoices/InvoiceBill";
 import { ReactToPrint } from "react-to-print";
 import billLogo from "../../Images/svgs/bill-logo.svg";
 import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
+import { collection, doc, getDocs, query, where, writeBatch } from "firebase/firestore";
+import { db } from "../../firebase";
 const OrderList = ({ distributor }) => {
 
 
@@ -63,19 +65,48 @@ const OrderList = ({ distributor }) => {
   const [deliveryid, setDeliveryId] = useState("");
   const [deliverydate, setDeliverydate] = useState(false);
   const [selectedStatuses, setSelectedStatuses] = useState([]);
-
-     const [qstatus, setQstatus] = useState(""); // Default to empty string for no filter
+ 
+  const [assignButtonVisible, setAssignButtonVisible] = useState(false); 
+     const [qstatus, setQstatus] = useState(""); 
      const [qdeliveryname, setQdeliveryname] = useState("");
      const [qoption, setQoption] = useState("week");
 
 
-    async function handleQuery(e){
-      e.preventDefault()
-      setIsFiltering(true);
+    // async function handleQuery(e){
+    //   e.preventDefault()
+    //   setIsFiltering(true);
    
-     await fetchOrdersBasedQuery(qdeliveryname,qstatus,qoption)
-      setDatePop(false);
+    //  await fetchOrdersBasedQuery(qdeliveryname,qstatus,qoption)
+    //   setDatePop(false);
+   
+
+  // }
+
+
+  
+  
+  async function handleQuery(e) {
+    e.preventDefault();
+    setIsFiltering(true);
+
+    const result = await fetchOrdersBasedQuery(qdeliveryname, qstatus, qoption);
+
+    // Assuming result is the array of fetched orders
+    if (result && result.length > 0) {
+      const allProcessing = result.every(order => order.status === "PROCESSING");
+      setAssignButtonVisible(allProcessing);
+    } else {
+      setAssignButtonVisible(false);
     }
+
+    setDatePop(false);
+  }
+  
+  useEffect(() => {
+    const allProcessing = orders.length > 0 && orders.every(order => order.status === "PROCESSING");
+    setAssignButtonVisible(allProcessing);
+  }, [orders]);
+
 
 
     async function handleReset(){
@@ -92,8 +123,7 @@ await fetchOrders();
     setSelectedBill([...bill]);
   };
 
-  // format date logic start from here
-  // console.log(orderStatus);
+  
   function formatDate(dateString) {
     const options = {
       year: "numeric",
@@ -222,25 +252,8 @@ await fetchOrders();
     }
   }
 
-  // const handleMainCheckboxChange = () => {
-  //   const updatedData = orders.map((item) => ({
-  //     ...item,
-  //     checked: !selectAll,
-  //   }));
-  //   updateData(updatedData);
-  //   setSelectAll(!selectAll);
-  // };
 
-  // Datacheckboxes functionality strat from here
-  // const handleCheckboxChange = (index) => {
-  //   const updatedData = [...orders];
-  //   updatedData[index].checked = !orders[index].checked;
-  //   updateData(updatedData);
-
-  //   // Check if all checkboxes are checked
-  //   const allChecked = updatedData.every((item) => item.checked);
-  //   setSelectAll(allChecked);
-  // };
+  
 
   /*  *******************************
       Checbox  functionality end 
@@ -251,33 +264,7 @@ await fetchOrders();
     *********************************************   **/
 
   const [order, setorder] = useState("ASC");
-  // const sorting = (col) => {
-  //   // Create a copy of the data array
-  //   const sortedData = [...orders];
-
-  //   if (order === 'ASC') {
-  //     sortedData.sort((a, b) => {
-  //       const valueA = a[col].toLowerCase();
-  //       const valueB = b[col].toLowerCase();
-  //       return valueA.localeCompare(valueB);
-  //     });
-  //   } else {
-  //     // If the order is not ASC, assume it's DESC
-  //     sortedData.sort((a, b) => {
-  //       const valueA = a[col].toLowerCase();
-  //       console.log('asdf', valueA);
-  //       const valueB = b[col].toLowerCase();
-  //       return valueB.localeCompare(valueA);
-  //     });
-  //   }
-
-  //   // Update the order state
-  //   const newOrder = order === 'ASC' ? 'DESC' : 'ASC';
-  //   setorder(newOrder);
-
-  //   // Update the data using the updateData function from your context
-  //   updateData(sortedData);
-  // };
+  
 
   const sorting = (col) => {
     // Create a copy of the data array
@@ -550,13 +537,20 @@ await fetchOrders();
     setSearchPrice(newIndex);
   };
 
-  const handleOrderStatusChange = (e) => {
 
-  setQstatus(e.target.value)
+  const handleOrderStatusChange = (e) => {
+    setOrderStatus(e.target.value);
+    setQstatus(e.target.value)
+  };
+  const onhandelchange = (event) => {
+    setQdeliveryname(event.target.value)
+    setDeliveryName(event.target.value);
+
   };
 
   const handleDateRangeSelection = (range) => {
     setQoption(range)
+    setSelectedRange(range)
   };
 
   const handleSubmit = (e) => {
@@ -575,10 +569,8 @@ await fetchOrders();
     );
   };
 
-  const onhandelchange = (event) => {
-    setQdeliveryname(event.target.value)
 
-  };
+
 
   return (
     <div className="main_panel_wrapper overflow-x-hidden bg_light_grey w-100">
@@ -716,9 +708,12 @@ await fetchOrders();
               </h5>
             </div>
           </div>
+          
+         
+         
           <div className="d-flex align-itmes-center gap-3">
             <form
-              className="form_box   mx-2 d-flex p-2 align-items-center"
+              className="form_box  mx-2 d-flex p-2 align-items-center"
               action=""
             >
               <div className="d-flex">

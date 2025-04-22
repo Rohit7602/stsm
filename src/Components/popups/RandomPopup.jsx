@@ -1,55 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { Modal, Button } from "react-bootstrap";
 
-export  const RandomPopup = ({ showModal, handleClose,data }) => {
+export const RandomPopup = ({ showModal, handleClose, data, updateAllOrdersStatus }) => {
 
-    console.log(data)
-  // Saple data for the table
- const orders = [
-   {
-     id: 1,
-     customer: "John Doe",
-     items: [
-       { itemName: "Item 1", quantity: 2 },
-       { itemName: "Item 2", quantity: 1 },
-       { itemName: "Item 3", quantity: 3 },
-       { itemName: "Item 4", quantity: 1 },
-       { itemName: "Item 5", quantity: 2 },
-       { itemName: "Item 6", quantity: 1 },
-       { itemName: "Item 7", quantity: 4 },
-     ],
-     totalAmount: 30,
-   },
-   {
-     id: 2,
-     customer: "Jane Smith",
-     items: [
-       { itemName: "Item 3", quantity: 5 },
-       { itemName: "Item 4", quantity: 3 },
-       { itemName: "Item 5", quantity: 2 },
-     ],
-     totalAmount: 50,
-   },
-   {
-     id: 3,
-     customer: "Sam Green",
-     items: [
-       { itemName: "Item 6", quantity: 1 },
-       { itemName: "Item 7", quantity: 4 },
-       { itemName: "Item 8", quantity: 2 },
-       { itemName: "Item 9", quantity: 1 },
-       { itemName: "Item 10", quantity: 3 },
-     ],
-     totalAmount: 40,
-   },
- ];
-
-
-
+console.log(data,"data")
   const handleConfirm = () => {
     if(data.length!==0){
-            alert("Work is under progress will be complete by tonight, Thank you!")
+            alert("confirm")
     }
+    updateAllOrdersStatus()
     handleClose(); // Close modal after confirm
   };
 

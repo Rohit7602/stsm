@@ -182,9 +182,9 @@ const DeliveryManList = () => {
                         <th className="mx_160 px-2">
                           <h3 className="fs-sm fw-400 black mb-0">Work type</h3>
                         </th>
-                        <th className="mx_140 ps-3">
+                        {/* <th className="mx_140 ps-3">
                           <h3 className="fs-sm fw-400 black mb-0">Total Order’s</h3>
-                        </th>
+                        </th> */}
                         <th onClick={() => sorting("status")} className="mx_140 cursor_pointer">
                           <p className="fw-400 fs-sm black mb-0 ms-2">
                             Status
@@ -214,6 +214,7 @@ const DeliveryManList = () => {
                     </thead>
                     <tbody className="table_body">
                       {DeliveryManData.filter((data) => {
+                        console.log(data,"data")
                         return searchvalue.toLowerCase() === ""
                           ? data
                           : data.basic_info.name.toLowerCase().includes(searchvalue);
@@ -227,7 +228,7 @@ const DeliveryManList = () => {
                             orderCount[asignedOrder.assign_to]++;
                           }
                         }
-                        // console.log(orderCount);
+                     
                         return (
                           <tr key={index} className="product_borderbottom">
                             <td className="py-3 ps-3 ">
@@ -257,11 +258,11 @@ const DeliveryManList = () => {
                                 {data.job_info.shift}
                               </h3>
                             </td>
-                            <td className="mx_140 ps-5">
+                            {/* <td className="mx_140 ps-5">
                               <h3 className="fs-sm fw-400 black ">
                                 {orderCount[data.id] ?? 0}
                               </h3>
-                            </td>
+                            </td> */}
                             <td className="px-2 mx_140">
                               <h3
                                 className={`fs-sm fw-400 ${
@@ -288,7 +289,7 @@ const DeliveryManList = () => {
                                   ? "PENDING"
                                   : data.profile_status}
                               </h3>
-                              {/* <h3 className="fs-sm fw-400 status_btn_red mb-0">Rejected</h3> */}
+                           
                             </td>
                             <td className="ps-3 mx_160">
                               <h3 className="fs-sm fw-400 black mb-0">
@@ -364,7 +365,7 @@ const DeliveryManList = () => {
                     </tbody>
                   </table>
                   <ToastContainer />
-                  {/* <div className=""></div> */}
+             
                 </div>
               </div>
             </div>
@@ -417,29 +418,7 @@ const DeliveryManList = () => {
                     </>
                   );
                 })}
-                {/* <span
-                  style={{
-                    border: '1px solid #00000033',
-                    width: '100%',
-                    display: 'inline-block',
-                  }}></span> */}
-                {/* <div>
-                  <p className="fs-xs fw-600 black mt-2">Barwala (125121)</p>
-                  <div className="d-flex gap-2 flex-wrap">
-                    <div className="d-flex align-items-center service_locations gap-2">
-                      <p className="fs-xxs fw-400 black m-0">Dabra Chowk</p>
-                      <img className="ms-1 cursor_pointer" src={removeIcon} alt="removeIcon" />
-                    </div>
-                    <div className="d-flex align-items-center service_locations gap-2">
-                      <p className="fs-xxs fw-400 black m-0">PLA</p>
-                      <img className="ms-1 cursor_pointer" src={removeIcon} alt="removeIcon" />
-                    </div>
-                    <div className="d-flex align-items-center service_locations gap-2">
-                      <p className="fs-xxs fw-400 black m-0">Red Square Market</p>
-                      <img className="ms-1 cursor_pointer" src={removeIcon} alt="removeIcon" />
-                    </div>
-                  </div>
-                </div> <>*/}
+                
               </div>
             ) : null}
             {deletePopup && (

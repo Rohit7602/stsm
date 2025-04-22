@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useMemo } from "react";
-import { getDocs, collection, onSnapshot } from 'firebase/firestore';
+import { getDocs, collection } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const DeliveryManContext = createContext()
@@ -26,8 +26,6 @@ export const DeliverManContextProvider = ({ children }) => {
             }
         };
         fetchservice()
-
-
     }, []);
 
     const memodata = useMemo(() => DeliveryManData, [DeliveryManData])

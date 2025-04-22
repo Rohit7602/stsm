@@ -357,7 +357,7 @@ input[type="range"] {
 
 .form_box {
   background: #ebedf0;
-  min-width: 340px;
+  min-width: 240px;
 }
 
 .form_box input:focus {
