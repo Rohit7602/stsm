@@ -25,7 +25,6 @@
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
     "react-bootstrap": "^2.9.1",
-    "react-charts": "^2.0.0-beta.7",
     "react-detect-offline": "^2.4.5",
     "react-dom": "^18.2.0",
     "react-draggable": "^4.4.6",
