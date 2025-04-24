@@ -40,27 +40,17 @@ function DeliveryBoyInventory2() {
   const [addquantity, setaddquantity] = useState(0);
   const [varienttype, setvarienttype] = useState("");
   const [selectAll, setSelectAll] = useState([]);
-  const [AllProducts, setAllProducts] = useState([]);
   const [itemSelect, setItemSelect] = useState({});
   const [disableUpload, setDisableUpload] = useState(false);
   const [finalVanProducts, setFinalVanProducts] = useState([]);
   const [conformpop, setConFormPop] = useState(false);
-
+  
+  const [AllProducts, setAllProducts] = useState([]);
   const [orders, setOrders] = useState([]);
 
 console.log(orders,"order")
-
-
-
-
   const [showModal, setShowModal] = useState(false);
-
   const handleClose = () => setShowModal(false);
-
-
-
-
-
   function addToVan(e) {
     e.preventDefault();
     if (
@@ -178,7 +168,6 @@ console.log(orders,"order")
       });
     }
   }
-
   ///////////////////////             update entry                      ////////////////////////////////////
   async function updateEntry(e) {
     let loaditems = [];
@@ -236,7 +225,6 @@ console.log(orders,"order")
 
     setFinalVanProducts([]);
   }
-
   //////////////////////////////////
 
   async function handleWithdrow() {
@@ -570,7 +558,7 @@ console.log(orders,"order")
 
       orders.forEach((order) => {
         const orderRef = doc(db, "order", order.id);
-        batch.update(orderRef, { status: "OUT FOR DELIVERY", assigned_to:id });
+        batch.update(orderRef, { status: "OUT_FOR_DELIVERY", assign_to:id });
       });
 
       await batch.commit();
@@ -578,6 +566,29 @@ console.log(orders,"order")
     } catch (error) {
       console.error("Error updating all orders:", error);
     }
+  };
+  const handleUpdateOrders = () => {
+    // Get all product IDs from AllProducts
+    const allProductIds = AllProducts.map(p => p.id);
+
+    // Track how many orders have matching products
+    const matchingOrders = orders.filter(order =>
+      Array.isArray(order.products) &&
+      order.products.some(productId => allProductIds.includes(productId))
+    );
+
+    if (matchingOrders.length === 0) {
+      console.log("❌ No matching products found. Orders not updated.");
+      return;
+    }
+
+    if (matchingOrders.length < orders.length) {
+      const confirmProceed = window.confirm("Some products match, but not all. Do you still want to update?");
+      if (!confirmProceed) return;
+    }
+
+    // If we reach here, we can safely update orders
+    updateAllOrdersStatus();
   };
 
   
@@ -592,7 +603,7 @@ console.log(orders,"order")
   } else {
     return (
       <div>
-        <RandomPopup showModal={showModal} handleClose={handleClose} data={orders} updateAllOrdersStatus={updateAllOrdersStatus} />
+        <RandomPopup showModal={showModal} handleClose={handleClose} data={orders} updateAllOrdersStatus={handleUpdateOrders} />
         <div className="main_panel_wrapper bg_light_grey w-100">
           {/* conform pop */}
           {conformpop ? <div className="bg_black_overlay"></div> : null}

@@ -8,6 +8,7 @@ import {
   startAfter,
   getDocs,
   onSnapshot,
+  Timestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import Loader from "../Components/Loader";
@@ -81,7 +82,7 @@ export const OrderContextProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    fetchOrders();
+    fetchOrders(); // No need to assign to a variable or return anything
   }, []);
 
   const updateData = (updatedProduct) => {
@@ -107,107 +108,115 @@ export const OrderContextProvider = ({ children }) => {
     }
   };
 
+  // function getCreatedAtTimestamp(option, customStartDate, customEndDate) {
+  //   const now = new Date();
+  //   let startTime, endTime;
+
+  //   switch (option) {
+  //     case "yesterday":
+  //       startTime = new Date(now.setDate(now.getDate() - 1));
+  //       startTime.setHours(0, 0, 0, 0); // Set time to 00:00 (midnight)
+  //       break;
+  //     case "week":
+  //       startTime = new Date(now.setDate(now.getDate() - 7));
+  //       break;
+  //     case "month":
+  //       startTime = new Date(now.setMonth(now.getMonth() - 1));
+  //       break;
+  //     case "six_months":
+  //       startTime = new Date(now.setMonth(now.getMonth() - 6));
+  //       break;
+  //     case "custom":
+  //       if (customStartDate && customEndDate) {
+  //         startTime = new Date(customStartDate);
+  //         endTime = new Date(customEndDate);
+  //         break;
+  //       } else {
+  //         return { start: null, end: null }; // Invalid custom date range
+  //       }
+  //     default:
+  //       return { start: null, end: null }; // No filtering if invalid option
+  //   }
+
+  //   return {
+  //     start: startTime.getTime(),
+  //     end: endTime ? endTime.getTime() : null,
+  //   };
+  // }
+
+  const convertToDate = (timestamp) => {
+    return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
+  };
+
+
+  // Function to get the start and end timestamps based on the selected option
   function getCreatedAtTimestamp(option, customStartDate, customEndDate) {
     const now = new Date();
     let startTime, endTime;
 
     switch (option) {
       case "yesterday":
-        startTime = new Date(now.setDate(now.getDate() - 1));
-        startTime.setHours(0, 0, 0, 0); // Set time to 00:00 (midnight)
+        startTime = new Date(now);
+        startTime.setDate(now.getDate() - 1);
+        startTime.setHours(0, 0, 0, 0);
+
+        endTime = new Date(startTime);
+        endTime.setHours(23, 59, 59, 999);
         break;
+
       case "week":
-        startTime = new Date(now.setDate(now.getDate() - 7));
+        startTime = new Date();
+        startTime.setDate(now.getDate() - 7);
+        startTime.setHours(0, 0, 0, 0);
+
+        endTime = new Date();
+        endTime.setHours(23, 59, 59, 999);
         break;
+
       case "month":
-        startTime = new Date(now.setMonth(now.getMonth() - 1));
+        startTime = new Date();
+        startTime.setMonth(now.getMonth() - 1);
+        startTime.setHours(0, 0, 0, 0);
+
+        endTime = new Date();
+        endTime.setHours(23, 59, 59, 999);
         break;
+
       case "six_months":
-        startTime = new Date(now.setMonth(now.getMonth() - 6));
+        startTime = new Date();
+        startTime.setMonth(now.getMonth() - 6);
+        startTime.setHours(0, 0, 0, 0);
+
+        endTime = new Date();
+        endTime.setHours(23, 59, 59, 999);
         break;
+
       case "custom":
         if (customStartDate && customEndDate) {
           startTime = new Date(customStartDate);
           endTime = new Date(customEndDate);
-          break;
+          endTime.setHours(23, 59, 59, 999);
         } else {
-          return { start: null, end: null }; // Invalid custom date range
+          return { start: null, end: null };
         }
+        break;
+
       default:
-        return { start: null, end: null }; // No filtering if invalid option
+        return { start: null, end: null };
     }
 
     return {
       start: startTime.getTime(),
-      end: endTime ? endTime.getTime() : null,
+      end: endTime.getTime(),
     };
   }
 
-  async function getDeliverman() {
-    // fetch and build list
-    const list = [];
-    const qs = await getDocs(collection(db, "Delivery"));
-    qs.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
 
-    // find the matching document
-    const match = list.find(item => item.id === delivaryManId);
-    if (!match) {
-      console.warn("DeliveryManData.id not found:", delivaryManId);
-      return [];
-    }
 
-    // ensure serviceArea is iterable
-    const serviceArea = Array.isArray(match.serviceArea) ? match.serviceArea : [];
-    return serviceArea.flatMap(area =>
-      Array.isArray(area.terretory) ? area.terretory : []
-    );
-  }
-  async function fetchDelivaryManOrders(assign_to) {
-    console.log("fetchDelivaryManOrders for ID:", assign_to);
 
-    // Get all Delivery docs
-    const qs = await getDocs(collection(db, "Delivery"));
-    const docs = qs.docs.map(d => ({ id: d.id, ...d.data() }));
-    console.log("All delivery IDs:", docs.map(d => d.id));
 
-    // Find the one we want
-    const match = docs.find(d => d.id === assign_to);
-    console.log("Match:", match);
 
-    if (!match || !Array.isArray(match.serviceArea)) {
-      console.warn("No valid serviceArea for", assign_to);
-      setOrderAccordingDelivary([]);
-      return;
-    }
 
-    // Extract territories
-    const territories = match.serviceArea.flatMap(a =>
-      Array.isArray(a.terretory) ? a.terretory : []
-    );
-    console.log("Territories:", territories);
-
-    if (!territories.length) {
-      console.warn("No territories inside serviceArea for", assign_to);
-      setOrderAccordingDelivary([]);
-      return;
-    }
-
-    // Now fetch only PROCESSING in those areas
-    try {
-      const q = query(
-        collection(db, "order"),
-        where("shipping.area", "in", territories),
-        where("status", "==", "PROCESSING")
-      );
-      const snap = await getDocs(q);
-      const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      console.log("Found PROCESSING orders:", list);
-      setOrderAccordingDelivary(list);
-    } catch (e) {
-      console.error(e);
-      setOrderAccordingDelivary([]);
-    }
-  }
 
 
   async function fetchOrdersBasedQuery(
@@ -232,10 +241,11 @@ export const OrderContextProvider = ({ children }) => {
       if (territories.length) {
         const q = query(
           collection(db, "order"),
-          where("shipping.area", "in", territories),
+          where("shipping.city", "in", territories),
           where("status", "==", "PROCESSING")
         );
         const snap = await getDocs(q);
+        console.log("snap", snap);
         setOrders(snap.docs.map(d => ({ id: d.id, ...d.data() })));
       } else {
         setOrders([]);  // no territories → no orders
