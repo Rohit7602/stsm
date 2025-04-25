@@ -267,6 +267,7 @@ input[type="range"] {
   display: inline-block;
   border-radius: 5px;
 }
+
 .status_btn_yellow {
   background-color: rgba(0, 0, 139, 0.242);
   color: darkblue;
@@ -474,17 +475,13 @@ input[type="range"] {
 /*export_btn*/
 .export_btn {
   border-radius: 10px;
-  background: var(
-    --red_gradient,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
-  );
+  background: var(--red_gradient,
+      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
 }
 
 .export_btn:hover {
-  background: var(
-    --red_gradient,
-    linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
-  );
+  background: var(--red_gradient,
+      linear-gradient(180deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
 }
 
 .unit_type_input {
@@ -498,6 +495,7 @@ input[type="range"] {
 .transition_04 {
   transition: all ease-in-out 300ms;
 }
+
 .transition_600ms {
   transition: all ease-in-out 600ms;
 }
@@ -508,20 +506,16 @@ input[type="range"] {
   padding: 12px 15px;
   transition: 0.5s ease-in-out;
   background-color: transparent;
-  background: var(
-    --red_gradient,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
-  );
+  background: var(--red_gradient,
+      linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .reset_btn:hover {
-  background: var(
-    --red_gradient,
-    linear-gradient(90deg, #fff 0%, #fff 49.43%, #fff 105.44%)
-  );
+  background: var(--red_gradient,
+      linear-gradient(90deg, #fff 0%, #fff 49.43%, #fff 105.44%));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -532,20 +526,15 @@ input[type="range"] {
   border-radius: 10px;
   border: 1.5px solid transparent;
   background: linear-gradient(#f5f7fa, #f5f7fa) padding-box,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
-      border-box;
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%) border-box;
 }
 
 .reset_border:hover {
-  background: linear-gradient(
-        90deg,
-        #8a2387 0%,
-        #e94057 49.43%,
-        #f27121 105.44%
-      )
-      padding-box,
-    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%)
-      border-box;
+  background: linear-gradient(90deg,
+      #8a2387 0%,
+      #e94057 49.43%,
+      #f27121 105.44%) padding-box,
+    linear-gradient(90deg, #8a2387 0%, #e94057 49.43%, #f27121 105.44%) border-box;
 }
 
 /*save_btn*/
@@ -593,7 +582,7 @@ input[type="range"] {
 }
 
 .addnewproduct_btn2:hover {
-  color:black;
+  color: black;
   background: transparent;
   border: 1px solid #225008;
 }
@@ -791,11 +780,11 @@ input[type="range"] {
 } */
 
 /* When the checkbox is checked, add a blue background */
-.check input:checked ~ .checkmark {
+.check input:checked~.checkmark {
   background-color: #000000;
 }
 
-.check1 input:checked ~ .checkmark {
+.check1 input:checked~.checkmark {
   background-color: transparent;
 }
 
@@ -807,11 +796,11 @@ input[type="range"] {
 }
 
 /* Show the checkmark when checked */
-.check input:checked ~ .checkmark:after {
+.check input:checked~.checkmark:after {
   display: block;
 }
 
-.check1 input:checked ~ .checkmark:after {
+.check1 input:checked~.checkmark:after {
   display: block;
 }
 
@@ -966,6 +955,7 @@ input[type="range"] {
   max-width: 300px;
   width: 300px;
 }
+
 .mw-400 {
   max-width: 400px;
   width: 400px;
@@ -981,13 +971,16 @@ input[type="range"] {
   border-radius: 10px !important;
   box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2);
 }
+
 .active_user {
   height: 291px;
   overflow-y: auto;
 }
+
 .chart_content_wrapper::-webkit-scrollbar {
   width: 3px;
 }
+
 .img_height {
   height: 232px !important;
 }
@@ -1127,8 +1120,8 @@ delivery_man_dropdown::-webkit-scrollbar {
   cursor: pointer;
 }
 
-.btn-check:checked + .btn,
-:not(.btn-check) + .btn:active,
+.btn-check:checked+.btn,
+:not(.btn-check)+.btn:active,
 .btn:first-child:active,
 .btn.active,
 .btn.show {
@@ -1207,6 +1200,7 @@ delivery_man_dropdown::-webkit-scrollbar {
 .min_width_1350 {
   min-width: 1550px;
 }
+
 .min_width_1850 {
   min-width: 1850px;
 }
@@ -1632,6 +1626,7 @@ div.rich-text-editor .ql-editor {
   height: 100%;
   overflow-y: auto !important;
 }
+
 .table_body3 {
   height: 100%;
   display: block !important;
@@ -1655,6 +1650,7 @@ div.rich-text-editor .ql-editor {
   width: 100% !important;
   table-layout: fixed !important;
 }
+
 .table_head,
 .table_body3 tr {
   display: table !important;
@@ -2181,6 +2177,7 @@ min_width_230 {
   height: 128px;
   padding: 10px;
 }
+
 .profile_top_data_width_amount {
   width: 300px;
   height: 128px;
@@ -2615,57 +2612,71 @@ min_width_230 {
   border-radius: 10px;
   border: 0;
 }
+
 .receiver_msg {
   padding: 15px 20px;
   background-color: #dddddd;
   border-radius: 15px 15px 15px 0;
 }
+
 .sender_msg {
   padding: 15px 20px;
   background-color: #3d464d;
   border-radius: 15px 15px 0px 15px;
 }
+
 .sender_msg p {
   color: white;
 }
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
 }
+
 .area_slider::-webkit-scrollbar {
   width: 0;
   height: 0;
 }
+
 .pincode_confirm_btn {
   border: 0;
   background-color: transparent;
 }
+
 .tox .tox-statusbar {
   display: none !important;
 }
+
 .tox .tox-menubar {
   display: none !important;
 }
+
 .tox .tox-edit-area::before {
   border: 0 !important;
 }
+
 .tox-tinymce {
   border: 0.5px solid rgba(0, 0, 0, 0.3) !important;
   border-radius: 0 !important;
   height: 300px !important;
 }
+
 .privacy_policy .tox-tinymce {
   border: 0.5px solid rgba(0, 0, 0, 0.3) !important;
   border-radius: 0 !important;
   height: calc(100vh - 200px) !important;
 }
+
 .tox-tinymce ::-webkit-scrollbar {
   height: 3px !important;
   width: 3px !important;
 }
+
 .faq-text-editor {
   width: 100%;
 }
+
 .tox-notifications-container {
   display: none !important;
   transform: scale(0) !important;
@@ -2682,6 +2693,7 @@ input[type="number"]::-webkit-outer-spin-button {
   border-radius: 7px;
   z-index: 3;
 }
+
 .deliveryman_list {
   width: 500px;
   height: 400px;
@@ -2692,29 +2704,35 @@ input[type="number"]::-webkit-outer-spin-button {
   width: 5px;
   height: 5px;
 }
+
 .deliveryman_popup_list .save_btn {
   padding: 7px 0;
   width: 70px;
 }
+
 .deliveryman_popup_list .cancel_btn {
   padding: 6px 0;
   padding: 0;
   width: 70px;
 }
+
 .deliveryman_popup_list .close_icon {
   position: absolute;
   right: 10px;
   top: 10px;
 }
+
 .reply_close_btn {
   right: 75px;
   top: 5px;
 }
+
 .complain_head_bg {
   padding: 14px 50px;
   background-color: #eaeaea;
   margin-top: 20px;
 }
+
 .deliverd_btn {
   border: 0;
   padding: 5px 10px;
@@ -2723,6 +2741,7 @@ input[type="number"]::-webkit-outer-spin-button {
   border-radius: 5px;
   margin-left: 20px;
 }
+
 .on_credit_btn {
   border: 0;
   padding: 5px 10px;
@@ -2730,9 +2749,11 @@ input[type="number"]::-webkit-outer-spin-button {
   color: #ffae00;
   border-radius: 5px;
 }
+
 .w_179 {
   min-width: 179px;
 }
+
 .mark_resolved_btn {
   border: 0;
   background-color: #00a015;
@@ -2740,6 +2761,7 @@ input[type="number"]::-webkit-outer-spin-button {
   color: white;
   border-radius: 10px;
 }
+
 .mx_250 {
   min-width: 250px;
   width: 250px;
@@ -2753,6 +2775,7 @@ input[type="number"]::-webkit-outer-spin-button {
   width: 400px;
   border-radius: 20px;
 }
+
 .reject_reason_popup {
   position: fixed;
   top: 50%;
@@ -2764,6 +2787,7 @@ input[type="number"]::-webkit-outer-spin-button {
   padding: 20px;
   border-radius: 12px;
 }
+
 .reject_reason_popup textarea {
   width: 100%;
   height: 130px;
@@ -2780,6 +2804,7 @@ input[type="number"]::-webkit-outer-spin-button {
   width: 100px;
   border-radius: 5px;
 }
+
 .reject_cancel_btn {
   border: 1px solid black;
   height: 35px;
@@ -2787,6 +2812,7 @@ input[type="number"]::-webkit-outer-spin-button {
   border-radius: 5px;
   background-color: transparent;
 }
+
 /* ===========Medgitia-query========== */
 @media (max-width: 1400px) {
   .mx_xxl_580 {
@@ -3023,6 +3049,7 @@ abbr {
   padding: 20px;
   width: 500px;
 }
+
 .history_van_pop {
   box-shadow: 0px 1px 3px 0px #00000033;
   background-color: white;
