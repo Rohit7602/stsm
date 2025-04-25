@@ -568,28 +568,48 @@ console.log(orders,"order")
     }
   };
   const handleUpdateOrders = () => {
-    // Get all product IDs from AllProducts
-    const allProductIds = AllProducts.map(p => p.id);
+    const allProductTitles = AllProducts.map(p => p.name); // ✅ list of allowed titles
 
-    // Track how many orders have matching products
-    const matchingOrders = orders.filter(order =>
-      Array.isArray(order.products) &&
-      order.products.some(productId => allProductIds.includes(productId))
-    );
+    let totalOrders = orders.length;
+    let matchedOrders = 0;
 
-    if (matchingOrders.length === 0) {
-      console.log("❌ No matching products found. Orders not updated.");
+    console.log(totalOrders, "Total Orders");
+    console.log(allProductTitles, "Allowed Product Titles");
+
+    orders.forEach(order => {
+      const items = order.items || [];
+
+      const hasMatchingItem = items.some(item =>
+        allProductTitles.includes(item.title)
+      );
+
+      if (hasMatchingItem) {
+        matchedOrders++;
+      }
+    });
+
+
+    if (matchedOrders === 0) {
+      alert("❌ Product not found in van. Orders not updated.");
       return;
     }
 
-    if (matchingOrders.length < orders.length) {
-      const confirmProceed = window.confirm("Some products match, but not all. Do you still want to update?");
+    if (matchedOrders < totalOrders) {
+      const confirmProceed = window.confirm(
+        `⚠️ ${matchedOrders} out of ${totalOrders} orders matched with products in van. Do you want to proceed?`
+      );
       if (!confirmProceed) return;
+      updateAllOrdersStatus();
+      return;
     }
 
-    // If we reach here, we can safely update orders
+
+    // ✅ Final update call
+    alert("✅ All orders matched. Orders are marked as OUT_FOR_DELIVERY.");
     updateAllOrdersStatus();
   };
+
+  console.log(AllProducts, "all products");
 
   
   // fetching orders
