@@ -1,21 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {  useRef, useState } from "react";
 import filtericon from "../../Images/svgs/filtericon.svg";
-import manicon from "../../Images/svgs/manicon.svg";
 import threedot from "../../Images/svgs/threedot.svg";
 import search from "../../Images/svgs/search.svg";
 import eye_icon from "../../Images/svgs/eye.svg";
-import pencil_icon from "../../Images/svgs/pencil.svg";
-import delete_icon from "../../Images/svgs/delte.svg";
-import updown_icon from "../../Images/svgs/arross.svg";
 import manimage from "../../Images/Png/manimage.jpg";
 import shortIcon from "../../Images/svgs/short-icon.svg";
 import { Link } from "react-router-dom";
-import { CustomersProvider, useCustomerContext } from "../../context/Customergetters";
-import { set } from "date-fns";
+import {  useCustomerContext } from "../../context/Customergetters";
 import { useOrdercontext } from "../../context/OrderGetter";
-import { ArrowIcons } from "../../Common/Icon";
-import { db } from "../../firebase";
-import { collection, getDocs } from "firebase/firestore";
 import Loader from "../Loader";
 
 const Customers = () => {
@@ -52,17 +44,6 @@ const Customers = () => {
 
     if (node) observer.current.observe(node);
   };
-
-
-
-
-
-
-
-
-
-
-
 
   // Function to calculate total spent by a customer/////////////////////////////////////
   const customeraddress = customer
@@ -251,7 +232,7 @@ const Customers = () => {
     });
   }
 
-
+  console.log(totalSpentByCustomer,"totalSpentByCustomer");
 
 
  if (loader) {
