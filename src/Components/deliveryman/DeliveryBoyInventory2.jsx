@@ -31,6 +31,10 @@ import {RandomPopup} from "../popups/RandomPopup";
 function DeliveryBoyInventory2() {
   const { DeliveryManData } = UseDeliveryManContext();
   const { id } = useParams();
+
+ 
+
+
   const [loaderstatus, setLoaderstatus] = useState(false);
   const { productData, fetchProducts } = useProductsContext();
   const [delivryMan, setDeliveryMan] = useState([]);
@@ -44,11 +48,10 @@ function DeliveryBoyInventory2() {
   const [disableUpload, setDisableUpload] = useState(false);
   const [finalVanProducts, setFinalVanProducts] = useState([]);
   const [conformpop, setConFormPop] = useState(false);
-  
+  const [matchedOrdersArray, setMatchedOrdersArray] = useState([]);
   const [AllProducts, setAllProducts] = useState([]);
   const [orders, setOrders] = useState([]);
 
-console.log(orders,"order")
   const [showModal, setShowModal] = useState(false);
   const handleClose = () => setShowModal(false);
   function addToVan(e) {
@@ -509,22 +512,7 @@ console.log(orders,"order")
     }
   }
 
-  async function getDeliverman() {
-    let list = [];
 
-    const querySnapshot = await getDocs(collection(db, "Delivery"));
-    querySnapshot.forEach((doc) => {
-      list.push({ id: doc.id, ...doc.data() });
-    });
-    const DeliveryManval = list.filter((item) => item.id === id);
-
-     
-    const allTerritories = DeliveryManval[0].serviceArea?.flatMap(
-      (area) => area.terretory
-    );
-
-    return allTerritories;
-  }
 
   const fetchOrders = async () => {
 
@@ -552,45 +540,88 @@ console.log(orders,"order")
       console.error("Error fetching orders:", error);
     }
   };
-  const updateAllOrdersStatus = async () => {
+  async function getDeliverman() {
+    let list = [];
+
+    const querySnapshot = await getDocs(collection(db, "Delivery"));
+    querySnapshot.forEach((doc) => {
+      list.push({ id: doc.id, ...doc.data() });
+    });
+    const DeliveryManval = list.filter((item) => item.id === id);
+
+     
+    const allTerritories = DeliveryManval[0].serviceArea?.flatMap(
+      (area) => area.terretory
+    );
+
+    return allTerritories;
+  }
+
+ 
+  const updateAllOrdersStatus = async (ordersToProcess) => {
+    const delivaryManId = id;
     try {
       const batch = writeBatch(db);
 
-      orders.forEach((order) => {
+      ordersToProcess.forEach((order) => {
         const orderRef = doc(db, "order", order.id);
-        batch.update(orderRef, { status: "OUT_FOR_DELIVERY", assign_to:id });
+        batch.update(orderRef, { status: "OUT_FOR_DELIVERY", assign_to: delivaryManId });
       });
 
       await batch.commit();
-      console.log("All orders updated to OUT FOR DELIVERY ✅");
+      console.log("✅ Selected orders updated to OUT FOR DELIVERY", delivaryManId);
     } catch (error) {
-      console.error("Error updating all orders:", error);
+      console.error("❌ Error updating selected orders:", error);
     }
   };
+
   const handleUpdateOrders = () => {
-    // Get all product IDs from AllProducts
-    const allProductIds = AllProducts.map(p => p.id);
+    const allProductTitles = AllProducts.map(p => p.name); // ✅ list of allowed titles
+    const matchedOrdersArray = [];
+    const unmatchedOrdersArray = [];
 
-    // Track how many orders have matching products
-    const matchingOrders = orders.filter(order =>
-      Array.isArray(order.products) &&
-      order.products.some(productId => allProductIds.includes(productId))
-    );
 
-    if (matchingOrders.length === 0) {
-      console.log("❌ No matching products found. Orders not updated.");
+    let totalOrders = orders.length;
+    let matchedOrders = 0;
+
+    orders.forEach(order => {
+      const items = order.items || [];
+
+      const hasMatchingItem = items.some(item =>
+        allProductTitles.includes(item.title)
+      );
+
+      if (hasMatchingItem) {
+        matchedOrders++;
+        matchedOrdersArray.push(order); // ✅ Store only matched orders
+      } else {
+        unmatchedOrdersArray.push(order); // ✅ Store unmatched orders
+      }
+    });
+    setOrders(unmatchedOrdersArray);
+    setMatchedOrdersArray(matchedOrdersArray);
+    if (matchedOrders === 0) {
+      alert("❌ Product not found in van. Orders not updated.");
       return;
     }
 
-    if (matchingOrders.length < orders.length) {
-      const confirmProceed = window.confirm("Some products match, but not all. Do you still want to update?");
+    if (matchedOrders < totalOrders) {
+      const confirmProceed = window.confirm(
+        `⚠️ ${matchedOrders} out of ${totalOrders} orders matched with products in van. Do you want to proceed?`
+      );
       if (!confirmProceed) return;
+
+      updateAllOrdersStatus(matchedOrdersArray); // ✅ Update only matched orders
+      return;
     }
 
-    // If we reach here, we can safely update orders
-    updateAllOrdersStatus();
+    // ✅ All orders matched
+    alert("✅ All orders matched. Orders are marked as OUT_FOR_DELIVERY.");
+    updateAllOrdersStatus(orders); // ✅ Update all
   };
 
+
+  console.log(AllProducts, "all products");
   
   // fetching orders
   useEffect(() => {
@@ -603,7 +634,7 @@ console.log(orders,"order")
   } else {
     return (
       <div>
-        <RandomPopup showModal={showModal} handleClose={handleClose} data={orders} updateAllOrdersStatus={handleUpdateOrders} />
+        <RandomPopup showModal={showModal} handleClose={handleClose} data={orders} updateAllOrdersStatus={handleUpdateOrders} matchedOrdersArray={matchedOrdersArray} />
         <div className="main_panel_wrapper bg_light_grey w-100">
           {/* conform pop */}
           {conformpop ? <div className="bg_black_overlay"></div> : null}

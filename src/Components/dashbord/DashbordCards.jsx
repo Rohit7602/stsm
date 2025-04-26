@@ -9,6 +9,7 @@ import { CrossIcons } from "../../Common/Icon";
 import alertgif from "../../Images/gif/altert Gif.gif"; 
 import { useProductsContext } from "../../context/productgetter";
 import AllCustomerPopup from "../AllCustomerPopup";
+import ShowAllOrders from "../ShowAllOrders";
 function DashbordCards() {
   const { ordersAll } = useOrdercontext();
   const [showCustomDate, setShowCustomDate] = useState(false);
@@ -246,221 +247,8 @@ function DashbordCards() {
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
         {showAllCustomers && <AllCustomerPopup setShowAllCustomers={setShowAllCustomers} />}
         {showAllOrder && (
-          <div className="bg-white p-4 rounded-4 w-100 position-fixed center_pop  h-100">
-            <div className="d-flex align-items-center justify-content-between">
-              <h2 className="text-black fw-700 fs-2sm mb-0">
-                All Orders
-              </h2>
-              <button
-                className="border-0 bg-white"
-                onClick={() => setShowAllOrder(false)}
-              >
-                <CrossIcons />
-              </button>
-            </div>
-            <div className="overflow-auto">
-              {ordersAll.length === 0 ? (
-                <p className="text-center my-3">There are no orders 😢</p>
-              ) : (
-                  <div style={{ minWidth: "1750px" }}>
-                    <table className="w-100">
-                      <thead className="table_head w-100">
-                        <tr className="product_borderbottom">
-                          <th
-                            className="mw-200 p-3 cursor_pointer"
-                         
-                          >
-                            <div className="d-flex align-items-center">
-                             
-                              <p className="fw-400 fs-sm black mb-0 ms-2">
-                                Order Number
-                                
-                              </p>
-                            </div>
-                          </th>
-                          <th className="mw-200 p-2">
-                            <h3 className="fs-sm fw-400 black mb-0">Invoice</h3>
-                          </th>
-                          <th className="mw-200 p-3">
-                            <h3 className="fs-sm fw-400 black mb-0 d-flex">
-                              Date{" "}
-                             
-                            </h3>
-                          </th>
-                          <th
-                            className="mw-200 p-3"
-                           
-                          >
-                            <h3 className="fs-sm fw-400 black mb-0">Customer </h3>
-                          </th>
-                          <th
-                           
-                            className="mw-200 p-3 cursor_pointer"
-                          >
-                            <span className="d-flex align-items-center">
-                              <h3 className="fs-sm fw-400 black mb-0 white_space_nowrap text-capitalize">
-                                Payment Status
-                                
-                              </h3>
-                            </span>
-                          </th>
-                          <th
-                          
-                            className="mw_160 p-3 cursor_pointer"
-                          >
-                            <h3 className="fs-sm fw-400 black mb-0">
-                              Order Status
-                             
-                            </h3>
-                          </th>
-                          <th className="py-3 ps-5 mw-300 ">
-                            <h3 className="fs-sm fw-400 black mb-0 d-flex">
-                              Delivered Date
-                             
-                            </h3>
-                          </th>
-                          <th className="mw_140 p-3">
-                            <h3 className="fs-sm fw-400 black mb-0">Items</h3>
-                          </th>
-                          <th
-                           
-                            className="mw_160 p-3 cursor_pointer"
-                          >
-                            <h3 className="fs-sm fw-400 black mb-0">
-                              Order Price
-                              
-                            </h3>
-                          </th>
-                          <th className="mx_100 p-3 pe-4 text-center">
-                            <h3 className="fs-sm fw-400 black mb-0">Action</h3>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="table_body">
-                        {ordersAll.map((orderTableData, index) => {
-                            return (
-                              <tr
-                                key={orderTableData.id}
-                              >
-                                <td className="p-3 mw-200">
-                                  <h3 className="fs-xs fw-400 black mb-0">
-                                    {formatDate(orderTableData.created_at)}
-                                  </h3>
-                                </td>
-                                <td className="p-3 mw-200">
-                                  <Link
-                                    to={
-                                      orderTableData.order_created_by === "Van"
-                                        ? ""
-                                        : `/customer/viewcustomerdetails/${orderTableData.uid}`
-                                    }
-                                  >
-                                    <h3 className="fs-sm fw-400 color_blue mb-0">
-                                      {orderTableData.customer.name}
-                                    </h3>
-                                  </Link>
-                                </td>
-                                <td className="p-3 mw-200">
-                                  <h3
-                                    className={`fs-sm fw-400 mb-0 d-inline-block  ${orderTableData.status
-                                        .toString()
-                                        .toUpperCase() !== "CANCELLED" &&
-                                        orderTableData.status
-                                          .toString()
-                                          .toUpperCase() !== "REJECTED" &&
-                                        orderTableData.status
-                                          .toString()
-                                          .toUpperCase() !== "RETURNED"
-                                        ? orderTableData.transaction.status
-                                          .toString()
-                                          .toLowerCase() === "paid"
-                                          ? "black stock_bg"
-                                          : orderTableData.transaction.status
-                                            .toString()
-                                            .toLowerCase() === "cod"
-                                            ? "black cancel_gray"
-                                            : orderTableData.transaction.status
-                                              .toString()
-                                              .toLowerCase() === "refund"
-                                              ? "new_order red"
-                                              : "color_brown on_credit_bg"
-                                        : ""
-                                      }`}
-                                  >
-                                    {orderTableData.status
-                                      .toString()
-                                      .toUpperCase() !== "CANCELLED" &&
-                                      orderTableData.status.toString().toUpperCase() !==
-                                      "REJECTED" &&
-                                      orderTableData.status.toString().toUpperCase() !==
-                                      "RETURNED"
-                                      ? orderTableData.transaction.status
-                                      : null}
-                                  </h3>
-                                  {orderTableData.status.toString().toUpperCase() ===
-                                    "DELIVERED" && (
-                                      <span className=" ms-2">
-                                        {" "}
-                                        {orderTableData.transaction.type === "UPI" ? (
-                                          <span className=" border py-1 px-2 rounded-2 border_text text-danger">
-                                            UPI
-                                          </span>
-                                        ) : (
-                                          <span className=" border py-1 px-2 rounded-2 border_text">
-                                            Cash
-                                          </span>
-                                        )}
-                                      </span>
-                                    )}
-                                </td>
-                                <td className="p-3 mw_190">
-                                  <p
-                                    className={`d-inline-block ${orderTableData.status
-                                        .toString()
-                                        .toLowerCase() === "new"
-                                        ? "fs-sm fw-400 red mb-0 new_order"
-                                        : orderTableData.status
-                                          .toString()
-                                          .toLowerCase() === "processing"
-                                          ? "fs-sm fw-400 mb-0 processing_skyblue"
-                                          : orderTableData.status
-                                            .toString()
-                                            .toLowerCase() === "delivered"
-                                            ? "fs-sm fw-400 mb-0 green stock_bg"
-                                            : "fs-sm fw-400 mb-0 black cancel_gray"
-                                      }`}
-                                  >
-                                    {orderTableData.status}
-                                  </p>
-                                </td>
-                                <td className="py-3 ps-5 mw-300">
-                                  <h3 className="fs-sm fw-400 black mb-0">
-                                    {orderTableData.transaction.date &&
-                                      formatDate(orderTableData.transaction.date)}
-                                  </h3>
-                                </td>
-                                <td className="p-3 mw_140">
-                                  <h3 className="fs-sm fw-400 black mb-0">
-                                    {orderTableData.items.length} items
-                                  </h3>
-                                </td>
-                                <td className="p-3 mw_160">
-                                  <h3 className="fs-sm fw-400 black mb-0">
-                                    ₹ {orderTableData.order_price}
-                                  </h3>
-                                </td>
-                                
-                              </tr>
-                            );
-                          })}
-                      </tbody>
-                    </table>
-                  </div>
-              )}
-            </div>
-
-           
-          </div>
+          <ShowAllOrders setShowAllOrder={setShowAllOrder} formatDate={formatDate} />
+          
         )}
         {/* Dashboard-panel  */}
         {showdeliverypop ? <div className="bg_black_overlay"></div> : null}
@@ -568,7 +356,6 @@ function DashbordCards() {
             <div className="d-flex">
               <h1 className="fs-400   black fs-lg">Dashboard</h1>
             </div>
-            {/* <button className="export_btn  white fs-xxs px-3 py-2 fw-400 border-0">Export</button> */}
             <div className="d-flex gap-3">
               <button onClick={()=>setShowAllOrder(!showAllOrder)} className="filter_btn black d-flex align-items-center fs-xs xl:fs-sm px-sm-3 px-2 py-2 fw-400 ">All Orders</button>
               <button onClick={() => setShowAllCustomers(!showAllCustomers)} className="filter_btn black d-flex align-items-center fs-xs xl:fs-sm px-sm-3 px-2 py-2 fw-400 ">All Customers</button>
