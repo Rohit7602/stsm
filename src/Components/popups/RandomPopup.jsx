@@ -1,13 +1,10 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
 
-export const RandomPopup = ({ showModal, handleClose, data, updateAllOrdersStatus }) => {
+export const RandomPopup = ({ showModal, handleClose, data, updateAllOrdersStatus, matchedOrdersArray }) => {
 
 console.log(data,"data")
   const handleConfirm = () => {
-    if(data.length!==0){
-            alert("confirm")
-    }
     updateAllOrdersStatus()
     handleClose(); // Close modal after confirm
   };
@@ -39,6 +36,34 @@ console.log(data,"data")
             </thead>
             <tbody>
               {data.map((order) => (
+                <tr key={order.id}>
+                  <td>{order.order_id}</td>
+                  <td>{order.customer.name}</td>
+                  <td>{order.customer.phone}</td>
+                  <td style={{ maxHeight: "150px", overflowY: "auto" }}>
+                    {/* Apply scroll here */}
+                    <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
+                      {order.items.map((item, index) => (
+                        <li key={index}>
+                          {item.title} ({item.varient_price} x{item.quantity})
+                    
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+                  <td>₹ {order.order_price}</td>
+                </tr>
+              ))}
+              {matchedOrdersArray.length > 0 && (
+                
+                <tr>
+                  <td colSpan="5" style={{  fontWeight: "bold", color: "green" }}>
+                    Matched Orders
+                  </td>
+                </tr>
+               
+              )}
+              {matchedOrdersArray.map((order) => (
                 <tr key={order.id}>
                   <td>{order.order_id}</td>
                   <td>{order.customer.name}</td>
