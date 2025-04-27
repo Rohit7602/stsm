@@ -9,6 +9,8 @@ import {
   getDocs,
   onSnapshot,
   Timestamp,
+  getDoc,
+  doc,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import Loader from "../Components/Loader";
@@ -108,51 +110,12 @@ export const OrderContextProvider = ({ children }) => {
     }
   };
 
-  // function getCreatedAtTimestamp(option, customStartDate, customEndDate) {
-  //   const now = new Date();
-  //   let startTime, endTime;
-
-  //   switch (option) {
-  //     case "yesterday":
-  //       startTime = new Date(now.setDate(now.getDate() - 1));
-  //       startTime.setHours(0, 0, 0, 0); // Set time to 00:00 (midnight)
-  //       break;
-  //     case "week":
-  //       startTime = new Date(now.setDate(now.getDate() - 7));
-  //       break;
-  //     case "month":
-  //       startTime = new Date(now.setMonth(now.getMonth() - 1));
-  //       break;
-  //     case "six_months":
-  //       startTime = new Date(now.setMonth(now.getMonth() - 6));
-  //       break;
-  //     case "custom":
-  //       if (customStartDate && customEndDate) {
-  //         startTime = new Date(customStartDate);
-  //         endTime = new Date(customEndDate);
-  //         break;
-  //       } else {
-  //         return { start: null, end: null }; // Invalid custom date range
-  //       }
-  //     default:
-  //       return { start: null, end: null }; // No filtering if invalid option
-  //   }
-
-  //   return {
-  //     start: startTime.getTime(),
-  //     end: endTime ? endTime.getTime() : null,
-  //   };
-  // }
-
-  const convertToDate = (timestamp) => {
-    return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
-  };
-
 
   // Function to get the start and end timestamps based on the selected option
   function getCreatedAtTimestamp(option, customStartDate, customEndDate) {
     const now = new Date();
     let startTime, endTime;
+
 
     switch (option) {
       case "yesterday":
@@ -193,31 +156,48 @@ export const OrderContextProvider = ({ children }) => {
 
       case "custom":
         if (customStartDate && customEndDate) {
-          startTime = new Date(customStartDate);
-          endTime = new Date(customEndDate);
+          const startTime = new Date(customStartDate);  // Custom Start Date
+          const endTime = new Date(customEndDate);      // Custom End Date
+
+          if (isNaN(startTime) || isNaN(endTime)) {
+            console.error("Invalid custom dates:", customStartDate, customEndDate);
+            return { start: null, end: null }; // Early return if invalid
+          }
+
+          // 👇 Fix: Set END time to 23:59:59.999 *BEFORE* taking .getTime()
           endTime.setHours(23, 59, 59, 999);
+
+          const startMillis = startTime.getTime();
+          const endMillis = endTime.getTime();
+
+          console.log("Custom Start Time (ms):", startMillis);
+          console.log("Custom End Time (ms):", endMillis);
+
+          // Extra Fix: Make sure start is smaller than end
+          const start = Math.min(startMillis, endMillis);
+          const end = Math.max(startMillis, endMillis);
+
+          return { start, end };
         } else {
+          console.error("Custom dates are missing:", customStartDate, customEndDate);
           return { start: null, end: null };
         }
-        break;
-
       default:
         return { start: null, end: null };
     }
 
+    console.log(startTime.getTime(), endTime.getTime(), "startTime endTime");
     return {
       start: startTime.getTime(),
       end: endTime.getTime(),
     };
   }
 
-
-
-
-
-
-
-
+  const testDoc = async () => {
+    const orderDoc = await getDoc(doc(db, "order", "01WMDDrZ8AK33eFOAzJq"));
+    console.log(orderDoc.data().created_at);
+  }
+  testDoc()
 
   async function fetchOrdersBasedQuery(
     assign_to,
@@ -228,24 +208,35 @@ export const OrderContextProvider = ({ children }) => {
   ) {
     setDelivaryManId(assign_to);
     setLoading(true);
-    // If they asked for PROCESSING, use your special per‑man loader:
+    const { start, end } = getCreatedAtTimestamp(
+      created_at_option,
+      customStartDate,
+      customEndDate
+    );
+
     if (status === "PROCESSING") {
       console.log("Filtering PROCESSING for:", assign_to);
-      // fetch territories
-      const qs = await getDocs(collection(db, "Delivery"));
-      const docs = qs.docs.map(d => ({ id: d.id, ...d.data() }));
-      const match = docs.find(d => d.id === assign_to);
-      const territories = match?.serviceArea?.flatMap(a => a.terretory) || [];
 
-      // run the orders query
+      // fetch deliveryman's territories
+      const qs = await getDocs(collection(db, "Delivery"));
+      const deliveryMen = qs.docs.map(d => ({ id: d.id, ...d.data() }));
+      const matchedMan = deliveryMen.find(d => d.id === assign_to);
+      const territories = matchedMan?.serviceArea?.flatMap(a => a.terretory) || [];
+
       if (territories.length) {
-        const q = query(
-          collection(db, "order"),
+        let processingConstraints = [
           where("shipping.city", "in", territories),
           where("status", "==", "PROCESSING")
-        );
-        const snap = await getDocs(q);
-        console.log("snap", snap);
+        ];
+
+        // 🔥 Apply created_at date filter even for PROCESSING
+        if (start) processingConstraints.push(where("created_at", ">=", start));
+        if (end) processingConstraints.push(where("created_at", "<=", end));
+        console.log(start, end, "start end")
+        const processingQuery = query(collection(db, "order"), ...processingConstraints);
+        console.log(processingQuery, "processingQuery")
+        const snap = await getDocs(processingQuery);
+        console.log(snap, "snap")
         setOrders(snap.docs.map(d => ({ id: d.id, ...d.data() })));
       } else {
         setOrders([]);  // no territories → no orders

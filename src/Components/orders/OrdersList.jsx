@@ -89,7 +89,7 @@ const OrderList = ({ distributor }) => {
     e.preventDefault();
     setIsFiltering(true);
 
-    const result = await fetchOrdersBasedQuery(qdeliveryname, qstatus, qoption);
+    const result = await fetchOrdersBasedQuery(qdeliveryname, qstatus, qoption, endDate, startDate);
 
     // Assuming result is the array of fetched orders
     if (result && result.length > 0) {
@@ -632,10 +632,10 @@ await fetchOrders();
                 <option value="week">One Week</option>
                 <option value="month">One Month</option>
                 <option value="six_months">Six Months</option>
-                {/* <option value="custom">Custom</option> */}
+                <option value="custom">Custom</option>
               </select>
 
-              {/* {selectedRange === "custom" && (
+              {selectedRange === "custom" && (
                 <div className="p-3 border rounded bg-light mt-2">
                   <div className="mb-2">
                     <label htmlFor="startDate" className="form-label">
@@ -666,7 +666,7 @@ await fetchOrders();
                     />
                   </div>
                 </div>
-              )} */}
+              )}
             </div>
 
             <div className=" d-flex justify-content-end gap-4">
