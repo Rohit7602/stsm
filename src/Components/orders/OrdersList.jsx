@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import filtericon from "../../Images/svgs/filtericon.svg";
 import SearchIcon from "../../Images/svgs/search.svg";
 import dropdownDots from "../../Images/svgs/dots2.svg";
@@ -14,28 +14,11 @@ import billLogo from "../../Images/svgs/bill-logo.svg";
 import { UseDeliveryManContext } from "../../context/DeliverymanGetter";
 import { collection, doc, getDocs, query, where, writeBatch } from "firebase/firestore";
 import { db } from "../../firebase";
+
+
+
+
 const OrderList = ({ distributor }) => {
-
-
-
-// infinite scoll data call for orders 
-const observer = useRef();
-const lastOrderRef = (node) => {
-  if (loading) return;
-  if (observer.current) observer.current.disconnect();
-
-  observer.current = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && hasMore) {
-      fetchMoreOrders();
-    }
-  });
-
-  if (node) observer.current.observe(node);
-};
-  const componentRef = useRef();
-  // context
-
-  const { DeliveryManData } = UseDeliveryManContext();
   const {
     orders,
     updateData,
@@ -47,6 +30,57 @@ const lastOrderRef = (node) => {
     isFiltering,
     fetchOrders,
   } = useOrdercontext();
+
+
+// infinite scoll data call for orders 
+  const observer = useRef();
+const containerRef = useRef(null);
+
+
+  const fetchMoreWithScrollPreserve = async () => {
+  const el = containerRef.current;
+  if (!el) return;
+
+  // Store current scroll position
+  const prevScrollHeight = el.scrollHeight;
+  const prevScrollTop = el.scrollTop;
+
+  await fetchMoreOrders();
+
+  // Wait for DOM update
+  requestAnimationFrame(() => {
+    const newScrollHeight = el.scrollHeight;
+    el.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight);
+  });
+};
+  
+const lastOrderRef = useCallback((node) => {
+  if (loading || !hasMore) return;
+  if (observer.current) observer.current.disconnect();
+
+  observer.current = new IntersectionObserver(
+    (entries) => {
+      if (entries[0].isIntersecting && hasMore) {
+        fetchMoreWithScrollPreserve();
+      }
+    },
+    {
+      root: containerRef.current,
+      rootMargin: "100px",
+      threshold: 0.5,
+    }
+  );
+
+  if (node) observer.current.observe(node);
+}, [loading, hasMore]);
+  
+  
+  console.log(observer,"obrtr")
+  const componentRef = useRef();
+  // context
+
+  const { DeliveryManData } = UseDeliveryManContext();
+
   const [searchvalue, setSearchvalue] = useState("");
   const [selectedBill, setSelectedBill] = useState("");
   const [searchdata, setSearchData] = useState(0);
@@ -70,18 +104,6 @@ const lastOrderRef = (node) => {
      const [qoption, setQoption] = useState("week");
 
 
-    // async function handleQuery(e){
-    //   e.preventDefault()
-    //   setIsFiltering(true);
-   
-    //  await fetchOrdersBasedQuery(qdeliveryname,qstatus,qoption)
-    //   setDatePop(false);
-   
-
-  // }
-
-
-  
   
   async function handleQuery(e) {
     e.preventDefault();
@@ -763,7 +785,7 @@ await fetchOrders();
               );
             })}
           </div>
-          <div className="overflow-x-scroll line_scroll">
+          <div ref={containerRef} className="overflow-x-scroll line_scroll" >
             <div style={{ minWidth: "1750px" }}>
               <table className="w-100">
                 <thead className="table_head w-100">
@@ -899,11 +921,14 @@ await fetchOrders();
 
                   
                     .map((orderTableData, index) => {
+                      const isLast = index === orders.length - 1;
                       return (
-                        <tr
-                        
+                     <tbody 
                           key={orderTableData.id}
-                        ref={index === orders.length - 1 ? lastOrderRef : null}
+                          ref={isLast ? lastOrderRef : null}>
+                          className={isLast ? "last-observed-row" : ""}
+                       <tr
+                        
                         >
                           <td className="p-3 mw-200">
                             <span className="d-flex align-items-center">
@@ -1117,10 +1142,11 @@ await fetchOrders();
                               </ul>
                             </div>
                           </td>
-                        </tr>
+                        </tr></tbody> 
                       );
                     })}
                 </tbody>
+              
               </table>
             </div>
           </div>

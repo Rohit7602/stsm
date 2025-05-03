@@ -701,7 +701,7 @@ input[type="range"] {
 }
 
 .line_scroll {
-  overflow: auto;
+overflow-anchor: none; 
 }
 
 /* webkit scrool */
@@ -3045,4 +3045,20 @@ abbr {
 
 .cursor_not_allowed {
   cursor: not-allowed;
+}
+
+
+.last-observed-row {
+  height: 1px;
+  visibility: hidden;
+}
+
+.scroll-container {
+  scroll-behavior: smooth;
+  overflow-anchor: none;
+}
+
+/* Disable browser's default scroll anchoring */
+table {
+  overflow-anchor: none;
 }
