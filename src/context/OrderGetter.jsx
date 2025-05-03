@@ -34,7 +34,8 @@ export const OrderContextProvider = ({ children }) => {
     const orderQuery = query(
       collection(db, "order"),
       orderBy("created_at", "desc"),
-      limit(100)
+      // limit(100)
+      
     );
     const unsubscribe = onSnapshot(orderQuery, (querySnapshot) => {
       const newOrders = querySnapshot.docs.map((doc) => ({
@@ -60,7 +61,7 @@ export const OrderContextProvider = ({ children }) => {
       collection(db, "order"),
       orderBy("created_at", "desc"),
       startAfter(lastDoc),
-      limit(100)
+      // limit(100)
     );
     const querySnapshot = await getDocs(nextQuery);
     if (!querySnapshot.empty) {
@@ -74,6 +75,8 @@ export const OrderContextProvider = ({ children }) => {
     }
     setLoading(false);
   };
+
+
 
   useEffect(() => {
     const unsubscribe = fetchOrders(); // Real-time listener
@@ -245,7 +248,7 @@ export const OrderContextProvider = ({ children }) => {
       setLoading(false);
       return;
     }
-    console.log(assign_to, status, created_at_option);
+
     try {
       const ordersRef = collection(db, "order");
       let queryConstraints = [];
@@ -291,7 +294,7 @@ export const OrderContextProvider = ({ children }) => {
       return [];
     }
   }
-    console.log(orderAccordingDelivary)
+
   // all orders fetched
   useEffect(() => {
     const fetchOrdersall = async () => {
