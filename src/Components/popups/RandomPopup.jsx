@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
 
-export const RandomPopup = ({ showModal, handleClose, data, updateAllOrdersStatus, matchedOrdersArray }) => {
+export const RandomPopup = ({ showModal, handleClose, data, updateAllOrdersStatus,handleCancelOrder, matchedOrdersArray }) => {
 
 console.log(data,"data")
   const handleConfirm = () => {
@@ -13,6 +13,7 @@ console.log(data,"data")
     console.log("Cancelled");
     handleClose(); // Close modal after cancel
   };
+
 
   return (
     <Modal show={showModal} onHide={handleClose} centered size="lg">
@@ -32,6 +33,7 @@ console.log(data,"data")
                 <th>Customer Phone</th>
                 <th>Items</th>
                 <th>Total Amount</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -52,6 +54,7 @@ console.log(data,"data")
                     </ul>
                   </td>
                   <td>₹ {order.order_price}</td>
+                  <td><span onClick={()=>handleCancelOrder(order.id)} style={{  fontWeight: "bold", color: "red" }}>Cencel</span></td>
                 </tr>
               ))}
               {matchedOrdersArray.length > 0 && (

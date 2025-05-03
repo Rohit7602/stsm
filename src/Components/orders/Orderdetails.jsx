@@ -563,7 +563,7 @@ export default function NewOrder() {
     const orderData = orderDoc.data();
     let area = orderData.shipping.area.toLowerCase();
 
-    
+
     ////////////////////////////  Filter the deliverymen whose service areas include the desired area  ////////////////////////////
 
     const deliverymenWithArea = DeliveryManData.filter(
@@ -580,12 +580,12 @@ export default function NewOrder() {
             )
         )
     );
- 
+
     ////////////////////////////  Check deliveryman  if many given pop selct custom deliveryman   ////////////////////////////
 
     if (deliverymenWithArea.length !== 0 || selectedDeliveryManId !== null) {
       ////////////////////////////  check deliveyman multiple or only one       ////////////////////////////
-     
+
       if (deliverymenWithArea.length === 1 && selectedDeliveryManId === null) {
         const q = query(
           collection(db, `Delivery/${deliverymenWithArea[0].id}/Van`)
@@ -597,7 +597,7 @@ export default function NewOrder() {
         const allMatch = orderData.items.every((item) =>
           vanProductIds.has(item.product_id)
         );
-      
+
         //////////////////    order aviable or not        ////////////////
 
         if (allMatch) {
@@ -901,15 +901,14 @@ export default function NewOrder() {
                   #{item.order_id}
                 </h1>
                 <p
-                  className={`d-inline-block ms-3 ${
-                    item.status.toString().toLowerCase() === "new"
+                  className={`d-inline-block ms-3 ${item.status.toString().toLowerCase() === "new"
                       ? "fs-sm fw-400 red mb-0 new_order"
                       : item.status.toString().toLowerCase() === "confirmed"
-                      ? "fs-sm fw-400 mb-0 processing_skyblue"
-                      : item.status.toString().toLowerCase() === "delivered"
-                      ? "fs-sm fw-400 mb-0 green stock_bg"
-                      : "fs-sm fw-400 mb-0 black processing_skyblue"
-                  }`}
+                        ? "fs-sm fw-400 mb-0 processing_skyblue"
+                        : item.status.toString().toLowerCase() === "delivered"
+                          ? "fs-sm fw-400 mb-0 green stock_bg"
+                          : "fs-sm fw-400 mb-0 black processing_skyblue"
+                    }`}
                 >
                   {item.status}
                 </p>
@@ -951,7 +950,15 @@ export default function NewOrder() {
               ) : item.status === "DISPATCHED" ? (
                 <div></div>
               ) : item.status === "CONFIRMED" ? (
-                <div>
+                        <div className="d-flex align-itmes-center gap-3">
+                          <button className="reset_border">
+                      <button
+                        onClick={() => handleRejectOrder(item.id)}
+                        className="fs-sm reset_btn  border-0 fw-400"
+                      >
+                        Reject Order
+                      </button>
+                    </button>
                   <button
                     onClick={() =>
                       handlePreparedPacking(item.id, item.order_id, item)
@@ -964,7 +971,15 @@ export default function NewOrder() {
                   </button>
                 </div>
               ) : item.status === "PROCESSING" ? (
-                <div>
+                          <div className="d-flex align-itmes-center gap-3">
+                            <button className="reset_border">
+                      <button
+                        onClick={() => handleRejectOrder(item.id)}
+                        className="fs-sm reset_btn  border-0 fw-400"
+                      >
+                        Reject Order
+                      </button>
+                    </button>
                   <button
                     onClick={() =>
                       handlePreparedDelivery(item.id, item.order_id)
@@ -977,22 +992,6 @@ export default function NewOrder() {
                   </button>
                 </div>
               ) : (
-                //           : item.status === "OUT_FOR_DELIVERY" ? (
-                // <div className="d-flex align-items-center">
-                //   <div className="d-flex align-itmes-center gap-3">
-                //     <button
-                //       onClick={() =>
-                //         handleMarkAsDelivered(item.id, item.order_id)
-                //       }
-                //       className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-2 green_btn fw-400 white"
-                //       type="submit"
-                //     >
-                //       <img src={whitesaveicon} alt="whitesaveicon" />
-                //       Mark as Delivered
-                //     </button>
-                //   </div>
-                // </div>
-                //           )
                 ""
               )}
             </div>
@@ -1053,20 +1052,20 @@ export default function NewOrder() {
                                 {products.varient_name
                                   .toString()
                                   .toLowerCase() !== "not found" && (
-                                  <span className="fs-sm fw-400 black mb-0 ms-3">
-                                    {products.varient_name}
-                                  </span>
-                                )}
+                                    <span className="fs-sm fw-400 black mb-0 ms-3">
+                                      {products.varient_name}
+                                    </span>
+                                  )}
                               </p>
                               <p className="fs-xxs fw-400 fade_grey mb-0">
                                 ID :{products.product_id}
                               </p>
                               {products.color.toString().toLowerCase() !=
                                 "" && (
-                                <p className="fs-xxs fw-400 fade_grey mb-0">
-                                  color :{products.color}
-                                </p>
-                              )}
+                                  <p className="fs-xxs fw-400 fade_grey mb-0">
+                                    color :{products.color}
+                                  </p>
+                                )}
                             </div>
                           </div>
                           <div className="d-flex align-items-center p-3">
@@ -1097,7 +1096,7 @@ export default function NewOrder() {
                       </>
                     );
                   })}
-                 
+
                   <div className="product_borderbottom mt-3"></div>
                   <div className="d-flex align-items-center justify-content-between mt-4">
                     <p className="fs-sm fw-400 black mb-0">Subtotal</p>
@@ -1157,8 +1156,8 @@ export default function NewOrder() {
                                 {log.data.status === "PROCESSING"
                                   ? "PROCESSING"
                                   : log.data.status === "NEW"
-                                  ? "ORDER PLACED"
-                                  : log.data.status}{" "}
+                                    ? "ORDER PLACED"
+                                    : log.data.status}{" "}
                               </p>
                               <p className="fs-xxs fw-400 black ps-3 ms-1 mb-0">
                                 {log.data.name}
@@ -1248,8 +1247,8 @@ export default function NewOrder() {
                 {(item.transaction.mode === "Cash on Delivery" ||
                   item.transaction.mode === "UPI / Bank Transfer" ||
                   item.transaction.mode === "Pay Later / Credit") &&
-                (item.transaction.status === "Paid" ||
-                  item.status === "DELIVERED") ? (
+                  (item.transaction.status === "Paid" ||
+                    item.status === "DELIVERED") ? (
                   <div className="p-3 bg-white product_shadow mt-4">
                     <p className="fs-2sm fw-400 black mb-0">Transactions</p>
                     <div className="d-flex flex-column mt-3">
@@ -1284,217 +1283,216 @@ export default function NewOrder() {
         <div>
           {filterData.length > 0
             ? filterData.map((items) => {
-                const subtotal = items.items.reduce(
-                  (acc, data) => acc + data.quantity * data.final_price,
-                  0
-                );
-                const savedDiscount = items.items.reduce(
-                  (acc, data) => acc + data.quantity * data.varient_discount,
-                  0
-                );
-                return (
-                  <div className="bill m-auto" ref={componentRef}>
-                    <div className="d-flex align-items-start justify-content-between">
-                      <img src={billLogo} alt="billLogo" />
-                      <div className="text-end">
-                        <h1 className="fs_24 fw-700 black mb-0">INVOICE</h1>
-                        <p className="fs-xxs fw_700 black mb-0">
-                          #{items.invoiceNumber}
+              const subtotal = items.items.reduce(
+                (acc, data) => acc + data.quantity * data.final_price,
+                0
+              );
+              const savedDiscount = items.items.reduce(
+                (acc, data) => acc + data.quantity * data.varient_discount,
+                0
+              );
+              return (
+                <div className="bill m-auto" ref={componentRef}>
+                  <div className="d-flex align-items-start justify-content-between">
+                    <img src={billLogo} alt="billLogo" />
+                    <div className="text-end">
+                      <h1 className="fs_24 fw-700 black mb-0">INVOICE</h1>
+                      <p className="fs-xxs fw_700 black mb-0">
+                        #{items.invoiceNumber}
+                      </p>
+                      <p className="fs-xs fw_400 green mb-0">
+                        {items.transaction.status}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <div className="d-flex align-items-start justify-content-between gap-3">
+                      <div className="w-50">
+                        <p className="fs-xs fw-700 black mb-0">
+                          Save Time Save Money
                         </p>
-                        <p className="fs-xs fw_400 green mb-0">
-                          {items.transaction.status}
+                        <p className="fs-xs fw-400 black mb-0 mt-1">
+                          Near TVS Agency, Hansi Road, Barwala,
+                        </p>
+                        <p className="fs-xs fw-400 black mb-0 mt-1">
+                          Hisar, Haryana - 125121
+                        </p>
+                        <p className="fs-xs fw-400 black mb-0 mt-1">
+                          GSTIN : 06GWMPS2545Q1ZJ
+                        </p>
+                      </div>
+                      <div className="text-end w-50">
+                        <p className="fs-xxs fw-700 black mb-0">Bill To:</p>
+                        <p className="fs-xxs fw-700 black mb-0">
+                          {items.customer.name}
+                        </p>
+                        <p className="fs-xs fw-400 black mb-0 mt-1">
+                          {items.shipping.address}
+                        </p>
+                        <p className="fs-xs fw-400 black mb-0 mt-1">
+                          {items.shipping.city} {items.shipping.state}{" "}
+                        </p>
+                        <p className="fs-xs fw-400 black mb-0 mt-4 text-end">
+                          Invoice Date : {formatDate(items.created_at)}
                         </p>
                       </div>
                     </div>
-                    <div className="mt-3">
-                      <div className="d-flex align-items-start justify-content-between gap-3">
-                        <div className="w-50">
-                          <p className="fs-xs fw-700 black mb-0">
-                            Save Time Save Money
-                          </p>
-                          <p className="fs-xs fw-400 black mb-0 mt-1">
-                            Near TVS Agency, Hansi Road, Barwala,
-                          </p>
-                          <p className="fs-xs fw-400 black mb-0 mt-1">
-                            Hisar, Haryana - 125121
-                          </p>
-                          <p className="fs-xs fw-400 black mb-0 mt-1">
-                            GSTIN : 06GWMPS2545Q1ZJ
-                          </p>
-                        </div>
-                        <div className="text-end w-50">
-                          <p className="fs-xxs fw-700 black mb-0">Bill To:</p>
-                          <p className="fs-xxs fw-700 black mb-0">
-                            {items.customer.name}
-                          </p>
-                          <p className="fs-xs fw-400 black mb-0 mt-1">
-                            {items.shipping.address}
-                          </p>
-                          <p className="fs-xs fw-400 black mb-0 mt-1">
-                            {items.shipping.city} {items.shipping.state}{" "}
-                          </p>
-                          <p className="fs-xs fw-400 black mb-0 mt-4 text-end">
-                            Invoice Date : {formatDate(items.created_at)}
-                          </p>
-                        </div>
+                    <table className="w-100 mt-3">
+                      <thead>
+                        <tr className="bg_dark_black">
+                          <th className="fs-xxs fw-400 white p_10">#</th>
+                          <th className="fs-xxs fw-400 white p_10">
+                            Item Description
+                          </th>
+                          <th className="fs-xxs fw-400 white p_10 text-center">
+                            Qty
+                          </th>
+                          <th className="fs-xxs fw-400 white p_10 text-end">
+                            Unit Cost
+                          </th>
+                          <th className="fs-xxs fw-400 white p_10 text-center">
+                            Tax
+                          </th>
+                          <th className="fs-xxs fw-400 white p_10 text-end">
+                            Line Total
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {items.items.map((data) => {
+                          return (
+                            <tr>
+                              <td className="fs-xxs fw-400 black p_5_10">
+                                1
+                              </td>
+                              <td className="p_5_10">
+                                <span>
+                                  <p className="fs-xxs fw-400 black mb-0">
+                                    {data.title}
+                                  </p>
+                                  <span className="d-flex align-items-center gap-2">
+                                    <p className=" fs-xxxs fw-700 black mb-0">
+                                      ₹ {data.varient_discount} OFF
+                                    </p>
+                                    <p
+                                      className={`fs-xxxs fw-400 black mb-0  ${data.varient_discount !== "0"
+                                          ? "strikethrough"
+                                          : null
+                                        }`}
+                                    >
+                                      MRP : {data.varient_price}
+                                    </p>
+                                  </span>
+                                  <span className="d-flex align-items-center gap-3">
+                                    <p className=" fs-xxxs fw-400 black mb-0">
+                                      {data.varient_name} {data.unitType}
+                                    </p>
+                                    <p className="fs-xxxs fw-400 black mb-0">
+                                      {data.color}
+                                    </p>
+                                  </span>
+                                </span>
+                              </td>
+                              <td className="fs-xxs fw-400 black p_5_10 text-center">
+                                {data.quantity}
+                              </td>
+                              <td className="fs-xxs fw-400 black p_5_10 text-end">
+                                {data.final_price}
+                              </td>
+                              <td className="fs-xxs fw-400 black p_5_10 text-center">
+                                {typeof data.Tax === "undefined"
+                                  ? "0"
+                                  : data.Tax}
+                                %
+                              </td>
+                              <td className="fs-xxs fw-400 black p_5_10 text-end">
+                                ₹
+                                {data.quantity * data.final_price +
+                                  (typeof data.text === "undefined"
+                                    ? 0
+                                    : data.quantity *
+                                    data.final_price *
+                                    (data.Tax / 100))}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                    <div className="d-flex align-items-center justify-content-between mt-3">
+                      <div className="w-75 text-end">
+                        <p className="fs_xxs fw-700 black mb-0">Sub Total</p>
+                        <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">
+                          Promo Discount
+                        </p>
+                        <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">
+                          Total Amount
+                        </p>
                       </div>
-                      <table className="w-100 mt-3">
+                      <div className="text-end">
+                        <p className="fs_xxs fw-400 black mb-0">
+                          ₹{subtotal}
+                        </p>
+                        <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
+                          (-) ₹ {items.additional_discount.discount}
+                        </p>
+                        <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
+                          {/* {((data.quantity * data.final_price) * (data.Tax / 100))} */}
+                          {items.order_price}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <span className="mt-3 bill_border d-inline-block"></span>
+                  <p className=" fs-xxxs fw-400 black mb-0 mt-1">
+                    Note : You Saved{" "}
+                    <span className="fw-700"> ₹{savedDiscount} </span> on
+                    product discount.
+                  </p>
+                  {items.transaction.status === "Paid" ? (
+                    <div>
+                      <p className="fs_xxs fw-400 black mb-0 mt-3">
+                        Transactions:
+                      </p>
+                      <table className="mt-3 w-100">
                         <thead>
-                          <tr className="bg_dark_black">
-                            <th className="fs-xxs fw-400 white p_10">#</th>
-                            <th className="fs-xxs fw-400 white p_10">
-                              Item Description
+                          <tr>
+                            <th className="fs-xxs fw-400 black py_2">
+                              Transaction ID
                             </th>
-                            <th className="fs-xxs fw-400 white p_10 text-center">
-                              Qty
+                            <th className="fs-xxs fw-400 black py_2">
+                              Payment Mode
                             </th>
-                            <th className="fs-xxs fw-400 white p_10 text-end">
-                              Unit Cost
-                            </th>
-                            <th className="fs-xxs fw-400 white p_10 text-center">
-                              Tax
-                            </th>
-                            <th className="fs-xxs fw-400 white p_10 text-end">
-                              Line Total
+                            <th className="fs-xxs fw-400 black py_2">Date</th>
+                            <th className="fs-xxs fw-400 black py_2">
+                              Amount
                             </th>
                           </tr>
                         </thead>
                         <tbody>
-                          {items.items.map((data) => {
-                            return (
-                              <tr>
-                                <td className="fs-xxs fw-400 black p_5_10">
-                                  1
-                                </td>
-                                <td className="p_5_10">
-                                  <span>
-                                    <p className="fs-xxs fw-400 black mb-0">
-                                      {data.title}
-                                    </p>
-                                    <span className="d-flex align-items-center gap-2">
-                                      <p className=" fs-xxxs fw-700 black mb-0">
-                                        ₹ {data.varient_discount} OFF
-                                      </p>
-                                      <p
-                                        className={`fs-xxxs fw-400 black mb-0  ${
-                                          data.varient_discount !== "0"
-                                            ? "strikethrough"
-                                            : null
-                                        }`}
-                                      >
-                                        MRP : {data.varient_price}
-                                      </p>
-                                    </span>
-                                    <span className="d-flex align-items-center gap-3">
-                                      <p className=" fs-xxxs fw-400 black mb-0">
-                                        {data.varient_name} {data.unitType}
-                                      </p>
-                                      <p className="fs-xxxs fw-400 black mb-0">
-                                        {data.color}
-                                      </p>
-                                    </span>
-                                  </span>
-                                </td>
-                                <td className="fs-xxs fw-400 black p_5_10 text-center">
-                                  {data.quantity}
-                                </td>
-                                <td className="fs-xxs fw-400 black p_5_10 text-end">
-                                  {data.final_price}
-                                </td>
-                                <td className="fs-xxs fw-400 black p_5_10 text-center">
-                                  {typeof data.Tax === "undefined"
-                                    ? "0"
-                                    : data.Tax}
-                                  %
-                                </td>
-                                <td className="fs-xxs fw-400 black p_5_10 text-end">
-                                  ₹
-                                  {data.quantity * data.final_price +
-                                    (typeof data.text === "undefined"
-                                      ? 0
-                                      : data.quantity *
-                                        data.final_price *
-                                        (data.Tax / 100))}
-                                </td>
-                              </tr>
-                            );
-                          })}
+                          <tr className="bill_border">
+                            <td className="fs-xxs fw-400 black py-1">
+                              {items.transaction.tx_id === ""
+                                ? "N/A"
+                                : items.transaction.tx_id}
+                            </td>
+                            <td className="fs-xxs fw-400 black py-1">
+                              {items.transaction.mode}
+                            </td>
+                            <td className="fs-xxs fw-400 black py-1">
+                              {formatDate(items.transaction.date)}
+                            </td>
+                            <td className="fs-xxs fw-400 black py-1">
+                              ₹{items.order_price}
+                            </td>
+                          </tr>
                         </tbody>
                       </table>
-                      <div className="d-flex align-items-center justify-content-between mt-3">
-                        <div className="w-75 text-end">
-                          <p className="fs_xxs fw-700 black mb-0">Sub Total</p>
-                          <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">
-                            Promo Discount
-                          </p>
-                          <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">
-                            Total Amount
-                          </p>
-                        </div>
-                        <div className="text-end">
-                          <p className="fs_xxs fw-400 black mb-0">
-                            ₹{subtotal}
-                          </p>
-                          <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
-                            (-) ₹ {items.additional_discount.discount}
-                          </p>
-                          <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
-                            {/* {((data.quantity * data.final_price) * (data.Tax / 100))} */}
-                            {items.order_price}
-                          </p>
-                        </div>
-                      </div>
                     </div>
-                    <span className="mt-3 bill_border d-inline-block"></span>
-                    <p className=" fs-xxxs fw-400 black mb-0 mt-1">
-                      Note : You Saved{" "}
-                      <span className="fw-700"> ₹{savedDiscount} </span> on
-                      product discount.
-                    </p>
-                    {items.transaction.status === "Paid" ? (
-                      <div>
-                        <p className="fs_xxs fw-400 black mb-0 mt-3">
-                          Transactions:
-                        </p>
-                        <table className="mt-3 w-100">
-                          <thead>
-                            <tr>
-                              <th className="fs-xxs fw-400 black py_2">
-                                Transaction ID
-                              </th>
-                              <th className="fs-xxs fw-400 black py_2">
-                                Payment Mode
-                              </th>
-                              <th className="fs-xxs fw-400 black py_2">Date</th>
-                              <th className="fs-xxs fw-400 black py_2">
-                                Amount
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr className="bill_border">
-                              <td className="fs-xxs fw-400 black py-1">
-                                {items.transaction.tx_id === ""
-                                  ? "N/A"
-                                  : items.transaction.tx_id}
-                              </td>
-                              <td className="fs-xxs fw-400 black py-1">
-                                {items.transaction.mode}
-                              </td>
-                              <td className="fs-xxs fw-400 black py-1">
-                                {formatDate(items.transaction.date)}
-                              </td>
-                              <td className="fs-xxs fw-400 black py-1">
-                                ₹{items.order_price}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : null}
-                  </div>
-                );
-              })
+                  ) : null}
+                </div>
+              );
+            })
             : null}
         </div>
       </div>

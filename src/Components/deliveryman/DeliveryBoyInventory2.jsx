@@ -628,13 +628,37 @@ function DeliveryBoyInventory2() {
     fetchOrders();
   }, []);
 
+  
+ 
+const handleCancelOrder = async (id) => {
+  try {
+    const orderRef = doc(db, "order", id);
+
+    // Firebase update
+    await updateDoc(orderRef, {
+      status: "CANCELLED",
+    });
+
+    // Local state update
+    const updatedData = orders.map((order) =>
+      order.id === id ? { ...order, status: "CANCELLED" } : order
+    );
+    setOrders(updatedData);
+
+    console.log("✅ Order cancelled in Firebase and state:", id);
+  } catch (error) {
+    console.error("❌ Error cancelling order:", error);
+  }
+};
+  
+  
 
   if (loaderstatus) {
     return <Loader></Loader>;
   } else {
     return (
       <div>
-        <RandomPopup showModal={showModal} handleClose={handleClose} data={orders} updateAllOrdersStatus={handleUpdateOrders} matchedOrdersArray={matchedOrdersArray} />
+        <RandomPopup showModal={showModal} handleClose={handleClose} data={orders} handleCancelOrder={handleCancelOrder} updateAllOrdersStatus={handleUpdateOrders} matchedOrdersArray={matchedOrdersArray} />
         <div className="main_panel_wrapper bg_light_grey w-100">
           {/* conform pop */}
           {conformpop ? <div className="bg_black_overlay"></div> : null}
