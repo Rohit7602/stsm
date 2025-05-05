@@ -80,7 +80,7 @@ export const OrderContextProvider = ({ children }) => {
     const orderQuery = query(
       collection(db, "order"),
       orderBy("created_at", "desc"),
-      // limit(100) // Increased initial batch size
+      limit(100) // Increased initial batch size
     );
     
     const querySnapshot = await getDocs(orderQuery);
