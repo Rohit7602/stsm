@@ -2304,8 +2304,8 @@ await fetchOrders();
                       return (
                      <tbody 
                           key={orderTableData.id}
-                          ref={isLast ? lastOrderRef : null}>
-                          className={isLast ? "last-observed-row" : ""}
+                          ref={isLast ? lastOrderRef : null}
+                          className={isLast ? "last-observed-row" : ""}>
                        <tr
                         
                         >
