@@ -694,8 +694,10 @@ input[type="range"] {
   height: 80vh
 }
 
-.load_more_btn {
-  width: calc(100vw -270px) !important;
+.down_btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
 }
 
 /* webkit scrool */
