@@ -1968,7 +1968,14 @@ await fetchOrders();
     );
   };
 
-
+const handleScrollToBottom = () => {
+  if (containerRef.current) {
+    containerRef.current.scrollTo({
+      bottom: containerRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }
+};
 
 
   return (
@@ -2164,9 +2171,10 @@ await fetchOrders();
               );
             })}
           </div>
-          <div ref={containerRef} className="overflow-x-scroll line_scroll" >
+          <div ref={containerRef} className="overflow-x-scroll line_scroll position-relative" >
+            {/* <span   onClick={handleScrollToBottom} className="border border-black rounded-full down_btn">down</span> */}
             <div style={{ minWidth: "1750px" }}>
-              <table className="w-100">
+              <table className="w-100 ">
                 <thead className="table_head w-100">
                   <tr className="product_borderbottom">
                     <th

@@ -7,6 +7,7 @@ import {
   limit,
   startAfter,
   getDocs,
+  onSnapshot,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import Loader from "../Components/Loader";
@@ -26,106 +27,51 @@ export const OrderContextProvider = ({ children }) => {
   const [orderAccordingDelivary, setOrderAccordingDelivary] = useState([])
   const [delivaryManId, setDelivaryManId] = useState('')
   // Fetch initial orders
-  // const fetchOrders = async () => {
-  //   const orderQuery = query(
-  //     collection(db, "order"),
-  //     orderBy("created_at", "desc"),
-  //     limit(100)
-      
-  //   );
-  //   const unsubscribe = onSnapshot(orderQuery, (querySnapshot) => {
-  //     const newOrders = querySnapshot.docs.map((doc) => ({
-  //       id: doc.id,
-  //       ...doc.data(),
-  //     }));
-
-  //     setOrders(newOrders);
-  //     setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
-  //     setIsFiltering(false);
-  //     setLoading(false);
-  //   });
-
-  //   return unsubscribe; // Clean up when the component unmounts
-  // };
-
-  // // Fetch next batch of orders
-  // const fetchMoreOrders = async () => {
-  //   if (isFiltering || !lastDoc || !hasMore || loading) return;
-
-  //   setLoading(true);
-  //   const nextQuery = query(
-  //     collection(db, "order"),
-  //     orderBy("created_at", "desc"),
-  //     startAfter(lastDoc),
-  //     limit(100)
-  //   );
-  //   const querySnapshot = await getDocs(nextQuery);
-  //   if (!querySnapshot.empty) {
-  //     setOrders((prev) => [
-  //       ...prev,
-  //       ...querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
-  //     ]);
-  //     setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
-  //   } else {
-  //     setHasMore(false);
-  //   }
-  //   setLoading(false);
-  // };
-  // In OrderContextProvider.js
-
-  
   const fetchOrders = async () => {
-  try {
-    setLoading(true);
     const orderQuery = query(
       collection(db, "order"),
       orderBy("created_at", "desc"),
-      limit(100) // Increased initial batch size
+      limit(100)
+      
     );
-    
-    const querySnapshot = await getDocs(orderQuery);
-    const newOrders = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    
-    setOrders(newOrders);
-    setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
-    setHasMore(newOrders.length >= 20); // Changed condition
-  } catch (error) {
-    console.error("Error fetching orders:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+    const unsubscribe = onSnapshot(orderQuery, (querySnapshot) => {
+      const newOrders = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-const fetchMoreOrders = async () => {
-  if (loading || !lastDoc || !hasMore) return;
+      setOrders(newOrders);
+      setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
+      setIsFiltering(false);
+      setLoading(false);
+    });
 
-  try {
+    return unsubscribe; // Clean up when the component unmounts
+  };
+
+  // Fetch next batch of orders
+  const fetchMoreOrders = async () => {
+    if (isFiltering || !lastDoc || !hasMore || loading) return;
+
     setLoading(true);
     const nextQuery = query(
       collection(db, "order"),
       orderBy("created_at", "desc"),
       startAfter(lastDoc),
-      limit(100) // Same as initial limit
+      limit(100)
     );
-
     const querySnapshot = await getDocs(nextQuery);
-    const newOrders = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-
-    setOrders(prev => [...prev, ...newOrders]);
-    setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
-    setHasMore(newOrders.length >= 20); // Same condition as initial
-  } catch (error) {
-    console.error("Error fetching more orders:", error);
-  } finally {
+    if (!querySnapshot.empty) {
+      setOrders((prev) => [
+        ...prev,
+        ...querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+      ]);
+      setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
+    } else {
+      setHasMore(false);
+    }
     setLoading(false);
-  }
-};
+  };
 
 
   useEffect(() => {
