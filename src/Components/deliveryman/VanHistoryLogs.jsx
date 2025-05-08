@@ -16,6 +16,8 @@ function VanHistoryLogs() {
     ),
   }));
 
+  console.log("object",location.state)
+
   return (
     <div className="main_panel_wrapper bg_light_grey w-100">
       {viewhistorypop ? <div className="bg_black_overlay"></div> : null}
@@ -221,6 +223,7 @@ function VanHistoryLogs() {
                       return dateB - dateA;
                     })
                     .map((item, index) => {
+                      console.log(item,"items")
                       return (
                         <div key={index}>
                           <div>

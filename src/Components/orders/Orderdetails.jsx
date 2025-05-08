@@ -561,27 +561,41 @@ export default function NewOrder() {
     const orderDocRef = doc(db, "order", id);
     const orderDoc = await getDoc(orderDocRef);
     const orderData = orderDoc.data();
-    let area = orderData.shipping.area.toLowerCase();
-console.log(orderData,"orderDataarea")
-// console.log(area,"area")
-console.log(area,"area")
+  let area = (orderData.shipping.area || "").trim().toLowerCase();
+  let address = (orderData.shipping.address || "").trim().toLowerCase();
+  let areaOrAddress = area !== "" ? area : address;
+
 
     ////////////////////////////  Filter the deliverymen whose service areas include the desired area  ////////////////////////////
 
-    const deliverymenWithArea = DeliveryManData.filter(
-      (deliveryman) =>
-        deliveryman.profile_status === "APPROVED" &&
-        deliveryman.is_verified === true &&
-        deliveryman.serviceArea &&
-        deliveryman.status === "online" &&
-        deliveryman.serviceArea.some(
-          (areas) =>
-            areas.terretory &&
-            areas.terretory.some((t) =>
-              t.toLowerCase().includes(area.split(",")[0].trim().toLowerCase())
-            )
-        )
-    );
+    // const deliverymenWithArea = DeliveryManData.filter(
+    //   (deliveryman) =>
+    //     deliveryman.profile_status === "APPROVED" &&
+    //     deliveryman.is_verified === true &&
+    //     deliveryman.serviceArea &&
+    //     deliveryman.status === "online" &&
+    //     deliveryman.serviceArea.some(
+    //       (areas) =>
+    //         areas.terretory &&
+    //         areas.terretory.some((t) =>
+    //           t.toLowerCase().includes(area.split(",")[0].trim().toLowerCase())
+    //         )
+    //     )
+    // );
+ let deliverymenWithArea = DeliveryManData.filter(
+    (deliveryman) =>
+      deliveryman.profile_status === "APPROVED" &&
+      deliveryman.is_verified === true &&
+      deliveryman.serviceArea &&
+      deliveryman.status === "online" &&
+      deliveryman.serviceArea.some(
+        (areas) =>
+          areas.terretory &&
+          areas.terretory.some((t) =>
+            t.toLowerCase().includes(areaOrAddress.split(",")[0].trim())
+          )
+      )
+  );
 
     ////////////////////////////  Check deliveryman  if many given pop selct custom deliveryman   ////////////////////////////
 
@@ -616,9 +630,7 @@ console.log(area,"area")
             let soldQuantity = Number(matchingVanProduct.sold || 0);
             let correctQuantity = matchingVanProduct.quantity - soldQuantity;
 
-            // console.log(
-            //   `Order Quantity: ${orderItem.quantity * orderItem.size}, Available: ${correctQuantity}`
-            // );
+        
 
             return orderItem.quantity * orderItem.size <= correctQuantity; // Check only order quantity
           });
@@ -691,11 +703,7 @@ console.log(area,"area")
               let soldQuantity = Number(matchingVanProduct.sold || 0);
               let correctQuantity = matchingVanProduct.quantity - soldQuantity;
 
-              // console.log(
-              //   `Order Quantity: ${
-              //     orderItem.quantity * orderItem.size
-              //   }, Available: ${correctQuantity}`
-              // );
+          
 
               return orderItem.quantity * orderItem.size <= correctQuantity; // Check only order quantity
             });
