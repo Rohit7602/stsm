@@ -205,32 +205,49 @@ export default function NewOrder() {
     }
   };
 
-  const handleRejectOrder = async (id) => {
-    setLoading(true);
-    try {
-      // Toggle the status between 'publish' and 'hidden'
-      const newStatus = "REJECTED";
-      await updateDoc(doc(db, "order", id), {
-        status: newStatus,
-      });
-      // Add a new log entry to the logs collection
-      // const logData = {
-      //   name: "Admin",
-      //   status: newStatus,
-      //   updated_at: new Date().toISOString(),
-      //   updated_by: AdminId,
-      //   description:
-      //     "Seller rejected the order due to unavailability of item or other reasons. Refund process initiated.",
-      // };
-      // await addDoc(collection(db, `order/${id}/logs`), logData);
-      updateData({ id, status: newStatus });
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  };
+  // const handleCancelOrRejectOrder = async (id) => {
+  //   setLoading(true);
+  //   try {
+  //     // Toggle the status between 'publish' and 'hidden'
+  //     const newStatus = "REJECTED";
+  //     await updateDoc(doc(db, "order", id), {
+  //       status: newStatus,
+  //     });
+  //     // Add a new log entry to the logs collection
+  //     // const logData = {
+  //     //   name: "Admin",
+  //     //   status: newStatus,
+  //     //   updated_at: new Date().toISOString(),
+  //     //   updated_by: AdminId,
+  //     //   description:
+  //     //     "Seller rejected the order due to unavailability of item or other reasons. Refund process initiated.",
+  //     // };
+  //     // await addDoc(collection(db, `order/${id}/logs`), logData);
+  //     updateData({ id, status: newStatus });
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.log(error);
+  //     setLoading(false);
+  //   }
+  // };
 
+  const handleCancelOrRejectOrder = async (order) => {
+    console.log(order)
+  setLoading(true);
+  try {
+    let newStatus = order.status === "NEW" ? "REJECTED" : "CANCELLED";
+
+    await updateDoc(doc(db, "order", order), {
+      status: newStatus,
+    });
+
+    updateData({ id: order, status: newStatus });
+  } catch (error) {
+    console.log("Error cancelling/rejecting order:", error);
+  } finally {
+    setLoading(false);
+  }
+};
   async function handlePreparedPacking(id) {
     setLoading(true);
     try {
@@ -255,333 +272,47 @@ export default function NewOrder() {
     }
   }
 
-  // async function handlePreparedDeliverqy(id) {
-  //   setLoading(true);
-  //   const orderDocRef = doc(db, "order", id);
-  //   const orderDoc = await getDoc(orderDocRef);
-  //   const orderData = orderDoc.data();
-  //   let area = orderData.shipping.area.toLowerCase();
-
-  //   // Filter the deliverymen whose service areas include the desired area
-  //   const deliverymenWithArea = DeliveryManData.filter(
-  //     (deliveryman) =>
-  //       deliveryman.profile_status === "APPROVED" &&
-  //       deliveryman.is_verified === true &&
-  //       deliveryman.serviceArea &&
-  //       deliveryman.status === "online" &&
-  //       deliveryman.serviceArea.some(
-  //         (areas) =>
-  //           areas.terretory &&
-  //           areas.terretory.some((t) => t.toLowerCase() === area)
-  //       )
-  //   );
-  //   if (deliverymenWithArea.length !== 0 || selectedDeliveryManId !== null) {
-  //     try {
-  //       const orderDocRef = doc(db, "order", id);
-  //       const orderDoc = await getDoc(orderDocRef);
-  //       const orderData = orderDoc.data();
-  //       const invoiceNumber = await getInvoiceNo();
-  //       let area = orderData.shipping.area.toLowerCase();
-  //       // Filter the deliverymen whose service areas include the desired area
-  //       const deliverymenWithArea = DeliveryManData.filter(
-  //         (deliveryman) =>
-  //           deliveryman.profile_status === "APPROVED" &&
-  //           deliveryman.is_verified === true &&
-  //           deliveryman.status === "online" &&
-  //           deliveryman.serviceArea &&
-  //           deliveryman.serviceArea.some(
-  //             (areas) =>
-  //               areas.terretory &&
-  //               areas.terretory.some((t) => t.toLowerCase() === area)
-  //           )
-  //       );
-  //       // setAllDeliverymans(deliverymenWithArea);
-
-  //       let autoSelectedDeliveryManId = null;
-  //       if (deliverymenWithArea.length > 1) {
-  //         let orderProductsIds = [];
-  //         let deliverymanIds = [];
-  //         filterData.forEach((item) =>
-  //           item.items.forEach((product) =>
-  //             orderProductsIds.push(product.product_id)
-  //           )
-  //         );
-  //         for (let deliveryman of deliverymenWithArea) {
-  //           const q = query(collection(db, `Delivery/${deliveryman.id}/Van`));
-  //           const querySnapshot = await getDocs(q);
-  //           const vans = querySnapshot.docs.map((doc) => doc.data());
-  //           if (
-  //             orderProductsIds.every((id) =>
-  //               vans.some(
-  //                 (van) =>
-  //                   van.productid === id &&
-  //                   van.quantity >=
-  //                     orderData.items.find((item) => item.product_id === id)
-  //                       .quantity
-  //               )
-  //             )
-  //           ) {
-  //             deliverymanIds.push(deliveryman.id);
-  //           }
-  //         }
-
-  //         // Find deliveryman with fewest orders
-  //         if (deliverymanIds.length > 1) {
-  //           let minOrderCount = Infinity;
-  //           let deliverymanWithFewestOrders = null;
-  //           // Count orders per deliveryman
-  //           const ordersCount = {};
-  //           let lowOrder;
-  //           orders.forEach((order) => {
-  //             if (
-  //               order.status === "OUT_FOR_DELIVERY" &&
-  //               deliverymanIds.includes(order.assign_to)
-  //             ) {
-  //               if (!ordersCount[order.assign_to]) {
-  //                 ordersCount[order.assign_to] = 0;
-  //               }
-  //               ordersCount[order.assign_to]++;
-  //             }
-  //           });
-  //           for (let noOrder in ordersCount) {
-  //             lowOrder = deliverymanIds.filter((id) => id !== noOrder);
-  //           }
-  //           // Find deliveryman with the fewest orders
-  //           let randomdeliveryMan;
-  //           if (Array.isArray(lowOrder) && lowOrder.length > 0) {
-  //             randomdeliveryMan = Math.floor(Math.random() * lowOrder.length);
-  //           }
-  //           // Find deliveryman with the fewest orders
-  //           if (Array.isArray(lowOrder) && lowOrder.length === 0) {
-  //             deliverymanIds.forEach((deliverymanId) => {
-  //               const orderCount = ordersCount[deliverymanId] || 0;
-  //               if (orderCount < minOrderCount) {
-  //                 minOrderCount = orderCount;
-  //                 deliverymanWithFewestOrders = deliverymanId;
-  //               }
-  //             });
-  //             console.log(
-  //               "Deliveryman with the fewest orders1:",
-  //               deliverymanWithFewestOrders
-  //             );
-  //             autoSelectedDeliveryManId = deliverymanWithFewestOrders;
-  //           } else if (Array.isArray(lowOrder) && lowOrder.length !== 0) {
-  //             console.log("random1", lowOrder[randomdeliveryMan]);
-  //             autoSelectedDeliveryManId = lowOrder[randomdeliveryMan];
-  //           } else {
-  //             let randomdeliveryManid = Math.floor(
-  //               Math.random() * deliverymanIds.length
-  //             );
-
-  //             // console.log(deliverymanIds[randomdeliveryManid]);
-  //             autoSelectedDeliveryManId = deliverymanIds[randomdeliveryManid];
-  //           }
-  //         } else if (deliverymanIds.length === 0) {
-  //           let minOrderCount = Infinity;
-  //           let deliverymanWithFewestOrders = null;
-  //           // Count orders per deliveryman
-  //           const ordersCount = {};
-  //           let lowOrder = [];
-  //           orders.forEach((order) => {
-  //             if (order.status === "CONFIRMED") {
-  //               if (!ordersCount[order.assign_to]) {
-  //                 ordersCount[order.assign_to] = 0;
-  //               }
-  //               ordersCount[order.assign_to]++;
-  //             }
-  //           });
-  //           // Find deliveryman with the fewest orders
-  //           deliverymenWithArea.forEach((deliverymanId) => {
-  //             const orderCount =
-  //               ordersCount[deliverymanId.id] ??
-  //               lowOrder.push(deliverymanId.id);
-  //             if (orderCount < minOrderCount && lowOrder.length == 0) {
-  //               minOrderCount = orderCount;
-  //               deliverymanWithFewestOrders = deliverymanId.id;
-  //             }
-  //           });
-  //           if (Array.isArray(lowOrder) && lowOrder.length !== 0) {
-  //             let idIndex = Math.floor(Math.random() * lowOrder.length);
-  //             deliverymanWithFewestOrders = lowOrder[idIndex];
-  //           }
-  //           autoSelectedDeliveryManId = deliverymanWithFewestOrders;
-  //         } else {
-  //           autoSelectedDeliveryManId = deliverymanIds[0];
-  //           console.log("working", autoSelectedDeliveryManId);
-  //         }
-  //       } else if (deliverymenWithArea.length === 1) {
-  //         autoSelectedDeliveryManId = deliverymenWithArea[0].id;
-  //         console.log("only one deliveryman", deliverymenWithArea[0].id);
-  //       }
-
-  //       if (orderData && orderData.items) {
-  //         //  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  //         // ////////////////    check all products match into van        ////////////////
-  //         const filterdeliverymanid =
-  //           selectedDeliveryManId !== null
-  //             ? selectedDeliveryManId
-  //             : autoSelectedDeliveryManId;
-  //         const q = query(
-  //           collection(db, `Delivery/${filterdeliverymanid}/Van`)
-  //         );
-  //         const querySnapshot = await getDocs(q);
-  //         const vanProductIds = new Set(
-  //           querySnapshot.docs.map((doc) => doc.data().productid)
-  //         );
-  //         const allMatch = orderData.items.every((item) =>
-  //           vanProductIds.has(item.product_id)
-  //         );
-
-  //         if (allMatch) {
-  //           // ////////////////    order quantity        ////////////////
-  //           const filterorder = orderData.items.map((item) => item.quantity);
-  //           const vanQuantities = querySnapshot.docs.map((doc) =>
-  //             Number(doc.data().quantity)
-  //           );
-  //           const allSufficient = filterorder.every((orderQty, index) => {
-  //             return vanQuantities[index] >= orderQty;
-  //           });
-
-  //           if (allSufficient) {
-  //             for (const item of orderData.items) {
-  //               const vanDoc = querySnapshot.docs.find(
-  //                 (doc) => doc.data().productid === item.product_id
-  //               );
-  //               const showvandata = vanDoc ? vanDoc.data() : null;
-  //               if (showvandata) {
-  //                 if (filterorder[0].quantity > Number(showvandata.quantity)) {
-  //                   const matchingDeliverymanData = await Promise.all(
-  //                     deliverymenWithArea.map(async (value) => {
-  //                       const q = query(
-  //                         collection(db, `Delivery/${value.id}/Van`)
-  //                       );
-  //                       const querySnapshot = await getDocs(q);
-  //                       const vans = querySnapshot.docs.map((doc) =>
-  //                         doc.data()
-  //                       );
-  //                       const filterproduct = vans.filter(
-  //                         (van) => van.productid === item.product_id
-  //                       );
-  //                       const filterquatity = filterproduct.filter(
-  //                         (van) => van.quantity > filterorder[0].quantity
-  //                       );
-  //                       if (filterquatity.length > 0) {
-  //                         return value;
-  //                       }
-  //                       return null;
-  //                     })
-  //                   );
-  //                   const validDeliverymanData = matchingDeliverymanData.filter(
-  //                     (data) => data !== null
-  //                   );
-  //                   if (validDeliverymanData.length !== 0) {
-  //                     setFilterAllDeliverymans(validDeliverymanData);
-  //                   } else {
-  //                     setIsFilterDeliverymanPopup(true);
-  //                   }
-  //                 }
-  //               } else {
-  //                 console.warn(
-  //                   "Van data not found for product:",
-  //                   item.product_id
-  //                 );
-  //                 toast.warning("Van data for this product is unavailable", {
-  //                   position: toast.POSITION.TOP_RIGHT,
-  //                 });
-  //               }
-
-  //               // ////////////////    assign order driver and change status        ////////////////
-  //               let autoSelectedDeliveryManName = DeliveryManData.filter(
-  //                 (value) => value.id === autoSelectedDeliveryManId
-  //               );
-  //               if (showvandata.quantity >= item.quantity * item.size) {
-  //                 const newStatus = "OUT_FOR_DELIVERY";
-
-  //                 if (!orderData.hasOwnProperty("invoiceNumber")) {
-  //                   await updateDoc(orderDocRef, {
-  //                     status: newStatus,
-  //                     // OTP: otp,
-  //                     invoiceNumber: invoiceNumber,
-  //                     tokens: customertoken,
-  //                     deliveryname:
-  //                       deliverymenWithArea.length !== 0
-  //                         ? autoSelectedDeliveryManName[0].basic_info.name
-  //                         : selectedDeliveryManName,
-  //                     assign_to:
-  //                       deliverymenWithArea.length !== 0
-  //                         ? autoSelectedDeliveryManId
-  //                         : selectedDeliveryManId,
-  //                   });
-  //                 } else {
-  //                   await updateDoc(orderDocRef, {
-  //                     status: newStatus,
-  //                     // OTP: otp,
-  //                     deliveryname:
-  //                       deliverymenWithArea.length !== 0
-  //                         ? autoSelectedDeliveryManName[0].basic_info.name
-  //                         : selectedDeliveryManName,
-  //                     assign_to:
-  //                       deliverymenWithArea.length !== 0
-  //                         ? autoSelectedDeliveryManId
-  //                         : selectedDeliveryManId,
-  //                   });
-  //                   setLoading(false);
-  //                 }
-  //               } else {
-  //                 toast.warning("product Stocks not available", {
-  //                   position: toast.POSITION.TOP_RIGHT,
-  //                 });
-  //               }
-  //             }
-  //           } else {
-  //             setIsFilterDeliverymanPopup(true);
-  //           }
-  //         }
-
-  //         // ////////////////       ////////////////
-  //         else {
-  //           toast.warning("Van data for this product is unavailable", {
-  //             position: toast.POSITION.TOP_RIGHT,
-  //           });
-  //         }
-  //       }
-  //       setLoading(false);
-  //     } catch (error) {
-  //       console.log(error);
-  //       setLoading(false);
-  //     }
-  //   } else {
-  //     setLoading(false);
-  //     setIssDeliverymanPopup(true);
-  //   }
-  // }
 
   async function handlePreparedDelivery(id) {
     ////////////////////////////  get order area  ////////////////////////////
     const orderDocRef = doc(db, "order", id);
     const orderDoc = await getDoc(orderDocRef);
     const orderData = orderDoc.data();
-    let area = orderData.shipping.area.toLowerCase();
-console.log(orderData,"orderDataarea")
-// console.log(area,"area")
-console.log(area,"area")
+  let area = (orderData.shipping.area || "").trim().toLowerCase();
+  let address = (orderData.shipping.address || "").trim().toLowerCase();
+  let areaOrAddress = area !== "" ? area : address;
+
 
     ////////////////////////////  Filter the deliverymen whose service areas include the desired area  ////////////////////////////
 
-    const deliverymenWithArea = DeliveryManData.filter(
-      (deliveryman) =>
-        deliveryman.profile_status === "APPROVED" &&
-        deliveryman.is_verified === true &&
-        deliveryman.serviceArea &&
-        deliveryman.status === "online" &&
-        deliveryman.serviceArea.some(
-          (areas) =>
-            areas.terretory &&
-            areas.terretory.some((t) =>
-              t.toLowerCase().includes(area.split(",")[0].trim().toLowerCase())
-            )
-        )
-    );
+    // const deliverymenWithArea = DeliveryManData.filter(
+    //   (deliveryman) =>
+    //     deliveryman.profile_status === "APPROVED" &&
+    //     deliveryman.is_verified === true &&
+    //     deliveryman.serviceArea &&
+    //     deliveryman.status === "online" &&
+    //     deliveryman.serviceArea.some(
+    //       (areas) =>
+    //         areas.terretory &&
+    //         areas.terretory.some((t) =>
+    //           t.toLowerCase().includes(area.split(",")[0].trim().toLowerCase())
+    //         )
+    //     )
+    // );
+ let deliverymenWithArea = DeliveryManData.filter(
+    (deliveryman) =>
+      deliveryman.profile_status === "APPROVED" &&
+      deliveryman.is_verified === true &&
+      deliveryman.serviceArea &&
+      deliveryman.status === "online" &&
+      deliveryman.serviceArea.some(
+        (areas) =>
+          areas.terretory &&
+          areas.terretory.some((t) =>
+            t.toLowerCase().includes(areaOrAddress.split(",")[0].trim())
+          )
+      )
+  );
 
     ////////////////////////////  Check deliveryman  if many given pop selct custom deliveryman   ////////////////////////////
 
@@ -616,9 +347,7 @@ console.log(area,"area")
             let soldQuantity = Number(matchingVanProduct.sold || 0);
             let correctQuantity = matchingVanProduct.quantity - soldQuantity;
 
-            // console.log(
-            //   `Order Quantity: ${orderItem.quantity * orderItem.size}, Available: ${correctQuantity}`
-            // );
+        
 
             return orderItem.quantity * orderItem.size <= correctQuantity; // Check only order quantity
           });
@@ -691,11 +420,7 @@ console.log(area,"area")
               let soldQuantity = Number(matchingVanProduct.sold || 0);
               let correctQuantity = matchingVanProduct.quantity - soldQuantity;
 
-              // console.log(
-              //   `Order Quantity: ${
-              //     orderItem.quantity * orderItem.size
-              //   }, Available: ${correctQuantity}`
-              // );
+          
 
               return orderItem.quantity * orderItem.size <= correctQuantity; // Check only order quantity
             });
@@ -920,7 +645,7 @@ console.log(area,"area")
                   <div className="d-flex align-itmes-center gap-3">
                     <button className="reset_border">
                       <button
-                        onClick={() => handleRejectOrder(item.id)}
+                        onClick={() => handleCancelOrRejectOrder(item.id)}
                         className="fs-sm reset_btn  border-0 fw-400"
                       >
                         Reject Order
@@ -955,10 +680,10 @@ console.log(area,"area")
                         <div className="d-flex align-itmes-center gap-3">
                           <button className="reset_border">
                       <button
-                        onClick={() => handleRejectOrder(item.id)}
+                        onClick={() => handleCancelOrRejectOrder(item.id)}
                         className="fs-sm reset_btn  border-0 fw-400"
                       >
-                        Reject Order
+                         {item.status === "NEW" ? "Reject Order" : "Cancel Order"}
                       </button>
                     </button>
                   <button
@@ -976,10 +701,10 @@ console.log(area,"area")
                           <div className="d-flex align-itmes-center gap-3">
                             <button className="reset_border">
                       <button
-                        onClick={() => handleRejectOrder(item.id)}
+                        onClick={() => handleCancelOrRejectOrder(item.id)}
                         className="fs-sm reset_btn  border-0 fw-400"
                       >
-                        Reject Order
+                         {item.status === "NEW" ? "Reject Order" : "Cancel Order"}
                       </button>
                     </button>
                   <button
@@ -993,7 +718,27 @@ console.log(area,"area")
                     Out for Delivery
                   </button>
                 </div>
-              ) : (
+              ) :item.status === "OUT_FOR_DELIVERY" ? (
+                          <div className="d-flex align-itmes-center gap-3">
+                            <button className="reset_border">
+                      <button
+                        onClick={() => handleCancelOrRejectOrder(item.id)}
+                        className="fs-sm reset_btn  border-0 fw-400"
+                      >
+                      {item.status === "NEW" ? "Reject Order" : "Cancel Order"}
+                      </button>
+                    </button>
+                  <button
+                    onClick={() =>
+                      handlePreparedDelivery(item.id, item.order_id)
+                    }
+                    className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-3 save_btn fw-400 black"
+                    type="submit"
+                  >
+                    <img src={saveicon} alt="saveicon" />
+                    Out for Delivery
+                  </button>
+                </div>): (
                 ""
               )}
             </div>
@@ -1031,7 +776,9 @@ console.log(area,"area")
                   pageStyle="print"
                 />
               ) : null}
+                
             </div>
+         
             <Row className="">
               <Col xxl={8}>
                 <div className="p-3 bg-white product_shadow">
