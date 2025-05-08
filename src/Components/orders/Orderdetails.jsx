@@ -728,16 +728,7 @@ export default function NewOrder() {
                       {item.status === "NEW" ? "Reject Order" : "Cancel Order"}
                       </button>
                     </button>
-                  <button
-                    onClick={() =>
-                      handlePreparedDelivery(item.id, item.order_id)
-                    }
-                    className="fs-sm d-flex gap-2 mb-0 align-items-center px-sm-3 px-2 py-3 save_btn fw-400 black"
-                    type="submit"
-                  >
-                    <img src={saveicon} alt="saveicon" />
-                    Out for Delivery
-                  </button>
+                 
                 </div>): (
                 ""
               )}
