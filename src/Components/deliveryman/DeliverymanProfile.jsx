@@ -446,9 +446,9 @@ async function handleCollectBalance() {
         (item) => item.formattedDate === todayDate
       );
 
-      const loaditems = todayHistory?.loaditems.length || [];
-      const pendingitems = todayHistory?.pendingitems.length  || [];
-      const unloaditems = todayHistory?.unloaditems.length  || [];
+      const loaditems = todayHistory?.loaditems || [];
+      const pendingitems = todayHistory?.pendingitems  || [];
+      const unloaditems = todayHistory?.unloaditems  || [];
 console.log("laoditems",loaditems,pendingitems,unloaditems)
       if (!docSnapshot.exists()) {
         // Create new doc with merge (safe)
