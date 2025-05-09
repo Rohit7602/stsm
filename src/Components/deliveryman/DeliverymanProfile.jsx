@@ -451,7 +451,7 @@ async function handleCollectBalance() {
       const unloaditems = todayHistory?.unloaditems  || [];
 console.log("laoditems",loaditems,pendingitems,unloaditems)
       if (!docSnapshot.exists()) {
-        // Create new doc with merge (safe)
+        // Create new doc with merge (safe) 
         await setDoc(
           historyDocRef,
           {

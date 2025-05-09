@@ -24,14 +24,13 @@ export const OrderContextProvider = ({ children }) => {
   const [lastDoc, setLastDoc] = useState(null);
   const [hasMore, setHasMore] = useState(true);
   const [isFiltering, setIsFiltering] = useState(false);
-  const [orderAccordingDelivary, setOrderAccordingDelivary] = useState([])
   const [delivaryManId, setDelivaryManId] = useState('')
   // Fetch initial orders
   const fetchOrders = async () => {
     const orderQuery = query(
       collection(db, "order"),
       orderBy("created_at", "desc"),
-      limit(100)
+      limit(40)
       
     );
     const unsubscribe = onSnapshot(orderQuery, (querySnapshot) => {
@@ -58,7 +57,7 @@ export const OrderContextProvider = ({ children }) => {
       collection(db, "order"),
       orderBy("created_at", "desc"),
       startAfter(lastDoc),
-      limit(100)
+      limit(40)
     );
     const querySnapshot = await getDocs(nextQuery);
     if (!querySnapshot.empty) {
@@ -82,9 +81,7 @@ export const OrderContextProvider = ({ children }) => {
     };
   }, []);
 
-  useEffect(() => {
-    fetchOrders(); // No need to assign to a variable or return anything
-  }, []);
+
 
   const updateData = (updatedProduct) => {
     if (typeof updatedProduct === "object" && updatedProduct.id) {
@@ -289,24 +286,52 @@ export const OrderContextProvider = ({ children }) => {
 
   // all orders fetched
   useEffect(() => {
-    const fetchOrdersall = async () => {
-      try {
-        setLoading(true);
-        const ordersRef = collection(db, "order");
-        const querySnapshot = await getDocs(ordersRef);
+    // const fetchOrdersall = async () => {
+    //   try {
+    //     setLoading(true);
+    //     const ordersRef = collection(db, "order");
+    //     const querySnapshot = await getDocs(ordersRef);
 
-        const ordersData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+    //     const ordersData = querySnapshot.docs.map((doc) => ({
+    //       id: doc.id,
+    //       ...doc.data(),
+    //     }));
 
-        setOrdersAll(ordersData);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    //     setOrdersAll(ordersData);
+    //   } catch (error) {
+    //     console.error("Error fetching orders:", error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+
+
+    const fetchOrdersall = async (limitCount = 50) => {
+  try {
+    // Optional: Use a separate loading state to avoid blocking main UI
+    setLoading(true);
+
+    const ordersRef = collection(db, "order");
+    const ordersQuery = query(
+      ordersRef,
+      orderBy("created_at", "desc"),
+      limit(limitCount) // Fetch only the latest N orders
+    );
+    const querySnapshot = await getDocs(ordersQuery);
+
+    const ordersData = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    setOrdersAll(ordersData);
+  } catch (error) {
+    console.error("Error fetching all orders:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
     fetchOrdersall();
   }, []);
