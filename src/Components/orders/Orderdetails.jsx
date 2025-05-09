@@ -54,15 +54,12 @@ export default function NewOrder() {
   const [loading, setLoading] = useState(false);
   const [selectedDeliveryManId, setSelectedDeliveryManId] = useState(null);
   const [selectedDeliveryManName, setSelectedDeliveryManName] = useState(null);
-  const [filterallDeliverymans, setFilterAllDeliverymans] = useState(null);
   const [isDeliverymanPopup, setIssDeliverymanPopup] = useState(false);
   const [isfilterDeliverymanPopup, setIsFilterDeliverymanPopup] =
     useState(false);
   const [allDeliverymans, setAllDeliverymans] = useState(null);
   const { customer } = useCustomerContext();
   const [customertoken, setCustomertoken] = useState(null);
-  const { productData } = useProductsContext();
-  const adminId = localStorage.getItem("isAdminId");
   const [logs, setLogs] = useState([]);
   useEffect(() => {
     if (filterData.length === 1) {
@@ -167,36 +164,7 @@ export default function NewOrder() {
         setLoading(false);
       }
 
-      // Add a new log entry to the logs collection
-      // const logData = {
-      //   name: "Admin",
-      //   status: newStatus,
-      //   updated_at: new Date().toISOString(),
-      //   updated_by: AdminId,
-      //   tokens: customertoken,
-      //   description: `order #${order_id} has been confirmed! we will notify you once it's on its way."`,
-      // };
-
-      // await addDoc(collection(db, `order/${id}/logs`), logData);
-
-      // const AssignDeliver = {
-      //   name: "Admin",
-      //   status: "PROCESSING",
-      //   updated_at: new Date().toISOString(),
-      //   updated_by: AdminId,
-      //   description:
-      //     "Order assigned to the delivery partner for shipment. Preparing for dispatch.",
-      // };
-      // await addDoc(collection(db, `order/${id}/logs`), AssignDeliver);
-      // updateData({
-      //   id,
-      //   status: newStatus,
-      //   invoiceNumber: invoiceNumber,
-      //   assign_to:
-      //     deliverymenWithArea.length !== 0
-      //       ? autoSelectedDeliveryManId
-      //       : selectedDeliveryManId,
-      // });
+    
 
       setLoading(false);
     } catch (error) {
@@ -205,32 +173,7 @@ export default function NewOrder() {
     }
   };
 
-  // const handleCancelOrRejectOrder = async (id) => {
-  //   setLoading(true);
-  //   try {
-  //     // Toggle the status between 'publish' and 'hidden'
-  //     const newStatus = "REJECTED";
-  //     await updateDoc(doc(db, "order", id), {
-  //       status: newStatus,
-  //     });
-  //     // Add a new log entry to the logs collection
-  //     // const logData = {
-  //     //   name: "Admin",
-  //     //   status: newStatus,
-  //     //   updated_at: new Date().toISOString(),
-  //     //   updated_by: AdminId,
-  //     //   description:
-  //     //     "Seller rejected the order due to unavailability of item or other reasons. Refund process initiated.",
-  //     // };
-  //     // await addDoc(collection(db, `order/${id}/logs`), logData);
-  //     updateData({ id, status: newStatus });
-  //     setLoading(false);
-  //   } catch (error) {
-  //     console.log(error);
-  //     setLoading(false);
-  //   }
-  // };
-
+  
   const handleCancelOrRejectOrder = async (order) => {
     console.log(order)
   setLoading(true);
@@ -283,22 +226,6 @@ export default function NewOrder() {
   let areaOrAddress = area !== "" ? area : address;
 
 
-    ////////////////////////////  Filter the deliverymen whose service areas include the desired area  ////////////////////////////
-
-    // const deliverymenWithArea = DeliveryManData.filter(
-    //   (deliveryman) =>
-    //     deliveryman.profile_status === "APPROVED" &&
-    //     deliveryman.is_verified === true &&
-    //     deliveryman.serviceArea &&
-    //     deliveryman.status === "online" &&
-    //     deliveryman.serviceArea.some(
-    //       (areas) =>
-    //         areas.terretory &&
-    //         areas.terretory.some((t) =>
-    //           t.toLowerCase().includes(area.split(",")[0].trim().toLowerCase())
-    //         )
-    //     )
-    // );
  let deliverymenWithArea = DeliveryManData.filter(
     (deliveryman) =>
       deliveryman.profile_status === "APPROVED" &&
