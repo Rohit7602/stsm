@@ -54,7 +54,7 @@ console.log(data,"data")
                     </ul>
                   </td>
                   <td>₹ {order.order_price}</td>
-                  <td><span onClick={()=>handleCancelOrder(order.id)} style={{  fontWeight: "bold", color: "red" }}>Cencel</span></td>
+                  <td><span onClick={()=>handleCancelOrder(order.id)} style={{  fontWeight: "bold", color: "red",cursor:"pointer" }}>Cencel</span></td>
                 </tr>
               ))}
               {matchedOrdersArray.length > 0 && (
