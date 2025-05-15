@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ApexBarChart from "../charts/bar";
 import Donut from "../charts/donatchart";
 import eyeIcon from "../../Images/svgs/eye-icon.svg";
 import { useOrdercontext } from "../../context/OrderGetter";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useNotification } from "../../context/NotificationContext";
 import { CrossIcons } from "../../Common/Icon";
 import alertgif from "../../Images/gif/altert Gif.gif"; 
 import { useProductsContext } from "../../context/productgetter";
 import AllCustomerPopup from "../AllCustomerPopup";
 import ShowAllOrders from "../ShowAllOrders";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase";
 function DashbordCards() {
   const { ordersAll } = useOrdercontext();
   const [showCustomDate, setShowCustomDate] = useState(false);
@@ -23,7 +25,29 @@ function DashbordCards() {
   const navigate = useNavigate();
   /**  ******************************************* Calculation of Average ORder value According to current Month
    * ****************************************    */
+  const [loading, setLoading] = useState(true);
 
+    const [allOrders, setAllOrders] = useState([])
+
+  useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setLoading(true); // Loading start
+      const querySnapshot = await getDocs(collection(db, "order"));
+      const allOrder = [];
+      querySnapshot.forEach((doc) => {
+        allOrder.push({ id: doc.id, ...doc.data() });
+      });
+      setAllOrders(allOrder);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false); // Loading end
+    }
+  };
+
+  fetchData();
+}, [setLoading]);
   // Get the current month and last month
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
@@ -244,12 +268,13 @@ function DashbordCards() {
 
   return (
     <>
+      <Outlet/>
       <div className="main_panel_wrapper pb-4  bg_light_grey w-100">
-        {showAllCustomers && <AllCustomerPopup setShowAllCustomers={setShowAllCustomers} />}
-        {showAllOrder && (
+        {/* {showAllCustomers && <AllCustomerPopup setShowAllCustomers={setShowAllCustomers} />} */}
+        {/* {showAllOrder && (
           <ShowAllOrders setShowAllOrder={setShowAllOrder} formatDate={formatDate} />
           
-        )}
+        )} */}
         {/* Dashboard-panel  */}
         {showdeliverypop ? <div className="bg_black_overlay"></div> : null}
         {showdeliverypop && (
@@ -357,8 +382,8 @@ function DashbordCards() {
               <h1 className="fs-400   black fs-lg">Dashboard</h1>
             </div>
             <div className="d-flex gap-3">
-              <button onClick={()=>setShowAllOrder(!showAllOrder)} className="filter_btn black d-flex align-items-center fs-xs xl:fs-sm px-sm-3 px-2 py-2 fw-400 ">All Orders</button>
-              <button onClick={() => setShowAllCustomers(!showAllCustomers)} className="filter_btn black d-flex align-items-center fs-xs xl:fs-sm px-sm-3 px-2 py-2 fw-400 ">All Customers</button>
+              <Link to={"/all-orders"}  className="filter_btn black d-flex align-items-center fs-xs xl:fs-sm px-sm-3 px-2 py-2 fw-400 ">All Orders</Link>
+              <Link to={"/all-customer"} className="filter_btn black d-flex align-items-center fs-xs xl:fs-sm px-sm-3 px-2 py-2 fw-400 ">All Customers</Link>
               {filterlowproductsdata.length !== 0 && (
                 <abbr className=" bg-transparent" title="Low Stock Notifications">
                   <button
@@ -526,7 +551,7 @@ function DashbordCards() {
                 <div className="d-flex justify-content-between   bg-white">
                   <h3 className="fw-400 black fs-xs">Order Statistics</h3>
                 </div>
-                <ApexBarChart className="w-100" orderData={ordersAll} />
+                <ApexBarChart className="w-100" orderData={allOrders} />
               </div>
             </div>
           </div>

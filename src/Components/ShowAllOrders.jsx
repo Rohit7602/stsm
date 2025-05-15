@@ -1,16 +1,57 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { CrossIcons } from '../Common/Icon';
 import { useOrdercontext } from '../context/OrderGetter';
 import { Link } from 'react-router-dom';
 import ExcelJS from 'exceljs';  // Import ExcelJS
+import { db } from '../firebase';
+import { collection, getDocs } from 'firebase/firestore';
+import Loader from './Loader';
 
 const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
-    const { ordersAll } = useOrdercontext();
+  const [loading, setLoading] = useState(true);
 
-    // Ensure ordersAll is an array
+    const [allOrders, setAllOrders] = useState([])
+
+  useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setLoading(true); // Loading start
+      const querySnapshot = await getDocs(collection(db, "order"));
+      const allOrder = [];
+      querySnapshot.forEach((doc) => {
+        allOrder.push({ id: doc.id, ...doc.data() });
+      });
+      setAllOrders(allOrder);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false); // Loading end
+    }
+  };
+
+  fetchData();
+}, [setLoading]); 
+
+
+
+    function formatDate(dateString) {
+        const options = {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+        };
+        const formattedDate = new Date(dateString).toLocaleDateString(
+            undefined,
+            options
+        );
+        return formattedDate.replace("at", "|");
+    }
+    // Ensure allOrders is an array
     const exportOrdersExcelFile = () => {
-        if (!Array.isArray(ordersAll)) {
-            console.error("ordersAll is not an array");
+        if (!Array.isArray(allOrders)) {
+            console.error("allOrders is not an array");
             return;
         }
 
@@ -31,7 +72,7 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
         ];
 
         // Populate the rows with order data
-        ordersAll.forEach((order) => {
+        allOrders.forEach((order) => {
             const formattedDate = formatDate(order.created_at);
             const deliveredDate = order.transaction.date
                 ? formatDate(order.transaction.date)
@@ -63,6 +104,10 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
         });
     };
 
+
+ if (loading) {
+    return <Loader />;
+  }
     return (
         <div>
             <div className="bg-white p-4 rounded-4 w-100 position-fixed center_pop h-100">
@@ -77,16 +122,16 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                         >
                             Export
                         </button>
-                        <button
+                        <Link to="/"
                             className="border-0 bg-white"
-                            onClick={() => setShowAllOrder(false)}
+                            // onClick={() => setShowAllOrder(false)}
                         >
                             <CrossIcons />
-                        </button>
+                        </Link>
                     </div>
                 </div>
                 <div className="overflow-auto">
-                    {ordersAll.length === 0 ? (
+                    {allOrders.length === 0 ? (
                         <p className="text-center my-3">There are no orders 😢</p>
                     ) : (
                         <div style={{ minWidth: "1750px" }}>
@@ -137,12 +182,12 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                             </h3>
                                         </th>
                                         <th className="mx_100 p-3 pe-4 text-center">
-                                            <h3 className="fs-sm fw-400 black mb-0">Action</h3>
+                                            <h3 className="fs-sm fw-400 black mb-0">Address</h3>
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody className="table_body">
-                                    {ordersAll.map((orderTableData, index) => (
+                                    {allOrders.map((orderTableData, index) => (
                                         <tr key={orderTableData.id}>
                                             <td className="p-3 mw-200">
                                                 <h3 className="fs-xs fw-400 black mb-0">
@@ -185,6 +230,11 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                             <td className="p-3 mw_160">
                                                 <h3 className="fs-sm fw-400 black mb-0">
                                                     ₹ {orderTableData.order_price}
+                                                </h3>
+                                            </td>
+                                            <td className="p-3 mw_160">
+                                                <h3 className="fs-sm fw-400 black mb-0">
+                                                     {orderTableData.shipping.address}
                                                 </h3>
                                             </td>
                                         </tr>

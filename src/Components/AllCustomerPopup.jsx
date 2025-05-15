@@ -2,19 +2,61 @@
 
 
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCustomerContext } from '../context/Customergetters';
 import { CrossIcons } from '../Common/Icon';
 import { useOrdercontext } from '../context/OrderGetter';
 import ExcelJS from 'exceljs';  // Import ExcelJS
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const AllCustomerPopup = ({ setShowAllCustomers }) => {
-    const { customer } = useCustomerContext();
-    const { ordersAll } = useOrdercontext();
+    // const { customer } = useCustomerContext();
+    // const { ordersAll } = useOrdercontext();
+     const [loading, setLoading] = useState(true);
+
+    const [allOrders, setAllOrders] = useState([])
+    const [customer, setCustomer] = useState([])
+
+  useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setLoading(true); // Loading start
+      const querySnapshot = await getDocs(collection(db, "order"));
+      const allOrder = [];
+      querySnapshot.forEach((doc) => {
+        allOrder.push({ id: doc.id, ...doc.data() });
+      });
+      setAllOrders(allOrder);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false); // Loading end
+    }
+  };
+  const fetchAllCustomer = async () => {
+    try {
+      setLoading(true); // Loading start
+      const querySnapshot = await getDocs(collection(db, "customers"));
+      const allCustomer = [];
+      querySnapshot.forEach((doc) => {
+        allCustomer.push({ id: doc.id, ...doc.data() });
+      });
+      setCustomer(allCustomer);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false); // Loading end
+    }
+  };
+
+      fetchData();
+      fetchAllCustomer()
+}, [setLoading]); 
 
     const totalSpentByCustomer = customer.map((customer) => {
-        const totalSpent = ordersAll
+        const totalSpent = allOrders
             .filter((order) => order.uid === customer.id)
             .filter((value) => value.status.toUpperCase() === "DELIVERED")
             .reduce((total, order) => total + order.order_price, 0);
@@ -61,12 +103,12 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
             window.URL.revokeObjectURL(url);
         });
     };
-
+console.log(customer,"customer")
     return (
         <div>
             <div className="bg-white p-4 rounded-4 w-100 position-fixed center_pop h-100">
                 <div className="d-flex align-items-center justify-content-between">
-                    <h2 className="text-black fw-700 fs-2sm mb-0">All Orders</h2>
+                    <h2 className="text-black fw-700 fs-2sm mb-0">All Customers</h2>
                     <div className="d-flex gap-3">
                         <button
                             className="export_btn white fs-xxs px-3 py-2 fw-400 border-0"
@@ -74,15 +116,15 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
                         >
                             Export
                         </button>
-                        <button
+                        <Link to={"/"}
                             className="border-0 bg-white"
-                            onClick={() => setShowAllCustomers(false)}
+                            // onClick={() => setShowAllCustomers(false)}
                         >
                             <CrossIcons />
-                        </button>
+                        </Link>
                     </div>
                 </div>
-                <div className="overflow-x-scroll line_scroll">
+                <div className="overflow-x-scroll">
                     <div className="Customers_overflow_X">
                         <table className="w-100">
                             <thead className="table_head w-100">
@@ -98,6 +140,9 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
                                     <th className="mw-300 p-3">
                                         <h3 className="fs-sm fw-400 black mb-0">City / State</h3>
                                     </th>
+                                    <th className="mw-300 p-3">
+                                        <h3 className="fs-sm fw-400 black mb-0">Gender</h3>
+                                    </th>
                                     <th className="mw_160 p-3">
                                         <h3 className="fs-sm fw-400 black mb-0">Group</h3>
                                     </th>
@@ -108,9 +153,9 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
                             </thead>
                             <tbody className="table_body">
                                 {totalSpentByCustomer.map((item, index) => {
-                                    const { id, city, email, state, name, totalSpent, created_at } = item;
+                                    const { id, city, email, state, name, totalSpent, created_at,gender } = item;
                                     const formattedDate = new Date(created_at).toLocaleDateString();
-
+console.log(item,"item")
                                     return (
                                         <tr key={id}>
                                             <td className="py-2 px-3">
@@ -135,6 +180,11 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
                                             <td className="p-3 mw-300">
                                                 <h3 className="fs-sm fw-400 black mb-0">
                                                     {city} / {state}
+                                                </h3>
+                                            </td>
+                                            <td className="p-3 mw-300">
+                                                <h3 className="fs-sm fw-400 black mb-0">
+                                                    {gender}
                                                 </h3>
                                             </td>
                                             <td className="p-3 mw_160">

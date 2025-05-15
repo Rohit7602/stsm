@@ -53,7 +53,40 @@ function DeliveryBoyInventory2() {
   const [orders, setOrders] = useState([]);
 
   const [showModal, setShowModal] = useState(false);
+  const [showDeliveryHistory, setShowDeliveryHistory] = useState(false);
   const handleClose = () => setShowModal(false);
+
+  const handleDeliveryHistoryClose = () => setShowDeliveryHistory(false)
+  
+  const [deliveredItems, setDeliveredItems] = useState([]);
+
+const calculateDeliveredItems = (loadItems = [], unloadItems = []) => {
+  const delivered = [];
+  
+  // सुनिश्चित करें कि loadItems हमेशा ऐरे हो
+  (loadItems || []).forEach(loadItem => {
+    if(!loadItem) return; // undefined loadItem को स्किप करें
+    
+    const unloadItem = (unloadItems || []).find(u => 
+      u?.productid === loadItem?.productid
+    );
+    
+    const deliveredQty = unloadItem 
+      ? (loadItem?.quantity || 0) - (unloadItem?.quantity || 0)
+      : (loadItem?.quantity || 0);
+
+    if (deliveredQty > 0) {
+      delivered.push({
+        ...loadItem,
+        deliveredQuantity: deliveredQty,
+        deliveryDate: new Date().toLocaleDateString()
+      });
+    }
+  });
+
+  return delivered;
+};
+
   function addToVan(e) {
     e.preventDefault();
     if (
@@ -306,6 +339,8 @@ function DeliveryBoyInventory2() {
       quantity: value.quantity - Number(value.sold || 0),
     }));
 
+      const deliveredItems = calculateDeliveredItems(loaditems, unloaditems);
+
     try {
       const historyRef = collection(db, `Delivery/${id}/history`);
       const q = query(historyRef, where("formattedDate", "==", formattedDate));
@@ -314,6 +349,7 @@ function DeliveryBoyInventory2() {
       if (querySnapshot.empty) {
         await addDoc(historyRef, {
           loaditems: loaditems,
+          deliveredItems: deliveredItems || [],
           unloaditems: newupdateUnloadItems,
           formattedDate,
           formattedTime: today.toLocaleTimeString("en-GB", {
@@ -385,6 +421,7 @@ function DeliveryBoyInventory2() {
           await updateDoc(vanDocRef, {
             loaditems: finalLoadItems,
             unloaditems: finalUnloadItems,
+             deliveredItems: [...deliveredItems] 
           });
         } else {
           console.error("Failed to retrieve history document ID.");
@@ -394,6 +431,35 @@ function DeliveryBoyInventory2() {
       console.error("Error creating daily document:", error);
     }
   }
+
+  const fetchDeliveryHistory = async () => {
+  try {
+    const historyRef = collection(db, `Delivery/${id}/history`);
+    const querySnapshot = await getDocs(historyRef);
+    
+    // undefined entries को filter करें
+    const historyData = querySnapshot.docs
+      .map(doc => doc.data())
+      .filter(data => !!data); // undefined डॉक्यूमेंट्स को हटाएं
+
+    // सभी delivered items को एक साथ लाएं और undefined को filter करें
+    const allDelivered = historyData
+      .flatMap(day => day.deliveredItems || []) // यहाँ डिफॉल्ट ऐरे जोड़ें
+      .filter(item => !!item); // undefined आइटम्स हटाएं
+
+    setDeliveredItems(allDelivered);
+  } catch (error) {
+    console.error("Error fetching delivery history:", error);
+    setDeliveredItems([]); // एरर केस में खाली ऐरे सेट करें
+  }
+};
+  
+
+  useEffect(() => {
+  fetchDeliveryHistory();
+  }, []);
+  
+  console.log(deliveredItems,"deliveredItems")
 
   //////////////   filter delivryMan data  ////////////////
 
@@ -512,8 +578,6 @@ function DeliveryBoyInventory2() {
     }
   }
 
-
-
   const fetchOrders = async () => {
 
 
@@ -621,7 +685,6 @@ function DeliveryBoyInventory2() {
   };
 
 
-  console.log(AllProducts, "all products");
   
   // fetching orders
   useEffect(() => {
@@ -659,6 +722,9 @@ const handleCancelOrder = async (id) => {
     return (
       <div>
         <RandomPopup showModal={showModal} handleClose={handleClose} data={orders} handleCancelOrder={handleCancelOrder} updateAllOrdersStatus={handleUpdateOrders} matchedOrdersArray={matchedOrdersArray} />
+        
+       <RandomPopup showModal={showDeliveryHistory} handleClose={handleDeliveryHistoryClose} data={orders} handleCancelOrder={""} updateAllOrdersStatus={handleUpdateOrders} matchedOrdersArray={matchedOrdersArray} />
+      
         <div className="main_panel_wrapper bg_light_grey w-100">
           {/* conform pop */}
           {conformpop ? <div className="bg_black_overlay"></div> : null}
@@ -882,6 +948,12 @@ const handleCancelOrder = async (id) => {
                 </div>
 
                 <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
+                  {/* <button
+                    onClick={() => setShowDeliveryHistory(true)}
+                    className="addnewproduct_btn2  gap-2 white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
+                  >
+                    <span>Order Delivered</span>
+                  </button> */}
                   <button
                     onClick={() => setShowModal(true)}
                     className="addnewproduct_btn2  gap-2 white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "

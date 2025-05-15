@@ -3,14 +3,12 @@ import { Modal, Button } from "react-bootstrap";
 
 export const RandomPopup = ({ showModal, handleClose, data, updateAllOrdersStatus,handleCancelOrder, matchedOrdersArray }) => {
 
-console.log(data,"data")
   const handleConfirm = () => {
     updateAllOrdersStatus()
     handleClose(); // Close modal after confirm
   };
 
   const handleCancel = () => {
-    console.log("Cancelled");
     handleClose(); // Close modal after cancel
   };
 

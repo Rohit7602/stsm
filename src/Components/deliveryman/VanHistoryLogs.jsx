@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import profile_image from "../../Images/Png/customer_profile.png";
 import { CrossIcons } from "../../Common/Icon";
@@ -6,6 +6,7 @@ function VanHistoryLogs() {
   const location = useLocation();
   const [viewlogspop, setViewLogsPop] = useState(null);
   const [viewhistorypop, setViewHistoryPop] = useState(false);
+ const [deliveredHistory,setDeliveredHistory]=useState([])
   const updatedFilterHistory = location.state.filterhistory.map((entry) => ({
     ...entry,
     pendingitems: entry.loaditems?.filter(
@@ -16,7 +17,30 @@ function VanHistoryLogs() {
     ),
   }));
 
-  console.log("object",location.state)
+  console.log(location.state,"state")
+// / 🔥 Filter Delivered Orders Between Two Time Periods
+  useEffect(() => {
+    if (
+      typeof viewhistorypop === "object" &&
+      viewhistorypop?.LoadOutVanHistory?.length &&
+      viewhistorypop?.LoadInVanHistory?.length
+    ) {
+      const out = viewhistorypop.LoadOutVanHistory[0];
+      const inTime = viewhistorypop.LoadInVanHistory[0];
+
+      const start = new Date(`${out.date}T${out.time}`);
+      const end = new Date(`${inTime.date}T${inTime.time}`);
+
+      const filtered = updatedFilterHistory.filter((order) => {
+        const deliveredTime = new Date(order.deliveredDateTime); // Make sure field name matches
+        return deliveredTime >= start && deliveredTime <= end;
+      });
+
+      setDeliveredHistory(filtered);
+    }
+  }, [viewhistorypop]);
+console.log(viewhistorypop,"updatedFilterHistory")
+ 
 
   return (
     <div className="main_panel_wrapper bg_light_grey w-100">
@@ -47,6 +71,8 @@ function VanHistoryLogs() {
                   </thead>
                   <tbody>
                     {viewhistorypop.LoadOutVanHistory?.map((value, index) => {
+                      console.log(value, "vlaue")
+                      
                       const currentDate = new Date()
                         .toISOString()
                         .split("T")[0]; // Get today's date in "YYYY-MM-DD" format
@@ -105,6 +131,7 @@ function VanHistoryLogs() {
                         month: "short",
                         year: "numeric",
                       });
+                      console.log(value,"value")
                       return (
                         <tr key={index}>
                           <td className="text-center">{formattedTime}</td>
@@ -223,7 +250,7 @@ function VanHistoryLogs() {
                       return dateB - dateA;
                     })
                     .map((item, index) => {
-                      console.log(item,"items")
+                     
                       return (
                         <div key={index}>
                           <div>
