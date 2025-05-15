@@ -50,6 +50,8 @@ import Offers from "./Components/marketing/Offers";
 import DeliveryBoyInventory2 from "./Components/deliveryman/DeliveryBoyInventory2";
 import VanHistoryLogs from "./Components/deliveryman/VanHistoryLogs";
 import Productlogs from "./Components/brands/Productlogs";
+import ShowAllOrders from "./Components/ShowAllOrders";
+import AllCustomerPopup from "./Components/AllCustomerPopup";
 
 function App() {
   const { logoutUser } = useUserAuth();
@@ -212,7 +214,11 @@ function App() {
                     {!distributor ? (
                       <div className="h-100 px-3 bg_light_grey">
                         <Routes>
-                          <Route path="" element={<DashbordCards />} />
+                              <Route path="" element={<DashbordCards />} >
+                              <Route path="all-orders" element={<ShowAllOrders />} />
+                              <Route path="all-customer" element={<AllCustomerPopup />} />
+                              
+                              </Route>
                           <Route path="catalog">
                             <Route index element={<CategoriesView />} />
                             <Route

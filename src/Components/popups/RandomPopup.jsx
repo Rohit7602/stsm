@@ -3,14 +3,12 @@ import { Modal, Button } from "react-bootstrap";
 
 export const RandomPopup = ({ showModal, handleClose, data, updateAllOrdersStatus,handleCancelOrder, matchedOrdersArray }) => {
 
-console.log(data,"data")
   const handleConfirm = () => {
     updateAllOrdersStatus()
     handleClose(); // Close modal after confirm
   };
 
   const handleCancel = () => {
-    console.log("Cancelled");
     handleClose(); // Close modal after cancel
   };
 
@@ -54,7 +52,7 @@ console.log(data,"data")
                     </ul>
                   </td>
                   <td>₹ {order.order_price}</td>
-                  <td><span onClick={()=>handleCancelOrder(order.id)} style={{  fontWeight: "bold", color: "red" }}>Cencel</span></td>
+                  <td><span onClick={()=>handleCancelOrder(order.id)} style={{  fontWeight: "bold", color: "red",cursor:"pointer" }}>Cencel</span></td>
                 </tr>
               ))}
               {matchedOrdersArray.length > 0 && (
