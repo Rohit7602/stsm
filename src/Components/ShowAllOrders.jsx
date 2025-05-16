@@ -4,7 +4,7 @@ import { useOrdercontext } from '../context/OrderGetter';
 import { Link } from 'react-router-dom';
 import ExcelJS from 'exceljs';  // Import ExcelJS
 import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs} from 'firebase/firestore';
 import Loader from './Loader';
 
 const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
@@ -31,6 +31,7 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
 
   fetchData();
 }, [setLoading]); 
+
 
 
 
@@ -64,11 +65,13 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
             { header: "Order Number", key: "OrderNumber", width: 20 },
             { header: "Invoice", key: "Invoice", width: 20 },
             { header: "Customer Name", key: "CustomerName", width: 30 },
-            { header: "Payment Status", key: "PaymentStatus", width: 20 },
-            { header: "Order Status", key: "OrderStatus", width: 20 },
-            { header: "Delivered Date", key: "DeliveredDate", width: 20 },
-            { header: "Total Items", key: "TotalItems", width: 15 },
-            { header: "Order Price", key: "OrderPrice", width: 20 },
+            { header: "Date", key: "OrderDate", width: 30 },
+            { header: "Payment Status", key: "PaymentStatus", width: 10 },
+            { header: "Order Status", key: "OrderStatus", width: 15 },
+            { header: "Delivered Date", key: "DeliveredDate", width: 30 },
+            { header: "Total Items", key: "TotalItems", width: 10 },
+            { header: "Order Price", key: "OrderPrice", width: 10 },
+            { header: "address", key: "address", width: 30, style: { alignment: { wrapText: true, vertical: 'top' } }  },
         ];
 
         // Populate the rows with order data
@@ -79,13 +82,15 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                 : "N/A";
 
             excelSheet.addRow({
-                OrderNumber: formattedDate,
-                Invoice: order.order_created_by === "Van" ? "" : order.uid,
+                OrderNumber: order.order_id,
+                OrderDate: formattedDate,
+                Invoice: order.order_created_by === "Van" ? "" : order.invoiceNumber,
                 CustomerName: order.customer.name,
                 PaymentStatus: order.transaction.status,
                 OrderStatus: order.status,
                 DeliveredDate: deliveredDate,
                 TotalItems: order.items.length,
+                address: order.shipping.address,
                 OrderPrice: `₹ ${order.order_price}`,
             });
         });
@@ -103,7 +108,7 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
             window.URL.revokeObjectURL(url);
         });
     };
-
+    // console.log(allOrders,"orders")
 
  if (loading) {
     return <Loader />;
@@ -148,14 +153,17 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                         <th className="mw-200 p-2">
                                             <h3 className="fs-sm fw-400 black mb-0">Invoice</h3>
                                         </th>
+                                        <th className="mw-200 p-2">
+                                            <h3 className="fs-sm fw-400 black mb-0">Customer</h3>
+                                        </th>
                                         <th className="mw-200 p-3">
                                             <h3 className="fs-sm fw-400 black mb-0 d-flex">
                                                 Date
                                             </h3>
                                         </th>
-                                        <th className="mw-200 p-3">
+                                        {/* <th className="mw-200 p-3">
                                             <h3 className="fs-sm fw-400 black mb-0">Customer</h3>
-                                        </th>
+                                        </th> */}
                                         <th className="mw-200 p-3 cursor_pointer">
                                             <span className="d-flex align-items-center">
                                                 <h3 className="fs-sm fw-400 black mb-0 white_space_nowrap text-capitalize">
@@ -163,7 +171,7 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                                 </h3>
                                             </span>
                                         </th>
-                                        <th className="mw_160 p-3 cursor_pointer">
+                                        <th className="mw_190 p-3 cursor_pointer">
                                             <h3 className="fs-sm fw-400 black mb-0">
                                                 Order Status
                                             </h3>
@@ -181,17 +189,23 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                                 Order Price
                                             </h3>
                                         </th>
-                                        <th className="mx_100 p-3 pe-4 text-center">
+                                        <th className="mx_160 p-3 pe-4 text-center">
                                             <h3 className="fs-sm fw-400 black mb-0">Address</h3>
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody className="table_body">
-                                    {allOrders.map((orderTableData, index) => (
+                                <tbody className="table_body w-100">
+                                        {allOrders.map((orderTableData, index) => {
+                                            return(
                                         <tr key={orderTableData.id}>
                                             <td className="p-3 mw-200">
                                                 <h3 className="fs-xs fw-400 black mb-0">
-                                                    {formatDate(orderTableData.created_at)}
+                                                    {orderTableData.order_id}
+                                                </h3>
+                                            </td>
+                                            <td className="p-3 mw-200">
+                                                <h3 className="fs-xs fw-400 black mb-0">
+                                                    {orderTableData.invoiceNumber}
                                                 </h3>
                                             </td>
                                             <td className="p-3 mw-200">
@@ -206,6 +220,11 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                                         {orderTableData.customer.name}
                                                     </h3>
                                                 </Link>
+                                            </td>
+                                              <td className="p-3 mw-200">
+                                                <h3 className="fs-xs fw-400 black mb-0">
+                                                    {formatDate(orderTableData.created_at)}
+                                                </h3>
                                             </td>
                                             <td className="p-3 mw-200">
                                                 <h3 className={`fs-sm fw-400 mb-0 d-inline-block`}>
@@ -238,7 +257,8 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                                 </h3>
                                             </td>
                                         </tr>
-                                    ))}
+                                    )
+                                        })}
                                 </tbody>
                             </table>
                         </div>

@@ -1,59 +1,53 @@
 
-
-
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useCustomerContext } from '../context/Customergetters';
 import { CrossIcons } from '../Common/Icon';
-import { useOrdercontext } from '../context/OrderGetter';
 import ExcelJS from 'exceljs';  // Import ExcelJS
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
+import Loader from './Loader';
 
 const AllCustomerPopup = ({ setShowAllCustomers }) => {
-    // const { customer } = useCustomerContext();
-    // const { ordersAll } = useOrdercontext();
-     const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     const [allOrders, setAllOrders] = useState([])
     const [customer, setCustomer] = useState([])
 
-  useEffect(() => {
-  const fetchData = async () => {
-    try {
-      setLoading(true); // Loading start
-      const querySnapshot = await getDocs(collection(db, "order"));
-      const allOrder = [];
-      querySnapshot.forEach((doc) => {
-        allOrder.push({ id: doc.id, ...doc.data() });
-      });
-      setAllOrders(allOrder);
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    } finally {
-      setLoading(false); // Loading end
-    }
-  };
-  const fetchAllCustomer = async () => {
-    try {
-      setLoading(true); // Loading start
-      const querySnapshot = await getDocs(collection(db, "customers"));
-      const allCustomer = [];
-      querySnapshot.forEach((doc) => {
-        allCustomer.push({ id: doc.id, ...doc.data() });
-      });
-      setCustomer(allCustomer);
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    } finally {
-      setLoading(false); // Loading end
-    }
-  };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true); // Loading start
+                const querySnapshot = await getDocs(collection(db, "order"));
+                const allOrder = [];
+                querySnapshot.forEach((doc) => {
+                    allOrder.push({ id: doc.id, ...doc.data() });
+                });
+                setAllOrders(allOrder);
+            } catch (error) {
+                console.error("Error fetching orders:", error);
+            } finally {
+                setLoading(false); // Loading end
+            }
+        };
+        const fetchAllCustomer = async () => {
+            try {
+                setLoading(true); // Loading start
+                const querySnapshot = await getDocs(collection(db, "customers"));
+                const allCustomer = [];
+                querySnapshot.forEach((doc) => {
+                    allCustomer.push({ id: doc.id, ...doc.data() });
+                });
+                setCustomer(allCustomer);
+            } catch (error) {
+                console.error("Error fetching orders:", error);
+            } finally {
+                setLoading(false); // Loading end
+            }
+        };
 
-      fetchData();
-      fetchAllCustomer()
-}, [setLoading]); 
+        fetchData();
+        fetchAllCustomer()
+    }, [setLoading]);
 
     const totalSpentByCustomer = customer.map((customer) => {
         const totalSpent = allOrders
@@ -73,20 +67,27 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
         excelSheet.columns = [
             { header: "Name", key: "Name", width: 30 },
             { header: "Email", key: "Email", width: 30 },
-            { header: "City / State", key: "CityState", width: 30 },
+            { header: "Gender", key: "Gender", width: 10 },
             { header: "Total Spent", key: "TotalSpent", width: 15 },
             { header: "Registration Date", key: "RegistrationDate", width: 20 },
+            { header: "Address", key: "Address", width: 30 ,style: { alignment: { wrapText: true, vertical: 'top' } }},
         ];
 
         // Populate the rows with customer data
         totalSpentByCustomer.forEach((customer) => {
             const formattedDate = new Date(customer.created_at).toLocaleDateString();
+            const fullAddress = (customer.addresses || [])
+            .map((item) =>
+                `${item.house_no || ""}, ${item.colony || ""}, ${item.landmark || ""}, ${item.city || ""}, ${item.state || ""}`
+            )
+            .join("\n"); 
             excelSheet.addRow({
                 Name: customer.name,
                 Email: customer.email,
-                CityState: `${customer.city} / ${customer.state}`,
+                Gender: customer.gender,
                 TotalSpent: `₹ ${customer.totalSpent}`,
                 RegistrationDate: formattedDate,
+                  Address: fullAddress,
             });
         });
 
@@ -103,7 +104,11 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
             window.URL.revokeObjectURL(url);
         });
     };
-console.log(customer,"customer")
+    console.log(customer, "customer")
+
+ if (loading) {
+    return <Loader />;
+  }
     return (
         <div>
             <div className="bg-white p-4 rounded-4 w-100 position-fixed center_pop h-100">
@@ -118,7 +123,7 @@ console.log(customer,"customer")
                         </button>
                         <Link to={"/"}
                             className="border-0 bg-white"
-                            // onClick={() => setShowAllCustomers(false)}
+                        // onClick={() => setShowAllCustomers(false)}
                         >
                             <CrossIcons />
                         </Link>
@@ -138,7 +143,7 @@ console.log(customer,"customer")
                                         <h3 className="fs-sm fw-400 black mb-0">Registration</h3>
                                     </th>
                                     <th className="mw-300 p-3">
-                                        <h3 className="fs-sm fw-400 black mb-0">City / State</h3>
+                                        <h3 className="fs-sm fw-400 black mb-0">Address</h3>
                                     </th>
                                     <th className="mw-300 p-3">
                                         <h3 className="fs-sm fw-400 black mb-0">Gender</h3>
@@ -153,9 +158,9 @@ console.log(customer,"customer")
                             </thead>
                             <tbody className="table_body">
                                 {totalSpentByCustomer.map((item, index) => {
-                                    const { id, city, email, state, name, totalSpent, created_at,gender } = item;
+                                    const { id, city, email, state, name, totalSpent, created_at, gender ,addresses} = item;
                                     const formattedDate = new Date(created_at).toLocaleDateString();
-console.log(item,"item")
+                                    console.log(item, "item")
                                     return (
                                         <tr key={id}>
                                             <td className="py-2 px-3">
@@ -179,7 +184,19 @@ console.log(item,"item")
                                             </td>
                                             <td className="p-3 mw-300">
                                                 <h3 className="fs-sm fw-400 black mb-0">
-                                                    {city} / {state}
+                                                    {addresses.map((items) => {
+                                                        return (
+                                                            <div>
+                                                                { items.house_no } &nbsp;
+                                                                { items.colony }&nbsp;
+                                                                { items.landmark }&nbsp;
+                                                                { items.city }&nbsp;
+                                                                { items.state }&nbsp;
+                                                                
+                                                            </div> 
+                                                        )
+                                                    })}
+                                                    
                                                 </h3>
                                             </td>
                                             <td className="p-3 mw-300">

@@ -1631,7 +1631,7 @@ div.rich-text-editor .ql-editor {
   display: block !important;
   height: calc(100vh - 100px) !important;
   height: 100%;
-  overflow-y: auto !important;
+  /* overflow-y: auto !important; */
 }
 
 .table_body3 {
