@@ -12,52 +12,28 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
 
     const [allOrders, setAllOrders] = useState([])
 
-    //   useEffect(() => {
-    //   const fetchData = async () => {
-    //     try {
-    //       setLoading(true); // Loading start
-    //       const querySnapshot = await getDocs(collection(db, "order"));
-    //       const allOrder = [];
-    //       querySnapshot.forEach((doc) => {
-    //         allOrder.push({ id: doc.id, ...doc.data() });
-    //       });
-    //       setAllOrders(allOrder);
-    //     } catch (error) {
-    //       console.error("Error fetching orders:", error);
-    //     } finally {
-    //       setLoading(false); // Loading end
-    //     }
-    //   };
+      useEffect(() => {
+      const fetchData = async () => {
+        try {
+          setLoading(true); // Loading start
+          const querySnapshot = await getDocs(collection(db, "order"));
+          const allOrder = [];
+          querySnapshot.forEach((doc) => {
+            allOrder.push({ id: doc.id, ...doc.data() });
+          });
+          setAllOrders(allOrder);
+        } catch (error) {
+          console.error("Error fetching orders:", error);
+        } finally {
+          setLoading(false); // Loading end
+        }
+      };
 
-    //   fetchData();
-    // }, [setLoading]); 
-
-
+      fetchData();
+    }, [setLoading]); 
 
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true); // Loading start
 
-                const ordersQuery = query(collection(db, "order"), limit(10));
-                const querySnapshot = await getDocs(ordersQuery);
-
-                const allOrder = [];
-                querySnapshot.forEach((doc) => {
-                    allOrder.push({ id: doc.id, ...doc.data() });
-                });
-
-                setAllOrders(allOrder);
-            } catch (error) {
-                console.error("Error fetching orders:", error);
-            } finally {
-                setLoading(false); // Loading end
-            }
-        };
-
-        fetchData();
-    }, [setLoading]);
 
 
     function formatDate(dateString) {
