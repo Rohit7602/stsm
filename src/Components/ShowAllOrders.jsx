@@ -4,35 +4,60 @@ import { useOrdercontext } from '../context/OrderGetter';
 import { Link } from 'react-router-dom';
 import ExcelJS from 'exceljs';  // Import ExcelJS
 import { db } from '../firebase';
-import { collection, getDocs} from 'firebase/firestore';
+import { collection, getDocs, limit, query } from 'firebase/firestore';
 import Loader from './Loader';
 
 const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     const [allOrders, setAllOrders] = useState([])
 
-  useEffect(() => {
-  const fetchData = async () => {
-    try {
-      setLoading(true); // Loading start
-      const querySnapshot = await getDocs(collection(db, "order"));
-      const allOrder = [];
-      querySnapshot.forEach((doc) => {
-        allOrder.push({ id: doc.id, ...doc.data() });
-      });
-      setAllOrders(allOrder);
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    } finally {
-      setLoading(false); // Loading end
-    }
-  };
+    //   useEffect(() => {
+    //   const fetchData = async () => {
+    //     try {
+    //       setLoading(true); // Loading start
+    //       const querySnapshot = await getDocs(collection(db, "order"));
+    //       const allOrder = [];
+    //       querySnapshot.forEach((doc) => {
+    //         allOrder.push({ id: doc.id, ...doc.data() });
+    //       });
+    //       setAllOrders(allOrder);
+    //     } catch (error) {
+    //       console.error("Error fetching orders:", error);
+    //     } finally {
+    //       setLoading(false); // Loading end
+    //     }
+    //   };
 
-  fetchData();
-}, [setLoading]); 
+    //   fetchData();
+    // }, [setLoading]); 
 
 
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true); // Loading start
+
+                const ordersQuery = query(collection(db, "order"), limit(10));
+                const querySnapshot = await getDocs(ordersQuery);
+
+                const allOrder = [];
+                querySnapshot.forEach((doc) => {
+                    allOrder.push({ id: doc.id, ...doc.data() });
+                });
+
+                setAllOrders(allOrder);
+            } catch (error) {
+                console.error("Error fetching orders:", error);
+            } finally {
+                setLoading(false); // Loading end
+            }
+        };
+
+        fetchData();
+    }, [setLoading]);
 
 
     function formatDate(dateString) {
@@ -65,13 +90,15 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
             { header: "Order Number", key: "OrderNumber", width: 20 },
             { header: "Invoice", key: "Invoice", width: 20 },
             { header: "Customer Name", key: "CustomerName", width: 30 },
+            { header: "Father Name", key: "FatherName", width: 30 },
+            { header: "Phone", key: "phone", width: 30 },
             { header: "Date", key: "OrderDate", width: 30 },
-            { header: "Payment Status", key: "PaymentStatus", width: 10 },
+            { header: "Payment Status", key: "PaymentStatus", width: 15 },
             { header: "Order Status", key: "OrderStatus", width: 15 },
             { header: "Delivered Date", key: "DeliveredDate", width: 30 },
             { header: "Total Items", key: "TotalItems", width: 10 },
             { header: "Order Price", key: "OrderPrice", width: 10 },
-            { header: "address", key: "address", width: 30, style: { alignment: { wrapText: true, vertical: 'top' } }  },
+            { header: "address", key: "address", width: 30, style: { alignment: { wrapText: true, vertical: 'top' } } },
         ];
 
         // Populate the rows with order data
@@ -86,6 +113,8 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                 OrderDate: formattedDate,
                 Invoice: order.order_created_by === "Van" ? "" : order.invoiceNumber,
                 CustomerName: order.customer.name,
+                FatherName: order.fathername,
+                phone: order.customer.phone,
                 PaymentStatus: order.transaction.status,
                 OrderStatus: order.status,
                 DeliveredDate: deliveredDate,
@@ -110,9 +139,9 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
     };
     // console.log(allOrders,"orders")
 
- if (loading) {
-    return <Loader />;
-  }
+    if (loading) {
+        return <Loader />;
+    }
     return (
         <div>
             <div className="bg-white p-4 rounded-4 w-100 position-fixed center_pop h-100">
@@ -129,7 +158,7 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                         </button>
                         <Link to="/"
                             className="border-0 bg-white"
-                            // onClick={() => setShowAllOrder(false)}
+                        // onClick={() => setShowAllOrder(false)}
                         >
                             <CrossIcons />
                         </Link>
@@ -153,17 +182,22 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                         <th className="mw-200 p-2">
                                             <h3 className="fs-sm fw-400 black mb-0">Invoice</h3>
                                         </th>
+
                                         <th className="mw-200 p-2">
                                             <h3 className="fs-sm fw-400 black mb-0">Customer</h3>
+                                        </th>
+
+                                        <th className="mw-200 p-3">
+                                            <h3 className="fs-sm fw-400 black mb-0">Father Name</h3>
+                                        </th>
+                                        <th className="mw-200 p-2">
+                                            <h3 className="fs-sm fw-400 black mb-0">phone</h3>
                                         </th>
                                         <th className="mw-200 p-3">
                                             <h3 className="fs-sm fw-400 black mb-0 d-flex">
                                                 Date
                                             </h3>
                                         </th>
-                                        {/* <th className="mw-200 p-3">
-                                            <h3 className="fs-sm fw-400 black mb-0">Customer</h3>
-                                        </th> */}
                                         <th className="mw-200 p-3 cursor_pointer">
                                             <span className="d-flex align-items-center">
                                                 <h3 className="fs-sm fw-400 black mb-0 white_space_nowrap text-capitalize">
@@ -195,70 +229,81 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                     </tr>
                                 </thead>
                                 <tbody className="table_body w-100">
-                                        {allOrders.map((orderTableData, index) => {
-                                            return(
-                                        <tr key={orderTableData.id}>
-                                            <td className="p-3 mw-200">
-                                                <h3 className="fs-xs fw-400 black mb-0">
-                                                    {orderTableData.order_id}
-                                                </h3>
-                                            </td>
-                                            <td className="p-3 mw-200">
-                                                <h3 className="fs-xs fw-400 black mb-0">
-                                                    {orderTableData.invoiceNumber}
-                                                </h3>
-                                            </td>
-                                            <td className="p-3 mw-200">
-                                                <Link
-                                                    to={
-                                                        orderTableData.order_created_by === "Van"
-                                                            ? ""
-                                                            : `/customer/viewcustomerdetails/${orderTableData.uid}`
-                                                    }
-                                                >
-                                                    <h3 className="fs-sm fw-400 color_blue mb-0">
-                                                        {orderTableData.customer.name}
+                                    {allOrders.map((orderTableData, index) => {
+                                        console.log(orderTableData)
+                                        return (
+                                            <tr key={orderTableData.id}>
+                                                <td className="p-3 mw-200">
+                                                    <h3 className="fs-xs fw-400 black mb-0">
+                                                        {orderTableData.order_id}
                                                     </h3>
-                                                </Link>
-                                            </td>
-                                              <td className="p-3 mw-200">
-                                                <h3 className="fs-xs fw-400 black mb-0">
-                                                    {formatDate(orderTableData.created_at)}
-                                                </h3>
-                                            </td>
-                                            <td className="p-3 mw-200">
-                                                <h3 className={`fs-sm fw-400 mb-0 d-inline-block`}>
-                                                    {orderTableData.transaction.status}
-                                                </h3>
-                                            </td>
-                                            <td className="p-3 mw_190">
-                                                <p className="d-inline-block fs-sm fw-400 mb-0">
-                                                    {orderTableData.status}
-                                                </p>
-                                            </td>
-                                            <td className="py-3 ps-5 mw-300">
-                                                <h3 className="fs-sm fw-400 black mb-0">
-                                                    {formatDate(orderTableData.transaction.date)}
-                                                </h3>
-                                            </td>
-                                            <td className="p-3 mw_140">
-                                                <h3 className="fs-sm fw-400 black mb-0">
-                                                    {orderTableData.items.length} items
-                                                </h3>
-                                            </td>
-                                            <td className="p-3 mw_160">
-                                                <h3 className="fs-sm fw-400 black mb-0">
-                                                    ₹ {orderTableData.order_price}
-                                                </h3>
-                                            </td>
-                                            <td className="p-3 mw_160">
-                                                <h3 className="fs-sm fw-400 black mb-0">
-                                                     {orderTableData.shipping.address}
-                                                </h3>
-                                            </td>
-                                        </tr>
-                                    )
-                                        })}
+                                                </td>
+                                                <td className="p-3 mw-200">
+                                                    <h3 className="fs-xs fw-400 black mb-0">
+                                                        {orderTableData.invoiceNumber}
+                                                    </h3>
+                                                </td> <td className="p-3 mw-200">
+                                                    <Link
+                                                        to={
+                                                            orderTableData.order_created_by === "Van"
+                                                                ? ""
+                                                                : `/customer/viewcustomerdetails/${orderTableData.uid}`
+                                                        }
+                                                    >
+                                                        <h3 className="fs-sm fw-400 color_blue mb-0">
+                                                            {orderTableData.customer.name}
+                                                        </h3>
+                                                    </Link>
+                                                </td>
+                                              
+                                               
+                                                <td className="p-3 mw-200">
+                                                    <h3 className="fs-xs fw-400 black mb-0">
+                                                        {orderTableData.fathername}
+                                                    </h3>
+                                                </td>  <td className="p-3 mw-200">
+                                                    <h3 className="fs-xs fw-400 black mb-0">
+                                                        {orderTableData.customer.phone}
+                                                    </h3>
+                                                </td>
+                                                <td className="p-3 mw-200">
+                                                    <h3 className="fs-xs fw-400 black mb-0">
+                                                        {formatDate(orderTableData.created_at)}
+                                                    </h3>
+                                                </td>
+                                                <td className="p-3 mw-200">
+                                                    <h3 className={`fs-sm fw-400 mb-0 d-inline-block`}>
+                                                        {orderTableData.transaction.status}
+                                                    </h3>
+                                                </td>
+                                                <td className="p-3 mw_190">
+                                                    <p className="d-inline-block fs-sm fw-400 mb-0">
+                                                        {orderTableData.status}
+                                                    </p>
+                                                </td>
+                                                <td className="py-3 ps-5 mw-300">
+                                                    <h3 className="fs-sm fw-400 black mb-0">
+                                                        {formatDate(orderTableData.transaction.date)}
+                                                    </h3>
+                                                </td>
+                                                <td className="p-3 mw_140">
+                                                    <h3 className="fs-sm fw-400 black mb-0">
+                                                        {orderTableData.items.length} items
+                                                    </h3>
+                                                </td>
+                                                <td className="p-3 mw_160">
+                                                    <h3 className="fs-sm fw-400 black mb-0">
+                                                        ₹ {orderTableData.order_price}
+                                                    </h3>
+                                                </td>
+                                                <td className="p-3 mw_160">
+                                                    <h3 className="fs-sm fw-400 black mb-0">
+                                                        {orderTableData.shipping.address}
+                                                    </h3>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
                                 </tbody>
                             </table>
                         </div>
