@@ -68,26 +68,36 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
             { header: "Name", key: "Name", width: 30 },
             { header: "Email", key: "Email", width: 30 },
             { header: "Gender", key: "Gender", width: 10 },
+            { header: "FatherName", key: "FatherName", width: 20 },
+            { header: "Mobile", key: "Mobile", width: 15 },
             { header: "Total Spent", key: "TotalSpent", width: 15 },
             { header: "Registration Date", key: "RegistrationDate", width: 20 },
-            { header: "Address", key: "Address", width: 30 ,style: { alignment: { wrapText: true, vertical: 'top' } }},
+            { header: "House No", key: "HouseNo", width: 20 },
+            { header: "Colony", key: "Colony", width: 25, style: { alignment: { wrapText: true, vertical: 'top' } }   },
+            { header: "Landmark", key: "Landmark", width: 20 ,style: { alignment: { wrapText: true, vertical: 'top' } }  },
+            { header: "City", key: "City", width: 15 ,style: { alignment: { wrapText: true, vertical: 'top' } }  },
+            { header: "State", key: "State", width: 15,style: { alignment: { wrapText: true, vertical: 'top' } }   },
+            { header: "Pin Code", key: "ZIP", width: 10 },
         ];
 
         // Populate the rows with customer data
         totalSpentByCustomer.forEach((customer) => {
             const formattedDate = new Date(customer.created_at).toLocaleDateString();
-            const fullAddress = (customer.addresses || [])
-            .map((item) =>
-                `${item.house_no || ""}, ${item.colony || ""}, ${item.landmark || ""}, ${item.city || ""}, ${item.state || ""}`
-            )
-            .join("\n"); 
+            const address = (customer.addresses && customer.addresses[0]) || {};
             excelSheet.addRow({
                 Name: customer.name,
                 Email: customer.email,
                 Gender: customer.gender,
+                FatherName: customer.fathername,
+                Mobile: customer.phone,
                 TotalSpent: `₹ ${customer.totalSpent}`,
                 RegistrationDate: formattedDate,
-                  Address: fullAddress,
+                HouseNo: address.house_no || "",
+                Colony: address.colony || "",
+                Landmark: address.landmark || "",
+                City: address.city || "",
+                State: address.state || "",
+                ZIP: address.pincode || "",
             });
         });
 
@@ -106,9 +116,9 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
     };
     console.log(customer, "customer")
 
- if (loading) {
-    return <Loader />;
-  }
+    if (loading) {
+        return <Loader />;
+    }
     return (
         <div>
             <div className="bg-white p-4 rounded-4 w-100 position-fixed center_pop h-100">
@@ -134,7 +144,7 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
                         <table className="w-100">
                             <thead className="table_head w-100">
                                 <tr className="product_borderbottom">
-                                    <th className="mw-450 py-2 px-3 w-100 cursor_pointer">
+                                    <th className="mw-300 py-2 px-3 cursor_pointer">
                                         <div className="d-flex align-items-center gap-3 min_width_300">
                                             <p className="fw-400 fs-sm black mb-0">Name</p>
                                         </div>
@@ -145,12 +155,16 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
                                     <th className="mw-300 p-3">
                                         <h3 className="fs-sm fw-400 black mb-0">Address</h3>
                                     </th>
-                                    <th className="mw-300 p-3">
+                                    <th className="mw-160 p-3">
                                         <h3 className="fs-sm fw-400 black mb-0">Gender</h3>
                                     </th>
-                                    <th className="mw_160 p-3">
-                                        <h3 className="fs-sm fw-400 black mb-0">Group</h3>
+                                    <th className="mw-160 p-3">
+                                        <h3 className="fs-sm fw-400 black mb-0">Father Name</h3>
                                     </th>
+                                    <th className="mw-160 p-3">
+                                        <h3 className="fs-sm fw-400 black mb-0">Phone</h3>
+                                    </th>
+
                                     <th className="mw-200 p-3">
                                         <h3 className="fs-sm fw-400 black mb-0">Total Spent</h3>
                                     </th>
@@ -158,12 +172,12 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
                             </thead>
                             <tbody className="table_body">
                                 {totalSpentByCustomer.map((item, index) => {
-                                    const { id, city, email, state, name, totalSpent, created_at, gender ,addresses} = item;
+                                    const { id, phone, email, fathername, name, totalSpent, created_at, gender, addresses } = item;
                                     const formattedDate = new Date(created_at).toLocaleDateString();
                                     console.log(item, "item")
                                     return (
                                         <tr key={id}>
-                                            <td className="py-2 px-3">
+                                            <td className="py-2 px-3  mw-300">
                                                 <div className="d-flex align-items-center gap-3">
                                                     <div className="d-flex align-items-center">
                                                         <div>
@@ -187,26 +201,34 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
                                                     {addresses.map((items) => {
                                                         return (
                                                             <div>
-                                                                { items.house_no } &nbsp;
-                                                                { items.colony }&nbsp;
-                                                                { items.landmark }&nbsp;
-                                                                { items.city }&nbsp;
-                                                                { items.state }&nbsp;
-                                                                
-                                                            </div> 
+                                                                {items.house_no} &nbsp;
+                                                                {items.colony}&nbsp;
+                                                                {items.landmark}&nbsp;
+                                                                {items.city}&nbsp;
+                                                                {items.state}&nbsp;
+
+                                                            </div>
                                                         )
                                                     })}
-                                                    
+
                                                 </h3>
                                             </td>
-                                            <td className="p-3 mw-300">
+                                            <td className="p-3 mw-160">
                                                 <h3 className="fs-sm fw-400 black mb-0">
                                                     {gender}
                                                 </h3>
                                             </td>
-                                            <td className="p-3 mw_160">
-                                                <h3 className="fs-sm fw-400 black mb-0">Public</h3>
+                                            <td className="p-3 mw-160">
+                                                <h3 className="fs-sm fw-400 black mb-0">
+                                                    {fathername}
+                                                </h3>
                                             </td>
+                                            <td className="p-3 mw-160">
+                                                <h3 className="fs-sm fw-400 black mb-0">
+                                                    {phone}
+                                                </h3>
+                                            </td>
+
                                             <td className="p-3 mw-200">
                                                 <h3 className="fs-sm fw-400 black mb-0">₹ {totalSpent}</h3>
                                             </td>
