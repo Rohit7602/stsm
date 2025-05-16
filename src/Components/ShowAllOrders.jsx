@@ -194,9 +194,8 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody className="table_body">
+                                <tbody className="table_body w-100">
                                         {allOrders.map((orderTableData, index) => {
-                                    console.log(orderTableData,"ordrtalbedata")
                                             return(
                                         <tr key={orderTableData.id}>
                                             <td className="p-3 mw-200">
