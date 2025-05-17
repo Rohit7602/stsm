@@ -948,12 +948,12 @@ const handleCancelOrder = async (id) => {
                 </div>
 
                 <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
-                  <button
+                  {/* <button
                     onClick={() => setShowDeliveryHistory(true)}
                     className="addnewproduct_btn2  gap-2 white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
                   >
                     <span>Order Delivered</span>
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => setShowModal(true)}
                     className="addnewproduct_btn2  gap-2 white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "

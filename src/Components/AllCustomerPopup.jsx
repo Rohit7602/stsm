@@ -30,42 +30,22 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
             }
         };
 
-const fetchAllCustomer = async () => {
-  try {
-    setLoading(true); // Loading start
-
-    const q = query(collection(db, "customers"), limit(10));
-    const querySnapshot = await getDocs(q);
-
-    const allCustomer = [];
-    querySnapshot.forEach((doc) => {
-      allCustomer.push({ id: doc.id, ...doc.data() });
-    });
-
-    setCustomer(allCustomer);
-  } catch (error) {
-    console.error("Error fetching customers:", error);
-  } finally {
-    setLoading(false); // Loading end
-  }
-};
-        console.log(customer, "customer")
         
-        // const fetchAllCustomer = async () => {
-        //     try {
-        //         setLoading(true); // Loading start
-        //         const querySnapshot = await getDocs(collection(db, "customers"));
-        //         const allCustomer = [];
-        //         querySnapshot.forEach((doc) => {
-        //             allCustomer.push({ id: doc.id, ...doc.data() });
-        //         });
-        //         setCustomer(allCustomer);
-        //     } catch (error) {
-        //         console.error("Error fetching orders:", error);
-        //     } finally {
-        //         setLoading(false); // Loading end
-        //     }
-        // };
+        const fetchAllCustomer = async () => {
+            try {
+                setLoading(true); // Loading start
+                const querySnapshot = await getDocs(collection(db, "customers"));
+                const allCustomer = [];
+                querySnapshot.forEach((doc) => {
+                    allCustomer.push({ id: doc.id, ...doc.data() });
+                });
+                setCustomer(allCustomer);
+            } catch (error) {
+                console.error("Error fetching orders:", error);
+            } finally {
+                setLoading(false); // Loading end
+            }
+        };
 
         fetchData();
         fetchAllCustomer()

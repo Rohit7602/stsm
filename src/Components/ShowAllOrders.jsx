@@ -12,50 +12,25 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
 
     const [allOrders, setAllOrders] = useState([])
 
+      useEffect(() => {
+      const fetchData = async () => {
+        try {
+          setLoading(true); // Loading start
+          const querySnapshot = await getDocs(collection(db, "order"));
+          const allOrder = [];
+          querySnapshot.forEach((doc) => {
+            allOrder.push({ id: doc.id, ...doc.data() });
+          });
+          setAllOrders(allOrder);
+        } catch (error) {
+          console.error("Error fetching orders:", error);
+        } finally {
+          setLoading(false); // Loading end
+        }
+      };
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      setLoading(true); // Loading start
-
-      const q = query(collection(db, "order"), limit(10));
-      const querySnapshot = await getDocs(q);
-
-      const allOrder = [];
-      querySnapshot.forEach((doc) => {
-        allOrder.push({ id: doc.id, ...doc.data() });
-      });
-
-      setAllOrders(allOrder);
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    } finally {
-      setLoading(false); // Loading end
-    }
-  };
-
-  fetchData();
-}, [setLoading]);
-
-    //   useEffect(() => {
-    //   const fetchData = async () => {
-    //     try {
-    //       setLoading(true); // Loading start
-    //       const querySnapshot = await getDocs(collection(db, "order"));
-    //       const allOrder = [];
-    //       querySnapshot.forEach((doc) => {
-    //         allOrder.push({ id: doc.id, ...doc.data() });
-    //       });
-    //       setAllOrders(allOrder);
-    //     } catch (error) {
-    //       console.error("Error fetching orders:", error);
-    //     } finally {
-    //       setLoading(false); // Loading end
-    //     }
-    //   };
-
-    //   fetchData();
-    // }, [setLoading]); 
+      fetchData();
+    }, [setLoading]); 
 
 
 
@@ -90,19 +65,19 @@ useEffect(() => {
         excelSheet.columns = [
             { header: "Order Number", key: "OrderNumber", width: 20 },
             { header: "Invoice", key: "Invoice", width: 20 },
+            { header: "Date", key: "OrderDate", width: 30 },
             { header: "Customer Name", key: "CustomerName", width: 30 },
+            { header: "Alternate Name", key: "AlternateName", width: 30 },
             { header: "Father Name", key: "FatherName", width: 30 },
             { header: "Phone", key: "phone", width: 30 },
             { header: "Alternate Phone", key: "AlternatePhone", width: 30 },
-            { header: "Alternate Address", key: "AlternateAddress", width: 30 },
-            { header: "Alternate Name", key: "AlternateName", width: 30 },
-            { header: "Date", key: "OrderDate", width: 30 },
             { header: "Payment Status", key: "PaymentStatus", width: 15 },
             { header: "Order Status", key: "OrderStatus", width: 15 },
             { header: "Delivered Date", key: "DeliveredDate", width: 30 },
             { header: "Total Items", key: "TotalItems", width: 10 },
             { header: "Order Price", key: "OrderPrice", width: 10 },
             { header: "address", key: "address", width: 30, style: { alignment: { wrapText: true, vertical: 'top' } } },
+            { header: "Alternate Address", key: "AlternateAddress", width: 30 },
         ];
 
         // Populate the rows with order data
@@ -117,16 +92,16 @@ useEffect(() => {
                 OrderDate: formattedDate,
                 Invoice: order.order_created_by === "Van" ? "" : order.invoiceNumber,
                 CustomerName: order.customer.name,
+                AlternateName: order.alternateCustomer?.name,
                 FatherName: order.fathername,
                 phone: order.customer.phone,
-                AlternatePhone: order.alternateCustomer.phone,
-                AlternateAddress: order.alternateCustomer.address,
-                AlternateName: order.alternateCustomer.phone,
+                AlternatePhone: order.alternateCustomer?.phone,
                 PaymentStatus: order.transaction.status,
                 OrderStatus: order.status,
                 DeliveredDate: deliveredDate,
                 TotalItems: order.items.length,
                 address: order.shipping.address,
+                AlternateAddress: order.alternateCustomer?.address,
                 OrderPrice: `₹ ${order.order_price}`,
             });
         });
