@@ -77,7 +77,7 @@ export const OrderContextProvider = ({ children }) => {
     const unsubscribe = fetchOrders(); // Real-time listener
 
     return () => {
-      unsubscribe(); // Clean up listener on component unmount
+      unsubscribe(); 
     };
   }, []);
 
@@ -285,39 +285,49 @@ export const OrderContextProvider = ({ children }) => {
   }
 
   // all orders fetched
-  useEffect(() => {
+ useEffect(() => {
+  const fetchOrdersall = async () => {
+    try {
+      setLoading(true);
 
+      // Current date (aaj)
+      const today = new Date();
 
+      // Last month ke 1st date (April 1st agar aaj May 17 hai)
+      const startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
 
-    const fetchOrdersall = async (limitCount = 50) => {
-  try {
-    // Optional: Use a separate loading state to avoid blocking main UI
-    setLoading(true);
+      // Convert dono dates ko timestamp (milliseconds) me convert karo
+      const startTimestamp = startDate.getTime();
+      const endTimestamp = today.getTime();
 
-    const ordersRef = collection(db, "order");
-    const ordersQuery = query(
-      ordersRef,
-      orderBy("created_at", "desc"),
-      limit(limitCount) // Fetch only the latest N orders
-    );
-    const querySnapshot = await getDocs(ordersQuery);
+      const ordersRef = collection(db, "order");
 
-    const ordersData = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+      // Query with two conditions: created_at >= startDate AND created_at <= today
+      const ordersQuery = query(
+        ordersRef,
+        where("created_at", ">=", startTimestamp),
+        where("created_at", "<=", endTimestamp),
+        orderBy("created_at", "desc")
+      );
 
-    setOrdersAll(ordersData);
-  } catch (error) {
-    console.error("Error fetching all orders:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+      const querySnapshot = await getDocs(ordersQuery);
 
+      const ordersData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-    fetchOrdersall();
-  }, []);
+      setOrdersAll(ordersData);
+    } catch (error) {
+      console.error("Error fetching filtered orders:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchOrdersall();
+}, []);
+
 
   if (loading) {
     return <Loader />;

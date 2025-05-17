@@ -10,7 +10,7 @@ import alertgif from "../../Images/gif/altert Gif.gif";
 import { useProductsContext } from "../../context/productgetter";
 import AllCustomerPopup from "../AllCustomerPopup";
 import ShowAllOrders from "../ShowAllOrders";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebase";
 function DashbordCards() {
   const { ordersAll } = useOrdercontext();
@@ -27,27 +27,7 @@ function DashbordCards() {
    * ****************************************    */
   const [loading, setLoading] = useState(true);
 
-    const [allOrders, setAllOrders] = useState([])
-
-  useEffect(() => {
-  const fetchData = async () => {
-    try {
-      setLoading(true); // Loading start
-      const querySnapshot = await getDocs(collection(db, "order"));
-      const allOrder = [];
-      querySnapshot.forEach((doc) => {
-        allOrder.push({ id: doc.id, ...doc.data() });
-      });
-      setAllOrders(allOrder);
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    } finally {
-      setLoading(false); // Loading end
-    }
-  };
-
-  fetchData();
-}, [setLoading]);
+  
   // Get the current month and last month
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
@@ -111,11 +91,10 @@ function DashbordCards() {
   const averageOrderValueThisMonth =
     ordersThisMonth.reduce((total, order) => total + order.order_price, 0) /
     ordersThisMonth.length;
-  // console.log("averageordrebalue this ", averageOrderValueThisMonth)
   const averageOrderValueLastMonth =
     ordersLastMonth.reduce((total, order) => total + order.order_price, 0) /
     ordersLastMonth.length;
-  // console.log("averageOrderValueLastMonth", averageOrderValueLastMonth)
+ 
   // Calculate the percentage change
   const percentageChangeOfOrder =
     ((averageOrderValueThisMonth - averageOrderValueLastMonth) /
@@ -135,8 +114,6 @@ function DashbordCards() {
     currentDate.getMonth(),
     currentDate.getDate() - 7
   );
-  // console.log("asdfasfasdfasdf", oneWeekAgoStartDate)
-  // console.log("ASDFAsdf current date ", currentDate)
 
   // Filter  the New orders
 
@@ -158,8 +135,6 @@ function DashbordCards() {
   const deliveredOrdersLastMonthValue = DeliverdOrder.filter(
     (order) => new Date(order.created_at).getMonth() === lastMonth
   ).reduce((total, order) => total + order.order_price, 0);
-  // console.log("thismonthdeliverd", deliveredOrdersThisMonthValue)
-  // console.log("lastmonthdeliverd", deliveredOrdersLastMonthValue)
 
   let totalDeliverdOrderValue = DeliverdOrder.reduce(
     (total, order) => total + order.order_price,
@@ -551,7 +526,7 @@ function DashbordCards() {
                 <div className="d-flex justify-content-between   bg-white">
                   <h3 className="fw-400 black fs-xs">Order Statistics</h3>
                 </div>
-                <ApexBarChart className="w-100" orderData={allOrders} />
+                <ApexBarChart className="w-100" orderData={ordersAll} />
               </div>
             </div>
           </div>
