@@ -65,16 +65,19 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
         excelSheet.columns = [
             { header: "Order Number", key: "OrderNumber", width: 20 },
             { header: "Invoice", key: "Invoice", width: 20 },
+            { header: "Date", key: "OrderDate", width: 30 },
             { header: "Customer Name", key: "CustomerName", width: 30 },
+            { header: "Alternate Name", key: "AlternateName", width: 30 },
             { header: "Father Name", key: "FatherName", width: 30 },
             { header: "Phone", key: "phone", width: 30 },
-            { header: "Date", key: "OrderDate", width: 30 },
+            { header: "Alternate Phone", key: "AlternatePhone", width: 30 },
             { header: "Payment Status", key: "PaymentStatus", width: 15 },
             { header: "Order Status", key: "OrderStatus", width: 15 },
             { header: "Delivered Date", key: "DeliveredDate", width: 30 },
             { header: "Total Items", key: "TotalItems", width: 10 },
             { header: "Order Price", key: "OrderPrice", width: 10 },
             { header: "address", key: "address", width: 30, style: { alignment: { wrapText: true, vertical: 'top' } } },
+            { header: "Alternate Address", key: "AlternateAddress", width: 30 },
         ];
 
         // Populate the rows with order data
@@ -89,13 +92,16 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                 OrderDate: formattedDate,
                 Invoice: order.order_created_by === "Van" ? "" : order.invoiceNumber,
                 CustomerName: order.customer.name,
+                AlternateName: order.alternateCustomer?.name,
                 FatherName: order.fathername,
                 phone: order.customer.phone,
+                AlternatePhone: order.alternateCustomer?.phone,
                 PaymentStatus: order.transaction.status,
                 OrderStatus: order.status,
                 DeliveredDate: deliveredDate,
                 TotalItems: order.items.length,
                 address: order.shipping.address,
+                AlternateAddress: order.alternateCustomer?.address,
                 OrderPrice: `₹ ${order.order_price}`,
             });
         });
@@ -158,22 +164,28 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                         <th className="mw-200 p-2">
                                             <h3 className="fs-sm fw-400 black mb-0">Invoice</h3>
                                         </th>
-
+ <th className="mw-200 p-3">
+                                            <h3 className="fs-sm fw-400 black mb-0 d-flex">
+                                                Date
+                                            </h3>
+                                        </th>
                                         <th className="mw-200 p-2">
                                             <h3 className="fs-sm fw-400 black mb-0">Customer</h3>
                                         </th>
 
+                                        <th className="mw-200 p-3">
+                                            <h3 className="fs-sm fw-400 black mb-0">Alternate Name</h3>
+                                        </th>
                                         <th className="mw-200 p-3">
                                             <h3 className="fs-sm fw-400 black mb-0">Father Name</h3>
                                         </th>
                                         <th className="mw-200 p-2">
                                             <h3 className="fs-sm fw-400 black mb-0">phone</h3>
                                         </th>
-                                        <th className="mw-200 p-3">
-                                            <h3 className="fs-sm fw-400 black mb-0 d-flex">
-                                                Date
-                                            </h3>
+                                        <th className="mw-200 p-2">
+                                            <h3 className="fs-sm fw-400 black mb-0">Alternate Phone</h3>
                                         </th>
+                                       
                                         <th className="mw-200 p-3 cursor_pointer">
                                             <span className="d-flex align-items-center">
                                                 <h3 className="fs-sm fw-400 black mb-0 white_space_nowrap text-capitalize">
@@ -199,8 +211,11 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                                 Order Price
                                             </h3>
                                         </th>
-                                        <th className="mx_160 p-3 pe-4 text-center">
+                                        <th className="mx_160 p-3 pe-4 text-start">
                                             <h3 className="fs-sm fw-400 black mb-0">Address</h3>
+                                        </th>
+                                        <th className="mx_190 p-3 pe-4 text-start">
+                                            <h3 className="fs-sm fw-400 black mb-0">Alternate Address</h3>
                                         </th>
                                     </tr>
                                 </thead>
@@ -218,7 +233,13 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                                     <h3 className="fs-xs fw-400 black mb-0">
                                                         {orderTableData.invoiceNumber}
                                                     </h3>
-                                                </td> <td className="p-3 mw-200">
+                                                </td>
+                                                  <td className="p-3 mw-200">
+                                                    <h3 className="fs-xs fw-400 black mb-0">
+                                                        {formatDate(orderTableData.created_at)}
+                                                    </h3>
+                                                </td>
+                                                <td className="p-3 mw-200">
                                                     <Link
                                                         to={
                                                             orderTableData.order_created_by === "Van"
@@ -235,18 +256,25 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                                
                                                 <td className="p-3 mw-200">
                                                     <h3 className="fs-xs fw-400 black mb-0">
+                                                        {orderTableData.alternateCustomer?.name || ""}
+                                                    </h3>
+                                                </td>
+                                                <td className="p-3 mw-200">
+                                                    <h3 className="fs-xs fw-400 black mb-0">
                                                         {orderTableData.fathername}
                                                     </h3>
-                                                </td>  <td className="p-3 mw-200">
+                                                </td>
+                                                <td className="p-3 mw-200">
                                                     <h3 className="fs-xs fw-400 black mb-0">
                                                         {orderTableData.customer.phone}
                                                     </h3>
                                                 </td>
                                                 <td className="p-3 mw-200">
                                                     <h3 className="fs-xs fw-400 black mb-0">
-                                                        {formatDate(orderTableData.created_at)}
+                                                        {orderTableData.alternateCustomer?.phone || ""}
                                                     </h3>
                                                 </td>
+                                              
                                                 <td className="p-3 mw-200">
                                                     <h3 className={`fs-sm fw-400 mb-0 d-inline-block`}>
                                                         {orderTableData.transaction.status}
@@ -275,6 +303,11 @@ const ShowAllOrders = ({ setShowAllOrder, formatDate }) => {
                                                 <td className="p-3 mw_160">
                                                     <h3 className="fs-sm fw-400 black mb-0">
                                                         {orderTableData.shipping.address}
+                                                    </h3>
+                                                </td>
+                                                <td className="p-3 mw_190">
+                                                    <h3 className="fs-sm fw-400 black mb-0">
+                                                        {orderTableData.alternateCustomer?.address}
                                                     </h3>
                                                 </td>
                                             </tr>

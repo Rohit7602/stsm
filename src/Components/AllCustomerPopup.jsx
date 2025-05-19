@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CrossIcons } from '../Common/Icon';
 import ExcelJS from 'exceljs';  // Import ExcelJS
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, limit, query } from 'firebase/firestore';
 import { db } from '../firebase';
 import Loader from './Loader';
 
@@ -29,6 +29,8 @@ const AllCustomerPopup = ({ setShowAllCustomers }) => {
                 setLoading(false); // Loading end
             }
         };
+
+        
         const fetchAllCustomer = async () => {
             try {
                 setLoading(true); // Loading start

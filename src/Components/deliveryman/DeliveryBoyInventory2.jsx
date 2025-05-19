@@ -29,7 +29,7 @@ import { ButtonGroup } from "react-bootstrap";
 import {RandomPopup} from "../popups/RandomPopup";
 
 function DeliveryBoyInventory2() {
-  const { DeliveryManData } = UseDeliveryManContext();
+  const { DeliveryManData,orderBetween } = UseDeliveryManContext();
   const { id } = useParams();
 
  
@@ -723,7 +723,7 @@ const handleCancelOrder = async (id) => {
       <div>
         <RandomPopup showModal={showModal} handleClose={handleClose} data={orders} handleCancelOrder={handleCancelOrder} updateAllOrdersStatus={handleUpdateOrders} matchedOrdersArray={matchedOrdersArray} />
         
-       <RandomPopup showModal={showDeliveryHistory} handleClose={handleDeliveryHistoryClose} data={orders} handleCancelOrder={""} updateAllOrdersStatus={handleUpdateOrders} matchedOrdersArray={matchedOrdersArray} />
+       <RandomPopup showModal={showDeliveryHistory} handleClose={handleDeliveryHistoryClose} data={orderBetween} handleCancelOrder={""} updateAllOrdersStatus={handleUpdateOrders} matchedOrdersArray={matchedOrdersArray} />
       
         <div className="main_panel_wrapper bg_light_grey w-100">
           {/* conform pop */}

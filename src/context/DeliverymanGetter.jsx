@@ -9,7 +9,12 @@ export const UseDeliveryManContext = () => {
 }
 
 export const DeliverManContextProvider = ({ children }) => {
+
+
     // State for our global state.
+    const [clickCount, setClickCount] = useState(0);
+const [startTime, setStartTime] = useState(null);
+const [orderBetween, setOrderBetween] = useState([]);
     const [DeliveryManData, SetDeliveryManData] = useState([])
     useEffect(() => {
         const fetchservice = async () => {
@@ -68,8 +73,9 @@ export const DeliverManContextProvider = ({ children }) => {
     };
 
 
+
     return (
-        <DeliveryManContext.Provider value={{ DeliveryManData : memodata, updateDeliveryManData, deleteDeliveryManData, addDeliveryManData }}>
+        <DeliveryManContext.Provider value={{ DeliveryManData : memodata, updateDeliveryManData, deleteDeliveryManData, addDeliveryManData ,orderBetween, setOrderBetween, clickCount, setClickCount, startTime, setStartTime }}>
             {children}
         </DeliveryManContext.Provider>
     )
