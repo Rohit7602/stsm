@@ -639,59 +639,60 @@ const calculateDeliveredItems = (loadItems = [], unloadItems = []) => {
     }
   };
 
-  const handleUpdateOrders = () => {
-    const allProductTitles = AllProducts.map(p => p.name); // ✅ list of allowed titles
-    const matchedOrdersArray = [];
-    const unmatchedOrdersArray = [];
-
-
-    let totalOrders = orders.length;
-    let matchedOrders = 0;
-
-    orders.forEach(order => {
-      const items = order.items || [];
-
-      const hasMatchingItem = items.some(item =>
-        allProductTitles.includes(item.title)
-      );
-
-      if (hasMatchingItem) {
-        matchedOrders++;
-        matchedOrdersArray.push(order); // ✅ Store only matched orders
-      } else {
-        unmatchedOrdersArray.push(order); // ✅ Store unmatched orders
-      }
-    });
-    setOrders(unmatchedOrdersArray);
-    setMatchedOrdersArray(matchedOrdersArray);
-    if (matchedOrders === 0) {
-      alert("❌ Product not found in van. Orders not updated.");
-      return;
-    }
-
-    if (matchedOrders < totalOrders) {
-      const confirmProceed = window.confirm(
-        `⚠️ ${matchedOrders} out of ${totalOrders} orders matched with products in van. Do you want to proceed?`
-      );
-      if (!confirmProceed) return;
-
-      updateAllOrdersStatus(matchedOrdersArray); // ✅ Update only matched orders
-      return;
-    }
-
-    // ✅ All orders matched
-    alert("✅ All orders matched. Orders are marked as OUT_FOR_DELIVERY.");
-    updateAllOrdersStatus(orders); // ✅ Update all
-  };
-
-
-  
   // fetching orders
   useEffect(() => {
     fetchOrders();
   }, []);
 
-  
+  const handleUpdateOrders = () => {
+  const allProductTitles = AllProducts.map(p => p.name.trim().toLowerCase());
+  const matchedOrdersArray = [];
+  const unmatchedOrdersArray = [];
+
+  let totalOrders = orders.length;
+  let matchedOrders = 0;
+
+  orders.forEach(order => {
+    const items = order.items || [];
+
+    // Check if every item title exists in the van list
+    const isFullyMatched = items.every(item =>
+      allProductTitles.includes(item.title?.trim().toLowerCase())
+    );
+
+    if (isFullyMatched) {
+      matchedOrders++;
+      matchedOrdersArray.push(order); // full order added
+    } else {
+      unmatchedOrdersArray.push(order);
+    }
+  });
+
+  setOrders(unmatchedOrdersArray); // Not going to be processed
+  setMatchedOrdersArray(matchedOrdersArray); // Will be processed
+
+  console.log("Matched Orders: ", matchedOrdersArray);
+  console.log("Unmatched Orders: ", unmatchedOrdersArray);
+
+  if (matchedOrders === 0) {
+    alert("❌ No orders fully matched with van products.");
+    return;
+  }
+
+  if (matchedOrders < totalOrders) {
+    const confirmProceed = window.confirm(
+      `⚠️ Only ${matchedOrders} out of ${totalOrders} orders have all products in van. Do you want to proceed with them?`
+    );
+    if (!confirmProceed) return;
+
+    updateAllOrdersStatus(matchedOrdersArray);
+    return;
+  }
+
+  alert("✅ All orders matched. Orders are marked as OUT_FOR_DELIVERY.");
+  updateAllOrdersStatus(matchedOrdersArray);
+};
+
  
 const handleCancelOrder = async (id) => {
   try {

@@ -390,6 +390,7 @@ const ProductList = () => {
                       v.name.toLowerCase().includes(filtervalue.toLowerCase())
                     )
                     .map((value, index) => {
+                      console.log(value," value");
                       return (
                         <tr key={index}>
                           <td className="p-3 d-flex align-items-center">
