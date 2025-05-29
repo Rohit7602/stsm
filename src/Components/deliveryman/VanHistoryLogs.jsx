@@ -17,7 +17,6 @@ function VanHistoryLogs() {
     ),
   }));
 
-  console.log(location.state,"state")
 // / 🔥 Filter Delivered Orders Between Two Time Periods
   useEffect(() => {
     if (
@@ -39,7 +38,6 @@ function VanHistoryLogs() {
       setDeliveredHistory(filtered);
     }
   }, [viewhistorypop]);
-console.log(viewhistorypop,"updatedFilterHistory")
  
 
   return (
