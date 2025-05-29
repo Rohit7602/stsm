@@ -73,12 +73,10 @@ export const OrderContextProvider = ({ children }) => {
   };
 
 
-  useEffect(() => {
-    const unsubscribe = fetchOrders(); // Real-time listener
+   useEffect(() => {
+    const unsubscribe = fetchOrders();
 
-    return () => {
-      unsubscribe(); 
-    };
+    return () => unsubscribe();
   }, []);
 
 
