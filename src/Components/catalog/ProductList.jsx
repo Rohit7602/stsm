@@ -429,7 +429,7 @@ const ProductList = () => {
                           </td>
                           <td className="p-3 mw_160">
                             <h3 className="fs-sm fw-400 black mb-0">
-                              {value.categories.name}
+                              {value?.categories?.name}
                             </h3>
                           </td>
                           <td className="p-3 mx_180">
