@@ -214,7 +214,7 @@ const DeliveryManList = () => {
                     </thead>
                     <tbody className="table_body">
                       {DeliveryManData.filter((data) => {
-                        console.log(data,"data")
+                       
                         return searchvalue.toLowerCase() === ""
                           ? data
                           : data.basic_info.name.toLowerCase().includes(searchvalue);

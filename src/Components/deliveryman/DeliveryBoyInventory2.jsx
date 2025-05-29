@@ -641,59 +641,139 @@ const calculateDeliveredItems = (loadItems = [], unloadItems = []) => {
 
   // fetching orders
   useEffect(() => {
-    fetchOrders();
+    fetchOrders(); 
   }, []);
 
-  const handleUpdateOrders = () => {
-  const allProductTitles = AllProducts.map(p => p.name.trim().toLowerCase());
+ const handleUpdateOrders = async (e) => {
+  if (e?.preventDefault) e.preventDefault();
+
+  const productStockMap = {};
+  AllProducts.forEach(p => {
+    const title = p.name.trim().toLowerCase();
+    productStockMap[title] = parseFloat(p.quantity) || 0;
+  });
+
   const matchedOrdersArray = [];
   const unmatchedOrdersArray = [];
 
   let totalOrders = orders.length;
   let matchedOrders = 0;
 
-  orders.forEach(order => {
+  for (let order of orders) {
     const items = order.items || [];
+    let canFulfill = true;
+    const tempStockMap = { ...productStockMap };
 
-    // Check if every item title exists in the van list
-    const isFullyMatched = items.every(item =>
-      allProductTitles.includes(item.title?.trim().toLowerCase())
-    );
+    for (let item of items) {
+      const title = item.title?.trim().toLowerCase();
+      const requiredQty = parseFloat(item.quantity) || 0;
+ const availableQty = (productStockMap[title] || 0) - (AllProducts.find(p => p.name.trim().toLowerCase() === title)?.sold || 0);
+      // Check if available quantity is enough and NOT negative
+     if (availableQty <= 0 || availableQty < requiredQty) {
+    canFulfill = false;
+    break;
+  }
 
-    if (isFullyMatched) {
+      tempStockMap[title] -= requiredQty;
+    }
+
+    if (canFulfill) {
       matchedOrders++;
-      matchedOrdersArray.push(order); // full order added
+      matchedOrdersArray.push(order);
+      // Update main productStockMap AFTER confirming order
+      for (let item of items) {
+        const title = item.title?.trim().toLowerCase();
+        const requiredQty = parseFloat(item.quantity) || 0;
+        productStockMap[title] -= requiredQty;
+
+        // Prevent negative stock just in case
+        if (productStockMap[title] < 0) productStockMap[title] = 0;
+      }
     } else {
       unmatchedOrdersArray.push(order);
     }
-  });
+  }
 
-  setOrders(unmatchedOrdersArray); // Not going to be processed
-  setMatchedOrdersArray(matchedOrdersArray); // Will be processed
-
-  console.log("Matched Orders: ", matchedOrdersArray);
-  console.log("Unmatched Orders: ", unmatchedOrdersArray);
+  setOrders(unmatchedOrdersArray);
+  setMatchedOrdersArray(matchedOrdersArray);
 
   if (matchedOrders === 0) {
-    alert("❌ No orders fully matched with van products.");
+    alert("❌ No orders were matched with the available stock.");
     return;
   }
+
+  // Update products with correct sold values
+  const updatedAllProducts = AllProducts.map(p => {
+    const title = p.name.trim().toLowerCase();
+    const originalQty = parseFloat(p.quantity) || 0;
+    const updatedQty = productStockMap[title] ?? 0;
+    const soldQty = originalQty - updatedQty;
+    const prevSold = parseFloat(p.sold) || 0;
+
+    return {
+      ...p,
+      // Don't update quantity here, keep it same in UI (or update as needed)
+      sold: (prevSold + soldQty).toString(),
+    };
+  });
+
+  setAllProducts(updatedAllProducts);
+
+  // Firestore update
+  const updateProductsInFirestore = async () => {
+    const batch = writeBatch(db);
+
+    try {
+      for (const items of updatedAllProducts) {
+        const vanDocRef = doc(db, `Delivery/${id}/Van/${items.id}`);
+        const existingDoc = await getDoc(vanDocRef);
+
+        const { id: prodId, ...productData } = items;
+
+        if (!existingDoc.exists()) {
+          await addDoc(collection(db, `Delivery/${id}/Van`), productData);
+        } else {
+          batch.update(vanDocRef, {
+            quantity: productData.quantity,
+            sold: productData.sold,
+          });
+        }
+      }
+
+      for (const element of updatedAllProducts) {
+        const prodRef = doc(db, "products", element.id);
+
+        // Calculate new total stock carefully (only if needed)
+        const newTotalStock = parseFloat(element.totalStock || 0) - (parseFloat(element.quantity) || 0);
+        await updateDoc(prodRef, {
+          totalStock: newTotalStock >= 0 ? newTotalStock : 0,
+        });
+      }
+
+      await batch.commit();
+      toast.success("Orders Processed");
+    } catch (error) {
+      console.error("❌ Error", error);
+      toast.error("Failed!");
+    }
+  };
 
   if (matchedOrders < totalOrders) {
     const confirmProceed = window.confirm(
-      `⚠️ Only ${matchedOrders} out of ${totalOrders} orders have all products in van. Do you want to proceed with them?`
+      `⚠️ ${matchedOrders} out of ${totalOrders} orders can be fulfilled based on the current stock.`
     );
     if (!confirmProceed) return;
-
-    updateAllOrdersStatus(matchedOrdersArray);
-    return;
+  } else {
+    alert("All orders have been successfully matched with the van stock!");
   }
 
-  alert("✅ All orders matched. Orders are marked as OUT_FOR_DELIVERY.");
   updateAllOrdersStatus(matchedOrdersArray);
+  await updateProductsInFirestore();
 };
 
- 
+
+  
+  
 const handleCancelOrder = async (id) => {
   try {
     const orderRef = doc(db, "order", id);
@@ -949,12 +1029,12 @@ const handleCancelOrder = async (id) => {
                 </div>
 
                 <div className="d-flex align-itmes-center justify-content-center justify-content-md-between gap-3">
-                  {/* <button
+                  <button
                     onClick={() => setShowDeliveryHistory(true)}
                     className="addnewproduct_btn2  gap-2 white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
                   >
                     <span>Order Delivered</span>
-                  </button> */}
+                  </button>
                   <button
                     onClick={() => setShowModal(true)}
                     className="addnewproduct_btn2  gap-2 white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "

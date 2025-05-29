@@ -414,12 +414,114 @@ const DeliverymanProfile = () => {
     }
   }
   console.log(orderBetween, "orderBetween")
-  function getOrdersBetweenTimestamps(orders, startTime, endTime) {
-    return orders.filter((order) => {
-      const orderTime = new Date(order.created_at); // Adjust if timestamp is different
-      return orderTime >= startTime && orderTime <= endTime;
-    });
+function getOrdersBetweenTimestamps(orders, startTime, endTime) {
+  return orders.filter(order => {
+    const createdAt = order.created_at.toDate?.() || new Date(order.created_at);
+    return createdAt >= startTime && createdAt <= endTime;
+  });
+}
+async function handleCollectBalance() {
+  setLoading(true);
+  try {
+    const now = new Date();
+
+    // 🕒 Get last collect time from localStorage
+    const lastCollectStr = localStorage.getItem("lastCollectedTime");
+    const lastCollectTime = lastCollectStr ? new Date(lastCollectStr) : null;
+
+    // 🧾 Get orders between last collect and now
+    let ordersSinceLastCollect = [];
+
+    if (lastCollectTime) {
+      ordersSinceLastCollect = orders.filter(order => {
+        const createdAt = order.created_at?.toDate?.() || new Date(order.created_at);
+        return createdAt > lastCollectTime && createdAt <= now;
+      });
+    } else {
+      // Pehli baar collect kar rahe ho toh sabhi orders dedo
+      ordersSinceLastCollect = orders;
+    }
+
+    setOrderBetween(ordersSinceLastCollect);
+    console.log("🆕 New orders since last collect:", ordersSinceLastCollect);
+
+    // 🕒 Save this collect time for next time use
+    localStorage.setItem("lastCollectedTime", now.toISOString());
+
+    // 🧾 ---- Tera existing collect logic, untouched 👇 ----
+
+    const newDate = new Date();
+    const todayDate = newDate.toISOString().split("T")[0];
+
+    const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
+
+    if (wallet !== 0 || amountupi !== 0) {
+      if (DeliveryManDatas.length === 0) {
+        console.error("No delivery man data found for the given ID.");
+        return;
+      }
+
+      const deliveryManId = DeliveryManDatas[0].id;
+      const historyRef = collection(db, `Delivery/${deliveryManId}/history`);
+      const historyDocRef = doc(historyRef, todayDate);
+      const docSnapshot = await getDoc(historyDocRef);
+
+      let currentAmount = 0;
+      let currentAmountUpi = 0;
+
+      const todayHistory = deliveryvanhistory.find(item => item.formattedDate === todayDate);
+      const loaditems = todayHistory?.loaditems || [];
+      const pendingitems = todayHistory?.pendingitems || [];
+      const unloaditems = todayHistory?.unloaditems || [];
+
+      if (!docSnapshot.exists()) {
+        await setDoc(
+          historyDocRef,
+          {
+            formattedDate: todayDate,
+            totalamount: 0,
+            totalamountupi: 0,
+            loaditems,
+            pendingitems,
+            unloaditems,
+          },
+          { merge: true }
+        );
+      } else {
+        currentAmount = docSnapshot.data()?.totalamount || 0;
+        currentAmountUpi = docSnapshot.data()?.totalamountupi || 0;
+      }
+
+      const newAmount = currentAmount + wallet;
+      const newAmountupi = currentAmountUpi + amountupi;
+
+      await updateDoc(historyDocRef, {
+        totalamount: newAmount,
+        totalamountupi: newAmountupi,
+        loaditems,
+        pendingitems,
+        unloaditems,
+      });
+
+      const deliveryManRef = doc(db, "Delivery", deliveryManId);
+      await updateDoc(deliveryManRef, {
+        wallet: 0,
+        UPI: 0,
+      });
+
+      setShowpop(!showpop);
+      window.location.reload();
+    } else {
+      setShowpop(!showpop);
+    }
+
+  } catch (error) {
+    console.error("❌ Error in handleCollectBalance:", error);
+  } finally {
+    setLoading(false);
   }
+}
+
 
 
 
@@ -532,100 +634,100 @@ const DeliverymanProfile = () => {
 
 
 
-  async function handleCollectBalance() {
-    if (clickCount === 0) {
-      setStartTime(new Date());
-      setClickCount(1);
-      return;
-    }
+  // async function handleCollectBalance() {
+  //   if (clickCount === 0) {
+  //     setStartTime(new Date());
+  //     setClickCount(1);
+  //     return;
+  //   }
 
-    if (clickCount === 1) {
-      setLoading(true);
-      try {
-        const endTime = new Date();
-        const ordersBetweenClicks = getOrdersBetweenTimestamps(orders, startTime, endTime);
-        setOrderBetween(ordersBetweenClicks);
-        console.log("Orders between clicks:", ordersBetweenClicks);
-        console.log("Start Time:", startTime.toISOString());
-        console.log("End Time:", endTime.toISOString());
+  //   if (clickCount === 1) {
+  //     setLoading(true);
+  //     try {
+  //       const endTime = new Date();
+  //       const ordersBetweenClicks = getOrdersBetweenTimestamps(orders, startTime, endTime);
+  //       setOrderBetween(ordersBetweenClicks);
+  //       console.log("Orders between clicks:", ordersBetweenClicks);
+  //       console.log("Start Time:", startTime.toISOString());
+  //       console.log("End Time:", endTime.toISOString());
 
-        orders.forEach((order) => {
-          console.log("Order CreatedAt:", new Date(order.created_at).toISOString(), "Raw:", order.created_at);
-        });
-        // Reset click count for next round
-        setClickCount(0);
+  //       orders.forEach((order) => {
+  //         console.log("Order CreatedAt:", new Date(order.created_at).toISOString(), "Raw:", order.created_at);
+  //       });
+  //       // Reset click count for next round
+  //       setClickCount(0);
 
-        // ✅ Continue with balance update logic
-        const newDate = new Date();
-        const todayDate = newDate.toISOString().split("T")[0];
+  //       // ✅ Continue with balance update logic
+  //       const newDate = new Date();
+  //       const todayDate = newDate.toISOString().split("T")[0];
 
-        const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
-        if (wallet !== 0 || amountupi !== 0) {
-          if (DeliveryManDatas.length === 0) {
-            console.error("No delivery man data found for the given ID.");
-            return;
-          }
+  //       const DeliveryManDatas = DeliveryManData.filter((item) => item.d_id === id);
+  //       if (wallet !== 0 || amountupi !== 0) {
+  //         if (DeliveryManDatas.length === 0) {
+  //           console.error("No delivery man data found for the given ID.");
+  //           return;
+  //         }
 
-          const deliveryManId = DeliveryManDatas[0].id;
-          const historyRef = collection(db, `Delivery/${deliveryManId}/history`);
-          const historyDocRef = doc(historyRef, todayDate);
-          const docSnapshot = await getDoc(historyDocRef);
+  //         const deliveryManId = DeliveryManDatas[0].id;
+  //         const historyRef = collection(db, `Delivery/${deliveryManId}/history`);
+  //         const historyDocRef = doc(historyRef, todayDate);
+  //         const docSnapshot = await getDoc(historyDocRef);
 
-          let currentAmount = 0;
-          let currentAmountUpi = 0;
+  //         let currentAmount = 0;
+  //         let currentAmountUpi = 0;
 
-          const todayHistory = deliveryvanhistory.find(item => item.formattedDate === todayDate);
-          const loaditems = todayHistory?.loaditems || [];
-          const pendingitems = todayHistory?.pendingitems || [];
-          const unloaditems = todayHistory?.unloaditems || [];
+  //         const todayHistory = deliveryvanhistory.find(item => item.formattedDate === todayDate);
+  //         const loaditems = todayHistory?.loaditems || [];
+  //         const pendingitems = todayHistory?.pendingitems || [];
+  //         const unloaditems = todayHistory?.unloaditems || [];
 
-          if (!docSnapshot.exists()) {
-            await setDoc(
-              historyDocRef,
-              {
-                formattedDate: todayDate,
-                totalamount: 0,
-                totalamountupi: 0,
-                loaditems,
-                pendingitems,
-                unloaditems,
-              },
-              { merge: true }
-            );
-          } else {
-            currentAmount = docSnapshot.data()?.totalamount || 0;
-            currentAmountUpi = docSnapshot.data()?.totalamountupi || 0;
-          }
+  //         if (!docSnapshot.exists()) {
+  //           await setDoc(
+  //             historyDocRef,
+  //             {
+  //               formattedDate: todayDate,
+  //               totalamount: 0,
+  //               totalamountupi: 0,
+  //               loaditems,
+  //               pendingitems,
+  //               unloaditems,
+  //             },
+  //             { merge: true }
+  //           );
+  //         } else {
+  //           currentAmount = docSnapshot.data()?.totalamount || 0;
+  //           currentAmountUpi = docSnapshot.data()?.totalamountupi || 0;
+  //         }
 
-          const newAmount = currentAmount + wallet;
-          const newAmountupi = currentAmountUpi + amountupi;
+  //         const newAmount = currentAmount + wallet;
+  //         const newAmountupi = currentAmountUpi + amountupi;
 
-          await updateDoc(historyDocRef, {
-            totalamount: newAmount,
-            totalamountupi: newAmountupi,
-            loaditems,
-            pendingitems,
-            unloaditems,
-          });
+  //         await updateDoc(historyDocRef, {
+  //           totalamount: newAmount,
+  //           totalamountupi: newAmountupi,
+  //           loaditems,
+  //           pendingitems,
+  //           unloaditems,
+  //         });
 
-          const deliveryManRef = doc(db, "Delivery", deliveryManId);
-          await updateDoc(deliveryManRef, {
-            wallet: 0,
-            UPI: 0,
-          });
+  //         const deliveryManRef = doc(db, "Delivery", deliveryManId);
+  //         await updateDoc(deliveryManRef, {
+  //           wallet: 0,
+  //           UPI: 0,
+  //         });
 
-          setShowpop(!showpop);
-          window.location.reload();
-        } else {
-          setShowpop(!showpop);
-        }
-      } catch (error) {
-        console.error("Error in handleCollectBalance:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-  }
+  //         setShowpop(!showpop);
+  //         window.location.reload();
+  //       } else {
+  //         setShowpop(!showpop);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error in handleCollectBalance:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+  // }
 
 
 
