@@ -1033,7 +1033,7 @@ const handleCancelOrder = async (id) => {
                     onClick={() => setShowDeliveryHistory(true)}
                     className="addnewproduct_btn2  gap-2 white_space_nowrap black d-flex align-items-center fs-sm px-sm-3 px-2 py-2 fw-400 "
                   >
-                    <span>Order Delivered</span>
+                    <span>New Orders</span>
                   </button>
                   <button
                     onClick={() => setShowModal(true)}

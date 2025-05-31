@@ -14,7 +14,14 @@ export const DeliverManContextProvider = ({ children }) => {
     // State for our global state.
     const [clickCount, setClickCount] = useState(0);
 const [startTime, setStartTime] = useState(null);
-const [orderBetween, setOrderBetween] = useState([]);
+    const [orderBetween, setOrderBetween] = useState([]);
+    useEffect(() => {
+  const storedOrders = localStorage.getItem("newOrdersArray");
+  if (storedOrders) {
+    const parsedOrders = JSON.parse(storedOrders);
+    setOrderBetween(parsedOrders);
+  }
+}, []);
     const [DeliveryManData, SetDeliveryManData] = useState([])
     useEffect(() => {
         const fetchservice = async () => {
