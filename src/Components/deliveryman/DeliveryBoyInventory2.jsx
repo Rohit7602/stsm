@@ -17,6 +17,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  increment,
   query,
   setDoc,
   updateDoc,
@@ -621,181 +622,295 @@ const calculateDeliveredItems = (loadItems = [], unloadItems = []) => {
     return allTerritories;
   }
 
- 
-  const updateAllOrdersStatus = async (ordersToProcess) => {
-    const delivaryManId = id;
-    try {
-      const batch = writeBatch(db);
+//   const handleUpdateOrders = async (e) => {
+//   if (e?.preventDefault) e.preventDefault();
+//   setLoaderstatus(true);
 
-      ordersToProcess.forEach((order) => {
-        const orderRef = doc(db, "order", order.id);
-        batch.update(orderRef, { status: "OUT_FOR_DELIVERY", assign_to: delivaryManId });
-      });
+//   try {
+//     // 1. Create map of products with their van inventory data
+//     const productInventoryMap = {};
+//     const missingInVan = [];
 
-      await batch.commit();
-      console.log("✅ Selected orders updated to OUT FOR DELIVERY", delivaryManId);
-    } catch (error) {
-      console.error("❌ Error updating selected orders:", error);
-    }
-  };
+//     // Check van inventory for all products
+//     for (const product of AllProducts) {
+//       try {
+//         const vanRef = doc(db, `Delivery/${id}/Van`, product.id);
+//         const vanSnap = await getDoc(vanRef);
 
-  // fetching orders
-  useEffect(() => {
-    fetchOrders(); 
-  }, []);
+//         if (vanSnap.exists()) {
+//           productInventoryMap[product.name.toLowerCase()] = {
+//             id: product.id,
+//             available: vanSnap.data().quantity - (vanSnap.data().sold || 0),
+//             vanRef
+//           };
+//         } else {
+//           missingInVan.push(product.name);
+//         }
+//       } catch (error) {
+//         console.error(`Error checking van inventory for ${product.id}:`, error);
+//         missingInVan.push(product.name);
+//       }
+//     }
 
- const handleUpdateOrders = async (e) => {
+//     // Show warning for products missing in van
+//     if (missingInVan.length > 0) {
+//       toast.warning(
+//         `Products missing in van: ${missingInVan.join(', ')}`
+//       );
+//       return;
+//     }
+
+//     // 2. Process orders against van inventory
+//     const processableOrders = [];
+//     const productUpdates = {};
+
+//     orders.forEach(order => {
+//       let canFulfill = true;
+//       const requiredUpdates = {};
+
+//       // Check each item against van inventory
+//       order.items?.forEach(item => {
+//         const productName = item.title?.toLowerCase().trim();
+//         const requiredQty = parseFloat(item.quantity) || 0;
+        
+//         if (!productInventoryMap[productName] || 
+//             productInventoryMap[productName].available < requiredQty) {
+//           canFulfill = false;
+//         } else {
+//           requiredUpdates[productName] = {
+//             qty: requiredQty,
+//             remaining: productInventoryMap[productName].available - requiredQty
+//           };
+//         }
+//       });
+
+//       if (canFulfill) {
+//         processableOrders.push(order);
+//         // Apply the updates to our inventory map
+//         Object.entries(requiredUpdates).forEach(([name, update]) => {
+//           productInventoryMap[name].available = update.remaining;
+          
+//           if (!productUpdates[productInventoryMap[name].id]) {
+//             productUpdates[productInventoryMap[name].id] = {
+//               sold: update.qty,
+//               remaining: update.remaining
+//             };
+//           } else {
+//             productUpdates[productInventoryMap[name].id].sold += update.qty;
+//             productUpdates[productInventoryMap[name].id].remaining = update.remaining;
+//           }
+//         });
+//       }
+//     });
+
+//     if (processableOrders.length === 0) {
+//       toast.error("No orders can be fulfilled with current van inventory");
+//       return;
+//     }
+
+//     // 3. Execute all updates in a transaction
+//     const batch = writeBatch(db);
+
+//     // Update van inventory
+//     Object.entries(productUpdates).forEach(([productId, update]) => {
+//       const vanRef = doc(db, `Delivery/${id}/Van`, productId);
+//       batch.update(vanRef, {
+//         sold: increment(update.sold),
+//         quantity: update.remaining + update.sold
+//       });
+//     });
+
+//     // Update order statuses
+//     processableOrders.forEach(order => {
+//       const orderRef = doc(db, "order", order.id);
+//       batch.update(orderRef, {
+//         status: "OUT_FOR_DELIVERY",
+//         assign_to: id,
+//         updatedAt: new Date().toISOString()
+//       });
+//     });
+
+//     await batch.commit();
+
+//     // 4. Update local state
+//     setAllProducts(prev => prev.map(p => {
+//       const update = productUpdates[p.id];
+//       return update ? {
+//         ...p,
+//         sold: (p.sold || 0) + update.sold,
+//         quantity: update.remaining + update.sold
+//       } : p;
+//     }));
+
+//     setOrders(prev => prev.filter(o => 
+//       !processableOrders.some(po => po.id === o.id)
+//     ));
+
+//     toast.success(`Processed ${processableOrders.length} orders`);
+
+//   } catch (error) {
+//     console.error("Order processing failed:", error);
+//     toast.error(`Processing failed: ${error.message}`);
+//   } finally {
+//     setLoaderstatus(false);
+//   }
+// };
+  
+  
+const handleUpdateOrders = async (e) => {
   if (e?.preventDefault) e.preventDefault();
+  setLoaderstatus(true);
 
-  const productStockMap = {};
-  AllProducts.forEach(p => {
-    const title = p.name.trim().toLowerCase();
-    productStockMap[title] = parseFloat(p.quantity) || 0;
-  });
-
-  const matchedOrdersArray = [];
-  const unmatchedOrdersArray = [];
-
-  let totalOrders = orders.length;
-  let matchedOrders = 0;
-
-  for (let order of orders) {
-    const items = order.items || [];
-    let canFulfill = true;
-    const tempStockMap = { ...productStockMap };
-
-    for (let item of items) {
-      const title = item.title?.trim().toLowerCase();
-      const requiredQty = parseFloat(item.quantity) || 0;
- const availableQty = (productStockMap[title] || 0) - (AllProducts.find(p => p.name.trim().toLowerCase() === title)?.sold || 0);
-      // Check if available quantity is enough and NOT negative
-     if (availableQty <= 0 || availableQty < requiredQty) {
-    canFulfill = false;
-    break;
-  }
-
-      tempStockMap[title] -= requiredQty;
-    }
-
-    if (canFulfill) {
-      matchedOrders++;
-      matchedOrdersArray.push(order);
-      // Update main productStockMap AFTER confirming order
-      for (let item of items) {
-        const title = item.title?.trim().toLowerCase();
-        const requiredQty = parseFloat(item.quantity) || 0;
-        productStockMap[title] -= requiredQty;
-
-        // Prevent negative stock just in case
-        if (productStockMap[title] < 0) productStockMap[title] = 0;
-      }
-    } else {
-      unmatchedOrdersArray.push(order);
-    }
-  }
-
-  setOrders(unmatchedOrdersArray);
-  setMatchedOrdersArray(matchedOrdersArray);
-
-  if (matchedOrders === 0) {
-    alert("❌ No orders were matched with the available stock.");
-    return;
-  }
-
-  // Update products with correct sold values
-  const updatedAllProducts = AllProducts.map(p => {
-    const title = p.name.trim().toLowerCase();
-    const originalQty = parseFloat(p.quantity) || 0;
-    const updatedQty = productStockMap[title] ?? 0;
-    const soldQty = originalQty - updatedQty;
-    const prevSold = parseFloat(p.sold) || 0;
-
-    return {
-      ...p,
-      // Don't update quantity here, keep it same in UI (or update as needed)
-      sold: (prevSold + soldQty).toString(),
-    };
-  });
-
-  setAllProducts(updatedAllProducts);
-
-  // Firestore update
-  const updateProductsInFirestore = async () => {
-    const batch = writeBatch(db);
-
-    try {
-      for (const items of updatedAllProducts) {
-        const vanDocRef = doc(db, `Delivery/${id}/Van/${items.id}`);
-        const existingDoc = await getDoc(vanDocRef);
-
-        const { id: prodId, ...productData } = items;
-
-        if (!existingDoc.exists()) {
-          await addDoc(collection(db, `Delivery/${id}/Van`), productData);
-        } else {
-          batch.update(vanDocRef, {
-            quantity: productData.quantity,
-            sold: productData.sold,
-          });
-        }
-      }
-
-      for (const element of updatedAllProducts) {
-        const prodRef = doc(db, "products", element.id);
-
-        // Calculate new total stock carefully (only if needed)
-        const newTotalStock = parseFloat(element.totalStock || 0) - (parseFloat(element.quantity) || 0);
-        await updateDoc(prodRef, {
-          totalStock: newTotalStock >= 0 ? newTotalStock : 0,
-        });
-      }
-
-      await batch.commit();
-      toast.success("Orders Processed");
-    } catch (error) {
-      console.error("❌ Error", error);
-      toast.error("Failed!");
-    }
-  };
-
-  if (matchedOrders < totalOrders) {
-    const confirmProceed = window.confirm(
-      `⚠️ ${matchedOrders} out of ${totalOrders} orders can be fulfilled based on the current stock.`
-    );
-    if (!confirmProceed) return;
-  } else {
-    alert("All orders have been successfully matched with the van stock!");
-  }
-
-  updateAllOrdersStatus(matchedOrdersArray);
-  await updateProductsInFirestore();
-};
-
-
-  
-  
-const handleCancelOrder = async (id) => {
   try {
-    const orderRef = doc(db, "order", id);
+    // 1. Get current van inventory
+    const vanInventory = {};
+    const vanQuery = query(collection(db, `Delivery/${id}/Van`));
+    const vanSnapshot = await getDocs(vanQuery);
 
-    // Firebase update
-    await updateDoc(orderRef, {
-      status: "CANCELLED",
+    vanSnapshot.forEach(doc => {
+      vanInventory[doc.id] = {
+        ...doc.data(),
+        available: doc.data().quantity - (doc.data().sold || 0)
+      };
     });
 
-    // Local state update
-    const updatedData = orders.map((order) =>
-      order.id === id ? { ...order, status: "CANCELLED" } : order
-    );
-    setOrders(updatedData);
+    // 2. Validate orders against inventory
+    const processableOrders = [];
+    const inventoryUpdates = {};
+    const tempInventory = { ...vanInventory }; // ✅ temporary inventory tracker
 
-    console.log("✅ Order cancelled in Firebase and state:", id);
+    orders.forEach(order => {
+      let canFulfill = true;
+      const requiredUpdates = {};
+
+      for (const item of order.items || []) {
+        const productName = item.title?.toLowerCase().trim();
+        const product = AllProducts.find(p => p.name.toLowerCase() === productName);
+
+        if (!product) {
+          canFulfill = false;
+          break;
+        }
+
+        const productId = product.id;
+        const vanItem = tempInventory[productId];
+        const requiredQty = parseFloat(item.quantity) || 0;
+
+        if (!vanItem || vanItem.available < requiredQty) {
+          canFulfill = false;
+          break;
+        }
+
+        // 🧠 Temporarily reduce available in memory
+        vanItem.available -= requiredQty;
+
+        requiredUpdates[productId] = {
+          qty: requiredQty,
+        };
+
+        // Track overall updates
+        if (!inventoryUpdates[productId]) {
+          inventoryUpdates[productId] = {
+            qty: 0,
+          };
+        }
+        inventoryUpdates[productId].qty += requiredQty;
+      }
+
+      if (canFulfill) {
+        processableOrders.push(order);
+      }
+    });
+
+    if (processableOrders.length === 0) {
+      toast.error("Cannot process - insufficient inventory for all orders");
+      return;
+    }
+
+    // 3. Execute updates in transaction
+    const batch = writeBatch(db);
+
+    // Update van inventory
+    Object.entries(inventoryUpdates).forEach(([productId, update]) => {
+      const vanRef = doc(db, `Delivery/${id}/Van`, productId);
+      const currentVanItem = vanInventory[productId];
+
+      batch.update(vanRef, {
+        sold: increment(update.qty),
+        quantity: currentVanItem.quantity // no manual changes to quantity
+      });
+    });
+
+    // Update order statuses
+    processableOrders.forEach(order => {
+      const orderRef = doc(db, "order", order.id);
+      batch.update(orderRef, {
+        status: "OUT_FOR_DELIVERY",
+        assign_to: id,
+        updatedAt: new Date().toISOString()
+      });
+    });
+
+    await batch.commit();
+
+    // 4. Update local state
+    setAllProducts(prev => prev.map(p => {
+      const update = inventoryUpdates[p.id];
+      return update ? {
+        ...p,
+        sold: (p.sold || 0) + update.qty,
+        quantity: p.quantity // You can recalculate here if needed
+      } : p;
+    }));
+
+    setOrders(prev => prev.filter(o =>
+      !processableOrders.some(po => po.id === o.id)
+    ));
+
+    toast.success(`Processed ${processableOrders.length} orders`);
+
   } catch (error) {
-    console.error("❌ Error cancelling order:", error);
+    console.error("Order processing failed:", error);
+    toast.error(`Error: ${error.message}`);
+  } finally {
+    setLoaderstatus(false);
   }
 };
+
+
+  const handleCancelOrder = async (orderId) => {
+  try {
+    const orderRef = doc(db, "order", orderId);
+    const orderSnap = await getDoc(orderRef);
+    
+    if (!orderSnap.exists()) {
+      throw new Error("Order document does not exist");
+    }
+
+    await updateDoc(orderRef, {
+      status: "CANCELLED",
+      cancelledAt: new Date().toISOString()
+    });
+
+    // Update local state
+    setOrders(prevOrders => 
+      prevOrders.map(order => 
+        order.id === orderId 
+          ? { ...order, status: "CANCELLED" } 
+          : order
+      )
+    );
+
+    toast.success("Order cancelled successfully");
+  } catch (error) {
+    console.error("Error cancelling order:", error);
+    toast.error(`Failed to cancel order: ${error.message}`);
+  }
+  };
   
-  
+   useEffect(() => {
+    fetchOrders(); 
+  }, []);
 
   if (loaderstatus) {
     return <Loader></Loader>;
