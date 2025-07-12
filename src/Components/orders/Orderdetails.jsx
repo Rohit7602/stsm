@@ -30,6 +30,7 @@ import {
   collection,
   query,
   getDoc,
+  runTransaction,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useState, useEffect } from "react";
@@ -55,8 +56,9 @@ export default function NewOrder() {
   const [selectedDeliveryManId, setSelectedDeliveryManId] = useState(null);
   const [selectedDeliveryManName, setSelectedDeliveryManName] = useState(null);
   const [isDeliverymanPopup, setIssDeliverymanPopup] = useState(false);
-  const [isfilterDeliverymanPopup, setIsFilterDeliverymanPopup] =
-    useState(false);
+  const [isfilterDeliverymanPopup, setIsFilterDeliverymanPopup] = useState(
+    false
+  );
   const [allDeliverymans, setAllDeliverymans] = useState(null);
   const { customer } = useCustomerContext();
   const [customertoken, setCustomertoken] = useState(null);
@@ -164,8 +166,6 @@ export default function NewOrder() {
         setLoading(false);
       }
 
-    
-
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -173,24 +173,23 @@ export default function NewOrder() {
     }
   };
 
-  
   const handleCancelOrRejectOrder = async (order) => {
-    console.log(order)
-  setLoading(true);
-  try {
-    let newStatus = order.status === "NEW" ? "REJECTED" : "CANCELLED";
+    console.log(order);
+    setLoading(true);
+    try {
+      let newStatus = order.status === "NEW" ? "REJECTED" : "CANCELLED";
 
-    await updateDoc(doc(db, "order", order), {
-      status: newStatus,
-    });
+      await updateDoc(doc(db, "order", order), {
+        status: newStatus,
+      });
 
-    updateData({ id: order, status: newStatus });
-  } catch (error) {
-    console.log("Error cancelling/rejecting order:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+      updateData({ id: order, status: newStatus });
+    } catch (error) {
+      console.log("Error cancelling/rejecting order:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   async function handlePreparedPacking(id) {
     setLoading(true);
     try {
@@ -215,182 +214,131 @@ export default function NewOrder() {
     }
   }
 
-
   async function handlePreparedDelivery(id) {
-    ////////////////////////////  get order area  ////////////////////////////
-    const orderDocRef = doc(db, "order", id);
-    const orderDoc = await getDoc(orderDocRef);
-    const orderData = orderDoc.data();
-  let area = (orderData.shipping.area || "").trim().toLowerCase();
-  let address = (orderData.shipping.address || "").trim().toLowerCase();
-  let areaOrAddress = area !== "" ? area : address;
+    try {
+      setLoading(true);
 
+      // Get order data
+      const orderDocRef = doc(db, "order", id);
+      const orderDoc = await getDoc(orderDocRef);
+      const orderData = orderDoc.data();
 
- let deliverymenWithArea = DeliveryManData.filter(
-    (deliveryman) =>
-      deliveryman.profile_status === "APPROVED" &&
-      deliveryman.is_verified === true &&
-      deliveryman.serviceArea &&
-      deliveryman.status === "online" &&
-      deliveryman.serviceArea.some(
-        (areas) =>
-          areas.terretory &&
-          areas.terretory.some((t) =>
-            t.toLowerCase().includes(areaOrAddress.split(",")[0].trim())
-          )
-      )
-  );
+      // Determine delivery area
+      const area = (orderData.shipping.area || "").trim().toLowerCase();
+      const address = (orderData.shipping.address || "").trim().toLowerCase();
+      const areaOrAddress = area !== "" ? area : address;
 
-    ////////////////////////////  Check deliveryman  if many given pop selct custom deliveryman   ////////////////////////////
-
-    if (deliverymenWithArea.length !== 0 || selectedDeliveryManId !== null) {
-      ////////////////////////////  check deliveyman multiple or only one       ////////////////////////////
-
-      if (deliverymenWithArea.length === 1 && selectedDeliveryManId === null) {
-        const q = query(
-          collection(db, `Delivery/${deliverymenWithArea[0].id}/Van`)
-        );
-        const querySnapshot = await getDocs(q);
-        const vanProductIds = new Set(
-          querySnapshot.docs.map((doc) => doc.data().productid)
-        );
-        const allMatch = orderData.items.every((item) =>
-          vanProductIds.has(item.product_id)
-        );
-
-        //////////////////    order aviable or not        ////////////////
-
-        if (allMatch) {
-          const vanProducts = querySnapshot.docs.map((doc) => doc.data());
-          const orderItems = orderData.items; // No need to `.map()` as it's already an array.
-
-          let result = orderItems.every((orderItem) => {
-            const matchingVanProduct = vanProducts.find(
-              (product) => product.productid === orderItem.product_id
-            );
-
-            if (!matchingVanProduct) return false; // If no matching product, return false immediately.
-
-            let soldQuantity = Number(matchingVanProduct.sold || 0);
-            let correctQuantity = matchingVanProduct.quantity - soldQuantity;
-
-        
-
-            return orderItem.quantity * orderItem.size <= correctQuantity; // Check only order quantity
-          });
-
-          //////////////////    check order quantity        ////////////////
-
-          if (result) {
-            const newStatus = "OUT_FOR_DELIVERY";
-            //////////////////    check invoiceNumber        ////////////////
-            if (!orderData.hasOwnProperty("invoiceNumber")) {
-              await updateDoc(orderDocRef, {
-                status: newStatus,
-                // OTP: otp,
-                invoiceNumber: orderData.invoiceNumber,
-                tokens: customertoken,
-                deliveryname: deliverymenWithArea[0].basic_info.name,
-                assign_to: deliverymenWithArea[0].id,
-              });
-            } else {
-              await updateDoc(orderDocRef, {
-                status: newStatus,
-                // OTP: otp,
-                deliveryname: deliverymenWithArea[0].basic_info.name,
-                assign_to: deliverymenWithArea[0].id,
-              });
-              setLoading(false);
-            }
-          } else {
-            setIsFilterDeliverymanPopup(true);
-          }
-        } else {
-          toast.warning("Van data for this product is unavailable", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        }
-      } else {
-        if (selectedDeliveryManId === null) {
-          setAllDeliverymans(deliverymenWithArea);
-          setIssDeliverymanPopup(true);
-        } else {
-          const filterautoselectdeliverymandata = DeliveryManData.filter(
-            (value) => value.id === selectedDeliveryManId
-          );
-          const q = query(
-            collection(
-              db,
-              `Delivery/${filterautoselectdeliverymandata[0].id}/Van`
+      // Find available deliverymen for the area
+      const deliverymenWithArea = DeliveryManData.filter(
+        (deliveryman) =>
+          deliveryman.profile_status === "APPROVED" &&
+          deliveryman.is_verified === true &&
+          deliveryman.serviceArea &&
+          deliveryman.status === "online" &&
+          deliveryman.serviceArea.some((areas) =>
+            areas.terretory?.some((t) =>
+              t.toLowerCase().includes(areaOrAddress.split(",")[0].trim())
             )
+          )
+      );
+
+      // No deliverymen case
+      if (deliverymenWithArea.length === 0 && selectedDeliveryManId === null) {
+        toast.warning("No Delivery Man Found In this Area", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Determine which deliveryman to use
+      const deliveryman = selectedDeliveryManId
+        ? DeliveryManData.find((value) => value.id === selectedDeliveryManId)
+        : deliverymenWithArea.length === 1
+        ? deliverymenWithArea[0]
+        : null;
+
+      // Multiple deliverymen case - show selection popup
+      if (!deliveryman) {
+        setAllDeliverymans(deliverymenWithArea);
+        setIssDeliverymanPopup(true);
+        setLoading(false);
+        return;
+      }
+
+      // Check van inventory
+      const vanProductsQuery = query(
+        collection(db, `Delivery/${deliveryman.id}/Van`)
+      );
+      const querySnapshot = await getDocs(vanProductsQuery);
+      const vanProducts = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Verify stock availability before proceeding
+      let allProductsAvailable = true;
+      const stockIssues = [];
+
+      for (const orderItem of orderData.items) {
+        const vanProduct = vanProducts.find(
+          (p) => p.productid === orderItem.product_id
+        );
+
+        if (!vanProduct) {
+          stockIssues.push(`${orderItem.name} not available in delivery van`);
+          allProductsAvailable = false;
+          continue;
+        }
+
+        const availableQty = vanProduct.quantity - (vanProduct.sold || 0);
+        const requiredQty = orderItem.quantity * orderItem.size;
+
+        if (availableQty < requiredQty) {
+          stockIssues.push(
+            `Insufficient stock for ${orderItem.name}. Available: ${availableQty}, Required: ${requiredQty}`
           );
-          const querySnapshot = await getDocs(q);
-          const vanProductIds = new Set(
-            querySnapshot.docs.map((doc) => doc.data().productid)
-          );
-          const allMatch = orderData.items.every((item) =>
-            vanProductIds.has(item.product_id)
-          );
-          //////////////////    order aviable or not        ////////////////
-
-          if (allMatch) {
-            const vanProducts = querySnapshot.docs.map((doc) => doc.data());
-            const orderItems = orderData.items; // No need to `.map()` as it's already an array.
-
-            let result = orderItems.every((orderItem) => {
-              const matchingVanProduct = vanProducts.find(
-                (product) => product.productid === orderItem.product_id
-              );
-
-              if (!matchingVanProduct) return false; // If no matching product, return false immediately.
-
-              let soldQuantity = Number(matchingVanProduct.sold || 0);
-              let correctQuantity = matchingVanProduct.quantity - soldQuantity;
-
-          
-
-              return orderItem.quantity * orderItem.size <= correctQuantity; // Check only order quantity
-            });
-
-            //////////////////    check order quantity        ////////////////
-
-            if (result) {
-              const newStatus = "OUT_FOR_DELIVERY";
-              //////////////////    check invoiceNumber        ////////////////
-              if (!orderData.hasOwnProperty("invoiceNumber")) {
-                await updateDoc(orderDocRef, {
-                  status: newStatus,
-                  // OTP: otp,
-                  invoiceNumber: orderData.invoiceNumber,
-                  tokens: customertoken,
-                  deliveryname:
-                    filterautoselectdeliverymandata[0].basic_info.name,
-                  assign_to: filterautoselectdeliverymandata[0].id,
-                });
-              } else {
-                await updateDoc(orderDocRef, {
-                  status: newStatus,
-                  // OTP: otp,
-                  deliveryname:
-                    filterautoselectdeliverymandata[0].basic_info.name,
-                  assign_to: filterautoselectdeliverymandata[0].id,
-                });
-                setLoading(false);
-              }
-            } else {
-              setIsFilterDeliverymanPopup(true);
-            }
-          } else {
-            toast.warning("Van data for this product is unavailable", {
-              position: toast.POSITION.TOP_RIGHT,
-            });
-          }
+          allProductsAvailable = false;
         }
       }
-    } else {
-      toast.warning("No Delivery Man Found In this Area", {
+
+      if (!allProductsAvailable) {
+        stockIssues.forEach((issue) => {
+          toast.error(issue, { position: toast.POSITION.TOP_RIGHT });
+        });
+        setLoading(false);
+        return;
+      }
+
+      // All checks passed - proceed with order
+      await runTransaction(db, async (transaction) => {
+        // Only mark as OUT_FOR_DELIVERY without updating van inventory
+        const updateData = {
+          status: "OUT_FOR_DELIVERY",
+          deliveryname: deliveryman.basic_info.name,
+          assign_to: deliveryman.id,
+          ...(customertoken && { tokens: customertoken }),
+          ...(!orderData.invoiceNumber && {
+            invoiceNumber: orderData.invoiceNumber,
+          }),
+        };
+        transaction.update(orderDocRef, updateData);
+
+       
+      });
+
+      toast.success(
+        "Order is out for delivery!",
+        {
+          position: toast.POSITION.TOP_RIGHT,
+        }
+      );
+    } catch (error) {
+      console.error("Order processing error:", error);
+      toast.error(`Order failed: ${error.message}`, {
         position: toast.POSITION.TOP_RIGHT,
       });
+    } finally {
       setLoading(false);
     }
   }
@@ -555,14 +503,15 @@ export default function NewOrder() {
                   #{item.order_id}
                 </h1>
                 <p
-                  className={`d-inline-block ms-3 ${item.status.toString().toLowerCase() === "new"
+                  className={`d-inline-block ms-3 ${
+                    item.status.toString().toLowerCase() === "new"
                       ? "fs-sm fw-400 red mb-0 new_order"
                       : item.status.toString().toLowerCase() === "confirmed"
-                        ? "fs-sm fw-400 mb-0 processing_skyblue"
-                        : item.status.toString().toLowerCase() === "delivered"
-                          ? "fs-sm fw-400 mb-0 green stock_bg"
-                          : "fs-sm fw-400 mb-0 black processing_skyblue"
-                    }`}
+                      ? "fs-sm fw-400 mb-0 processing_skyblue"
+                      : item.status.toString().toLowerCase() === "delivered"
+                      ? "fs-sm fw-400 mb-0 green stock_bg"
+                      : "fs-sm fw-400 mb-0 black processing_skyblue"
+                  }`}
                 >
                   {item.status}
                 </p>
@@ -604,15 +553,15 @@ export default function NewOrder() {
               ) : item.status === "DISPATCHED" ? (
                 <div></div>
               ) : item.status === "CONFIRMED" ? (
-                        <div className="d-flex align-itmes-center gap-3">
-                          <button className="reset_border">
-                      <button
-                        onClick={() => handleCancelOrRejectOrder(item.id)}
-                        className="fs-sm reset_btn  border-0 fw-400"
-                      >
-                         {item.status === "NEW" ? "Reject Order" : "Cancel Order"}
-                      </button>
+                <div className="d-flex align-itmes-center gap-3">
+                  <button className="reset_border">
+                    <button
+                      onClick={() => handleCancelOrRejectOrder(item.id)}
+                      className="fs-sm reset_btn  border-0 fw-400"
+                    >
+                      {item.status === "NEW" ? "Reject Order" : "Cancel Order"}
                     </button>
+                  </button>
                   <button
                     onClick={() =>
                       handlePreparedPacking(item.id, item.order_id, item)
@@ -625,15 +574,15 @@ export default function NewOrder() {
                   </button>
                 </div>
               ) : item.status === "PROCESSING" ? (
-                          <div className="d-flex align-itmes-center gap-3">
-                            <button className="reset_border">
-                      <button
-                        onClick={() => handleCancelOrRejectOrder(item.id)}
-                        className="fs-sm reset_btn  border-0 fw-400"
-                      >
-                         {item.status === "NEW" ? "Reject Order" : "Cancel Order"}
-                      </button>
+                <div className="d-flex align-itmes-center gap-3">
+                  <button className="reset_border">
+                    <button
+                      onClick={() => handleCancelOrRejectOrder(item.id)}
+                      className="fs-sm reset_btn  border-0 fw-400"
+                    >
+                      {item.status === "NEW" ? "Reject Order" : "Cancel Order"}
                     </button>
+                  </button>
                   <button
                     onClick={() =>
                       handlePreparedDelivery(item.id, item.order_id)
@@ -645,18 +594,18 @@ export default function NewOrder() {
                     Out for Delivery
                   </button>
                 </div>
-              ) :item.status === "OUT_FOR_DELIVERY" ? (
-                          <div className="d-flex align-itmes-center gap-3">
-                            <button className="reset_border">
-                      <button
-                        onClick={() => handleCancelOrRejectOrder(item.id)}
-                        className="fs-sm reset_btn  border-0 fw-400"
-                      >
+              ) : item.status === "OUT_FOR_DELIVERY" ? (
+                <div className="d-flex align-itmes-center gap-3">
+                  <button className="reset_border">
+                    <button
+                      onClick={() => handleCancelOrRejectOrder(item.id)}
+                      className="fs-sm reset_btn  border-0 fw-400"
+                    >
                       {item.status === "NEW" ? "Reject Order" : "Cancel Order"}
-                      </button>
                     </button>
-                 
-                </div>): (
+                  </button>
+                </div>
+              ) : (
                 ""
               )}
             </div>
@@ -694,75 +643,76 @@ export default function NewOrder() {
                   pageStyle="print"
                 />
               ) : null}
-                
             </div>
-         
+
             <Row className="">
               <Col xxl={8}>
                 <div className="p-3 bg-white product_shadow">
                   <p className="fs-2sm fw-400 black mb-0">Items</p>
-                  {item.items.filter((products) => products.quantity > 0).map((products, index) => {
-                    return (
-                      <>
-                        <div className="d-flex align-items-center justify-content-between mt-3">
-                          <div className="d-flex align-items-center mw-300 p-2">
-                            <div style={{}}>
-                              <img
-                                src={products.image}
-                                alt="mobileicon"
-                                className="items_images"
-                              />
-                            </div>
-                            <div className="ps-3">
-                              <p className="fs-sm fw-400 black mb-0">
-                                {products.title}{" "}
-                                {products.varient_name
-                                  .toString()
-                                  .toLowerCase() !== "not found" && (
+                  {item.items
+                    .filter((products) => products.quantity > 0)
+                    .map((products, index) => {
+                      return (
+                        <>
+                          <div className="d-flex align-items-center justify-content-between mt-3">
+                            <div className="d-flex align-items-center mw-300 p-2">
+                              <div style={{}}>
+                                <img
+                                  src={products.image}
+                                  alt="mobileicon"
+                                  className="items_images"
+                                />
+                              </div>
+                              <div className="ps-3">
+                                <p className="fs-sm fw-400 black mb-0">
+                                  {products.title}{" "}
+                                  {products.varient_name
+                                    .toString()
+                                    .toLowerCase() !== "not found" && (
                                     <span className="fs-sm fw-400 black mb-0 ms-3">
                                       {products.varient_name}
                                     </span>
                                   )}
-                              </p>
-                              <p className="fs-xxs fw-400 fade_grey mb-0">
-                                ID :{products.product_id}
-                              </p>
-                              {products.color.toString().toLowerCase() !=
-                                "" && (
+                                </p>
+                                <p className="fs-xxs fw-400 fade_grey mb-0">
+                                  ID :{products.product_id}
+                                </p>
+                                {products.color.toString().toLowerCase() !=
+                                  "" && (
                                   <p className="fs-xxs fw-400 fade_grey mb-0">
                                     color :{products.color}
                                   </p>
                                 )}
+                              </div>
                             </div>
-                          </div>
-                          <div className="d-flex align-items-center p-3">
-                            <p className="fs-sm fw-400 black mb-0">
-                              ₹ {Math.round(products.varient_price)}{" "}
-                              <span className="ms-4">X</span>
-                            </p>
-                            <p className="fs-sm fw-400 black mb-0 ps-4 ms-2 me-5">
-                              {products.quantity}
-                            </p>
-                            <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">
-                              (-) ₹{" "}
+                            <div className="d-flex align-items-center p-3">
+                              <p className="fs-sm fw-400 black mb-0">
+                                ₹ {Math.round(products.varient_price)}{" "}
+                                <span className="ms-4">X</span>
+                              </p>
+                              <p className="fs-sm fw-400 black mb-0 ps-4 ms-2 me-5">
+                                {products.quantity}
+                              </p>
+                              <p className="fs-sm fw-400 black mb-0 ps-4 ms-5 ps-5 ">
+                                (-) ₹{" "}
+                                {Math.round(
+                                  products.varient_discount * products.quantity
+                                )}
+                              </p>
+                            </div>
+                            <p className="fs-sm fw-400 black mb-0 p-3">
+                              ₹{" "}
                               {Math.round(
-                                products.varient_discount * products.quantity
-                              )}
+                                products.varient_price * products.quantity
+                              ) -
+                                Math.round(
+                                  products.varient_discount * products.quantity
+                                )}
                             </p>
                           </div>
-                          <p className="fs-sm fw-400 black mb-0 p-3">
-                            ₹{" "}
-                            {Math.round(
-                              products.varient_price * products.quantity
-                            ) -
-                              Math.round(
-                                products.varient_discount * products.quantity
-                              )}
-                          </p>
-                        </div>
-                      </>
-                    );
-                  })}
+                        </>
+                      );
+                    })}
 
                   <div className="product_borderbottom mt-3"></div>
                   <div className="d-flex align-items-center justify-content-between mt-4">
@@ -823,8 +773,8 @@ export default function NewOrder() {
                                 {log.data.status === "PROCESSING"
                                   ? "PROCESSING"
                                   : log.data.status === "NEW"
-                                    ? "ORDER PLACED"
-                                    : log.data.status}{" "}
+                                  ? "ORDER PLACED"
+                                  : log.data.status}{" "}
                               </p>
                               <p className="fs-xxs fw-400 black ps-3 ms-1 mb-0">
                                 {log.data.name}
@@ -914,8 +864,8 @@ export default function NewOrder() {
                 {(item.transaction.mode === "Cash on Delivery" ||
                   item.transaction.mode === "UPI / Bank Transfer" ||
                   item.transaction.mode === "Pay Later / Credit") &&
-                  (item.transaction.status === "Paid" ||
-                    item.status === "DELIVERED") ? (
+                (item.transaction.status === "Paid" ||
+                  item.status === "DELIVERED") ? (
                   <div className="p-3 bg-white product_shadow mt-4">
                     <p className="fs-2sm fw-400 black mb-0">Transactions</p>
                     <div className="d-flex flex-column mt-3">
@@ -950,216 +900,217 @@ export default function NewOrder() {
         <div>
           {filterData.length > 0
             ? filterData.map((items) => {
-              const subtotal = items.items.reduce(
-                (acc, data) => acc + data.quantity * data.final_price,
-                0
-              );
-              const savedDiscount = items.items.reduce(
-                (acc, data) => acc + data.quantity * data.varient_discount,
-                0
-              );
-              return (
-                <div className="bill m-auto" ref={componentRef}>
-                  <div className="d-flex align-items-start justify-content-between">
-                    <img src={billLogo} alt="billLogo" />
-                    <div className="text-end">
-                      <h1 className="fs_24 fw-700 black mb-0">INVOICE</h1>
-                      <p className="fs-xxs fw_700 black mb-0">
-                        #{items.invoiceNumber}
-                      </p>
-                      <p className="fs-xs fw_400 green mb-0">
-                        {items.transaction.status}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-3">
-                    <div className="d-flex align-items-start justify-content-between gap-3">
-                      <div className="w-50">
-                        <p className="fs-xs fw-700 black mb-0">
-                          Save Time Save Money
-                        </p>
-                        <p className="fs-xs fw-400 black mb-0 mt-1">
-                          Near TVS Agency, Hansi Road, Barwala,
-                        </p>
-                        <p className="fs-xs fw-400 black mb-0 mt-1">
-                          Hisar, Haryana - 125121
-                        </p>
-                        <p className="fs-xs fw-400 black mb-0 mt-1">
-                          GSTIN : 06GWMPS2545Q1ZJ
-                        </p>
-                      </div>
-                      <div className="text-end w-50">
-                        <p className="fs-xxs fw-700 black mb-0">Bill To:</p>
-                        <p className="fs-xxs fw-700 black mb-0">
-                          {items.customer.name}
-                        </p>
-                        <p className="fs-xs fw-400 black mb-0 mt-1">
-                          {items.shipping.address}
-                        </p>
-                        <p className="fs-xs fw-400 black mb-0 mt-1">
-                          {items.shipping.city} {items.shipping.state}{" "}
-                        </p>
-                        <p className="fs-xs fw-400 black mb-0 mt-4 text-end">
-                          Invoice Date : {formatDate(items.created_at)}
-                        </p>
-                      </div>
-                    </div>
-                    <table className="w-100 mt-3">
-                      <thead>
-                        <tr className="bg_dark_black">
-                          <th className="fs-xxs fw-400 white p_10">#</th>
-                          <th className="fs-xxs fw-400 white p_10">
-                            Item Description
-                          </th>
-                          <th className="fs-xxs fw-400 white p_10 text-center">
-                            Qty
-                          </th>
-                          <th className="fs-xxs fw-400 white p_10 text-end">
-                            Unit Cost
-                          </th>
-                          <th className="fs-xxs fw-400 white p_10 text-center">
-                            Tax
-                          </th>
-                          <th className="fs-xxs fw-400 white p_10 text-end">
-                            Line Total
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {items.items.map((data) => {
-                          return (
-                            <tr>
-                              <td className="fs-xxs fw-400 black p_5_10">
-                                1
-                              </td>
-                              <td className="p_5_10">
-                                <span>
-                                  <p className="fs-xxs fw-400 black mb-0">
-                                    {data.title}
-                                  </p>
-                                  <span className="d-flex align-items-center gap-2">
-                                    <p className=" fs-xxxs fw-700 black mb-0">
-                                      ₹ {data.varient_discount} OFF
-                                    </p>
-                                    <p
-                                      className={`fs-xxxs fw-400 black mb-0  ${data.varient_discount !== "0"
-                                          ? "strikethrough"
-                                          : null
-                                        }`}
-                                    >
-                                      MRP : {data.varient_price}
-                                    </p>
-                                  </span>
-                                  <span className="d-flex align-items-center gap-3">
-                                    <p className=" fs-xxxs fw-400 black mb-0">
-                                      {data.varient_name} {data.unitType}
-                                    </p>
-                                    <p className="fs-xxxs fw-400 black mb-0">
-                                      {data.color}
-                                    </p>
-                                  </span>
-                                </span>
-                              </td>
-                              <td className="fs-xxs fw-400 black p_5_10 text-center">
-                                {data.quantity}
-                              </td>
-                              <td className="fs-xxs fw-400 black p_5_10 text-end">
-                                {data.final_price}
-                              </td>
-                              <td className="fs-xxs fw-400 black p_5_10 text-center">
-                                {typeof data.Tax === "undefined"
-                                  ? "0"
-                                  : data.Tax}
-                                %
-                              </td>
-                              <td className="fs-xxs fw-400 black p_5_10 text-end">
-                                ₹
-                                {data.quantity * data.final_price +
-                                  (typeof data.text === "undefined"
-                                    ? 0
-                                    : data.quantity *
-                                    data.final_price *
-                                    (data.Tax / 100))}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                    <div className="d-flex align-items-center justify-content-between mt-3">
-                      <div className="w-75 text-end">
-                        <p className="fs_xxs fw-700 black mb-0">Sub Total</p>
-                        <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">
-                          Promo Discount
-                        </p>
-                        <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">
-                          Total Amount
-                        </p>
-                      </div>
+                const subtotal = items.items.reduce(
+                  (acc, data) => acc + data.quantity * data.final_price,
+                  0
+                );
+                const savedDiscount = items.items.reduce(
+                  (acc, data) => acc + data.quantity * data.varient_discount,
+                  0
+                );
+                return (
+                  <div className="bill m-auto" ref={componentRef}>
+                    <div className="d-flex align-items-start justify-content-between">
+                      <img src={billLogo} alt="billLogo" />
                       <div className="text-end">
-                        <p className="fs_xxs fw-400 black mb-0">
-                          ₹{subtotal}
+                        <h1 className="fs_24 fw-700 black mb-0">INVOICE</h1>
+                        <p className="fs-xxs fw_700 black mb-0">
+                          #{items.invoiceNumber}
                         </p>
-                        <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
-                          (-) ₹ {items.additional_discount.discount}
-                        </p>
-                        <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
-                          {/* {((data.quantity * data.final_price) * (data.Tax / 100))} */}
-                          {items.order_price}
+                        <p className="fs-xs fw_400 green mb-0">
+                          {items.transaction.status}
                         </p>
                       </div>
                     </div>
-                  </div>
-                  <span className="mt-3 bill_border d-inline-block"></span>
-                  <p className=" fs-xxxs fw-400 black mb-0 mt-1">
-                    Note : You Saved{" "}
-                    <span className="fw-700"> ₹{savedDiscount} </span> on
-                    product discount.
-                  </p>
-                  {items.transaction.status === "Paid" ? (
-                    <div>
-                      <p className="fs_xxs fw-400 black mb-0 mt-3">
-                        Transactions:
-                      </p>
-                      <table className="mt-3 w-100">
+                    <div className="mt-3">
+                      <div className="d-flex align-items-start justify-content-between gap-3">
+                        <div className="w-50">
+                          <p className="fs-xs fw-700 black mb-0">
+                            Save Time Save Money
+                          </p>
+                          <p className="fs-xs fw-400 black mb-0 mt-1">
+                            Near TVS Agency, Hansi Road, Barwala,
+                          </p>
+                          <p className="fs-xs fw-400 black mb-0 mt-1">
+                            Hisar, Haryana - 125121
+                          </p>
+                          <p className="fs-xs fw-400 black mb-0 mt-1">
+                            GSTIN : 06GWMPS2545Q1ZJ
+                          </p>
+                        </div>
+                        <div className="text-end w-50">
+                          <p className="fs-xxs fw-700 black mb-0">Bill To:</p>
+                          <p className="fs-xxs fw-700 black mb-0">
+                            {items.customer.name}
+                          </p>
+                          <p className="fs-xs fw-400 black mb-0 mt-1">
+                            {items.shipping.address}
+                          </p>
+                          <p className="fs-xs fw-400 black mb-0 mt-1">
+                            {items.shipping.city} {items.shipping.state}{" "}
+                          </p>
+                          <p className="fs-xs fw-400 black mb-0 mt-4 text-end">
+                            Invoice Date : {formatDate(items.created_at)}
+                          </p>
+                        </div>
+                      </div>
+                      <table className="w-100 mt-3">
                         <thead>
-                          <tr>
-                            <th className="fs-xxs fw-400 black py_2">
-                              Transaction ID
+                          <tr className="bg_dark_black">
+                            <th className="fs-xxs fw-400 white p_10">#</th>
+                            <th className="fs-xxs fw-400 white p_10">
+                              Item Description
                             </th>
-                            <th className="fs-xxs fw-400 black py_2">
-                              Payment Mode
+                            <th className="fs-xxs fw-400 white p_10 text-center">
+                              Qty
                             </th>
-                            <th className="fs-xxs fw-400 black py_2">Date</th>
-                            <th className="fs-xxs fw-400 black py_2">
-                              Amount
+                            <th className="fs-xxs fw-400 white p_10 text-end">
+                              Unit Cost
+                            </th>
+                            <th className="fs-xxs fw-400 white p_10 text-center">
+                              Tax
+                            </th>
+                            <th className="fs-xxs fw-400 white p_10 text-end">
+                              Line Total
                             </th>
                           </tr>
                         </thead>
                         <tbody>
-                          <tr className="bill_border">
-                            <td className="fs-xxs fw-400 black py-1">
-                              {items.transaction.tx_id === ""
-                                ? "N/A"
-                                : items.transaction.tx_id}
-                            </td>
-                            <td className="fs-xxs fw-400 black py-1">
-                              {items.transaction.mode}
-                            </td>
-                            <td className="fs-xxs fw-400 black py-1">
-                              {formatDate(items.transaction.date)}
-                            </td>
-                            <td className="fs-xxs fw-400 black py-1">
-                              ₹{items.order_price}
-                            </td>
-                          </tr>
+                          {items.items.map((data) => {
+                            return (
+                              <tr>
+                                <td className="fs-xxs fw-400 black p_5_10">
+                                  1
+                                </td>
+                                <td className="p_5_10">
+                                  <span>
+                                    <p className="fs-xxs fw-400 black mb-0">
+                                      {data.title}
+                                    </p>
+                                    <span className="d-flex align-items-center gap-2">
+                                      <p className=" fs-xxxs fw-700 black mb-0">
+                                        ₹ {data.varient_discount} OFF
+                                      </p>
+                                      <p
+                                        className={`fs-xxxs fw-400 black mb-0  ${
+                                          data.varient_discount !== "0"
+                                            ? "strikethrough"
+                                            : null
+                                        }`}
+                                      >
+                                        MRP : {data.varient_price}
+                                      </p>
+                                    </span>
+                                    <span className="d-flex align-items-center gap-3">
+                                      <p className=" fs-xxxs fw-400 black mb-0">
+                                        {data.varient_name} {data.unitType}
+                                      </p>
+                                      <p className="fs-xxxs fw-400 black mb-0">
+                                        {data.color}
+                                      </p>
+                                    </span>
+                                  </span>
+                                </td>
+                                <td className="fs-xxs fw-400 black p_5_10 text-center">
+                                  {data.quantity}
+                                </td>
+                                <td className="fs-xxs fw-400 black p_5_10 text-end">
+                                  {data.final_price}
+                                </td>
+                                <td className="fs-xxs fw-400 black p_5_10 text-center">
+                                  {typeof data.Tax === "undefined"
+                                    ? "0"
+                                    : data.Tax}
+                                  %
+                                </td>
+                                <td className="fs-xxs fw-400 black p_5_10 text-end">
+                                  ₹
+                                  {data.quantity * data.final_price +
+                                    (typeof data.text === "undefined"
+                                      ? 0
+                                      : data.quantity *
+                                        data.final_price *
+                                        (data.Tax / 100))}
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
+                      <div className="d-flex align-items-center justify-content-between mt-3">
+                        <div className="w-75 text-end">
+                          <p className="fs_xxs fw-700 black mb-0">Sub Total</p>
+                          <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">
+                            Promo Discount
+                          </p>
+                          <p className="fs_xxs fw-700 black mt-2 pt-1 mb-0">
+                            Total Amount
+                          </p>
+                        </div>
+                        <div className="text-end">
+                          <p className="fs_xxs fw-400 black mb-0">
+                            ₹{subtotal}
+                          </p>
+                          <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
+                            (-) ₹ {items.additional_discount.discount}
+                          </p>
+                          <p className="fs_xxs fw-400 black mb-0 pt-1 mt-2">
+                            {/* {((data.quantity * data.final_price) * (data.Tax / 100))} */}
+                            {items.order_price}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  ) : null}
-                </div>
-              );
-            })
+                    <span className="mt-3 bill_border d-inline-block"></span>
+                    <p className=" fs-xxxs fw-400 black mb-0 mt-1">
+                      Note : You Saved{" "}
+                      <span className="fw-700"> ₹{savedDiscount} </span> on
+                      product discount.
+                    </p>
+                    {items.transaction.status === "Paid" ? (
+                      <div>
+                        <p className="fs_xxs fw-400 black mb-0 mt-3">
+                          Transactions:
+                        </p>
+                        <table className="mt-3 w-100">
+                          <thead>
+                            <tr>
+                              <th className="fs-xxs fw-400 black py_2">
+                                Transaction ID
+                              </th>
+                              <th className="fs-xxs fw-400 black py_2">
+                                Payment Mode
+                              </th>
+                              <th className="fs-xxs fw-400 black py_2">Date</th>
+                              <th className="fs-xxs fw-400 black py_2">
+                                Amount
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="bill_border">
+                              <td className="fs-xxs fw-400 black py-1">
+                                {items.transaction.tx_id === ""
+                                  ? "N/A"
+                                  : items.transaction.tx_id}
+                              </td>
+                              <td className="fs-xxs fw-400 black py-1">
+                                {items.transaction.mode}
+                              </td>
+                              <td className="fs-xxs fw-400 black py-1">
+                                {formatDate(items.transaction.date)}
+                              </td>
+                              <td className="fs-xxs fw-400 black py-1">
+                                ₹{items.order_price}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })
             : null}
         </div>
       </div>
