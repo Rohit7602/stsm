@@ -6,7 +6,7 @@ function VanHistoryLogs() {
   const location = useLocation();
   const [viewlogspop, setViewLogsPop] = useState(null);
   const [viewhistorypop, setViewHistoryPop] = useState(false);
- const [deliveredHistory,setDeliveredHistory]=useState([])
+  const [deliveredHistory, setDeliveredHistory] = useState([]);
   const updatedFilterHistory = location.state.filterhistory.map((entry) => ({
     ...entry,
     pendingitems: entry.loaditems?.filter(
@@ -17,7 +17,7 @@ function VanHistoryLogs() {
     ),
   }));
 
-// / 🔥 Filter Delivered Orders Between Two Time Periods
+  // / 🔥 Filter Delivered Orders Between Two Time Periods
   useEffect(() => {
     if (
       typeof viewhistorypop === "object" &&
@@ -26,6 +26,9 @@ function VanHistoryLogs() {
     ) {
       const out = viewhistorypop.LoadOutVanHistory[0];
       const inTime = viewhistorypop.LoadInVanHistory[0];
+
+      console.log(out, "out time ");
+      console.log(inTime, "in time ");
 
       const start = new Date(`${out.date}T${out.time}`);
       const end = new Date(`${inTime.date}T${inTime.time}`);
@@ -38,7 +41,6 @@ function VanHistoryLogs() {
       setDeliveredHistory(filtered);
     }
   }, [viewhistorypop]);
- 
 
   return (
     <div className="main_panel_wrapper bg_light_grey w-100">
@@ -69,8 +71,8 @@ function VanHistoryLogs() {
                   </thead>
                   <tbody>
                     {viewhistorypop.LoadOutVanHistory?.map((value, index) => {
-                      console.log(value, "vlaue")
-                      
+                      console.log(value, "vlaue");
+
                       const currentDate = new Date()
                         .toISOString()
                         .split("T")[0]; // Get today's date in "YYYY-MM-DD" format
@@ -129,7 +131,7 @@ function VanHistoryLogs() {
                         month: "short",
                         year: "numeric",
                       });
-                      console.log(value,"value")
+                      console.log(value, "value");
                       return (
                         <tr key={index}>
                           <td className="text-center">{formattedTime}</td>
@@ -248,7 +250,6 @@ function VanHistoryLogs() {
                       return dateB - dateA;
                     })
                     .map((item, index) => {
-                     
                       return (
                         <div key={index}>
                           <div>
