@@ -830,16 +830,16 @@ const handleUpdateOrders = async (e) => {
     // 3. Execute updates in transaction
     const batch = writeBatch(db);
 
-    // Update van inventory
-    Object.entries(inventoryUpdates).forEach(([productId, update]) => {
-      const vanRef = doc(db, `Delivery/${id}/Van`, productId);
-      const currentVanItem = vanInventory[productId];
+    // // Update van inventory
+    // Object.entries(inventoryUpdates).forEach(([productId, update]) => {
+    //   const vanRef = doc(db, `Delivery/${id}/Van`, productId);
+    //   const currentVanItem = vanInventory[productId];
 
-      batch.update(vanRef, {
-        sold: increment(update.qty),
-        quantity: currentVanItem.quantity // no manual changes to quantity
-      });
-    });
+    //   batch.update(vanRef, {
+    //     sold: increment(update.qty),
+    //     quantity: currentVanItem.quantity // no manual changes to quantity
+    //   });
+    // });
 
     // Update order statuses
     processableOrders.forEach(order => {
